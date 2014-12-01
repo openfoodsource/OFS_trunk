@@ -1,0 +1,59 @@
+.fileinput-button input {
+  cursor: pointer;
+  direction: ltr;
+  font-size: 200px;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  }
+.fileinput-button {
+  overflow: hidden;
+  position: relative;
+  }
+.template-upload {
+  position:relative;
+  }
+.extra-field-title,
+.extra-field-caption {
+  float:left;
+  }
+.extra-field-title label,
+.extra-field-caption label {
+  display:block;
+  color: #333;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 10px;
+  font-weight:normal;
+  }
+.extra-field-title {
+  width:30%;
+  }
+.extra-field-caption {
+  width:65%;
+  }
+.extra-field-title input,
+.extra-field-caption input {
+  line-height:1.2;
+  font-size:14px;
+  width:100%;
+  }
+.template-upload td p.size {
+  clear:both;
+  position:absolute;
+  }
+.btn-danger,
+.btn-primary,
+.btn-warning,
+.btn-success {
+  margin-bottom:10px;
+  }
+.template-upload,
+.template-download {
+  height:100px;
+  }
+.preview a img {
+  max-width:80px;
+  max-height:80px;
+  }

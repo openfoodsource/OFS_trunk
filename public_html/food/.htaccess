@@ -1,0 +1,7 @@
+php_value include_path '/var/www/openfoodsource/ofs_includes/:.'
+# DirectoryIndex index.php index.html index.htm
+
+RewriteEngine On
+RewriteBase /food/
+RewriteRule ^producers/([A-Za-z0-9_\-\.]+)$ product_list.php\?type=producer_link&producer_link=$1 [L]
+RewriteRule ^producers/([A-Za-z0-9_\-\.]+)\.php$ product_list.php\?type=producer_link&producer_link=$1 [L]

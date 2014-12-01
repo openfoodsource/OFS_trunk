@@ -1,0 +1,193 @@
+/* CSS for adjust_ledger.php */
+
+body {
+  background-color:#fff;
+  }
+
+#edit_account {
+  width:75%;
+  margin:1em auto;
+  }
+
+label {
+  display:block;
+  clear:both;
+  margin-top:1em;
+  font-size:80%;
+  color:#006;
+  }
+
+#account_id_display,
+#account_id {
+  float:left;
+  margin:0 2em 0 0;
+  width:15%;
+  }
+#internal_key_display:disabled {
+  width:100%;
+  overflow:hidden;
+  background-color: #ddd;
+  color: #666;
+  }
+
+#internal_key,
+#internal_subkey,
+#account_number,
+#sub_account_number,
+#description {
+  background-color:#fcc;
+  width:100%;
+  overflow:hidden;
+  }
+input#action {
+  float:right;
+  margin:0 0 0 2em;
+  }
+input#cancel {
+  float:right;
+  margin:0 2em;
+  }
+input#reset {
+  float:right;
+  margin:0 2em;
+  }
+
+#internal_key:valid,
+#internal_subkey:valid,
+#account_number:valid,
+#sub_account_number:valid,
+#description:valid {
+  background-color:#cfa !important;
+  }
+.alert {
+  color:#800;
+  }
+
+/*
+table {
+  clear:both;
+  border:2px solid #000;
+  border-collapse:collapse;
+  margin:auto;
+  }
+tr.replaced td {
+  text-decoration:line-through;
+  color:#888;
+  }
+thead tr th {
+  display:table-cell;
+  font-size:11px;
+  padding:3px 1px;
+  text-align:center;
+  border-right:1px solid #888;
+  }
+tbody tr td {
+  display:table-cell;
+  font-size:10px;
+  padding:3px 1px;
+  text-align:center;
+  border-right:1px solid #888;
+  }
+
+tbody tr td.edit_control {
+  background-color:#fc9;
+  color:#000;
+  border-top:1px solid #888;
+  }
+tbody tr td.edit_control div {
+  width:24%;
+  font-weight:bold;
+  text-align:center;
+  float:left;
+  }
+.highlight {
+  color:#c40;
+  }
+.header_row1 {
+  background-color:#eca;
+  }
+.header_row2 {
+  background-color:#eee;
+  }
+.row1 {
+  background-color:#fed;
+  }
+.row2 {
+  background-color:#fff;
+  }
+.transaction_row:hover {
+  color:#006;
+  }
+
+.data_entry {
+  background-color:#ffc;
+  }
+.adjustment_memo {
+  border-top:2px solid #000;
+  border-bottom:1px solid #000;
+  }
+.js_link {
+  cursor:pointer;
+  }
+.pseudo_input {
+  display:inline-block;
+  height:15px;
+  font-family: "Lucida Console",monospace;
+  font-size: 12px;
+  padding-top:1px;
+  margin-top:0;
+  background-color:#eee;
+  color:#888;
+  }
+.pseudo_input,
+.regular_input {
+  width:150px;
+  margin-bottom:5px;
+  border:1px solid #000;
+  }
+.wide_input {
+  text-align:left;
+  width:250px;
+  margin-bottom:5px;
+  border:1px solid #000;
+  }
+.edit_dialog {
+  border-top:1px dashed #888;
+  padding-top:5px;
+  margin-top:0;
+  }
+.edit_dialog fieldset {
+  padding:3px;
+  display:block;
+  width:47%;
+  height:100%;
+  text-align:right;
+  }
+.edit_dialog div {
+  width:15%;
+  text-align:center;
+  float:right;
+  }
+.close_row {
+  float:left;
+  color:#a00;
+  font-weight:bold;
+  padding:0 2px;
+  }
+.edit_button {
+  background-color:#fc9;
+  }
+.left {
+  float:left;
+  }
+.right {
+  float:right;
+  }
+.center {
+  text-align:center;
+  margin:auto;
+  }
+.clearboth {
+  clear:both;
+  }
+*/

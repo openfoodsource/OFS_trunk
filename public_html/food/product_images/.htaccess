@@ -1,0 +1,2 @@
+ErrorDocument 404 '/food/create_image.php'
+Options -Indexes

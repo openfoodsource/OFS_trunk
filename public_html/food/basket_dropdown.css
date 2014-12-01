@@ -1,0 +1,116 @@
+/* Styles for the all dropdowns */
+.dropdown {
+  -transition:height 0.7s cubic-bezier(1,0,0.5,1);
+  -webkit-transition:height 0.7s cubic-bezier(1,0,0.5,1);
+  -moz-transition:height 0.7s cubic-bezier(1,0,0.5,1);
+  -o-transition:height 0.7s cubic-bezier(1,0,0.5,1);
+  -ie-transition:height 0.7s cubic-bezier(1,0,0.5,1);
+  }
+/* Styles for the Basket Selector */
+#basket_dropdown {
+  position:absolute;
+  border:1px solid #000;
+  float:left;
+  width:300px;
+  height:26px;
+  overflow:hidden;
+  }
+#basket_dropdown:hover {
+  height:400px;
+  }
+h1.basket_history {
+  width:300px;
+  font-size:16px;
+  color:#efe;
+  background-color:#050;
+  position:relative;
+  height:26px;
+  margin:0;
+  padding:3px;
+  line-height:1;
+  }
+#basket_history {
+  width:100%;
+  background-color:#fff;
+  overflow:auto;
+  width:300px;
+  height:374px;
+  }
+ul.basket_history {
+  list-style-type:none;
+  padding-left:0;
+  }
+ul.basket_history li {
+  padding-top:5px;
+  text-align:left;
+  height:60px;
+  padding-left:70px;
+  border-top:1px solid transparent;
+  border-bottom:1px solid transparent;
+  }
+ul.basket_history li.view:hover {
+  cursor:default;
+  background-color:#efd;
+  border-top:1px solid #ad6;
+  border-bottom:1px solid #ad6;
+  }
+ul.basket_history li.ecs,
+ul.basket_history li.fcs {
+  background-color:#eeb;
+  border-top:1px solid #cba;
+  border-bottom:1px solid #cba;
+  }
+ul.basket_history li span {
+  vertical-align: middle;
+  }
+.delivery_date {
+  display:block;
+  font-size:130%;
+  font-weight:bold;
+  color:#350;
+  }
+.order_dates {
+  display:block;
+  font-size:90%;
+  color:#530;
+  }
+.basket_qty,
+.basket_action {
+  font-size:90%;
+  color:#000;
+  }
+li.fcs {
+  background:url(/food/grfx/basket-fcs.png) no-repeat 7px 7px;
+  }
+li.fci {
+  background:url(/food/grfx/basket-fci.png) no-repeat 7px 7px;
+  }
+li.fgs {
+  background:url(/food/grfx/basket-fgs.png) no-repeat 7px 7px;
+  }
+li.fgi {
+  background:url(/food/grfx/basket-fgi.png) no-repeat 7px 7px;
+  }
+li.ecs {
+  background:url(/food/grfx/basket-ecs.png) no-repeat 7px 7px;
+  }
+li.eci {
+  background:url(/food/grfx/basket-eci.png) no-repeat 7px 7px;
+  }
+li.egs {
+  background:url(/food/grfx/basket-egs.png) no-repeat 7px 7px;
+  }
+li.egi {
+  background:url(/food/grfx/basket-egi.png) no-repeat 7px 7px;
+  }
+li.eci span,
+li.egs span,
+li.egi span {
+  color:#999;
+  }
+.basket_link {
+  font-size:80%;
+  }
+.accounting_link {
+  font-size:80%;
+  }

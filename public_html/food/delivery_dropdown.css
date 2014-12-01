@@ -1,0 +1,111 @@
+/* Styles for all the dropdowns */
+.dropdown {
+  -transition:height 0.7s cubic-bezier(1,0,0.5,1);
+  -webkit-transition:height 0.7s cubic-bezier(1,0,0.5,1);
+  -moz-transition:height 0.7s cubic-bezier(1,0,0.5,1);
+  -o-transition:height 0.7s cubic-bezier(1,0,0.5,1);
+  -ie-transition:height 0.7s cubic-bezier(1,0,0.5,1);
+  }
+/* Styles for the delivery dropdown */
+a:hover {
+  text-decoration:none;
+  }
+#delivery_dropdown {
+  position:absolute;
+  border:1px solid #000;
+  /* float:right; */
+  width:40%;
+  max-width:400px;
+  height:26px;
+  overflow:hidden;
+  }
+#delivery_dropdown:hover {
+  width:400px;
+  height:400px;
+  }
+h1.delivery_select {
+  width:400px;
+  font-size:16px;
+  text-align:left;
+  color:#efe;
+  background-color:#050;
+  position:relative;
+  height:26px;
+  margin:0;
+  padding:3px;
+  }
+#delivery_select {
+  width:100%;
+  background-color:#fff;
+  overflow:auto;
+  width:400px;
+  height:374px;
+  }
+ul.delivery_select {
+  list-style-type:none;
+  padding-left:0;
+  margin-bottom:50px;
+  }
+ul.delivery_select li {
+  padding-top:10px;
+  text-align:left;
+  padding-bottom:20px;
+  padding-left:70px;
+  border-top:1px solid transparent;
+  border-bottom:1px solid transparent;
+  }
+ul.delivery_select li.active:hover {
+  cursor:pointer;
+  background-color:#efd;
+  border-top:1px solid #ad6;
+  border-bottom:1px solid #ad6;
+  }
+ul.delivery_select li span {
+  vertical-align: middle;
+  }
+ul.delivery_select li.select {
+  background-color:#eeb;
+  border-top:1px solid #cba;
+  border-bottom:1px solid #cba;
+  }
+.site_long {
+  display:block;
+  font-size:130%;
+  font-weight:bold;
+  color:#350;
+  }
+.site_action {
+  font-weight:bold;
+  color:#066;
+  }
+.inactive .site_action {
+  font-weight:bold;
+  color:#d50;
+  }
+.suspended .site_action {
+  font-weight:bold;
+  color:#a00;
+  }
+.site_description {
+  display:block;
+  font-size:80%;
+  color:#530;
+  }
+li.delivery_type-dag {
+  background:url(/food/grfx/deltype-dag.png) no-repeat 7px 7px;
+  }
+li.delivery_type-dac {
+  background:url(/food/grfx/deltype-dac.png) no-repeat 7px 7px;
+  }
+li.delivery_type-dig {
+  background:url(/food/grfx/deltype-dig.png) no-repeat 7px 7px;
+  }
+li.delivery_type-pag {
+  background:url(/food/grfx/deltype-pag.png) no-repeat 7px 7px;
+  }
+li.delivery_type-pac {
+  background:url(/food/grfx/deltype-pac.png) no-repeat 7px 7px;
+  }
+li.delivery_type-pig {
+  background:url(/food/grfx/deltype-pig.png) no-repeat 7px 7px;
+  }
