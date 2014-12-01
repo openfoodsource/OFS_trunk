@@ -11,13 +11,13 @@ function prdcr_info ($producer_id, $producer_link)
       }
     elseif (strlen ($producer_link) > 0)
       {
-        TABLE_PRODUCER.'.producer_link = "'.mysql_real_escape_string ($producer_link).'"';
+        $where_producer = TABLE_PRODUCER.'.producer_link = "'.mysql_real_escape_string ($producer_link).'"';
       }
     else
       {
         return '';
       }
-    $sqlr = '
+    $query = '
       SELECT
         '.TABLE_PRODUCER.'.*,
         '.TABLE_MEMBER.'.*
@@ -30,8 +30,8 @@ function prdcr_info ($producer_id, $producer_link)
         AND '.TABLE_PRODUCER.'.unlisted_producer != 2
       ORDER BY
         '.TABLE_MEMBER.'.business_name ASC';
-    $rsr = @mysql_query($sqlr, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-    while ( $row = mysql_fetch_array($rsr) )
+    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 828135 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    while ( $row = mysql_fetch_array($result) )
       {
         $producer_id = $row['producer_id'];
         $business_name =  $row['business_name'];
@@ -69,15 +69,15 @@ function prdcr_info ($producer_id, $producer_link)
         $pub_fax = $row['pub_fax'];
         $pub_web = $row['pub_web'];
         $display_logo = '';
-        $sqll = '
+        $query2 = '
           SELECT
             '.TABLE_PRODUCER_LOGOS.'.*
           FROM
             '.TABLE_PRODUCER_LOGOS.'
           WHERE
             '.TABLE_PRODUCER_LOGOS.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"';
-        $rsrl = @mysql_query($sqll, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-        while ( $row = mysql_fetch_array($rsrl) )
+        $result2 = @mysql_query($query2, $connection) or die(debug_print ("ERROR: 759323 ", array ($query2,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        while ( $row = mysql_fetch_array($result2) )
           {
             $logo_id = $row['logo_id'];
             $logo_desc = $row['logo_desc'];
