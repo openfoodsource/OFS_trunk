@@ -137,7 +137,7 @@ INSERT INTO `ofs_configuration` (`section`, `name`, `constant`, `options`, `valu
 ('7. Optional Modules', 'paypal_valid_emails', 'PAYPAL_VALID_EMAILS', 'text_area', 'paypal@openfoodsource.org\r\ngm@openfoodsource.org\r\ninfo@openfoodsource.org', 'List all e-mail addresses through which this organization can receive paypal payments, one per line.'),
 ('7. Optional Modules', 'wordpress2openfood_groups', 'WORDPRESS2OPENFOOD_GROUPS', 'text_area', '1=registered\r\n2=member\r\n3=producer\r\n4=institution\r\n5=route_admin\r\n6=cashier\r\n7=board\r\n8=member_admin\r\n9=producer_admin\r\n10=site_admin', 'This is a configurable list of wordpress group numbers (from the groups plugin) and their corresponding auth_type in openfood. Enter one correlation per row beginning with the group number and auth_type separated by an equal sign. Example: 1=registered 2=member 3=producer The first row should always be 1=registered.'),
 ('7. Optional Modules', 'wordpress_config', 'WORDPRESS_CONFIG', 'input_pattern=\r\n/[a-zA-Z0-9\\.\\/\\-_]*[a-zA-Z0-9\\.\\-_]+', '/wordpress/wp-config.php', 'Path, within document root, where the wordpress configuration file is located. This should have a leading slash. Example: /wordpress/wp-config.php'),
-('7. Optional Modules', 'wordpress_enabled', 'WORDPRESS_ENABLED', 'checkbox=\r\nfalse\r\ntrue', 'true', 'Select this option if the site is integrated with WordPress.');
+('7. Optional Modules', 'wordpress_enabled', 'WORDPRESS_ENABLED', 'checkbox=\r\nfalse\r\ntrue', 'false', 'Select this option if the site is integrated with WordPress.');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
