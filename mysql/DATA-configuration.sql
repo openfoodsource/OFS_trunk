@@ -9,7 +9,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 INSERT INTO `ofs_configuration` (`section`, `name`, `constant`, `options`, `value`, `description`) VALUES
 ('1. Server Setup', '', '', '', '', 'Configure the server'),
 ('1. Server Setup', 'create_image_files', 'CREATE_IMAGE_FILES', 'checkbox=\r\nfalse\r\ntrue', 'true', 'Determine whether the server will automatically create image files when it access images through the database interface.'),
-('1. Server Setup', 'current_version', 'CURRENT_VERSION', 'read_only=\r\nOFSv0.9.0\r\nOFSv0.9.1\r\nOFSv0.9.2\r\nOFSv0.9.3\r\nOFSv1.0.0\r\n', 'OFSv1.0.0', 'Current version of the Open Food Software installed on this server.'),
+('1. Server Setup', 'current_version', 'CURRENT_VERSION', 'read_only=\r\nOFSv0.9.0\r\nOFSv0.9.1\r\nOFSv0.9.2\r\nOFSv0.9.3\r\nOFSv1.0.0\r\nOFSv1.0.1\r\n', 'OFSv1.0.1', 'Current version of the Open Food Software installed on this server.'),
 ('1. Server Setup', 'debug', 'DEBUG', 'checkbox=\r\nfalse\r\ntrue', 'false', 'Whether to show debugging messages on web pages (true) or not (false). Normally, this should be turned off for production servers.'),
 ('1. Server Setup', 'debug_logging', 'DEBUG_LOGGING', 'checkbox=\r\nfalse\r\ntrue', 'true', 'Whether to log errors to a file (normally located at the PATH location.'),
 ('1. Server Setup', 'domainname', 'DOMAIN_NAME', 'input_pattern=\r\n[a-zA-Z0-9]+[a-zA-Z0-9.-]*.[a-zA-Z0-9.-]*[a-zA-Z0-9]+', 'openfoodsource.org', 'Domain name that will be used for email. Example openfoodsource.org gives email addresses like help@openfoodsource.org. This should not include any subdomain portion, like www.'),
