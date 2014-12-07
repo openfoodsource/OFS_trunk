@@ -6,7 +6,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 
-INSERT INTO `delivery_types` (`deltype_id`, `deltype_group`, `deltype`, `deltype_title`) VALUES
+INSERT INTO `ofs_delivery_types` (`deltype_id`, `deltype_group`, `deltype`, `deltype_title`) VALUES
 (1, 'P', 'P', 'Pick Up Order'),
 (2, 'D', 'H', 'Delivery');
 

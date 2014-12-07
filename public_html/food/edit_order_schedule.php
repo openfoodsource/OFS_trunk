@@ -353,7 +353,7 @@ $display = '
         </div>
       </fieldset>
       <fieldset class="deprecated">
-        <legend>Unused Fields (?)</legend>
+        <legend>Unused Fields (will be removed)</legend>
         <label for="coopfee">Co-op Fee (dollars)</label>
         <input type="text" id="coopfee" name="coopfee" pattern="\d*(\.\d{2}){0,1}" value="'.number_format($coopfee, 2).'">
         <label for="producer_markdown">Producer Markdown (percent)</label>

@@ -129,7 +129,7 @@ $display .= '
         <b>Payment Options</b>
         <ul class="fancyList1">'.
         // Only show PayPal if PayPal is enabled and if there is a real member_id
-        (PAYPAL_EMAIL && $_SESSION['member_id'] ? 
+        (PAYPAL_ENABLED && $_SESSION['member_id'] ? 
           paypal_display_form (array (
             'form_id' => 'paypal_form2',
             'span1_content' => '<li class="last_of_group"><strong>Pay with PayPal &nbsp; &nbsp;</strong><div class="paypal_message">(enter amount at PayPal)</div>',

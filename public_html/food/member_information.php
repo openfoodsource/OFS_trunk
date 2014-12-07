@@ -93,19 +93,19 @@ $running_total = 0;
 $extra_lap = true;
 if ($_GET['restrict'] == 'true')
   {
-    $new_accounting_restriction = 'AND (IF(new_order_cycles.delivery_date IS NOT NULL, new_order_cycles.delivery_date, DATE(effective_datetime)) > "2013-03-01")';
+    $new_accounting_restriction = 'AND (IF('.TABLE_ORDER_CYCLES.'.delivery_date IS NOT NULL, '.TABLE_ORDER_CYCLES.'.delivery_date, DATE(effective_datetime)) > "2013-03-01")';
   }
 
 // Get the ledger history for this member
 $query_ledger = '
   SELECT
-    new_ledger.basket_id AS basket_id,
-    new_ledger.delivery_id AS delivery_id,
-    new_ledger.text_key AS text_key,
+    '.NEW_TABLE_LEDGER.'.basket_id AS basket_id,
+    '.NEW_TABLE_LEDGER.'.delivery_id AS delivery_id,
+    '.NEW_TABLE_LEDGER.'.text_key AS text_key,
     SUM(amount * IF(source_type="member", -1, 1)) AS amount,
-    IF(new_order_cycles.delivery_date IS NOT NULL, new_order_cycles.delivery_date, DATE(effective_datetime)) AS date
-  FROM new_ledger
-  LEFT JOIN new_order_cycles USING(delivery_id)
+    IF('.TABLE_ORDER_CYCLES.'.delivery_date IS NOT NULL, '.TABLE_ORDER_CYCLES.'.delivery_date, DATE(effective_datetime)) AS date
+  FROM '.NEW_TABLE_LEDGER.'
+  LEFT JOIN '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   WHERE
     (
       (source_type = "member"

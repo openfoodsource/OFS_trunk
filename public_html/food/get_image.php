@@ -1,5 +1,4 @@
 <?php
-
 include_once 'config_openfood.php';
 include_once 'image_functions.php';
 
@@ -9,7 +8,7 @@ if (is_numeric ($image_id))
   {
     // First check to see if the image exists as a file
     $file = PRODUCT_IMAGE_PATH.'img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png';
-    if (!file_exists ($file))
+    if (!file_exists (FILE_PATH.$file))
       {
         // If the image does not exist, then get it from the database
         $query = '
@@ -44,7 +43,7 @@ if (is_numeric ($image_id))
             $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 902742 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));;
           }
         $image->resizeDownToWidthHeight(PRODUCT_IMAGE_SIZE);
-        $image->save(FILE_PATH.'/'.$file, IMAGETYPE_PNG);
+        $image->save(FILE_PATH.$file, IMAGETYPE_PNG);
         // This would be a good place to remove any of the same image but of a different size
         // NOT IMPLEMENTED
       }

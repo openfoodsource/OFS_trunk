@@ -6,7 +6,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 
-INSERT INTO `subcategories` (`subcategory_id`, `subcategory_name`, `category_id`, `taxable`, `subcategory_fee_percent`) VALUES
+INSERT INTO `ofs_subcategories` (`subcategory_id`, `subcategory_name`, `category_id`, `taxable`, `subcategory_fee_percent`) VALUES
 (1, 'Chicken', 2, 0, 0.000),
 (2, 'Almonds', 7, 0, 0.000),
 (3, 'Eggs', 4, 0, 0.000),

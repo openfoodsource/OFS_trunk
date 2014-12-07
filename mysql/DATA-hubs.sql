@@ -6,7 +6,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 
-INSERT INTO `hubs` (`hub_id`, `hub_short`, `hub_long`, `hub_color`) VALUES
+INSERT INTO `ofs_hubs` (`hub_id`, `hub_short`, `hub_long`, `hub_color`) VALUES
 (1, 'DT', 'Downtown', '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

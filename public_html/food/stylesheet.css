@@ -368,36 +368,47 @@ table.compact tr td img {
 
 /* Set up display settings for the header menu */
 #menu {
+  clear:both;
   width:95%;
-  height:18px;
   background-color:#758954;
-  margin:auto;
-  padding:0px 10px;
-  border-top:3px solid #758954;
-  border-bottom:3px solid #758954;
+  margin:0 auto 0;
+  padding:2px 10px 0px;
+  border-top:2px solid #758954;
   border-left:10px solid #758954;
   border-right:10px solid #758954;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
   }
 
+#menu .tab_frame {
+  position:relative;
+  display:inline-block;
+  margin:0px 0px 2px;
+  padding:0;
+  }
+
 #menu a {
+
   display:block;
-  height:14px;
-  padding:1px 10px;
-  margin:2px 1px;
+  overflow:hidden;
+  padding:1px 4px;
   font-size:12px;
   font-weight:normal;
   text-decoration:none;
+  text-align:center;
   background-color:#ffe;
   color:#607044;
   }
-#menu a.left {
+
+
+#menu div.left {
   float:left;
   }
-#menu a.right {
+#menu div.right {
   float:right;
   }
+
+
 #menu a:hover {
   background-color:#d4e8bb;
   color:#607044;
@@ -446,33 +457,31 @@ table.compact tr td img {
   font-size:80%;
   }
 
-/*
 #content {
   border-right:10px solid #758954;
-  border-bottom:1px solid #758954;
+  border-bottom:10px solid #758954;
+  border-left:10px solid #758954;
   border-left:10px solid #758954;
   padding:10px;
   min-height:550px;
   width:95%;
   background-color:#fff;
   margin:auto;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
   }
-*/
 
-/*
 .title {
-  margin-right:1em;
-  font-size:150%;
+  display:block;
   color:#58673f;
   font-weight:bold;
   }
 .subtitle {
-  margin-right:1em;
-  font-size:150%;
+  display:block;
+  font-size:100%;
   color:#58673f;
-  font-style:italic;
+  font-variant:small-caps
   }
-*/
 
 
 .sidebar .entry-header, .sidebar .entry-content, .sidebar .entry-summary, .sidebar .entry-meta {
@@ -485,10 +494,6 @@ table.compact tr td img {
     max-width: 95%;
 }
 
-.subtitle {
-  font-size: 70%;
-  }
-
 .discontinued {
   text-decoration: line-through;
   }
@@ -498,17 +503,40 @@ table.compact tr td img {
 
 /* Set up style for the header logo div */
 #header {
+  position:relative;
+  min-height:140px; /* height of the logo */
   width:95%;
-  margin:auto;
-  border:0;
-  padding-top:5px;
-  padding-right:20px;
-  padding-left:20px;
+  padding:5px 10px;
   }
 
 #header_logo {
-  margin:2px 30px 0 3px;
-  float:left;
+  margin:0 10px 0 0;
+  }
+#header .header_mission,
+#header .tagline,
+#header a {
+  display:inline-block;
+  vertical-align:middle;
+  }
+#header .header_mission {
+  font-style:italic;
+  width:50%;
+  padding-left:50px;
+  color:#758954;
+  }
+#header .header_mission strong {
+  color:#9a7823;
+  font-size:130%;
+  }
+#header .tagline {
+  width:95%;
+  text-align:right;
+  margin:0.5em auto 0;
+  font-variant:small-caps;
+  color:#758954;
+  }
+#header_mission {
+  font-family:Brush-Script-MT;
   }
 
 /* Make sure the header logo (hyperlinked) doesn't have weird link attributes */

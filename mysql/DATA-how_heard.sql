@@ -6,7 +6,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 
-INSERT INTO `how_heard` (`how_heard_id`, `how_heard_name`) VALUES
+INSERT INTO `ofs_how_heard` (`how_heard_id`, `how_heard_name`) VALUES
 (1, 'Newspaper Article'),
 (2, 'Magazine'),
 (3, 'Online'),

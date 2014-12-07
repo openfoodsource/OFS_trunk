@@ -92,7 +92,7 @@ if ($_GET['action'] == 'select_image')
               <input id="edit-'.$image_id.'" class="image_edit" type="button" title="Edit this image" value="&#9998;" onclick="popup_src(\''.$_SERVER['SCRIPT_NAME'].'?action=edit_image&image_id='.$image_id.'\')"></input>
               '.(strlen ($product_list) == 0 ? '<input id="delete-'.$image_id.'" class="image_delete" type="button" title="Delete this image" value="&#215;" onclick="delete_image(this,\'set\')" onblur="delete_image(this,\'clear\')"></input>' : '').'
               <input id="select-'.$image_id.'" class="image_select" type="button" title="Select this image" value="&#10004;" onclick="set_image('.$image_id.')"></input>
-              <img src="'.PRODUCT_IMAGE_PATH.'img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png">
+              <img src="'.get_image_path_by_id ($image_id).'">
             </div>
           <figcaption>'.$title.'</figcaption>
           </div>';
@@ -208,7 +208,7 @@ elseif ($_REQUEST['action'] == 'edit_image')
                 $page_content .= '
               <h3>Information for image #'.$image_id.'</h3>
               <div class="gallery_image_large">
-                <img src="'.PRODUCT_IMAGE_PATH.'img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png">
+                <img src="'.get_image_path_by_id ($image_id).'">
                 <div id="small_size_message">'.$stretch_text.'</div>
               </div>
               <div class="image_info">
@@ -418,12 +418,14 @@ $page_specific_css = '
     /* Border color of the images during mouseover */
     .gallery_image:hover {
       border:6px solid rgba(128,128,128,0.6);
+      height:118px;
       padding:0;
       color:#000;
       }
     /* Border color of the currently-selected image */
     .gallery_image.selected {
       border:6px solid rgba(192,0,0,0.8);
+      height:118px;
       padding:0;
       }
     /* Border color of the currently-selected image during mouseover */

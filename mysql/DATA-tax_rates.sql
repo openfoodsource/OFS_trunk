@@ -6,7 +6,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 
-INSERT INTO `tax_rates` (`tax_id`, `region_code`, `region_type`, `region_name`, `postal_code`, `order_id_start`, `order_id_stop`, `tax_percent`) VALUES
+INSERT INTO `ofs_tax_rates` (`tax_id`, `region_code`, `region_type`, `region_name`, `postal_code`, `order_id_start`, `order_id_stop`, `tax_percent`) VALUES
 (1, '0-001', 'state', 'Quaton', '12356', 1, 0, 5.500),
 (2, '0-001', 'state', 'Quaton', '12358', 1, 0, 5.500),
 (3, '0-001', 'state', 'Quaton', '12359', 1, 0, 5.500),

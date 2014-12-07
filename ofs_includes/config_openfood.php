@@ -7,8 +7,8 @@ include_once ('general_functions.php');
 $database_config = array (
   'db_host'         => 'localhost',                          // Enter the db host
   'db_user'         => 'openfood_user',                      // Enter the username for db access
-  'db_pass'         => 'OpunFud DayTaBaze PazzWoorD',        // Enter the password for db access
-  'db_name'         => 'openfoodsource_ofs',                 // Enter the database name
+  'db_pass'         => 'openfood_password',                  // Enter the password for db access
+  'db_name'         => 'openfoodsource',                     // Enter the database name
   'db_prefix'       => 'ofs_',                               // This is probably blank
   'openfood_config' => 'configuration'                       // Points to configuration table in database
   );

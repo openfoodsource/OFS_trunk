@@ -6,7 +6,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 
-INSERT INTO `product_storage_types` (`storage_id`, `storage_type`, `storage_code`) VALUES
+INSERT INTO `ofs_product_storage_types` (`storage_id`, `storage_type`, `storage_code`) VALUES
 (1, 'non-refrigerated', 'NON'),
 (2, 'refrigerated', 'REF'),
 (3, 'frozen', 'FROZ'),

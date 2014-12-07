@@ -1,5 +1,5 @@
 
-CREATE TABLE IF NOT EXISTS accounts (
+CREATE TABLE IF NOT EXISTS ofs_accounts (
   account_id mediumint(9) NOT NULL AUTO_INCREMENT COMMENT 'used for account_number in ledger entries',
   internal_key varchar(25) NOT NULL COMMENT 'textual name passed by software',
   internal_subkey varchar(25) NOT NULL DEFAULT '',
@@ -10,13 +10,13 @@ CREATE TABLE IF NOT EXISTS accounts (
   UNIQUE KEY account_id (account_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS availability (
+CREATE TABLE IF NOT EXISTS ofs_availability (
   producer_id mediumint(9) NOT NULL,
   site_id smallint(5) unsigned NOT NULL,
   UNIQUE KEY producer_delcode_id (producer_id,site_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS baskets (
+CREATE TABLE IF NOT EXISTS ofs_baskets (
   basket_id int(11) unsigned NOT NULL AUTO_INCREMENT,
   member_id int(11) NOT NULL DEFAULT '0',
   delivery_id int(11) NOT NULL DEFAULT '0',
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS baskets (
   KEY delcode_id (site_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 PACK_KEYS=0;
 
-CREATE TABLE IF NOT EXISTS basket_items (
+CREATE TABLE IF NOT EXISTS ofs_basket_items (
   bpid int(10) unsigned NOT NULL AUTO_INCREMENT,
   basket_id int(11) NOT NULL DEFAULT '0',
   product_id int(11) NOT NULL DEFAULT '0',
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS basket_items (
   KEY basket_id (basket_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 PACK_KEYS=0;
 
-CREATE TABLE IF NOT EXISTS categories (
+CREATE TABLE IF NOT EXISTS ofs_categories (
   category_id int(11) NOT NULL AUTO_INCREMENT,
   category_name varchar(37) NOT NULL DEFAULT '',
   category_desc varchar(225) DEFAULT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS categories (
   UNIQUE KEY category_name (category_name)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS configuration (
+CREATE TABLE IF NOT EXISTS ofs_configuration (
   section varchar(40) NOT NULL,
   `name` varchar(40) NOT NULL,
   constant varchar(40) NOT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS configuration (
   PRIMARY KEY (`name`,section)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS delivery_codes (
+CREATE TABLE IF NOT EXISTS ofs_delivery_codes (
   delcode_id varchar(5) NOT NULL DEFAULT '',
   delcode varchar(40) NOT NULL DEFAULT '',
   deltype char(1) DEFAULT NULL,
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS delivery_codes (
   KEY truck_code (truck_code)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS delivery_types (
+CREATE TABLE IF NOT EXISTS ofs_delivery_types (
   deltype_id int(10) unsigned NOT NULL AUTO_INCREMENT,
   deltype_group char(1) NOT NULL DEFAULT '',
   deltype char(1) NOT NULL DEFAULT '',
@@ -103,13 +103,13 @@ CREATE TABLE IF NOT EXISTS delivery_types (
   PRIMARY KEY (deltype_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS how_heard (
+CREATE TABLE IF NOT EXISTS ofs_how_heard (
   how_heard_id smallint(6) NOT NULL AUTO_INCREMENT,
   how_heard_name varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (how_heard_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS hubs (
+CREATE TABLE IF NOT EXISTS ofs_hubs (
   hub_id smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   hub_short varchar(50) NOT NULL DEFAULT '',
   hub_long varchar(255) NOT NULL DEFAULT '',
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS hubs (
   PRIMARY KEY (hub_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS inventory (
+CREATE TABLE IF NOT EXISTS ofs_inventory (
   inventory_id int(11) NOT NULL AUTO_INCREMENT,
   producer_id mediumint(9) NOT NULL,
   description varchar(50) NOT NULL,
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS inventory (
   PRIMARY KEY (inventory_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS ledger (
+CREATE TABLE IF NOT EXISTS ofs_ledger (
   transaction_id int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'transaction_id',
   transaction_group_id varchar(25) NOT NULL DEFAULT '',
   source_type enum('producer','member','tax','internal') CHARACTER SET utf8 NOT NULL COMMENT 'type of source account',
@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS ledger (
   KEY delivery_id (delivery_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS ledger_backup (
+CREATE TABLE IF NOT EXISTS ofs_ledger_backup (
   transaction_id int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'transaction_id',
   transaction_group_id varchar(25) NOT NULL DEFAULT '',
   source_type enum('producer','member','tax','internal') CHARACTER SET utf8 NOT NULL COMMENT 'type of source account',
@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS ledger_backup (
   KEY delivery_id (delivery_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS members (
+CREATE TABLE IF NOT EXISTS ofs_members (
   member_id int(11) unsigned NOT NULL AUTO_INCREMENT,
   pending tinyint(4) NOT NULL DEFAULT '0',
   username varchar(20) DEFAULT NULL,
@@ -235,7 +235,7 @@ CREATE TABLE IF NOT EXISTS members (
   KEY membership_discontinued (membership_discontinued)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 PACK_KEYS=0;
 
-CREATE TABLE IF NOT EXISTS membership_types (
+CREATE TABLE IF NOT EXISTS ofs_membership_types (
   membership_type_id int(11) NOT NULL AUTO_INCREMENT,
   set_auth_type set('+member','+producer','+institution','+unfi','-member','-producer','-institution','-unfi') NOT NULL COMMENT '+ include auth_type, - exclude auth_type',
   initial_cost float NOT NULL,
@@ -255,7 +255,7 @@ CREATE TABLE IF NOT EXISTS membership_types (
   PRIMARY KEY (membership_type_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS messages (
+CREATE TABLE IF NOT EXISTS ofs_messages (
   message_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   message_type_id smallint(5) NOT NULL COMMENT 'reference to message_types table',
   referenced_key1 int(10) NOT NULL DEFAULT '0' COMMENT 'key for primary indexing',
@@ -267,7 +267,7 @@ CREATE TABLE IF NOT EXISTS messages (
   KEY referenced_key2 (referenced_key2)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS message_types (
+CREATE TABLE IF NOT EXISTS ofs_message_types (
   message_type_id smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   key1_target varchar(35) NOT NULL,
   key2_target varchar(35) NOT NULL,
@@ -275,7 +275,7 @@ CREATE TABLE IF NOT EXISTS message_types (
   PRIMARY KEY (message_type_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS openfood_config (
+CREATE TABLE IF NOT EXISTS ofs_openfood_config (
   section varchar(40) NOT NULL,
   `name` varchar(40) NOT NULL,
   constant varchar(40) NOT NULL,
@@ -285,7 +285,7 @@ CREATE TABLE IF NOT EXISTS openfood_config (
   PRIMARY KEY (`name`,section)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS order_cycles (
+CREATE TABLE IF NOT EXISTS ofs_order_cycles (
   delivery_id int(11) NOT NULL AUTO_INCREMENT COMMENT 'Do not change this field to type BIGINT',
   date_open datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   date_closed datetime DEFAULT '0000-00-00 00:00:00',
@@ -301,7 +301,7 @@ CREATE TABLE IF NOT EXISTS order_cycles (
   PRIMARY KEY (delivery_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS payment_method (
+CREATE TABLE IF NOT EXISTS ofs_payment_method (
   method_id smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   method_short varchar(15) NOT NULL COMMENT 'Name of payment type',
   transaction_fee decimal(5,2) NOT NULL DEFAULT '0.00' COMMENT 'Amount added to each transaction as a fee',
@@ -311,7 +311,7 @@ CREATE TABLE IF NOT EXISTS payment_method (
   PRIMARY KEY (method_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS producers (
+CREATE TABLE IF NOT EXISTS ofs_producers (
   producer_id mediumint(9) NOT NULL AUTO_INCREMENT,
   list_order smallint(6) NOT NULL,
   producer_link varchar(50) NOT NULL,
@@ -341,7 +341,7 @@ CREATE TABLE IF NOT EXISTS producers (
   KEY member_id (member_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS producers_logos (
+CREATE TABLE IF NOT EXISTS ofs_producers_logos (
   logo_id int(10) unsigned NOT NULL AUTO_INCREMENT,
   producer_id mediumint(9) NOT NULL,
   logo_desc varchar(50) NOT NULL DEFAULT '',
@@ -352,7 +352,7 @@ CREATE TABLE IF NOT EXISTS producers_logos (
   PRIMARY KEY (logo_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 PACK_KEYS=0;
 
-CREATE TABLE IF NOT EXISTS producers_registration (
+CREATE TABLE IF NOT EXISTS ofs_producers_registration (
   pid int(5) NOT NULL AUTO_INCREMENT,
   producer_id mediumint(9) NOT NULL,
   member_id int(5) NOT NULL DEFAULT '0',
@@ -378,14 +378,14 @@ CREATE TABLE IF NOT EXISTS producers_registration (
   UNIQUE KEY producer_id (producer_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 PACK_KEYS=0;
 
-CREATE TABLE IF NOT EXISTS production_types (
+CREATE TABLE IF NOT EXISTS ofs_production_types (
   production_type_id int(11) NOT NULL AUTO_INCREMENT,
   prodtype varchar(35) DEFAULT NULL,
   proddesc varchar(225) DEFAULT NULL,
   PRIMARY KEY (production_type_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE IF NOT EXISTS ofs_products (
   pvid int(11) unsigned NOT NULL AUTO_INCREMENT,
   product_id int(11) NOT NULL,
   product_version mediumint(9) unsigned NOT NULL DEFAULT '1',
@@ -430,7 +430,7 @@ CREATE TABLE IF NOT EXISTS products (
   KEY storage_id (storage_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS product_images (
+CREATE TABLE IF NOT EXISTS ofs_product_images (
   image_id int(10) unsigned NOT NULL AUTO_INCREMENT,
   producer_id mediumint(8) unsigned NOT NULL,
   title varchar(255) NOT NULL,
@@ -445,14 +445,14 @@ CREATE TABLE IF NOT EXISTS product_images (
   KEY producer_id (producer_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 PACK_KEYS=0;
 
-CREATE TABLE IF NOT EXISTS product_storage_types (
+CREATE TABLE IF NOT EXISTS ofs_product_storage_types (
   storage_id mediumint(9) NOT NULL AUTO_INCREMENT,
   storage_type varchar(40) NOT NULL DEFAULT '',
   storage_code varchar(4) DEFAULT NULL,
   PRIMARY KEY (storage_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS repeat_orders (
+CREATE TABLE IF NOT EXISTS ofs_repeat_orders (
   repeat_id int(11) NOT NULL AUTO_INCREMENT,
   product_id int(11) NOT NULL,
   repeat_cycles tinyint(4) NOT NULL,
@@ -461,7 +461,7 @@ CREATE TABLE IF NOT EXISTS repeat_orders (
   PRIMARY KEY (repeat_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Scheduling data for repeating orders';
 
-CREATE TABLE IF NOT EXISTS routes (
+CREATE TABLE IF NOT EXISTS ofs_routes (
   route_id smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   route_name varchar(40) NOT NULL DEFAULT '',
   rtemgr_member_id int(11) NOT NULL DEFAULT '0',
@@ -474,7 +474,7 @@ CREATE TABLE IF NOT EXISTS routes (
   KEY rtemgr_member_id (rtemgr_member_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS sites (
+CREATE TABLE IF NOT EXISTS ofs_sites (
   site_id smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   site_type set('producer','customer','institution') NOT NULL COMMENT 'Who can use this site',
   site_short varchar(10) NOT NULL COMMENT 'Abbreviation for routing',
@@ -493,7 +493,7 @@ CREATE TABLE IF NOT EXISTS sites (
   KEY truck_code (truck_code)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS status (
+CREATE TABLE IF NOT EXISTS ofs_status (
   status_scope varchar(50) NOT NULL,
   status_key varchar(50) NOT NULL,
   status_value text NOT NULL,
@@ -502,7 +502,7 @@ CREATE TABLE IF NOT EXISTS status (
   UNIQUE KEY scope_key (status_scope,status_key)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS subcategories (
+CREATE TABLE IF NOT EXISTS ofs_subcategories (
   subcategory_id int(11) NOT NULL AUTO_INCREMENT,
   subcategory_name varchar(35) NOT NULL DEFAULT '',
   category_id int(11) NOT NULL DEFAULT '0',
@@ -512,7 +512,7 @@ CREATE TABLE IF NOT EXISTS subcategories (
   KEY category_id (category_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS tax_rates (
+CREATE TABLE IF NOT EXISTS ofs_tax_rates (
   tax_id int(11) NOT NULL AUTO_INCREMENT,
   region_code varchar(20) NOT NULL,
   region_type varchar(15) NOT NULL,
@@ -526,7 +526,7 @@ CREATE TABLE IF NOT EXISTS tax_rates (
   KEY region_code (region_code)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Need only include lines that have actual tax values';
 
-CREATE TABLE IF NOT EXISTS transactions (
+CREATE TABLE IF NOT EXISTS ofs_transactions (
   transaction_id int(11) unsigned NOT NULL AUTO_INCREMENT,
   transaction_type mediumint(8) unsigned NOT NULL DEFAULT '0',
   transaction_name varchar(75) NOT NULL DEFAULT '',
@@ -550,7 +550,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   KEY transaction_producer_id (transaction_producer_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 PACK_KEYS=0;
 
-CREATE TABLE IF NOT EXISTS transactions_types (
+CREATE TABLE IF NOT EXISTS ofs_transactions_types (
   ttype_id int(10) unsigned NOT NULL AUTO_INCREMENT,
   ttype_parent int(10) unsigned NOT NULL DEFAULT '0',
   ttype_name varchar(75) NOT NULL DEFAULT '',
@@ -563,12 +563,12 @@ CREATE TABLE IF NOT EXISTS transactions_types (
   PRIMARY KEY (ttype_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS transaction_group_enum (
+CREATE TABLE IF NOT EXISTS ofs_transaction_group_enum (
   adjustment_group_enum int(11) NOT NULL AUTO_INCREMENT COMMENT 'Enumeration of ledger.adjustment_group values',
   PRIMARY KEY (adjustment_group_enum)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS translation (
+CREATE TABLE IF NOT EXISTS ofs_translation (
   `context` varchar(25) NOT NULL,
   input varchar(255) NOT NULL,
   output varchar(255) NOT NULL,
@@ -576,14 +576,14 @@ CREATE TABLE IF NOT EXISTS translation (
   PRIMARY KEY (`context`,input)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS transport_legs (
+CREATE TABLE IF NOT EXISTS ofs_transport_legs (
   route_id int(11) NOT NULL,
   leg_id int(11) NOT NULL,
   leg_sequence int(11) NOT NULL,
   UNIQUE KEY route_segment_sequence (route_id,leg_id,leg_sequence)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS transport_metrics (
+CREATE TABLE IF NOT EXISTS ofs_transport_metrics (
   `key` int(11) NOT NULL,
   site_start int(11) NOT NULL,
   site_finish int(11) NOT NULL,
@@ -593,7 +593,7 @@ CREATE TABLE IF NOT EXISTS transport_metrics (
   KEY `key` (`key`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS transport_stops (
+CREATE TABLE IF NOT EXISTS ofs_transport_stops (
   leg_id int(11) NOT NULL,
   site_sequence int(11) NOT NULL,
   site_id varchar(1) NOT NULL,
@@ -602,15 +602,15 @@ CREATE TABLE IF NOT EXISTS transport_stops (
   UNIQUE KEY segment_truck_sequence (leg_id,truck_id,site_sequence)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-CREATE VIEW transport AS
-  (select 
-    transport_legs.leg_id AS leg_id,
-    transport_legs.route_id AS route_id,
-    transport_legs.leg_sequence AS leg_sequence,
-    transport_stops.site_sequence AS site_sequence,
-    transport_stops.site_id AS site_id,
-    transport_stops.truck_id AS truck_id,
-    transport_stops.layover_minutes AS layover_minutes
-  from (new_transport_legs
-    left join transport_stops
-    on((new_transport_legs.leg_id = transport_stops.leg_id))));
+CREATE VIEW ofs_transport AS
+  (SELECT 
+    ofs_transport_legs.leg_id AS leg_id,
+    ofs_transport_legs.route_id AS route_id,
+    ofs_transport_legs.leg_sequence AS leg_sequence,
+    ofs_transport_stops.site_sequence AS site_sequence,
+    ofs_transport_stops.site_id AS site_id,
+    ofs_transport_stops.truck_id AS truck_id,
+    ofs_transport_stops.layover_minutes AS layover_minutes
+  FROM (ofs_transport_legs
+    left join ofs_transport_stops
+    on((ofs_transport_legs.leg_id = ofs_transport_stops.leg_id))));

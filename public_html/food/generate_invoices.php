@@ -550,8 +550,7 @@ $content .= '
   <div id="cust_control">
     <div id="cust_html_link"><a id="load_customer_html" href="'.$customer_output_html.'" target="_blank"'.$cust_view_html.'>View Customer Invoices (HTML)</a></div>
     <div id="cust_pdf_link"><a id="load_customer_pdf" href="'.$customer_output_pdf.'" target="_blank"'.$cust_view_pdf.'>View Customer Invoices (PDF)</a></div>
-    <div id="cust_generate_start"><input id="cust_generate_button" type="submit" onClick="reset_cust_list(); cust_generate_start(); compile_customer_invoices();" value="Generate Customer Invoices"><br>
-    <input type="checkbox" id="finalize" value="yes"><label for="finalize"> &nbsp; Finalize?</label></div>
+    <div id="cust_generate_start"><input id="cust_generate_button" type="submit" onClick="reset_cust_list(); cust_generate_start(); compile_customer_invoices();" value="Generate Customer Invoices"></div>
     <div id="cust_html2pdf_message">Converting HTML to PDF... <blink>please wait</blink></div>
     <div id="cust_progress"><div id="c_progress-left"></div><div id="c_progress-right"></div></div>
   </div>
@@ -653,8 +652,7 @@ $content .= '
   <div id="cust_control">
     <div id="prod_html_link"><a id="load_producer_html" href="'.$producer_output_html.'" target="_blank"'.$prod_view_html.'>View Producer Invoices (HTML)</a></div>
     <div id="prod_pdf_link"><a id="load_producer_pdf" href="'.$producer_output_pdf.'" target="_blank"'.$prod_view_pdf.'>View Producer Invoices (PDF)</a></div>
-    <div id="prod_generate_start"><input id="prod_generate_button" type="submit" onClick="reset_prod_list(); prod_generate_start(); compile_producer_invoices();" value="Generate Producer Invoices"><br>
-    <input type="checkbox" id="store_totals" value="yes"><label for="store_totals"> &nbsp; Store totals?</label></div>
+    <div id="prod_generate_start"><input id="prod_generate_button" type="submit" onClick="reset_prod_list(); prod_generate_start(); compile_producer_invoices();" value="Generate Producer Invoices"></div>
     <div id="prod_html2pdf_message">Converting HTML to PDF... <blink>please wait</blink></div>
     <div id="prod_progress"><div id="p_progress-left"></div><div id="p_progress-right"></div></div>
   </div>

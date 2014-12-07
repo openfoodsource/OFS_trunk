@@ -1,7 +1,5 @@
 <?php
 
-
-
 function wordpress_show_usermenu ()
   {
     // Check if the member is logged in
@@ -43,20 +41,17 @@ function wordpress_show_usermenu ()
     return $content_login;
   }
 
-function wordpress_login ()
+function wordpress_login ($member_id, $auth_types)
   {
     // We have skipped the Wordpress login checks, but since we are logged-in, we must set the wordpress session
     // This file includes everything required to set the session through wordpress
-    include_once (FILE_PATH.WORDPRESS_CONFIG);
-    wp_set_auth_cookie($_SESSION['member_id'], '', '');
-    do_action('wp_login', $_SESSION['member_id'], $_SESSION['username']);
-
+    @include_once (FILE_PATH.WORDPRESS_CONFIG);
+    @wp_set_auth_cookie($_SESSION['member_id'], '', '');
+    @do_action('wp_login', $_SESSION['member_id'], $_SESSION['username']);
     // Now make sure the wordpress database is correctly configured for this member
-
     // Open a database connection to the Wordpress database
     $wp_connection = @mysql_connect(DB_HOST, DB_USER, DB_PASSWORD) or die("Couldn't connect: \n".mysql_error());
     $wp_db = @mysql_select_db(DB_NAME, $wp_connection) or die(mysql_error());
-
     // SET ROLES FOR WORDPRESS
     // Members get to be "subscribers"
     $auth_array = explode (',', $auth_types);
@@ -71,10 +66,8 @@ function wordpress_login ()
         $wp_capabilities = 'a:1:{s:13:"administrator";b:1;}';
         $wp_user_level = 0;
       }
-
     // We will not overwrite any values (which means permissions will never be demoted)
     // but we do need to write *new* members as they log in...
-
     // First: wp_capabilities (ROLES)
     $query_get_capabilities = '
       SELECT
@@ -87,7 +80,6 @@ function wordpress_login ()
       WHERE
         user_id="'.mysql_real_escape_string($member_id).'"
         AND meta_key="wp_capabilities"';
-    // echo "<pre>$query_get_capabilities</pre>";
     $result_get_capabilities = @mysql_query($query_get_capabilities, $wp_connection) or die(debug_print ("ERROR: 790223 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
     if ( $row = mysql_fetch_array($result_get_capabilities) )
       {
@@ -105,7 +97,6 @@ function wordpress_login ()
             user_id="'.mysql_real_escape_string($member_id).'",
             meta_key="wp_capabilities",
             meta_value="'.mysql_real_escape_string($wp_capabilities).'"';
-    // echo "<pre>$query_set_capabilities</pre>";
         $result_set_capabilities = @mysql_query($query_set_capabilities, $wp_connection) or die(debug_print ("ERROR: 742943 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
       }
 
@@ -121,7 +112,6 @@ function wordpress_login ()
       WHERE
         user_id="'.mysql_real_escape_string($member_id).'"
         AND meta_key="wp_user_level"';
-    // echo "<pre>$query_get_user_level</pre>";
     $result_get_user_level = @mysql_query($query_get_user_level, $wp_connection) or die(debug_print ("ERROR: 939823 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
     if ( $row = mysql_fetch_array($result_get_user_level) )
       {
@@ -139,10 +129,8 @@ function wordpress_login ()
             user_id="'.mysql_real_escape_string($member_id).'",
             meta_key="wp_user_level",
             meta_value="'.mysql_real_escape_string($wp_user_level).'"';
-    // echo "<pre>$query_set_user_level</pre>";
         $result_set_user_level = @mysql_query($query_set_user_level, $wp_connection) or die(debug_print ("ERROR: 437956 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
       }
-
     // SET GROUPS FOR WORDPRESS
     // First remove all groups for this member -- except "registered"
     // This ensures the member's groups will be correctly updated at each login
@@ -152,25 +140,24 @@ function wordpress_login ()
       WHERE
         user_id="'.mysql_real_escape_string($member_id).'"
         AND group_id != 1';
-    // echo "<pre>$query_remove_groups</pre>";
     $result_remove_groups = @mysql_query($query_remove_groups, $wp_connection) or die(debug_print ("ERROR: 572923 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
     // Then set groups based on the member's auth_types
     foreach (explode ("\n", WORDPRESS2OPENFOOD_GROUPS) as $line)
       {
         list($key, $auth_type) = explode ('=', trim ($line));
-//     $wp_groups = array (
-//       1=>'registered',
-//       2=>'member',
-//       3=>'producer',
-//       4=>'institution',
-//       5=>'route_admin',
-//       6=>'cashier',
-//       7=>'board',
-//       8=>'member_admin',
-//       9=>'producer_admin',
-//       10=>'site_admin');
-//     foreach ($wp_groups as $key=>$auth_type)
-//       {
+          // Hard-coded example:
+          // 
+          // $wp_groups = array (
+          // 1=>'registered',
+          // 2=>'member',
+          // 3=>'producer',
+          // 4=>'institution',
+          // 5=>'route_admin',
+          // 6=>'cashier',
+          // 7=>'board',
+          // 8=>'member_admin',
+          // 9=>'producer_admin',
+          // 10=>'site_admin');
         if (in_array ($auth_type, $auth_array))
           {
             $query_add_group = '
@@ -179,7 +166,6 @@ function wordpress_login ()
               SET
                 user_id="'.mysql_real_escape_string($member_id).'",
                 group_id="'.mysql_real_escape_string($key).'"';
-    // echo "<pre>$query_add_group</pre>";
             $result_add_group = @mysql_query($query_add_group, $wp_connection) or die(debug_print ("ERROR: 673023 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
           }
       }
@@ -188,7 +174,7 @@ function wordpress_login ()
 function wordpress_logout ()
   {
     // This file includes everything required to logout through wordpress
-    include_once (FILE_PATH.WORDPRESS_CONFIG);
-    wp_logout();
+    @include_once (FILE_PATH.WORDPRESS_CONFIG);
+    @wp_logout();
   }
 ?>

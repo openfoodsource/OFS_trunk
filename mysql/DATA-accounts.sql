@@ -6,7 +6,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 
-INSERT INTO `accounts` (`account_id`, `internal_key`, `internal_subkey`, `account_number`, `sub_account_number`, `description`) VALUES
+INSERT INTO `ofs_accounts` (`account_id`, `internal_key`, `internal_subkey`, `account_number`, `sub_account_number`, `description`) VALUES
 (1, 'producer fee', '', '', '', 'producer fee'),
 (2, 'customer fee', '', '', '', 'customer fee'),
 (3, 'delivery cost', '', '', '', 'delivery cost'),

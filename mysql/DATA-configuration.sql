@@ -6,7 +6,7 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 
-INSERT INTO `configuration` (`section`, `name`, `constant`, `options`, `value`, `description`) VALUES
+INSERT INTO `ofs_configuration` (`section`, `name`, `constant`, `options`, `value`, `description`) VALUES
 ('1. Server Setup', '', '', '', '', 'Configure the server'),
 ('1. Server Setup', 'create_image_files', 'CREATE_IMAGE_FILES', 'checkbox=\r\nfalse\r\ntrue', 'true', 'Determine whether the server will automatically create image files when it access images through the database interface.'),
 ('1. Server Setup', 'current_version', 'CURRENT_VERSION', 'read_only=\r\nOFSv0.9.0\r\nOFSv0.9.1\r\nOFSv0.9.2\r\nOFSv0.9.3\r\nOFSv1.0.0\r\n', 'OFSv1.0.0', 'Current version of the Open Food Software installed on this server.'),

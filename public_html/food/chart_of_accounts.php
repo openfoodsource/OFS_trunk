@@ -13,17 +13,25 @@ $display = '
 
 <div id="spinner_container"><div id="spinner" style="display:none;"></div></div>
 <div id="tab_holder">
-  <div id="tab_member" class="tab" onclick="set_tab(\'member\');">
-    <a class="member">Member</a>
+  <div class="tab_frame">
+    <div id="tab_member" class="tab" onclick="set_tab(\'member\');">
+      <a class="member">Member</a>
+    </div>
   </div>
-  <div id="tab_producer" class="tab" onclick="set_tab(\'producer\');">
-    <a class="producer">Producer</a>
+  <div class="tab_frame">
+    <div id="tab_producer" class="tab" onclick="set_tab(\'producer\');">
+      <a class="producer">Producer</a>
+    </div>
   </div>
-  <div id="tab_internal" class="tab tab_active" onclick="set_tab(\'internal\');">
-    <a class="internal">Internal</a>
+  <div class="tab_frame">
+    <div id="tab_internal" class="tab tab_active" onclick="set_tab(\'internal\');">
+      <a class="internal">Internal</a>
+    </div>
   </div>
-  <div id="tab_tax" class="tab" onclick="set_tab(\'tax\');">
-    <a class="tax">Tax</a>
+  <div class="tab_frame">
+    <div id="tab_tax" class="tab" onclick="set_tab(\'tax\');">
+      <a class="tax">Tax</a>
+    </div>
   </div>
 </div>
 <div id="main_content">
@@ -216,18 +224,26 @@ $page_specific_css = '
   #tab_holder {
     width:100%;
     height:35px;
-    padding:5px 5px 0;
+    padding:0;
     background-color:#fff;
-    border-bottom:1px solid #888;
+    border-bottom:1px solid #444;
+    }
+  .tab_frame {
+    float:left;
+    width:25%;
+    margin:0;
     }
   .tab {
     position:relative;
     margin:0;
-    padding:5px 5px 0;
-    height:30px;
-    width:25%;
-    float:left;
+    padding:0;
+    height:33px;
+    width:90%;
+    margin:auto;
     cursor:pointer;
+    }
+  .tab_active {
+    height:35px;
     }
   .tab a {
     display:block;

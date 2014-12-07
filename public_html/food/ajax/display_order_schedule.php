@@ -186,8 +186,10 @@ else
                   $year
                   ) = explode ('-', date ('j-D-l-M-F-N-W-n-Y', $this_week_start_time + ($days_key * $day_length) + 3600)); // Add one hour to get past Daylight Savings Time in all cases
             $days_div .= '
-              <div id="day-'.$week_number.'-'.$day_number.'-'.$days_key.'" class="day day_no-'.number_format($day_number, 0).' date_no-'.$day_of_month.' month_no-'.$month_number.'">
-                <span class="cal_date">'.$day_of_month.'</span>
+              <div id="day-'.$week_number.'-'.$day_number.'-'.$days_key.'" class="day_frame day_no-'.number_format($day_number, 0).' date_no-'.$day_of_month.' month_no-'.$month_number.'">
+                <div class="day">
+                  <span class="cal_date">'.$day_of_month.'</span>
+                </div>
               </div>';
           }
         // Put it all together inside the week div

@@ -142,36 +142,56 @@ if ($_SESSION['member_id'])
     // Set up the page tabs
     if (CurrentMember::auth_type('member'))
       $panel_member_menu = '
-        <a href="'.PATH.'panel_member.php" class="left'.($page_tab == 'member_panel' ? ' current_tab' : '').'">Member Panel</a>';
+        <div class="tab_frame">
+          <a href="'.PATH.'panel_member.php" class="'.($page_tab == 'member_panel' ? ' current_tab' : '').'">Member Panel</a>
+        </div>';
     if (CurrentMember::auth_type('member'))
       $panel_shopping_menu = '
-        <a href="'.PATH.'panel_shopping.php" class="left'.($page_tab == 'shopping_panel' ? ' current_tab' : '').'">Shopping</a>';
+        <div class="tab_frame">
+          <a href="'.PATH.'panel_shopping.php" class="'.($page_tab == 'shopping_panel' ? ' current_tab' : '').'">Shopping</a>
+        </div>';
     if (CurrentMember::auth_type('producer'))
       $panel_producer_menu = '
-        <a href="'.PATH.'panel_producer.php" class="left'.($page_tab == 'producer_panel' ? ' current_tab' : '').'">Producer Panel</a>';
+        <div class="tab_frame">
+          <a href="'.PATH.'panel_producer.php" class="'.($page_tab == 'producer_panel' ? ' current_tab' : '').'">Producer Panel</a>
+        </div>';
     if (CurrentMember::auth_type('route_admin'))
       $panel_route_admin_menu = '
-        <a href="'.PATH.'panel_route_admin.php" class="left'.($page_tab == 'route_admin_panel' ? ' current_tab' : '').'">Route Admin</a>';
+        <div class="tab_frame">
+          <a href="'.PATH.'panel_route_admin.php" class="'.($page_tab == 'route_admin_panel' ? ' current_tab' : '').'">Route Admin</a>
+        </div>';
     if (CurrentMember::auth_type('producer_admin'))
       $panel_producer_admin_menu = '
-        <a href="'.PATH.'panel_producer_admin.php" class="left'.($page_tab == 'producer_admin_panel' ? ' current_tab' : '').'">Producer Admin</a>';
+        <div class="tab_frame">
+          <a href="'.PATH.'panel_producer_admin.php" class="'.($page_tab == 'producer_admin_panel' ? ' current_tab' : '').'">Producer Admin</a>
+        </div>';
     if (CurrentMember::auth_type('member_admin'))
       $panel_member_admin_menu = '
-        <a href="'.PATH.'panel_member_admin.php" class="left'.($page_tab == 'member_admin_panel' ? ' current_tab' : '').'">Member Admin</a>';
+        <div class="tab_frame">
+          <a href="'.PATH.'panel_member_admin.php" class="'.($page_tab == 'member_admin_panel' ? ' current_tab' : '').'">Member Admin</a>
+        </div>';
     if (CurrentMember::auth_type('cashier'))
       $panel_cashier_menu = '
-        <a href="'.PATH.'panel_cashier.php" class="left'.($page_tab == 'cashier_panel' ? ' current_tab' : '').'">Cashiers</a>';
+        <div class="tab_frame">
+          <a href="'.PATH.'panel_cashier.php" class="'.($page_tab == 'cashier_panel' ? ' current_tab' : '').'">Cashiers</a>
+        </div>';
     if (CurrentMember::auth_type('site_admin'))
       $panel_admin_menu = '
-        <a href="'.PATH.'panel_admin.php" class="left'.($page_tab == 'admin_panel' ? ' current_tab' : '').'">Site Admin</a>';
+        <div class="tab_frame">
+          <a href="'.PATH.'panel_admin.php" class="'.($page_tab == 'admin_panel' ? ' current_tab' : '').'">Site Admin</a>
+        </div>';
     $logout_menu = '
-        <a href="'.PATH.'index.php?action=logout" class="right'.($page_tab == 'login' ? ' current_tab' : '').'">Logout</a>';
+        <div class="tab_frame right">
+          <a href="'.PATH.'index.php?action=logout" class="'.($page_tab == 'login' ? ' current_tab' : '').'">Logout</a>
+        </div>';
     if (isset ($basket_id) && $basket_id != 0)
       {
         if (CurrentMember::auth_type('orderex') || ( ActiveCycle::ordering_window() == 'open'))
           {
             $basket_menu = '
-        <a href="'.PATH.'product_list.php?type=basket" class="right">View Basket ['.$basket_quantity.' '.Inflect::pluralize_if($basket_quantity, 'item').']</a>';
+        <div class="tab_frame right">
+          <a href="'.PATH.'product_list.php?type=basket" class="">View Basket ['.$basket_quantity.' '.Inflect::pluralize_if($basket_quantity, 'item').']</a>
+        </div>';
           }
       }
   }
@@ -179,7 +199,9 @@ if ($_SESSION['member_id'])
 else
   {
     $login_menu = '
-        <a href="'.PATH.'index.php?action=login" class="right'.($page_tab == 'login' ? ' current_tab' : '').'">Login</a>';
+        <div class="tab_frame right">
+          <a href="'.PATH.'index.php?action=login" class="'.($page_tab == 'login' ? ' current_tab' : '').'">Login</a>
+        </div>';
   }
 // Handle the MOTD inclusion
 $motd_file_name = FILE_PATH.PATH.'motd.html';

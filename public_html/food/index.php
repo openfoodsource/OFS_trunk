@@ -121,7 +121,7 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
                     $_GET = array ();
                     $_POST = array ();
                     require ('wordpress_utilities.php');
-                    wordpress_login ();
+                    wordpress_login ($member_id, $auth_types);
                   }
                 // If transferring to another page, then go do that...
                 if ($request_uri)

@@ -299,43 +299,61 @@ $page_specific_css = '
     }
   .week_row {
     position:static;
+    overflow:hidden;
     height:40px;
-    width:100%;
+    width:99.5%;
+    border-left:1px solid #ccc;
     }
   .day {
-    height:40px;
-    width:14.28%;
+    width:100%;
+    height:100%;
     border:1px solid #ccc;
+    border-left:0;
+    border-bottom:0;
+    }
+  .day_frame {
+    height:40px;
+    width:14.25%;
     float:left;
     z-index:10;
-    background-color:rgba(255,255,255,0);
+    }
+  .day_no-7 {
+    clear:left;
+    }
+  .day .cal_date {
+    display:block;
+    height:33%;
+    font-size:10px;
     }
   .cycle {
     position:relative;
     height:10px;
-    z-index:-20;
+    z-index:20;
     }
   .cycle .ordering {
     position:absolute;
+    opacity:0.3;
     height:10px;
     border:1px solid #888;
     border-top:3px solid #800;
     }
   .cycle .filling {
     position:absolute;
+    opacity:0.3;
     height:10px;
     border:1px solid #888;
     border-top:3px solid #008;
     }
   .cycle .delivery {
     position:absolute;
+    opacity:0.3;
     height:10px;
     border:1px solid #888;
     border-top:3px solid #060;
     }
   .cycle .highlight {
-    height:20px;
-    border-bottom:2px solid black;
+    opacity:0.8;
+    border-bottom:1px solid #888;
     }
   .distinct-1 div {
     background-color:#ace;
@@ -380,8 +398,9 @@ $page_specific_css = '
   .month_name {
     display:block;
     position:absolute;
+    line-height:150%;
     left:0;
-    font-size:35px;
+    font-size:25px;
     font-weight:bold;
     color:rgba(128,128,64,.5);
     }
