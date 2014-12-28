@@ -275,16 +275,6 @@ CREATE TABLE IF NOT EXISTS ofs_message_types (
   PRIMARY KEY (message_type_id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS ofs_openfood_config (
-  section varchar(40) NOT NULL,
-  `name` varchar(40) NOT NULL,
-  constant varchar(40) NOT NULL,
-  `options` text NOT NULL,
-  `value` text NOT NULL,
-  description text NOT NULL,
-  PRIMARY KEY (`name`,section)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
 CREATE TABLE IF NOT EXISTS ofs_order_cycles (
   delivery_id int(11) NOT NULL AUTO_INCREMENT COMMENT 'Do not change this field to type BIGINT',
   date_open datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
