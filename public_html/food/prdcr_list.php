@@ -28,19 +28,23 @@ $query = '
     '.TABLE_PRODUCER.'.producer_id,
     '.TABLE_PRODUCER.'.business_name,
     '.TABLE_PRODUCER.'.producttypes,
-    COUNT('.NEW_TABLE_PRODUCTS.'.product_id) as product_count
+    (
+      SELECT COUNT(product_id)
+      FROM '.NEW_TABLE_PRODUCTS.'
+      WHERE '.NEW_TABLE_PRODUCTS.'.producer_id = '.TABLE_PRODUCER.'.producer_id
+        AND confirmed = 1
+    ) AS product_count
   FROM
     '.TABLE_PRODUCER.'
   LEFT JOIN '.NEW_TABLE_PRODUCTS.' ON '.TABLE_PRODUCER.'.producer_id = '.NEW_TABLE_PRODUCTS.'.producer_id
   LEFT JOIN '.TABLE_INVENTORY.' USING(inventory_id)
   WHERE
     '.NEW_TABLE_PRODUCTS.'.listing_auth_type = "member"
-    AND confirmed = 1
     AND '.TABLE_PRODUCER.'.pending = 0
     AND '.TABLE_PRODUCER.'.unlisted_producer != 2'.
     $show_unlisted_query.'
   GROUP BY
-    '.NEW_TABLE_PRODUCTS.'.producer_id
+    '.TABLE_PRODUCER.'.producer_id
   ORDER BY
     '.TABLE_PRODUCER.'.business_name';
 $result = @mysql_query($query,$connection) or die(debug_print ("ERROR: 897650 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
