@@ -194,7 +194,7 @@ function display_page_header ($close_modal)
     <script src="'.PATH.'ajax/jquery.js" type="text/javascript"></script>
     <script src="'.PATH.'ajax/jquery-ui.js" type="text/javascript"></script>
   </head>
-  <body lang="en-us"'.($close_modal == true ? ' onload="parent.close_delivery_selector();"' : '').'>';
+  <body lang="en-us"'.($close_modal == true ? ' onload="parent.close_modal_window();"' : '').'>';
   }
 
 function display_page_footer ()
