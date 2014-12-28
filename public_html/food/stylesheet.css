@@ -601,6 +601,13 @@ a:hover {
   text-decoration:underline;
   }
 
+.error_message a {
+  color:#ff0;
+  }
+.error_message a:hover {
+  color:#fd8;
+  }
+
 .submit { 
    font-size: 12px; 
    font-family:Tahoma, Geneva, sans-serif;
@@ -735,7 +742,26 @@ dd {
   margin-top: 0.3em;
   }
 
-td.form_key strong {
+#producer_form .privacy {
+  width:49%;
+  float:left;
+  margin:3px;
+  }
+#producer_form .business_info {
+  margin:3px;
+  }
+#producer_form .denied {
+  display:none;
+  }
+#producer_form .required {
+  background-color:#ecb;
+  }
+#producer_form .optional {
+  background-color:#cdb;
+  }
+#producer_form .bus_desc,
+#producer_form .pub_desc,
+#producer_form td.form_key strong {
   color:#230;
   font-weight:bold;
   }

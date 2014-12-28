@@ -50,6 +50,7 @@ function prdcr_info ($producer_id, $producer_link)
         $city = $row['city'];
         $state = $row['state'];
         $zip = $row['zip'];
+        $county = $row['county'];
         $email_address = $row['email_address'];
         $email_address_2 = $row['email_address_2'];
         $home_phone = $row['home_phone'];
@@ -96,53 +97,94 @@ function prdcr_info ($producer_id, $producer_link)
                 '.$display_logo.'
               <td align="left">
             <font face="arial" size="4">
-            '.$business_name.'<br><br>'.$city.', '.$state.'
-            </font><br>
-              </td><td align="right">'.$_GLOBALS['font'];
-
+            '.$business_name.'<br></font>';
         if (PRDCR_INFO_PUBLIC || ($_SESSION['member_id']))
           {
-            if ( $address_line1 && $pub_address )
+            if ( $address_line1 &&
+                 $pub_address &&
+                 PRODUCER_PUB_ADDRESS != 'DENIED' &&
+                 strpos (' '.PRODUCER_DISPLAY_ADDRESS, 'STREET') )
               {
                 $display .= $address_line1.'<br>';
               }
-            if ( $address_line2 && $pub_address )
+            if ( $address_line2 &&
+                 $pub_address &&
+                 PRODUCER_PUB_ADDRESS != 'DENIED' &&
+                 strpos (' '.PRODUCER_DISPLAY_ADDRESS, 'STREET') )
               {
                 $display .= $address_line2.'<br>';
               }
-            if ( $address_line1 && $pub_address )
+            if ( $city &&
+                 $pub_address &&
+                 PRODUCER_PUB_ADDRESS != 'DENIED' &&
+                 strpos (' '.PRODUCER_DISPLAY_ADDRESS, 'CITY') )
               {
-                $display .= "$city, $state $zip<br>";
+                $display .= $city.', '.$state;
+                if ( $city &&
+                     $pub_address &&
+                     strpos (' '.PRODUCER_DISPLAY_ADDRESS, 'ZIP') )
+                  {
+                    $display .= ' '.$zip;
+                  }
+                $display .= '<br>';
               }
-            if ( $email_address && $pub_email )
+            if ( $county &&
+                 $pub_address &&
+                 strpos (' '.PRODUCER_DISPLAY_ADDRESS, 'COUNTY') )
+              {
+                $display .= $county.' County<br>';
+              }
+          }
+        $display .= '
+            </font><br>
+              </td><td align="right">'.$_GLOBALS['font'];
+        if (PRDCR_INFO_PUBLIC || ($_SESSION['member_id']))
+          {
+            if ( $email_address &&
+                 $pub_email &&
+                 PRODUCER_PUB_EMAIL != 'DENIED' )
               {
                 $display .= '<a href="mailto:'.$email_address.'">'.$email_address.'</a><br>';
               }
-            if ($email_address_2 && $pub_email2)
+            if ($email_address_2 &&
+                $pub_email2 &&
+                PRODUCER_PUB_EMAIL2 != 'DENIED')
               {
                 $display .= '<a href="mailto:'.$email_address_2.'">'.$email_address_2.'</a><br>';
               }
-            if ( $home_phone && $pub_phoneh )
+            if ( $home_phone &&
+                 $pub_phoneh &&
+                PRODUCER_PUB_PHONEH != 'DENIED' )
               {
                 $display .= $home_phone .' (home)<br>';
               }
-            if ( $work_phone && $pub_phonew )
+            if ( $work_phone &&
+                 $pub_phonew &&
+                PRODUCER_PUB_PHONEW != 'DENIED' )
               {
                 $display .= $work_phone .' (work)<br>';
               }
-            if ( $mobile_phone && $pub_phonec )
+            if ( $mobile_phone &&
+                 $pub_phonec &&
+                PRODUCER_PUB_PHONEC != 'DENIED' )
               {
                 $display .= $mobile_phone .' (cell)<br>';
               }
-            if ( $fax && $pub_fax )
+            if ( $fax &&
+                 $pub_fax &&
+                PRODUCER_PUB_FAX != 'DENIED' )
               {
                 $display .= $fax .'(fax)<br>';
               }
-            if ( $toll_free && $pub_phonet )
+            if ( $toll_free &&
+                 $pub_phonet &&
+                PRODUCER_PUB_PHONET != 'DENIED' )
               {
                 $display .= $toll_free .' (toll free)<br>';
               }
-            if ( $home_page && $pub_web )
+            if ( $home_page &&
+                 $pub_web &&
+                PRODUCER_PUB_WEB != 'DENIED' )
               {
                 $display .= '<a href="http://'.$home_page.'" target="_blank">'.$home_page.'</a><br>';
               }

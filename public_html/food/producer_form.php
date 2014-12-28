@@ -140,7 +140,7 @@ if ($_POST['action'] == 'Submit' || $_POST['action'] == 'Update' || ($producer_i
               {
                 if ($row->count > 0)
                   {
-                    array_push ($error_array, 'The Producer link you have chosen is already in use, please select another value');
+                    array_push ($error_array, 'The Producer link you have chosen is already in use, please select a different link');
                     $producer_link = $_POST['producer_link_prior'];
                   }
               }
@@ -153,6 +153,49 @@ if ($_POST['action'] == 'Submit' || $_POST['action'] == 'Update' || ($producer_i
           array_push ($error_array, 'Please list some of the products you intend to sell.');
         if ( $liability_statement != 1 )
           array_push ($error_array, 'In order to be accepted as a producer, you must agree with the stated terms');
+        if (PRODUCER_PUB_WEB == 'REQUIRED' &&
+            strlen ($website) < 1)
+            array_push ($error_array, 'Producer Website is '.PRODUCER_PUB_WEB);
+
+        // Ensure all required/denied publish fields are correctly set
+        if (PRODUCER_PUB_ADDRESS != 'OPTIONAL' &&
+            ($pub_address == 1 ? 'REQUIRED' : 'DENIED') != PRODUCER_PUB_ADDRESS)
+            array_push ($error_array, 'Permission to publish Home Address is '.PRODUCER_PUB_ADDRESS);
+        if (PRODUCER_PUB_EMAIL != 'OPTIONAL' &&
+            ($pub_email == 1 ? 'REQUIRED' : 'DENIED') != PRODUCER_PUB_EMAIL)
+            array_push ($error_array, 'Permission to publish Primary Email Address is '.PRODUCER_PUB_EMAIL);
+        if (PRODUCER_PUB_EMAIL2 != 'OPTIONAL' &&
+            ($pub_email2 == 1 ? 'REQUIRED' : 'DENIED') != PRODUCER_PUB_EMAIL2)
+            array_push ($error_array, 'Permission to publish Secondary Email Address is '.PRODUCER_PUB_EMAIL2);
+        if (PRODUCER_PUB_PHONEH != 'OPTIONAL' &&
+            ($pub_phoneh == 1 ? 'REQUIRED' : 'DENIED') != PRODUCER_PUB_PHONEH)
+            array_push ($error_array, 'Permission to publish Home Phone No. is '.PRODUCER_PUB_PHONEH);
+        if (PRODUCER_PUB_PHONEW != 'OPTIONAL' &&
+            ($pub_phonew == 1 ? 'REQUIRED' : 'DENIED') != PRODUCER_PUB_PHONEW)
+            array_push ($error_array, 'Permission to publish Work Phone No. is '.PRODUCER_PUB_PHONEW);
+        if (PRODUCER_PUB_PHONEC != 'OPTIONAL' &&
+            ($pub_phonec == 1 ? 'REQUIRED' : 'DENIED') != PRODUCER_PUB_PHONEC)
+            array_push ($error_array, 'Permission to publish Mobile Phone No. is '.PRODUCER_PUB_PHONEC);
+        if (PRODUCER_PUB_PHONET != 'OPTIONAL' &&
+            ($pub_phonet == 1 ? 'REQUIRED' : 'DENIED') != PRODUCER_PUB_PHONET)
+            array_push ($error_array, 'Permission to publish Toll-free Phone No. is '.PRODUCER_PUB_PHONET);
+        if (PRODUCER_PUB_FAX != 'OPTIONAL' &&
+            ($pub_fax == 1 ? 'REQUIRED' : 'DENIED') != PRODUCER_PUB_FAX)
+            array_push ($error_array, 'Permission to publish FAX No. is '.PRODUCER_PUB_FAX);
+        if (PRODUCER_PUB_WEB != 'OPTIONAL' &&
+            ($pub_web == 1 ? 'REQUIRED' : 'DENIED') != PRODUCER_PUB_WEB)
+            array_push ($error_array, 'Permission to publish Web Page is '.PRODUCER_PUB_WEB);
+
+        // Check for the "at least one" condition for email and phone numbers
+        // NOTE: This does not check that the producer has actually provided the specified information on their member form
+        if (PRODUCER_REQ_EMAIL && (! $pub_email && ! $pub_email2))
+          {
+            array_push ($error_array, 'At least one e-mail address is required.');
+          }
+        if (PRODUCER_REQ_PHONE && (! $pub_phoneh && ! $pub_phonew && !$pub_phonec && ! $pub_phonet))
+          {
+            array_push ($error_array, 'At least one telephone number is required.');
+          }
       }
     else // Not an Update or Submission, so get database information because we are editing existing producer information
       {
@@ -244,36 +287,58 @@ if (count ($error_array) > 0) $error_message = '
 ////////////////////////////////////////////////////////////////////////////////
 
 /* Section I - Credentials and Privacy */
-if ($pub_address == '1') $pub_address_check = ' checked';
-if ($pub_email == '1') $pub_email_check = ' checked';
-if ($pub_email2 == '1') $pub_email2_check = ' checked';
-if ($pub_phoneh == '1') $pub_phoneh_check = ' checked';
-if ($pub_phonew == '1') $pub_phonew_check = ' checked';
-if ($pub_phonec == '1') $pub_phonec_check = ' checked';
-if ($pub_phonet == '1') $pub_phonet_check = ' checked';
-if ($pub_fax == '1') $pub_fax_check = ' checked';
-if ($pub_web == '1') $pub_web_check = ' checked';
+if (($pub_address == '1' || PRODUCER_PUB_ADDRESS == 'REQUIRED') && PRODUCER_PUB_ADDRESS != 'DENIED') $pub_address_check = ' checked';
+else $pub_address = '0';
+
+if (($pub_email == '1' || PRODUCER_PUB_EMAIL == 'REQUIRED') && PRODUCER_PUB_EMAIL != 'DENIED') $pub_email_check = ' checked';
+else $pub_email = '0';
+
+if (($pub_email2 == '1' || PRODUCER_PUB_EMAIL2 == 'REQUIRED') && PRODUCER_PUB_EMAIL2 != 'DENIED') $pub_email2_check = ' checked';
+else $pub_email2 = '0';
+
+if (($pub_phoneh == '1' || PRODUCER_PUB_PHONEH == 'REQUIRED') && PRODUCER_PUB_PHONEH != 'DENIED') $pub_phoneh_check = ' checked';
+else $pub_phoneh = '0';
+
+if (($pub_phonew == '1' || PRODUCER_PUB_PHONEW == 'REQUIRED') && PRODUCER_PUB_PHONEW != 'DENIED') $pub_phonew_check = ' checked';
+else $pub_phonew = '0';
+
+if (($pub_phonec == '1' || PRODUCER_PUB_PHONEC == 'REQUIRED') && PRODUCER_PUB_PHONEC != 'DENIED') $pub_phonec_check = ' checked';
+else $pub_phonec = '0';
+
+if (($pub_phonet == '1' || PRODUCER_PUB_PHONET == 'REQUIRED') && PRODUCER_PUB_PHONET != 'DENIED') $pub_phonet_check = ' checked';
+else $pub_phonet = '0';
+
+if (($pub_fax == '1' || PRODUCER_PUB_FAX == 'REQUIRED') && PRODUCER_PUB_FAX != 'DENIED') $pub_fax_check = ' checked';
+else $pub_fax = '0';
+
+if (($pub_web == '1' || PRODUCER_PUB_WEB == 'REQUIRED') && PRODUCER_PUB_WEB != 'DENIED') $pub_web_check = ' checked';
+else $pub_web = '0';
+
 
 /* Section IV - Certifications (Registration for Review by PCC) */
 if ($organic_cert == '1') $organic_cert_yes = ' checked';
+else $organic_cert = '0';
+
 if ($organic_cert == '0') $organic_cert_no = ' checked';
+
 if ($liability_statement == 1) $liability_statement_check = ' checked';
+else $liability_statement = '0';
 
-/* Section I - Credentials and Privacy */
-if ($pub_address != '1') $pub_address = '0';
-if ($pub_email != '1') $pub_email = '0';
-if ($pub_email2 != '1') $pub_email2 = '0';
-if ($pub_phoneh != '1') $pub_phoneh = '0';
-if ($pub_phonew != '1') $pub_phonew = '0';
-if ($pub_phonec != '1') $pub_phonec = '0';
-if ($pub_phonet != '1') $pub_phonet = '0';
-if ($pub_fax != '1') $pub_fax = '0';
-if ($pub_web != '1') $pub_web = '0';
+// /* Section I - Credentials and Privacy */
+// if ($pub_address != '1') $pub_address = '0';
+// if ($pub_email != '1') $pub_email = '0';
+// if ($pub_email2 != '1') $pub_email2 = '0';
+// if ($pub_phoneh != '1') $pub_phoneh = '0';
+// if ($pub_phonew != '1') $pub_phonew = '0';
+// if ($pub_phonec != '1') $pub_phonec = '0';
+// if ($pub_phonet != '1') $pub_phonet = '0';
+// if ($pub_fax != '1') $pub_fax = '0';
+// if ($pub_web != '1') $pub_web = '0';
 
-/* Section IV - Certifications (Registration for Review by PCC) */
-if ($organic_cert != '1') $organic_cert = '0';
-
-if ($liability_statement != 1) $liability_statement = '0';
+// /* Section IV - Certifications (Registration for Review by PCC) */
+// if ($organic_cert != '1') $organic_cert = '0';
+// 
+// if ($liability_statement != 1) $liability_statement = '0';
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -296,8 +361,8 @@ $display_form_text .= '
 
   The following checked items will be displayed on the site
     ['.strtr ($pub_address, " 01", "  X").'] Publish Home Address
-    ['.strtr ($pub_email, " 01", "  X").'] Publish Email Address
-    ['.strtr ($pub_email2, " 01", "  X").'] Publish Email Address 2
+    ['.strtr ($pub_email, " 01", "  X").'] Publish Primary Email Address
+    ['.strtr ($pub_email2, " 01", "  X").'] Publish Secondary Email Address
     ['.strtr ($pub_phoneh, " 01", "  X").'] Publish Home Phone No.
     ['.strtr ($pub_phonew, " 01", "  X").'] Publish Work Phone No.
     ['.strtr ($pub_phonec, " 01", "  X").'] Publish Mobile Phone No.
@@ -376,7 +441,7 @@ else
   $welcome_message .= '<p><em>Thank you for your interest in becoming a producer member of '.SITE_NAME.'. '.SITE_NAME.' customers and producers are interested in local foods and products produced with sustainable practices that demonstrate good stewardship of the environment. Upon approval this form will register you to sell products within '.SITE_NAME.'.  Please read the <a href="'.TERMS_OF_SERVICE.'" target="_blank">Terms of Service</a>, and then complete the following information and click submit.</em></p>';
 /* HTML Page and E-mail */
 $display_form_html .= $error_message.'
-  <form action="'.$_SERVER['SCRIPT_NAME'].'" name="delivery" method="post">
+  <form action="'.$_SERVER['SCRIPT_NAME'].'" name="producer_form" id="producer_form" method="post">
 
     <table cellspacing="15" cellpadding="2" width="100%" border="1" align="center">
       <tbody>
@@ -408,7 +473,7 @@ $display_form_html .= $error_message.'
                 numbers, dash, dot, and/or underline and must be between five and fifty characters.
                 It will help list your information with search engines and allow web users to directly
                 access your information with an address like:
-                <nobr><em>'.PATH.'producers/my-organic-farm</em></nobr>
+                <nobr><em>'.BASE_URL.PATH.'producers/my-organic-farm</em></nobr>
               </td>
             </tr>
           </table>
@@ -416,58 +481,67 @@ $display_form_html .= $error_message.'
       </tr>
 
       <tr>
-        <td>
-          <table id="section1b">
-            <tr>
-              <td class="form_key"><strong>Business&nbsp;Name:</strong></td>
-              <td align="left"><input maxlength="50" size="45" name="business_name" value="'.htmlspecialchars ($business_name, ENT_QUOTES).'"></td>
-            </tr>
-            <tr>
-              <td class="form_key"><strong>Website:</strong></td>
-              <td align="left"><input maxlength="50" size="45" name="website" value="'.htmlspecialchars ($website, ENT_QUOTES).'"><br>
-              Use this only if you have a website in addition to your page on this site, configured above.</td>
-            </tr>
-          </table>
+        <td id="section1b">
+          <div class="business_info required">
+            <span class="bus_desc">Business&nbsp;Name</span>
+            <span class="bus_input"><input maxlength="50" size="45" name="business_name" value="'.htmlspecialchars ($business_name, ENT_QUOTES).'"></span>
+            <span class="bus_req">(required)</span>
+          </div>
+          <div class="business_info '.strtolower(PRODUCER_PUB_WEB).'">
+            <span class="bus_desc">Website</span>
+            <span class="bus_input"><input maxlength="50" size="45" name="website" value="'.htmlspecialchars ($website, ENT_QUOTES).'"></span>
+            <span class="bus_req">('.strtolower (PRODUCER_PUB_WEB).')</span>
+          </div>
         </td>
       </tr>
 
       <tr>
-        <td>
-          <table id="section1c">
-            <tr>
-              <td class="form_key" colspan="4">The following privacy settings affect which of your
-                membership information will be displayed publicly on your producer page (check to permit public
-                display of the information).</td>
-            </tr>
-            <tr>
-              <td align="right"><input type="checkbox" name="pub_address" value="1" '.$pub_address_check.'></td>
-              <td colspan="3" class="form_key"><strong>Publish Home Address</strong></td>
-            </tr>
-              <td align="right"><input type="checkbox" name="pub_email" value="1" '.$pub_email_check.'></td>
-              <td class="form_key"><strong>Publish Email Address</strong></td>
-              <td align="right"><input type="checkbox" name="pub_email2" value="1" '.$pub_email2_check.'></td>
-              <td class="form_key"><strong>Publish Email Address 2</strong></td>
-            <tr>
-            </tr>
-              <td align="right"><input type="checkbox" name="pub_phoneh" value="1" '.$pub_phoneh_check.'></td>
-              <td class="form_key"><strong>Publish Home Phone No.</strong></td>
-              <td align="right"><input type="checkbox" name="pub_phonew" value="1" '.$pub_phonew_check.'></td>
-              <td class="form_key"><strong>Publish Work Phone No.</strong></td>
-            <tr>
-            </tr>
-              <td align="right"><input type="checkbox" name="pub_phonec" value="1" '.$pub_phonec_check.'></td>
-              <td class="form_key"><strong>Publish Mobile Phone No.</strong></td>
-              <td align="right"><input type="checkbox" name="pub_phonet" value="1" '.$pub_phonet_check.'></td>
-              <td class="form_key"><strong>Publish Toll-free Phone No.</strong></td>
-            <tr>
-            </tr>
-              <td align="right"><input type="checkbox" name="pub_fax" value="1" '.$pub_fax_check.'></td>
-              <td class="form_key"><strong>Publish FAX No.</strong></td>
-              <td align="right"><input type="checkbox" name="pub_web" value="1" '.$pub_web_check.'></td>
-              <td class="form_key"><strong>Publish Web Page</strong></td>
-            <tr>
-            </tr>
-          </table>
+        <td id="section1c">
+          <div class="privacy '.strtolower(PRODUCER_PUB_ADDRESS).'">
+            <span class="pub_check"><input type="checkbox" name="pub_address" value="1" '.$pub_address_check.'></span>
+            <span class="pub_desc">Publish Home Address</span>
+            <span class="pub_req">('.strtolower (PRODUCER_PUB_ADDRESS).')</span>
+          </div>
+          <div class="privacy '.strtolower(PRODUCER_PUB_EMAIL).'">
+            <span class="pub_check"><input type="checkbox" name="pub_email" value="1" '.$pub_email_check.'></span>
+            <span class="pub_desc">Publish Primary Email Address</span>
+            <span class="pub_req">('.strtolower (PRODUCER_PUB_EMAIL).')</span>
+          </div>
+          <div class="privacy '.strtolower(PRODUCER_PUB_EMAIL2).'">
+            <span class="pub_check"><input type="checkbox" name="pub_email2" value="1" '.$pub_email2_check.'></span>
+            <span class="pub_desc">Publish Secondary Email Address</span>
+            <span class="pub_req">('.strtolower (PRODUCER_PUB_EMAIL2).')</span>
+          </div>
+          <div class="privacy '.strtolower(PRODUCER_PUB_PHONEH).'">
+            <span class="pub_check"><input type="checkbox" name="pub_phoneh" value="1" '.$pub_phoneh_check.'></span>
+            <span class="pub_desc">Publish Home Phone Number</span>
+            <span class="pub_req">('.strtolower (PRODUCER_PUB_PHONEH).')</span>
+          </div>
+          <div class="privacy '.strtolower(PRODUCER_PUB_PHONEW).'">
+            <span class="pub_check"><input type="checkbox" name="pub_phonew" value="1" '.$pub_phonew_check.'></span>
+            <span class="pub_desc">Publish Work Phone Number</span>
+            <span class="pub_req">('.strtolower (PRODUCER_PUB_PHONEW).')</span>
+          </div>
+          <div class="privacy '.strtolower(PRODUCER_PUB_PHONEC).'">
+            <span class="pub_check"><input type="checkbox" name="pub_phonec" value="1" '.$pub_phonec_check.'></span>
+            <span class="pub_desc">Publish Mobile Phone Number</span>
+            <span class="pub_req">('.strtolower (PRODUCER_PUB_PHONEC).')</span>
+          </div>
+          <div class="privacy '.strtolower(PRODUCER_PUB_PHONET).'">
+            <span class="pub_check"><input type="checkbox" name="pub_phonet" value="1" '.$pub_phonet_check.'></span>
+            <span class="pub_desc">Publish Toll-Free Phone Number</span>
+            <span class="pub_req">('.strtolower (PRODUCER_PUB_PHONET).')</span>
+          </div>
+          <div class="privacy '.strtolower(PRODUCER_PUB_FAX).'">
+            <span class="pub_check"><input type="checkbox" name="pub_fax" value="1" '.$pub_fax_check.'></span>
+            <span class="pub_desc">Publish FAX Number</span>
+            <span class="pub_req">('.strtolower (PRODUCER_PUB_FAX).')</span>
+          </div>
+          <div class="privacy '.strtolower(PRODUCER_PUB_WEB).'">
+            <span class="pub_check"><input type="checkbox" name="pub_web" value="1" '.$pub_web_check.'></span>
+            <span class="pub_desc">Publish Web Page</span>
+            <span class="pub_req">('.strtolower (PRODUCER_PUB_WEB).')</span>
+          </div>
         </td>
       </tr>
 './* Section II */'
