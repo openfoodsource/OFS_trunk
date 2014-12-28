@@ -259,7 +259,6 @@ $content_header = '<!DOCTYPE html>
     $motd_css.
     $renew_membership_form_css.
     (isset ($page_specific_css) ? $page_specific_css : '').'
-    <script src="'.PATH.'ajax/jquery-ui.js" type="text/javascript"></script>
     <script type="text/javascript">
       function init() {
         // Do not throw an error if page does not have a load_target element...
@@ -274,7 +273,7 @@ $content_header = '<!DOCTYPE html>
     $motd_javascript.
     (isset ($page_specific_javascript) ? $page_specific_javascript : '').'
   </head>
-  <body lang=""en-us">'.
+  <body lang="en-us">'.
     $google_analytics.'
     <div id="header">
       <a href="'.PATH.'">'.$header_title.'</a>

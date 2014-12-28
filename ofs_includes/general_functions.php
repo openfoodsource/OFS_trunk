@@ -182,7 +182,7 @@ function ofs_delete_status ($scope = '', $key = '')
       WHERE
         ( status_scope = "'.mysql_real_escape_string($scope).'"
           AND status_key = "'.mysql_real_escape_string($key).'")
-        OR ADDTIME(timestamp, ttl_minutes * 60) < NOW()';
+        OR TIMESTAMPADD(MINUTE, ttl_minutes, timestamp) < NOW()';
     $result = @mysql_query($query, $connection) or die (
       debug_print ("ERROR: 876924 ", array(
         'Level' => 'FATAL',

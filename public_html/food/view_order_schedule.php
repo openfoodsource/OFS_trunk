@@ -157,10 +157,8 @@ $page_specific_javascript = '
       });
     };
   // Close the simplemodal iframe after 500 ms
-  function close_delivery_selector() {
-    setTimeout(function (){
-      $.modal.close();
-      }, 1000);
+  function close_modal_window() {
+    $.modal.close();
     }
   </script>';
 

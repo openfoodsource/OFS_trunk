@@ -11,9 +11,6 @@ include_once 'config_openfood.php';
 
 if ( $_GET['image_id'] )
   {
-
-    // you may have to modify login information for your database server:
-
     $query = '
       SELECT
         image_content,
@@ -23,10 +20,8 @@ if ( $_GET['image_id'] )
       WHERE
         image_id = '.mysql_real_escape_string($_GET['image_id']);
     $result = @mysql_query($query,$connection);
-
-    $data = @mysql_result($result,0,"image_content");
-    $type = @mysql_result($result,0,"mime_type");
-
+    $data = @mysql_result($result, 0, "image_content");
+    $type = @mysql_result($result, 0, "mime_type");
     Header( "Content-type: $type");
     echo $data;
   };
