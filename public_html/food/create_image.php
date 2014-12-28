@@ -15,4 +15,4 @@ $file = basename ($_SERVER['REQUEST_URI'],'.png');
 list ($null, $image_id) = explode ('-', $file);
 
 // Redirect to the image (either from the database, or whatever)
-header ('Location: '.get_image_path_by_id ($image_id), TRUE, 301);
+header ('Location: '.PATH.'get_image.php?image_id='.$image_id, TRUE, 301);

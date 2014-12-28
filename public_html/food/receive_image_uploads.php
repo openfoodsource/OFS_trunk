@@ -36,19 +36,31 @@ if (isset ($_FILES['files']['size'][$image_index])) $content_size = mysql_real_e
 
 if ($_GET['action'] == 'delete')
   {
-    // Delete the image from the database
-    $query = '
-      DELETE FROM
-        '.TABLE_PRODUCT_IMAGES.'
-      WHERE
-        producer_id = "'.mysql_real_escape_string($producer_id_you).'"
-        AND image_id = "'.mysql_real_escape_string($image_id).'"
-        AND ( SELECT COUNT(product_id)
-              FROM '.NEW_TABLE_PRODUCTS.'
-              WHERE image_id = "'.mysql_real_escape_string($image_id).'")
-            ) AS existing_images < 1';
-    $result=mysql_query($query, $connection) or die(debug_print ("ERROR: 758921 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    echo json_encode (array ('img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png'=>true));
+    // Cycle through all files matching the image number and delete them
+    $deleted = true;
+    foreach (glob(FILE_PATH.PRODUCT_IMAGE_PATH.'img*-'.$image_id.'.png') as $filename)
+      {
+        // If deletion fails for some reason, then we won't send back the json to
+        // remove the file and we won't remove it from the database
+        unlink ($filename) or die (debug_print ("ERROR: 678530 ", array ('Failed while deleting file:'. $filename, basename(__FILE__).' LINE '.__LINE__)));
+        // if (! unlink ($filename)) $deleted = false;
+      }
+    if ($deleted == true)
+      {
+        // Delete the image from the database
+        $query = '
+          DELETE FROM
+            '.TABLE_PRODUCT_IMAGES.'
+          WHERE
+            producer_id = "'.mysql_real_escape_string($producer_id_you).'"
+            AND image_id = "'.mysql_real_escape_string($image_id).'"
+            AND ( SELECT COUNT(product_id)
+                  FROM '.NEW_TABLE_PRODUCTS.'
+                  WHERE image_id = "'.mysql_real_escape_string($image_id).'"
+                ) < 1';
+        $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 758921 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        echo 'deleted';
+      }
   }
 // Iterate through the files and save them in the database
 elseif (!$error && $content_size)

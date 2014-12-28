@@ -558,8 +558,8 @@ $page_specific_javascript = '
       if (action == "set") {
         if ($(obj).hasClass("warn")) {
           $.get("'.BASE_URL.PATH.'receive_image_uploads.php?action=delete&image_id="+image_id, function(data) {
-            // If the return value included the image_id (e.g. {"img300-2802.png":true})
-            if (data.indexOf("-"+image_id+".png") >= 0) {
+            // If the return value is deleted
+            if (data == "deleted") {
               // Remove the image from our list
               $("#image-"+image_id).parent().remove();
               }
@@ -614,6 +614,9 @@ $page_specific_javascript = '
         opacity:70,
         overlayCss: {backgroundColor:"#000"},
         closeHTML:"",
+        onClose: function (reload) {
+          location.reload();
+          },
         containerCss:{
           backgroundColor:"#fff",
           borderColor:"#fff",
