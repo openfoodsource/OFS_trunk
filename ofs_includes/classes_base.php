@@ -57,6 +57,8 @@ class ActiveCycle
               LIMIT
                 1';
             $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 730099 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+            // Set default values in case we returned nothing
+            self::$delivery_id = 1;
             if ($row = mysql_fetch_object ($result))
               {
                 self::$delivery_id = $row->delivery_id;
