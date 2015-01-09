@@ -1,11 +1,13 @@
 <?php
+// IMPORTANT: Save the posted data before doing anything else
+$received_post_data = file_get_contents('php://input');
 include_once 'config_openfood.php';
 
 // Use this file for all basic paypal services
 // Be careful when making changes because this must be prepared to process paypal calls at any time.
 
 // Check if there is incoming posted data -- i.e. from paypal
-if ($received_post_data = file_get_contents('php://input') && $not_from_paypal == false)
+if (strlen ($received_post_data) && $not_from_paypal == false)
   {
     // STEP 1: read POST data
 
