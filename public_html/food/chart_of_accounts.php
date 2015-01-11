@@ -225,7 +225,7 @@ $page_specific_css = '
     background-color:#fff;
     border-bottom:1px solid #444;
     }
-  .tab_frame {
+  #tab_holder .tab_frame {
     float:left;
     width:25%;
     margin:0;
