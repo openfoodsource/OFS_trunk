@@ -65,7 +65,7 @@ switch ($account_type)
             FROM
               '.NEW_TABLE_LEDGER.'
             LEFT JOIN
-              '.TABLE_MEMBER.' ON (source_key = member_id)
+              '.TABLE_MEMBER.' ON (target_key = member_id)
             WHERE
               target_type = "member"
               AND target_key = member_id
