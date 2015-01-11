@@ -42,6 +42,8 @@ function get_configuration ($database_config, $override_config)
             else define ($row->constant, $prefix_for_table.$row->value);
           }
       }
+    // Before leaving this function, set the timezone
+    date_default_timezone_set(LOCAL_TIME_ZONE);
   }
 
 // Check authorization for members to access certain things
