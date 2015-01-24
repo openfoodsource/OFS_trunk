@@ -59,7 +59,7 @@ function wholesale_text_html()
 
 function no_product_message()
   { return
-    '<h2>No products currently available</h2>';
+    '<h2>No products currently ordered</h2>';
   };
 
 // RANDOM_WEIGHT_DISPLAY_CALC
@@ -216,8 +216,7 @@ function pager_navigation($data)
 
 function open_list_top($data)
   { return
-    '<table id="product_list_table">
-      <caption>Producer basket for '.date ('F j, Y', strtotime($data['delivery_date'])).'</caption>';
+    '<table id="product_list_table">';
   };
 
 function close_list_bottom()

@@ -10,7 +10,8 @@ function get_delivery_codes_list ($request_data)
     global $connection;
     // See if it is okay to open a basket...
     if (ActiveCycle::delivery_id() &&
-        ActiveCycle::ordering_window() == 'open')
+        ( ActiveCycle::ordering_window() == 'open' ||
+          CurrentMember::auth_type('orderex')))
 //        && ! CurrentBasket::basket_id())
       {
         // If requested to open-basket...

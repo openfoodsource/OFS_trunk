@@ -314,12 +314,12 @@ while ( $row = mysql_fetch_array($result) )
     $$minor_division_prior = $row[$minor_division];
   }
 $unique['completed'] = 'true';
-// Close minor
-if ($show_minor_division) $display .= minor_division_close($row, $unique);
-// Close major
-if ($show_major_division) $display .= major_division_close($row);
+// Close minor if there were any products
+if ($unique['product_count'] > 0 && $show_minor_division) $display .= minor_division_close($row, $unique);
+// Close major if there were any products
+if ($unique['product_count'] > 0 && $show_major_division) $display .= major_division_close($row);
 // Close the product list if there were any products listed
-if ($unique['product_count'] > 0)
+if ($pager['found_rows'] && $unique['product_count'] > 0)
   {
     $display .= close_list_bottom($row, $unique);
   }
@@ -346,8 +346,6 @@ elseif ($_GET['producer_id'] || strpos($_SERVER['SCRIPT_NAME'],'producers'))
     $page_tab = 'shopping_panel';
   }
 
-
-
 $content_list = '
 <div id="listing_auth_type">
   <h3>';
@@ -365,8 +363,6 @@ foreach (array ("retail"=>"Listed Retail", "wholesale"=>"Listed Wholesale", "unl
   }
 $content_list .= '</h3>';
 
-
-
 if ($show_search) $search_display = '
   <form action="'.$_SERVER['SCRIPT_NAME'].'" method="get">'.
     ($_REQUEST['a'] ? '<input type="hidden" name="a" value="'.$_REQUEST['a'].'">' : '').
@@ -374,10 +370,12 @@ if ($show_search) $search_display = '
     <input type="submit" name="type" value="search">
   </form>';
 
+
 if (isset ($pager['found_rows']))
   {
     $search_display .= '
-      <span class="found_rows">'.$pager['found_rows'].' '.Inflect::pluralize_if ($pager['found_rows'], 'item').'</span>';
+      <span class="found_rows">'.$pager['found_rows'].' '.Inflect::pluralize_if ($pager['found_rows'], 'item').'</span>
+      <h4>'.(strlen (ActiveCycle::delivery_date ($_GET['delivery_id'])) > 0 ? 'Producer basket for '.ActiveCycle::delivery_date ($_GET['delivery_id']) : 'Cycle #'.$_GET['delivery_id'].' does not exist.').'</h4>';
   }
 
 $page_specific_css .= '
@@ -443,6 +441,31 @@ $page_specific_css .= '
   text-align:center;
   font-size:70%;
   color:#000;
+  }
+.product_list {
+  clear:both;
+  }
+#delivery_id_nav {
+  background-color: #eef;
+  height: 1.5em;
+  margin: 5px auto 0;
+  max-width: 40rem;
+  width: 45%;
+  text-align:center;
+  }
+#delivery_id_nav .next {
+  float: right;
+  }
+#delivery_id_nav .prior {
+  float: left;
+  }
+#delivery_id_nav .delivery_id {
+  font-weight:bold;
+  }
+#delivery_id_nav .prior, #delivery_id_nav .next {
+  display: block;
+  line-height: 1.5;
+  padding: 0 5px;
   }
 </style>';
 
@@ -615,6 +638,22 @@ $csv_link = '
   <!-- <br><a href="'.$_SERVER['REQUEST_URI'].'&csv=true">Download full list as a CSV file</a> -->
   ';
 
+// Set up the previous/next order cycle (delivery_id) navigation
+$http_get_query = 
+    ($_GET['type'] ? '&type='.$_GET['type'] : '').
+    ($_GET['producer_id'] ? '&producer_id='.$_GET['producer_id'] : '').
+    ($_GET['category_id'] ? '&category_id='.$_GET['category_id'] : '').
+    ($_GET['subcat_id'] ? '&subcat_id='.$_GET['subcat_id'] : '').
+    ($_GET['query'] ? '&query='.$_GET['query'] : '').
+    ($_GET['a'] ? '&a='.$_GET['a'] : '');
+
+$order_cycle_navigation = '
+  <div id="delivery_id_nav">
+    <a class="prior" href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.($_GET['delivery_id'] ? ($_GET['delivery_id'] - 1) : ActiveCycle::delivery_id() - 1).$http_get_query.'">&larr; PRIOR CYCLE </a>
+    <span class="delivery_id">'.($_GET['delivery_id'] ? $_GET['delivery_id'] : ActiveCycle::delivery_id()).'</span>
+    <a class="next" href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.($_GET['delivery_id'] ? ($_GET['delivery_id'] + 1) : ActiveCycle::delivery_id() + 1).$http_get_query.'"> NEXT CYCLE &rarr;</a>
+  </div>';
+
 $content_list = 
   ($content_top ? '
     <div id="content_top">
@@ -650,8 +689,9 @@ else
   {
     include("template_header.php");
     echo '
-      <!-- CONTENT BEGINS HERE -->
-      '.$content_list.'
+      <!-- CONTENT BEGINS HERE -->'.
+      $order_cycle_navigation.
+      $content_list.'
       <!-- CONTENT ENDS HERE -->';
     include("template_footer.php");
   }

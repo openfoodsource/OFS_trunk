@@ -47,6 +47,14 @@ else
     $show_update_button = false;
     $show_delete_button = false;
   }
+// Put together the customer_type value
+$customer_type_array = array ();
+if ($_POST['customer_type_institution'] == 'true')
+  array_push ($customer_type_array, 'institution');
+if ($_POST['customer_type_member'] == 'true')
+  array_push ($customer_type_array, 'member');
+$customer_type = implode (',', $customer_type_array);
+
 // Validate input
 if ($action == 'post_edit' || $action == 'post_new')
   {
@@ -91,6 +99,7 @@ if ($action == 'post_edit' && $errors_found == false)
         date_closed = "'.date ('Y-m-d H:i:s', strtotime (mysql_real_escape_string($_POST['date_closed']))).'",
         order_fill_deadline = "'.date ('Y-m-d H:i:s', strtotime (mysql_real_escape_string($_POST['order_fill_deadline']))).'",
         delivery_date = "'.date ('Y-m-d', strtotime (mysql_real_escape_string($_POST['delivery_date']))).'",
+        customer_type = "'.$customer_type.'",
         msg_all = "'.nl2br (mysql_real_escape_string($_POST['msg_all'])).'",
         msg_bottom = "'.nl2br (mysql_real_escape_string($_POST['msg_bottom'])).'",
         coopfee = "'.mysql_real_escape_string($_POST['coopfee']).'",
@@ -113,6 +122,7 @@ elseif ($action == 'post_new' && $errors_found == false)
         date_closed = "'.date ('Y-m-d H:i:s', strtotime (mysql_real_escape_string($_POST['date_closed']))).'",
         order_fill_deadline = "'.date ('Y-m-d H:i:s', strtotime (mysql_real_escape_string($_POST['order_fill_deadline']))).'",
         delivery_date = "'.date ('Y-m-d', strtotime (mysql_real_escape_string($_POST['delivery_date']))).'",
+        customer_type = "'.$customer_type.'",
         msg_all = "'.nl2br (mysql_real_escape_string($_POST['msg_all'])).'",
         msg_bottom = "'.nl2br (mysql_real_escape_string($_POST['msg_bottom'])).'",
         coopfee = "'.mysql_real_escape_string($_POST['coopfee']).'",
@@ -164,6 +174,7 @@ if (1)
     $date_closed = $order_cycle_info['date_closed'];
     $delivery_date = $order_cycle_info['delivery_date'];
     $order_fill_deadline = $order_cycle_info['order_fill_deadline'];
+    $customer_type = $order_cycle_info['customer_type'];
     $msg_all = $order_cycle_info['msg_all'];
     $msg_bottom = $order_cycle_info['msg_bottom'];
     $coopfee = $order_cycle_info['coopfee'];
@@ -198,20 +209,30 @@ $display = '
     input:invalid {
       color:#800;
       }
+    input[type=text],
+    input[type=datetime] {
+      width:24em;
+      }
     input[type=radio] {
       float:none;
       }
-    .radio_block {
+    input[type=checkbox] {
+      float:none;
+      }
+    .option_block {
       width:45%;
+      max-width:10em;
       float:left;
       text-align:center;
       background-color:#fff;
       border:1px solid #9e9e9e;
+      margin-bottom:0.5em;
       }
-    .radio_block:first-of-type {
+    .option_block:first-of-type {
       border-right:0;
+      clear:left;
       }
-    .radio_block:last-of-type {
+    .option_block:last-of-type {
       border-left:0;
       }
     label {
@@ -228,12 +249,13 @@ $display = '
     .required {
       float:left;
       border:1px solid #008;
-      width:45%;
+      width:97%;
       background-color:#ddf;
       }
     .deprecated {
+      display:none;
       float:right;
-      width:45%;
+      width:97%;
       background-color:#fdd;
       border:1px solid #800;
       }
@@ -245,15 +267,17 @@ $display = '
       border:1px solid #060;
       }
     .controls {
-      float:right;
-      width:45%;
+      float:left;
+      width:97%;
       border:0;
       }
     .controls input[type=submit],
-     .controls input[type=reset] {
-     width:40%;
-      margin:2% 5%;
-      float:right;
+    .controls input[type=reset] {
+      clear:none;
+      width:15%;
+      min-width:8em;
+      margin:1em;
+      float:left;
       }
     .controls input:hover {
       font-weight:bold;
@@ -342,13 +366,22 @@ $display = '
         <input type="text" id="order_fill_deadline" name="order_fill_deadline" required placeholder="YYYY-MM-DD HH:MM:SS" value="'.$order_fill_deadline.'">
         <label for="delivery_date">Delivery Date (date)</label>
         <input type="text" id="delivery_date" name="delivery_date" required placeholder="YYYY-MM-DD" value="'.$delivery_date.'">
-        <label>Invoice &dash; Show Price</label>
-        <div class="radio_block">
-          <label for="show_customer">Customer</label>
+        <label>Shopping enabled for:</label>
+        <div class="option_block">
+          <label for="customer_type_institution">Retail Members</label>
+          <input type="checkbox" id="customer_type_institution" name="customer_type_member" value="true"'.(strpos($customer_type,'member') !== false ? ' checked' : '').'>
+        </div>
+        <div class="option_block">
+          <label for="customer_type_institution">Institutions</label>
+          <input type="checkbox" id="customer_type_institution" name="customer_type_institution" value="true"'.(strpos($customer_type,'institution') !== false ? ' checked' : '').'>
+        </div>
+        <label>How to show fees on invoice:</label>
+        <div class="option_block">
+          <label for="show_customer">Fees included in prices</label>
           <input type="radio" id="show_customer" name="invoice_price" value="1"'.($invoice_price == 1 ? ' checked="checked"' : '').'>
         </div>
-        <div class="radio_block">
-          <label for="show_coop">Co-op</label>
+        <div class="option_block">
+          <label for="show_coop">Separate line-item for fees</label>
           <input type="radio" id="show_coop" name="invoice_price" value="0"'.($invoice_price == 0 ? ' checked="checked"' : '').'>
         </div>
       </fieldset>

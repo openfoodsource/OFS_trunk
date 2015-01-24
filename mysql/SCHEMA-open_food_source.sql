@@ -281,6 +281,7 @@ CREATE TABLE IF NOT EXISTS ofs_order_cycles (
   date_closed datetime DEFAULT '0000-00-00 00:00:00',
   order_fill_deadline datetime NOT NULL,
   delivery_date date NOT NULL DEFAULT '0000-00-00',
+  customer_type set('member','institution') NOT NULL,
   msg_all text NOT NULL,
   msg_bottom text NOT NULL,
   coopfee double NOT NULL DEFAULT '0',

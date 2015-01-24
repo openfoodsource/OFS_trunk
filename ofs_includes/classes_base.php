@@ -31,11 +31,30 @@ class ActiveCycle
     private static $ordering_window = false;
     private static $producer_update_window = false;
     private static $using_next = false;
-    private static function get_active_delivery_info ($new_delivery_id)
+    private static function get_delivery_info ($target_delivery_id)
       {
-        if (self::$active_cycle_query_complete === false)
+        if (self::$active_cycle_query_complete === false ||
+            self::$delivery_id != $target_delivery_id)
           {
             global $connection;
+            // Set up for pulling only order cycles appropriate to the current customer_type permissions
+            // Allow "orderex" direct access to all order cycles
+            $customer_type_query = (CurrentMember::auth_type('orderex') ? '1' : '0');
+            if (CurrentMember::auth_type('member')) $customer_type_query .= '
+              OR customer_type LIKE "%member%"';
+            if (CurrentMember::auth_type('institution')) $customer_type_query .= '
+              OR customer_type LIKE "%institution%"';
+            if ($target_delivery_id == '')   // Use the default (current) delivery_id
+              {
+                $query_where = '
+                date_open < "'.date ('Y-m-d H:i:s', time()).'"
+                AND ('.$customer_type_query.')';
+              }
+            else // Use a specific delivery_id
+              {
+                $query_where = '
+                delivery_id = "'.mysql_real_escape_string ($target_delivery_id).'"';
+              }
             // Get information about any shopping period that is currently open
             $query = '
               SELECT
@@ -49,8 +68,8 @@ class ActiveCycle
                 wholesale_markup / 100 AS wholesale_markup
               FROM
                 '.TABLE_ORDER_CYCLES.'
-              WHERE
-                date_open < "'.date ('Y-m-d H:i:s', time()).'"
+              WHERE'.
+                $query_where.'
                 /* AND order_fill_deadline > "'.date ('Y-m-d H:i:s', time()).'" */
               ORDER BY
                 delivery_id DESC
@@ -79,6 +98,18 @@ class ActiveCycle
                   self::$producer_update_window = 'closed';
                 self::$active_cycle_query_complete = true;
               }
+            elseif ($target_delivery_id != 0)
+              {
+                self::$delivery_id = $target_delivery_id;
+                self::$delivery_date = '';
+                self::$date_open = '';
+                self::$date_closed = '';
+                self::$order_fill_deadline = '';
+                self::$producer_markdown = 0;
+                self::$retail_markup = 0;
+                self::$wholesale_markup = 0;
+                self::$active_cycle_query_complete = true;
+              }
           }
       }
     private static function get_next_delivery_info ()
@@ -86,6 +117,13 @@ class ActiveCycle
         if (self::$next_query_complete === false)
           {
             global $connection;
+            // Set up for pulling only order cycles appropriate to the current customer_type permissions
+            // Allow "orderex" direct access to all order cycles
+            $customer_type_query = (CurrentMember::auth_type('orderex') ? '1' : '0');
+            if (CurrentMember::auth_type('member')) $customer_type_query .= '
+              OR customer_type LIKE "%member%"';
+            if (CurrentMember::auth_type('institution')) $customer_type_query .= '
+              OR customer_type LIKE "%institution%"';
             // Set the default "where condition" to be the cycle that opened most recently
             // Do not use MySQL NOW() because it does not know about the php timezone directive
             $now = date ('Y-m-d H:i:s', time());
@@ -103,6 +141,7 @@ class ActiveCycle
                   '.TABLE_ORDER_CYCLES.'
                 WHERE
                   date_closed > "'.$now.'"
+                  AND ('.$customer_type_query.')
                 ORDER BY
                   date_closed ASC
                 LIMIT 0,1)
@@ -120,6 +159,7 @@ class ActiveCycle
                   '.TABLE_ORDER_CYCLES.'
                 WHERE
                   date_open < "'.$now.'"
+                  AND ('.$customer_type_query.')
                 ORDER BY
                   date_open DESC
                 LIMIT 0,1)';
@@ -139,61 +179,61 @@ class ActiveCycle
           }
       }
     // Use this function if it is necessary to change/set the active delivery_id within a script.
-    public function set_active_delivery_id ($new_delivery_id)
+    public function set_active_delivery_id ($new_delivery_id = '')
       {
         $active_cycle_query_complete = false;
-        self::get_active_delivery_info ($new_delivery_id);
+        self::get_delivery_info ($target_delivery_id);
         return self::$delivery_id;
       }
     // Following functions return information for the (current or set value) delivery_id
-    public static function delivery_id ()
+    public static function delivery_id ($target_delivery_id = '')
       {
-        self::get_active_delivery_info (0);
+        self::get_delivery_info ($target_delivery_id);
         return self::$delivery_id;
       }
-    public static function delivery_date ()
+    public static function delivery_date ($target_delivery_id = '')
       {
-        self::get_active_delivery_info (0);
+        self::get_delivery_info ($target_delivery_id);
         return self::$delivery_date;
       }
-    public static function date_open ()
+    public static function date_open ($target_delivery_id = '')
       {
-        self::get_active_delivery_info (0);
+        self::get_delivery_info ($target_delivery_id);
         return self::$date_open;
       }
-    public static function date_closed ()
+    public static function date_closed ($target_delivery_id = '')
       {
-        self::get_active_delivery_info (0);
+        self::get_delivery_info ($target_delivery_id);
         return self::$date_closed;
       }
-    public static function order_fill_deadline ()
+    public static function order_fill_deadline ($target_delivery_id = '')
       {
-        self::get_active_delivery_info (0);
+        self::get_delivery_info ($target_delivery_id);
         return self::$order_fill_deadline;
       }
-    public static function producer_markdown ()
+    public static function producer_markdown ($target_delivery_id = '')
       {
-        self::get_active_delivery_info (0);
+        self::get_delivery_info ($target_delivery_id);
         return self::$producer_markdown;
       }
-    public static function retail_markup ()
+    public static function retail_markup ($target_delivery_id = '')
       {
-        self::get_active_delivery_info (0);
+        self::get_delivery_info ($target_delivery_id);
         return self::$retail_markup;
       }
-    public static function ordering_window ()
+    public static function ordering_window ($target_delivery_id = '')
       {
-        self::get_active_delivery_info (0);
+        self::get_delivery_info ($target_delivery_id);
         return self::$ordering_window;
       }
-    public static function producer_update_window ()
+    public static function producer_update_window ($target_delivery_id = '')
       {
-        self::get_active_delivery_info (0);
+        self::get_delivery_info ($target_delivery_id);
         return self::$producer_update_window;
       }
-    public static function wholesale_markup ()
+    public static function wholesale_markup ($target_delivery_id = '')
       {
-        self::get_active_delivery_info (0);
+        self::get_delivery_info ($target_delivery_id);
         return self::$wholesale_markup;
       }
     // NextDelivery returns delivery information for either the next delivery that
