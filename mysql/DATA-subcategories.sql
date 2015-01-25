@@ -1,12 +1,4 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
-
-INSERT INTO `ofs_subcategories` (`subcategory_id`, `subcategory_name`, `category_id`, `taxable`, `subcategory_fee_percent`) VALUES
+INSERT INTO ofs_subcategories (subcategory_id, subcategory_name, category_id, taxable, subcategory_fee_percent) VALUES
 (1, 'Chicken', 2, 0, 0.000),
 (2, 'Almonds', 7, 0, 0.000),
 (3, 'Eggs', 4, 0, 0.000),
@@ -183,7 +175,3 @@ INSERT INTO `ofs_subcategories` (`subcategory_id`, `subcategory_name`, `category
 (187, 'Milk', 4, 0, 0.000),
 (190, 'Clearance Products', 33, 0, 0.000),
 (191, 'Books', 8, 1, 0.000);
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

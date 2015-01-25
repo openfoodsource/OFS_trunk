@@ -1,12 +1,4 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
-
-INSERT INTO `ofs_tax_rates` (`tax_id`, `region_code`, `region_type`, `region_name`, `postal_code`, `order_id_start`, `order_id_stop`, `tax_percent`) VALUES
+INSERT INTO ofs_tax_rates (tax_id, region_code, region_type, region_name, postal_code, order_id_start, order_id_stop, tax_percent) VALUES
 (1, '0-001', 'state', 'Quaton', '12356', 1, 0, 5.500),
 (2, '0-001', 'state', 'Quaton', '12358', 1, 0, 5.500),
 (3, '0-001', 'state', 'Quaton', '12359', 1, 0, 5.500),
@@ -34,7 +26,3 @@ INSERT INTO `ofs_tax_rates` (`tax_id`, `region_code`, `region_type`, `region_nam
 (25, '1-234', 'city', 'Hollycot', '12379', 1, 0, 0.600),
 (26, '1-251', 'city', 'Roseweed', '12389', 1, 0, 0.850),
 (27, '1-269', 'city', 'Juniper', '12390', 1, 0, 0.700);
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

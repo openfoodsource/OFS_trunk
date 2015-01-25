@@ -1,12 +1,4 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
-
-INSERT INTO `ofs_categories` (`category_id`, `category_name`, `category_desc`, `taxable`, `parent_id`, `sort_order`) VALUES
+INSERT INTO ofs_categories (category_id, category_name, category_desc, taxable, parent_id, sort_order) VALUES
 (1, 'Vegetables', 'Healthy garden vegetables grown without herbicides and pesticides by Oklahoma farmers.', 0, 0, 1),
 (2, 'Meats & Poultry', 'Order a wide variety of all natural meats -- farm raised venison, lamb, grass finished beef, custom-fed pork.', 0, 0, 2),
 (3, 'Grains, Flours and Pastas', 'Bake your bread from Oklahoma Wheat for the finest flavor.  Whether you buy stone ground flour or the wheat to grind, this is the best!', 0, 0, 5),
@@ -41,7 +33,3 @@ INSERT INTO `ofs_categories` (`category_id`, `category_name`, `category_desc`, `
 (37, 'Miscellaneous Non-Taxable', '', 0, 0, 38),
 (38, 'Recreation', '', 1, 0, 39),
 (39, 'Vegetable Plants & Seeds', '', 1, 0, 36);
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

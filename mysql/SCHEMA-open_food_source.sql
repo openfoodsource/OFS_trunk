@@ -1,4 +1,3 @@
-
 CREATE TABLE IF NOT EXISTS ofs_accounts (
   account_id mediumint(9) NOT NULL AUTO_INCREMENT COMMENT 'used for account_number in ledger entries',
   internal_key varchar(25) NOT NULL COMMENT 'textual name passed by software',
@@ -70,12 +69,12 @@ CREATE TABLE IF NOT EXISTS ofs_categories (
 
 CREATE TABLE IF NOT EXISTS ofs_configuration (
   section varchar(40) NOT NULL,
-  `name` varchar(40) NOT NULL,
+  name varchar(40) NOT NULL,
   constant varchar(40) NOT NULL,
-  `options` text NOT NULL,
-  `value` text NOT NULL,
+  options text NOT NULL,
+  value text NOT NULL,
   description text NOT NULL,
-  PRIMARY KEY (`name`,section)
+  PRIMARY KEY (name,section)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS ofs_delivery_codes (
@@ -138,37 +137,7 @@ CREATE TABLE IF NOT EXISTS ofs_ledger (
   posted_by mediumint(9) DEFAULT NULL COMMENT 'member_id of person adding this transaction',
   replaced_by int(10) unsigned DEFAULT NULL COMMENT 'transaction_id that replaces/updates this transaction',
   replaced_datetime int(11) DEFAULT NULL COMMENT 'When was transaction replaced',
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'time transaction was last changed',
-  basket_id int(10) unsigned DEFAULT NULL COMMENT 'References key from baskets table',
-  bpid int(10) unsigned DEFAULT NULL COMMENT 'References key from basket_items table',
-  site_id smallint(5) unsigned DEFAULT NULL COMMENT 'References key from sites table',
-  delivery_id int(10) unsigned DEFAULT NULL COMMENT 'References key from order_cycles table',
-  pvid int(10) unsigned DEFAULT NULL COMMENT 'References key from products table',
-  PRIMARY KEY (transaction_id),
-  KEY text_key (text_key),
-  KEY source_key (source_key),
-  KEY target_key (target_key),
-  KEY basket_id (basket_id),
-  KEY bpid (bpid),
-  KEY delcode_id (site_id),
-  KEY pvid (pvid),
-  KEY delivery_id (delivery_id)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
-
-CREATE TABLE IF NOT EXISTS ofs_ledger_backup (
-  transaction_id int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'transaction_id',
-  transaction_group_id varchar(25) NOT NULL DEFAULT '',
-  source_type enum('producer','member','tax','internal') CHARACTER SET utf8 NOT NULL COMMENT 'type of source account',
-  source_key int(11) NOT NULL,
-  target_type enum('producer','member','tax','internal') CHARACTER SET utf8 NOT NULL COMMENT 'type of destination account',
-  target_key int(11) NOT NULL,
-  amount decimal(9,2) NOT NULL DEFAULT '0.00',
-  text_key varchar(20) NOT NULL COMMENT 'use to classify the transaction type',
-  effective_datetime datetime NOT NULL,
-  posted_by mediumint(9) DEFAULT NULL COMMENT 'member_id of person adding this transaction',
-  replaced_by int(10) unsigned DEFAULT NULL COMMENT 'transaction_id that replaces/updates this transaction',
-  replaced_datetime int(11) DEFAULT NULL COMMENT 'When was transaction replaced',
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'time transaction was last changed',
+  timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'time transaction was last changed',
   basket_id int(10) unsigned DEFAULT NULL COMMENT 'References key from baskets table',
   bpid int(10) unsigned DEFAULT NULL COMMENT 'References key from basket_items table',
   site_id smallint(5) unsigned DEFAULT NULL COMMENT 'References key from sites table',
@@ -189,7 +158,7 @@ CREATE TABLE IF NOT EXISTS ofs_members (
   member_id int(11) unsigned NOT NULL AUTO_INCREMENT,
   pending tinyint(4) NOT NULL DEFAULT '0',
   username varchar(20) DEFAULT NULL,
-  `password` varchar(100) DEFAULT NULL,
+  password varchar(100) DEFAULT NULL,
   auth_type set('member','producer','institution','orderex','member_admin','producer_admin','route_admin','cashier','site_admin','board') NOT NULL DEFAULT 'member',
   business_name varchar(50) DEFAULT NULL,
   preferred_name varchar(50) NOT NULL,
@@ -488,7 +457,7 @@ CREATE TABLE IF NOT EXISTS ofs_status (
   status_scope varchar(50) NOT NULL,
   status_key varchar(50) NOT NULL,
   status_value text NOT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   ttl_minutes int(11) NOT NULL COMMENT 'time to live',
   UNIQUE KEY scope_key (status_scope,status_key)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -560,11 +529,11 @@ CREATE TABLE IF NOT EXISTS ofs_transaction_group_enum (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS ofs_translation (
-  `context` varchar(25) NOT NULL,
+  context varchar(25) NOT NULL,
   input varchar(255) NOT NULL,
   output varchar(255) NOT NULL,
   last_seen datetime NOT NULL,
-  PRIMARY KEY (`context`,input)
+  PRIMARY KEY (context,input)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS ofs_transport_legs (
@@ -575,13 +544,13 @@ CREATE TABLE IF NOT EXISTS ofs_transport_legs (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS ofs_transport_metrics (
-  `key` int(11) NOT NULL,
+  metric_id int(11) NOT NULL,
   site_start int(11) NOT NULL,
   site_finish int(11) NOT NULL,
   distance_km int(11) NOT NULL,
   time_minutes int(11) NOT NULL,
   UNIQUE KEY site_start_finish (site_start,site_finish),
-  KEY `key` (`key`)
+  KEY metric_id (metric_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE IF NOT EXISTS ofs_transport_stops (

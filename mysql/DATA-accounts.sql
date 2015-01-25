@@ -1,12 +1,4 @@
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
-
-INSERT INTO `ofs_accounts` (`account_id`, `internal_key`, `internal_subkey`, `account_number`, `sub_account_number`, `description`) VALUES
+INSERT INTO ofs_accounts (account_id, internal_key, internal_subkey, account_number, sub_account_number, description) VALUES
 (1, 'producer fee', '', '', '', 'producer fee'),
 (2, 'customer fee', '', '', '', 'customer fee'),
 (3, 'delivery cost', '', '', '', 'delivery cost'),
@@ -32,7 +24,3 @@ INSERT INTO `ofs_accounts` (`account_id`, `internal_key`, `internal_subkey`, `ac
 (23, 'site coordinators', '', '', '', 'Site Coordinators'),
 (24, 'bad debt', '', '', '', 'Bad Debt'),
 (25, 'marketing', '', '', '', 'marketing (food samples, etc)');
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
