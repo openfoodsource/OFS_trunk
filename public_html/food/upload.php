@@ -8,8 +8,6 @@ valid_auth('producer,producer_admin,site_admin');
 // Example php script to demonstrate the storing of binary files into
 // an sql database. More information can be found at http://www.phpbuilder.com/
 
-
-
 // producer_admin and site_admin are allowed to pass $_GET directive
 if ($_GET['producer_id'] && CurrentMember::auth_type('site_admin,cashier'))
   {
@@ -20,19 +18,22 @@ elseif ($_SESSION['producer_id_you'])
   {
     $producer_id = $_SESSION['producer_id_you'];
   }
-
 $sqll = '
   SELECT
-    '.TABLE_PRODUCER_LOGOS.'.logo_id
+    '.TABLE_PRODUCER_LOGOS.'.logo_id,
+    '.TABLE_PRODUCER.'.business_name
   FROM
-    '.TABLE_PRODUCER_LOGOS.'
+    '.TABLE_PRODUCER.'
+  LEFT JOIN
+    '.TABLE_PRODUCER_LOGOS.' USING(producer_id)
   WHERE
-    '.TABLE_PRODUCER_LOGOS.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"';
+    '.TABLE_PRODUCER.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"';
 $rsrl = @mysql_query($sqll, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
 $num = mysql_numrows($rsrl);
 while ($row = mysql_fetch_array($rsrl))
   {
     $logo_id = $row['logo_id'];
+    $business_name = $row['business_name'];
   }
 if ( $logo_id )
   {
@@ -126,7 +127,7 @@ else
               <form method="post" action="'.$_SERVER['SCRIPT_NAME'].'?producer_id='.$producer_id.'" enctype="multipart/form-data">
               File Description:<br>
               <input type="text" name="form_description"  size="40"> (For example, Bob&#146;s Logo)<br><small>Alternative text that will be shown if the logo is not dislpayed</small>
-              <input type="hidden" name="MAX_FILE_SIZE" value="102400">
+              <input type="hidden" name="MAX_FILE_SIZE" value="'.(UPLOAD_MAX_FILE_KB * 1024).'">
               <input type="hidden" name="producer_id" value="'.$producer_id.'">
               <br><br>
               File to upload/store in database:<br>
@@ -138,8 +139,6 @@ else
         </table>
       </div>';
   }
-
-include("../func/show_businessname.php");
 
 $page_title_html = '<span class="title">'.$business_name.'</span>';
 $page_subtitle_html = '<span class="subtitle">Upload Logo</span>';
