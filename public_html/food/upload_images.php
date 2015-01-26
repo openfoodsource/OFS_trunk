@@ -58,13 +58,6 @@ $page_content = '
                     <i class="glyphicon glyphicon-ban-circle"></i>
                     <span>Cancel upload</span>
                 </button>
-                <button type="button" class="btn btn-danger delete">
-                    <i class="glyphicon glyphicon-trash"></i>
-                    <span>Delete</span>
-                </button>
-                <input type="checkbox" class="toggle">
-                <!-- The global file processing state -->
-                <span class="fileupload-process"></span>
             </div>
             <!-- The global progress state -->
             <div class="col-lg-5 fileupload-progress fade">
@@ -149,7 +142,6 @@ $page_content = '
                     <i class="glyphicon glyphicon-trash"></i>
                     <span>Delete</span>
                 </button>
-                <input type="checkbox" name="delete" value="1" class="toggle">
             {% } else { %}
                 <button class="btn btn-warning cancel">
                     <i class="glyphicon glyphicon-ban-circle"></i>
@@ -163,53 +155,53 @@ $page_content = '
 </script>
 </body> 
 <script src="'.PATH.'ajax/jquery.js"></script>
-<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
-<script src="'.PATH.'ajax/jquery-ui-widget.js"></script>
-<!-- The Load Image plugin is included for the preview images and image resizing functionality -->
-<script src="'.PATH.'ajax/load-image.js"></script>
-<!-- Bootstrap JS is not required, but included for the responsive demo navigation -->
-<script src="'.PATH.'js/bootstrap.min.js"></script>
-<!-- The Templates plugin is included to render the upload/download listings -->
-<script src="'.PATH.'js/tmpl.js"></script>
-<!-- Bootstrap JS is not required, but included for the responsive demo navigation -->
-<script src="'.PATH.'js/bootstrap.min.js"></script>
-<!-- The basic File Upload plugin -->
-<script src="'.PATH.'js/jquery.fileupload.js"></script>
-<!-- The File Upload processing plugin -->
-<script src="'.PATH.'js/jquery.fileupload-process.js"></script>
-<!-- The File Upload image preview & resize plugin -->
-<script src="'.PATH.'js/jquery.fileupload-image.js"></script>
-<!-- The File Upload audio preview plugin -->
-<script src="'.PATH.'js/jquery.fileupload-audio.js"></script>
-<!-- The File Upload video preview plugin -->
-<script src="'.PATH.'js/jquery.fileupload-video.js"></script>
-<!-- The File Upload validation plugin -->
-<script src="'.PATH.'js/jquery.fileupload-validate.js"></script>
-<!-- The File Upload user interface plugin -->
-<script src="'.PATH.'js/jquery.fileupload-ui.js"></script>
-<!-- The main application script -->
-<script src="'.PATH.'js/jquery.fileupload-main.js"></script>
-
 <script type="text/javascript">
-  $("#fileupload").fileupload({
-    url: "receive_image_uploads.php"
-    }).on("fileuploadsubmit", function (e, data) {
-      data.formData = data.context.find(":input").serializeArray();
+jQuery.cachedScript = function( url, options ) {
+  // Allow user to set any option except for dataType, cache, and url
+  options = $.extend( options || {}, {
+    dataType: "script",
+    cache: true,
+    url: url
     });
+  // Use $.ajax() since it is more flexible than $.getScript
+  // Return the jqXHR object so we can chain callbacks
+  return jQuery.ajax( options );
+  };
+// Ensure dependencies are loaded in order (this may be overkill, but it works)...
+$.cachedScript( "'.PATH.'js/tmpl.js" ).done(function() {
+  });
+$.cachedScript( "'.PATH.'ajax/load-image.js" ).done(function() {
+  $.cachedScript( "'.PATH.'ajax/load-image-meta.js" ).done(function() {
+    $.cachedScript( "'.PATH.'ajax/jquery-ui.js" ).done(function() {
+      $.cachedScript( "'.PATH.'ajax/jquery-ui-widget.js" ).done(function() {
+        $.cachedScript( "'.PATH.'js/jquery.fileupload.js" ).done(function() {
+          $.cachedScript( "'.PATH.'js/jquery.fileupload-ui.js" ).done(function() {
+          //$.cachedScript( "'.PATH.'js/jquery.fileupload-audio.js" ).done(function() {
+          //  });
+          //$.cachedScript( "'.PATH.'js/jquery.fileupload-video.js" ).done(function() {
+          //  });
+            $.cachedScript( "'.PATH.'js/jquery.fileupload-image.js" ).done(function() {
+              });
+            });
+          $.cachedScript( "'.PATH.'js/jquery.fileupload-process.js" ).done(function() {
+            $.cachedScript( "'.PATH.'js/jquery.fileupload-validate.js" ).done(function() {
+              $.cachedScript( "'.PATH.'js/jquery.fileupload-main.js" ).done(function() {
+                $("#fileupload").fileupload({
+                  url: "receive_image_uploads.php"
+                  }).on("fileuploadsubmit", function (e, data) {
+                    data.formData = data.context.find(":input").serializeArray();
+                  }); // End of #fileupload
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+$.cachedScript( "'.PATH.'js/bootstrap.min.js" ).done(function() {
+  });
 </script>
 </html>';
 echo $page_content;
-
-
-// <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-// <script src="'.PATH.'js/jquery.iframe-transport.js"></script>
-// <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
-// <script src="//blueimp.github.io/JavaScript-Load-Image/js/load-image.all.min.js"></script>
-// <!-- The Canvas to Blob plugin is included for image resizing functionality -->
-// <script src="//blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
-// <!-- blueimp Gallery script -->
-// <script src="//blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
-// 
-
-
 
