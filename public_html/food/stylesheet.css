@@ -772,7 +772,7 @@ dd {
   position:absolute;
   z-index:5;
   width:0px;
-  height:90px;
+  height:110px;
   color:#fff;
   opacity:0.7;
   padding:10px 10px 10px 40px;
@@ -784,11 +784,13 @@ dd {
   border-radius: 25px;
   border-radius: 25px;
   box-shadow: 5px 5px 5px #000;
+  transition:width 0.25s,height 1s;
   }
 .error_message:hover {
   width:50%;
   height:auto;
   opacity:0.9;
+  transition:width 0.25s,height 1s;
   }
 p.message {
   width:95%;
@@ -796,15 +798,31 @@ p.message {
   font-size: 1.1em;
   color:#008;
   }
-.error_list {
+.error_list,
+.error_list .error,
+.error_list .warn {
   font-weight:normal;
   font-style:italic;
   font-size: 1.1em;
   color:#ff8;
   clear:left;
   }
+.error_list .warn {
+  font-weight:normal;
+  font-style:italic;
+  font-size: 1.1em;
+  color:#8f8;
+  clear:left;
+  }
 .error_message .message {
   color:#fff;
+  }
+form .input_block label.error,
+form label.error {
+  color:#800;
+  }
+form input.error {
+  background-color:#ffa;
   }
 
 

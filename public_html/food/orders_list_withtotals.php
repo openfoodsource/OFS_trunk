@@ -175,12 +175,12 @@ while ( $row = mysql_fetch_array($result) )
         $all_checked_out ++;
       }
     $display .= '
-      <tr class="'.$notice_style.'">
-      <td id="'.$basket_id.'">$&nbsp;'.number_format($estimate_total,2).'</td>
-      <td>$&nbsp;'.number_format($invoice_total,2).'</td>
-      <td>'.$site_short.'</td>
-      <td># '.$member_id.'</td>
-      <td><strong><a href="member_interface.php?action=edit&ID='.$member_id.'" target="_blank">'.$last_name.':</strong> '.$preferred_name.'</a></td>
+      <tr id="'.$basket_id.'">
+      <td class="basket_estimate '.$notice_style.'">$&nbsp;'.number_format($estimate_total,2).'</td>
+      <td class="invoice_subtotal '.$notice_style.'">$&nbsp;'.number_format($invoice_total,2).'</td>
+      <td class="site_short '.$notice_style.'">'.$site_short.'</td>
+      <td class="member_id '.$notice_style.'"># '.$member_id.'</td>
+      <td class="name '.$notice_style.'"><strong>'.$last_name.':</strong> '.$preferred_name.'</td>
       <td>';
     $sqlp = '
       SELECT
@@ -203,9 +203,14 @@ while ( $row = mysql_fetch_array($result) )
       {
         $display .= '<a href="product_list.php?&amp;type=producer_byproduct&amp;producer_id='.$row['producer_id'].'&amp;delivery_id='.$delivery_id.'">Weight needed: #'.$row['product_id'].'</a><br>';
       }
-    $display .= '</td>';
-    $display .= '<td valign="top"><font size="2"><a href="product_list.php?type=basket&amp;delivery_id='.$delivery_id.'&amp;member_id='.$member_id.'&amp;basket_id='.$basket_id.'">Basket</a> / <a href="show_report.php?type=customer_invoice&amp;delivery_id='.$delivery_id.'&amp;member_id='.$member_id.'">Invoice</a></font></td>';
-    $display .= '</tr>';
+    $display .= '</td>
+      <td class="member_links">'.
+        (CurrentMember::auth_type('member_admin') == true ? '<a class="popup" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$member_id.'&display_as=popup\')">Edit</a>' : '').
+        (CurrentMember::auth_type('member_admin') == true && CurrentMember::auth_type('cashier') == true ? ' | ' : '').
+        (CurrentMember::auth_type('cashier') == true ? '<a class="popup" onclick="popup_src(\'member_information.php?member_id='.$member_id.'&display_as=popup\')">View</a>' : '').'
+      </td>
+      <td class="order_links" valign="top"><a href="product_list.php?type=basket&amp;delivery_id='.$delivery_id.'&amp;member_id='.$member_id.'&amp;basket_id='.$basket_id.'">Basket</a>&nbsp;|&nbsp;<a href="show_report.php?type=customer_invoice&amp;delivery_id='.$delivery_id.'&amp;member_id='.$member_id.'">Invoice</a></td>
+    </tr>';
     $member_id_list .= '#'.$member_id;
   }
 
@@ -227,13 +232,14 @@ $content_list = '
 
 <table id="customer_baskets">
   <tr>
-    <th>Basket<br />Estimate</th>
-    <th>Invoice<br />Subtotal</th>
-    <th><a href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.$delivery_id.'&sort=site_short'.($sort == 'site_short' ? $switch : '&amp;order=asc').'">Site Code '.($sort == 'site_short' ? $order_arrow : '').'</a></th>
-    <th><a href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.$delivery_id.'&sort=member_id'.($sort == 'member_id' ? $switch : '&amp;order=asc').'">Mem. ID '.($sort == 'member_id' ? $order_arrow : '').'</a></th>
-    <th><a href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.$delivery_id.'&sort=member_name'.($sort == 'member_name' ? $switch : '&amp;order=asc').'">Name '.($sort == 'member_name' ? $order_arrow : '').'</a></th>
-    <th>Weights needed</th>
-    <th>View</th>
+    <th class="basket_estimate">Basket<br />Estimate</th>
+    <th class="invoice_subtotal">Invoice<br />Subtotal</th>
+    <th class="site_short"><a href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.$delivery_id.'&sort=site_short'.($sort == 'site_short' ? $switch : '&amp;order=asc').'">Site Code '.($sort == 'site_short' ? $order_arrow : '').'</a></th>
+    <th class="member_id"><a href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.$delivery_id.'&sort=member_id'.($sort == 'member_id' ? $switch : '&amp;order=asc').'">Mem. ID '.($sort == 'member_id' ? $order_arrow : '').'</a></th>
+    <th class="name"><a href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.$delivery_id.'&sort=member_name'.($sort == 'member_name' ? $switch : '&amp;order=asc').'">Name '.($sort == 'member_name' ? $order_arrow : '').'</a></th>
+    <th class="weights_needed">Weights<br />needed</th>
+    <th class="member_links">Member<br />Links</th>
+    <th class="order_links">Order<br />Links</th>
   </tr>
   '.$display.'
   <tr>
@@ -312,7 +318,86 @@ $page_specific_css = '
       color:#000;
       vertical-align:top;
       }
+    td.weights_needed {
+      font-size:75%;
+      color:#800;
+      }
+    td.member_links,
+    td.order_links {
+      font-size:75%;
+      text-align:center;
+      }
+    /* BEGIN STYLES FOR SIMPLEMODAL OVERLAY */
+    a.popup {
+      cursor:pointer;
+      }
+    #simplemodal-data {
+      height:100%;
+      background-color:#fff;
+      }
+    #simplemodal-container {
+      box-shadow:10px 10px 10px #000;
+      }
+    #simplemodal-data iframe {
+      border:0;
+      height:95%;
+      width:100%;
+      }
+    #simplemodal-container a.modalCloseImg:hover {
+      background:url('.DIR_GRAPHICS.'/simplemodal_x_hover.png) no-repeat;
+      }
+    #simplemodal-container a.modalCloseImg {
+      background:url('.DIR_GRAPHICS.'/simplemodal_x.png) no-repeat;
+      width:40px;
+      height:46px;
+      display:inline;
+      z-index:3200;
+      position:absolute;
+      top:-20px;
+      right:-20px;
+      cursor:pointer;
+      }
+    ul.producer_list {
+      list-style-type:none;
+      margin:0;
+      padding-left:10px;
+      }
+    ul.producer_list li.producer {
+      font-size:80%;
+      color:#008;
+      cursor:pointer;
+      }
   </style>';
+
+$page_specific_javascript .= '
+<script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
+<script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>
+<script type="text/javascript">
+  // Display an external page using an iframe
+  // http://www.ericmmartin.com/projects/simplemodal/
+  // Set the simplemodal close button
+  $.modal.defaults.closeClass = "modalClose";
+  // Popup the simplemodal dialog for selecting a site
+  function popup_src(src) {
+    $.modal(\'<a class="modalCloseImg modalClose">&nbsp;</a><iframe src="\' + src + \'">\', {
+      opacity:70,
+      overlayCss: {backgroundColor:"#000"},
+      closeHTML:"",
+      containerCss:{
+        backgroundColor:"#fff",
+        borderColor:"#fff",
+        height:"80%",
+        width:"80%",
+        padding:0
+        },
+      overlayClose:true
+      });
+    };
+  // Close the simplemodal iframe after 500 ms
+  function close_modal_window() {
+    $.modal.close();
+    }
+</script>';
 
 $page_title_html = '<span class="title">Delivery Cycle Functions</span>';
 $page_subtitle_html = '<span class="subtitle">Customer Orders with Totals</span>';

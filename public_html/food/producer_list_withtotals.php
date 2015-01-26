@@ -149,11 +149,11 @@ while ( $row = mysql_fetch_array($result) )
         $all_checked_out ++;
       }
     $display .= '
-      <tr class="'.$notice_style.'">
-      <td id="'.$producer_id.'">$&nbsp;'.number_format($estimate_total,2).'</td>
-      <td>$&nbsp;'.number_format($invoice_total,2).'</td>
-      <td># '.$producer_id.'</td>
-      <td><strong><a href="member_interface.php?action=edit&ID='.$producer_member_id.'" target="_blank">'.$business_name.($payee == $business_name ? '</strong>' : ' </strong>(Payee: '.$payee.')').'</td>
+      <tr id="'.$producer_id.'">
+      <td class="basket_estimate '.$notice_style.'">$&nbsp;'.number_format($estimate_total,2).'</td>
+      <td class="invoice_subtotal '.$notice_style.'">$&nbsp;'.number_format($invoice_total,2).'</td>
+      <td class=" producer_id'.$notice_style.'"># '.$producer_id.'</td>
+      <td class=" name'.$notice_style.'"><strong>'.$business_name.($payee == $business_name ? '</strong>' : ' </strong>(Payee: '.$payee.')').'</td>
       <td>';
     // Get items with missing weights
     $sqlp = '
@@ -177,9 +177,12 @@ while ( $row = mysql_fetch_array($result) )
       {
         $display .= '<a href="product_list.php?&amp;type=producer_byproduct&amp;producer_id='.$row['producer_id'].'&amp;delivery_id='.$delivery_id.'">Weight needed: #'.$row['product_id'].'</a><br>';
       }
-    $display .= '</td>';
-    $display .= '<td valign="top"><font size="2"><a href="product_list.php?&type=producer_byproduct&amp;delivery_id='.$delivery_id.'&amp;producer_id='.$producer_id.'">Basket</a> / <a href="show_report.php?type=producer_invoice&amp;delivery_id='.$delivery_id.'&amp;producer_id='.$producer_id.'">Invoice</a></font></td>';
-    $display .= '</tr>';
+    $display .= '</td>
+      <td class="producer_links">'.
+        (CurrentMember::auth_type('producer_admin') == true ? '<a class="producer" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$producer_id.'&display_as=popup\')">Edit</a>' : '').'
+      </td>
+      <td class="order_links" valign="top"><a href="product_list.php?&type=producer_byproduct&amp;delivery_id='.$delivery_id.'&amp;producer_id='.$producer_id.'">Basket</a>&nbsp;|&nbsp;<a href="show_report.php?type=producer_invoice&amp;delivery_id='.$delivery_id.'&amp;producer_id='.$producer_id.'">Invoice</a></font></td>
+    </tr>';
     $member_id_list .= '#'.$member_id;
   }
 $content_list = '
@@ -197,15 +200,16 @@ $content_list = '
         Combined Estimate (using average for random-weight items): <strong>$'.number_format($estimate_running_total,2).'</strong><br/>
         '.($num_orders).' total producers
       </p>
-<table id="customer_baskets">
+<table id="producer_baskets">
   <tr>
     <th>Basket<br />Estimate</th>
     <th>Invoice<br />Subtotal</th>
     <th><a href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.$delivery_id.'&sort=producer_id'.($sort == 'producer_id' ? $switch : '&amp;order=asc').'">Pdcr. ID '.($sort == 'producer_id' ? $order_arrow : '').'</a></th>
     <th><a href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.$delivery_id.'&sort=business_name'.($sort == 'business_name' ? $switch : '&amp;order=asc').'">Name '.($sort == 'business_name' ? $order_arrow : '').'</a> &ndash;
         <a href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.$delivery_id.'&sort=payee'.($sort == 'payee' ? $switch : '&amp;order=asc').'">Payee '.($sort == 'payee' ? $order_arrow : '').'</a></th>
-    <th>Weights needed</th>
-    <th>View</th>
+    <th>Weights<br />needed</th>
+    <th>Producer<br />Links</th>
+    <th>Order<br />Links</th>
   </tr>
   '.$display.'
   <tr>
@@ -238,37 +242,37 @@ $page_specific_css = '
     #delivery_id_nav .next {
       float:right;
       }
-    table#customer_baskets {
+    table#producer_baskets {
       border:1px solid #666;
       border-collapse:separate;
       }
-    #customer_baskets th {
+    #producer_baskets th {
       text-align:center;
       background-color:#040;
       color:#fff;
       }
-    #customer_baskets th a {
+    #producer_baskets th a {
       color:#ffa;
       }
-    #customer_baskets td {
+    #producer_baskets td {
       border-bottom:1px solid #ddd;
       }
-    #customer_baskets td:nth-child(1) /* est basket total */
+    #producer_baskets td:nth-child(1) /* est basket total */
       {
         text-align:right;
         border-right:1px solid #ddd;
       }
-    #customer_baskets td:nth-child(2) /* invoice total */
+    #producer_baskets td:nth-child(2) /* invoice total */
       {
         text-align:right;
         font-weight:bold;
         border-right:1px solid #ddd;
       }
-    #customer_baskets td:nth-child(3) /* producer_id */
+    #producer_baskets td:nth-child(3) /* producer_id */
       {
         text-align:right;
       }
-    #customer_baskets td:nth-child(4) /* payee */
+    #producer_baskets td:nth-child(4) /* payee */
       {
         text-align:left;
       }
@@ -284,7 +288,89 @@ $page_specific_css = '
       color:#000;
       vertical-align:top;
       }
+    td.weights_needed {
+      font-size:75%;
+      color:#800;
+      }
+    td.producer_links,
+    td.order_links {
+      font-size:75%;
+      text-align:center;
+      }
+    td.producer_links a {
+      cursor:pointer;
+      }
+    /* BEGIN STYLES FOR SIMPLEMODAL OVERLAY */
+    a.popup {
+      cursor:pointer;
+      }
+    #simplemodal-data {
+      height:100%;
+      background-color:#fff;
+      }
+    #simplemodal-container {
+      box-shadow:10px 10px 10px #000;
+      }
+    #simplemodal-data iframe {
+      border:0;
+      height:95%;
+      width:100%;
+      }
+    #simplemodal-container a.modalCloseImg:hover {
+      background:url('.DIR_GRAPHICS.'/simplemodal_x_hover.png) no-repeat;
+      }
+    #simplemodal-container a.modalCloseImg {
+      background:url('.DIR_GRAPHICS.'/simplemodal_x.png) no-repeat;
+      width:40px;
+      height:46px;
+      display:inline;
+      z-index:3200;
+      position:absolute;
+      top:-20px;
+      right:-20px;
+      cursor:pointer;
+      }
+    ul.producer_list {
+      list-style-type:none;
+      margin:0;
+      padding-left:10px;
+      }
+    ul.producer_list li.producer {
+      font-size:80%;
+      color:#008;
+      cursor:pointer;
+      }
   </style>';
+
+$page_specific_javascript .= '
+<script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
+<script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>
+<script type="text/javascript">
+  // Display an external page using an iframe
+  // http://www.ericmmartin.com/projects/simplemodal/
+  // Set the simplemodal close button
+  $.modal.defaults.closeClass = "modalClose";
+  // Popup the simplemodal dialog for selecting a site
+  function popup_src(src) {
+    $.modal(\'<a class="modalCloseImg modalClose">&nbsp;</a><iframe src="\' + src + \'">\', {
+      opacity:70,
+      overlayCss: {backgroundColor:"#000"},
+      closeHTML:"",
+      containerCss:{
+        backgroundColor:"#fff",
+        borderColor:"#fff",
+        height:"80%",
+        width:"80%",
+        padding:0
+        },
+      overlayClose:true
+      });
+    };
+  // Close the simplemodal iframe after 500 ms
+  function close_modal_window() {
+    $.modal.close();
+    }
+</script>';
 
 $page_title_html = '<span class="title">Delivery Cycle Functions</span>';
 $page_subtitle_html = '<span class="subtitle">Producer Orders with Totals</span>';

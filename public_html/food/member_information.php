@@ -340,7 +340,8 @@ $page_specific_css = '
       color:#800;
       }
     #ledger {
-      margin-top:2em;
+      width:90%;
+      margin:2em auto;
       border:1px solid #000;
       border-collapse:collapse;
       box-shadow:6px 6px 15px #888888;
@@ -380,6 +381,9 @@ $page_title_html = '<span class="title">Member Information</span>';
 $page_subtitle_html = '<span class="subtitle">Details for '.$row_member_info['preferred_name'].'</span>';
 $page_title = 'Member Information: Details for ';
 $page_tab = 'member_admin_panel';
+
+if($_GET['display_as'] == 'popup')
+  $display_as_popup = true;
 
 include("template_header.php");
 echo '

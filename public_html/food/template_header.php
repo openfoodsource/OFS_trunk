@@ -247,7 +247,15 @@ if (is_readable ($motd_file_name) && $_SESSION['member_id'] && !$do_update_membe
       }
   }
 // Put it all together now
-$content_header = '<!DOCTYPE html>
+
+////////////////////////////////////////////////////////////////////////////////
+//////////////                                              ////////////////////
+//////////////   ASSEMBLE FINAL OUTPUT FOR STANDARD PAGES   ////////////////////
+//////////////                                              ////////////////////
+////////////////////////////////////////////////////////////////////////////////
+if ($display_as_popup != true)
+  {
+    $content_header = '<!DOCTYPE html>
 <html>
   <head>
     <title>'.SITE_NAME.' - '.$page_title.'</title>
@@ -307,6 +315,35 @@ $content_header = '<!DOCTYPE html>
       '.$page_title_html.'
       '.$page_subtitle_html.'
       <div class="clear"></div>';
+  }
+////////////////////////////////////////////////////////////////////////////////
+//////////////                                              ////////////////////
+//////////////     ASSEMBLE FINAL OUTPUT FOR POPUP PAGES    ////////////////////
+//////////////                                              ////////////////////
+////////////////////////////////////////////////////////////////////////////////
+else
+  {
+    $content_header = '<!DOCTYPE html>
+<html>
+  <head>'.
+    $favicon.
+    (isset ($page_specific_css) ? $page_specific_css : '').'
+    <link href="'.PATH.'stylesheet.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript">
+      function init() {
+        // Do not throw an error if page does not have a load_target element...
+        if (document.getElementById ("load_target")) {
+          var text_input = document.getElementById ("load_target");
+          text_input.focus ();
+          text_input.select ();
+          }
+        }
+      window.onload = init;
+    </script>'.
+    (isset ($page_specific_javascript) ? $page_specific_javascript : '').'
+  </head>
+  <body>';
+  }
 
 echo $content_header;
 

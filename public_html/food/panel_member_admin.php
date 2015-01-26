@@ -24,7 +24,7 @@ $display_admin .= '
         <img src="'.DIR_GRAPHICS.'bottom.png" width="32" height="32" align="left" hspace="2" alt="Membership Information"><br>
         <b>Membership Information</b>
         <ul class="fancyList1">
-          <li><a href="member_interface.php?action=find">Find/Edit Members</a></li>
+          <li><a href="member_lookup.php?action=find">Find/Edit Members</a></li>
           <li><a href="edit_member_types.php">Mass Edit Membership Types</a></li>
           <li><a href="edit_auth_types.php">Mass Edit Auth Types</a></li>
         </ul>
