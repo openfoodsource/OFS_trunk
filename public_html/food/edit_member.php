@@ -194,7 +194,8 @@ if (count ($error_array) == 0 &&
             home_page = "'.mysql_real_escape_string($_POST['home_page']).'",
             username = "'.mysql_real_escape_string($_POST['username']).'",'.
             /* Only update the password if there is a new one */
-            (strlen ($_POST['password1']) > 0 ? 'password = "'.mysql_real_escape_string($_POST['password']).'",' : '').
+            (strlen ($_POST['password1']) > 0 ? '
+            password = MD5("'.mysql_real_escape_string($_POST['password1']).'"),' : '').
             /* The auth_type is combined from a multi-valued array */ '
             auth_type = "'.implode (',', $_POST['auth_type']).'",
             membership_type_id = "'.mysql_real_escape_string($_POST['membership_type_id']).'",
