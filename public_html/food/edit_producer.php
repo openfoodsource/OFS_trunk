@@ -357,6 +357,14 @@ if (count ($error_array) == 0 &&
           $query_values.'
           WHERE
             producer_id = "'.mysql_real_escape_string($_POST['producer_id']).'"';
+        // Also update the producer registration table
+        $query2 = '
+          UPDATE
+            '.TABLE_PRODUCER_REG.'
+          SET
+            member_id = "'.mysql_real_escape_string($_POST['member_id']).'"
+          WHERE
+            producer_id = "'.mysql_real_escape_string($_POST['producer_id']).'"';
       }
     elseif ($_REQUEST['action'] == 'Add New')
       {
@@ -364,8 +372,16 @@ if (count ($error_array) == 0 &&
           INSERT INTO
             '.TABLE_PRODUCER.
           $query_values;
+        // Also enter a blank row in the producer registration table
+        $query2 = '
+          INSERT INTO
+            '.TABLE_PRODUCER_REG.'
+          SET
+            member_id = "'.mysql_real_escape_string($_POST['member_id']).'",
+            producer_id = "'.mysql_real_escape_string($_POST['producer_id']).'"';
       }
     $result = mysql_query($query) or die (debug_print ("ERROR: 759843 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $result2 = mysql_query($query2) or die (debug_print ("ERROR: 752893 ", array ($query2,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
     // Get the new or current producer_id
     if ($_REQUEST['action'] == 'Add New')
       $_GET['producer_id'] = mysql_insert_id ();
