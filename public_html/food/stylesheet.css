@@ -770,6 +770,8 @@ dd {
   background-repeat:no-repeat;
   background-position:left top;
   position:absolute;
+  top:-50px;
+  left:50px;
   z-index:5;
   width:0px;
   height:110px;
@@ -784,13 +786,14 @@ dd {
   border-radius: 25px;
   border-radius: 25px;
   box-shadow: 5px 5px 5px #000;
-  transition:width 0.25s,height 1s;
+  transition:width 0.5s,height 1.5s;
   }
+div.open,
 .error_message:hover {
   width:50%;
   height:auto;
   opacity:0.9;
-  transition:width 0.25s,height 1s;
+  transition:0.5s,height 1.5s;
   }
 p.message {
   width:95%;
