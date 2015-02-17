@@ -86,8 +86,7 @@ function compile_customer_invoices() {
     if (c_arrElements[i].attributes["class"].value == \'c_incomplete\') {
       // Get the id of the element (that is the basket number, formatted like: basket_id2147
       var element_id = c_arrElements[i].attributes["id"].value;
-      var finalize_flag = document.getElementById("finalize").checked;
-      $.post("'.PATH.'ajax/compile_customer_invoices.php", { query_data: ""+element_id+":'.$delivery_id.':"+finalize_flag+"" }, function(data) {
+      $.post("'.PATH.'ajax/compile_customer_invoices.php", { query_data: ""+element_id+":'.$delivery_id.'" }, function(data) {
         if(data == "GENERATED_INVOICE") {
           var oldHTML = document.getElementById(\'customerList\').innerHTML;
           var c_progress_left = Math.floor (300 * i / c_arrElements.length);
@@ -177,8 +176,7 @@ function compile_producer_invoices() {
       // Get the id of the element (that is the basket number, formatted like: basket_id2147
 //      alert ("DATA: "+data);
       var element_id = p_arrElements[i].attributes["id"].value;
-      var store_totals_flag = document.getElementById("store_totals").checked;
-      $.post("'.PATH.'ajax/compile_producer_invoices.php", { query_data: ""+element_id+":'.$delivery_id.':"+store_totals_flag+"" }, function(data) {
+      $.post("'.PATH.'ajax/compile_producer_invoices.php", { query_data: ""+element_id+":'.$delivery_id.'" }, function(data) {
         if(data == "GENERATED_INVOICE") {
           var oldHTML = document.getElementById(\'producerList\').innerHTML;
           var p_progress_left = Math.floor (300 * i / p_arrElements.length);

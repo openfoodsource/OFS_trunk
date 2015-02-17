@@ -10,7 +10,6 @@ if ($argument_array[0] == 'basket_id')
   {
     $basket_id = $argument_array[1]; // Query is received as "basket_id:xxx:yy:true|false"
     $delivery_id = $argument_array[2];
-    // if ($argument_array[3] == 'true') $use = 'adminfinalize'; // finalize the invoice, if requested
   }
 elseif ($argument_array[0] == 'html2pdf')
   {
