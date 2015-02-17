@@ -742,6 +742,19 @@ dd {
   margin-top: 0.3em;
   }
 
+td.form_key {
+  width:10em;
+  text-align:right;
+  }
+td.form_subkey {
+  width:10px;
+  font-size:70%;
+  }
+td.form_key strong {
+  color:#230;
+  font-weight:bold;
+  }
+
 #producer_form .privacy {
   width:49%;
   float:left;

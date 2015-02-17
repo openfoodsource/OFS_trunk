@@ -401,15 +401,15 @@ $display_form_html .= $error_message.'
               <td colspan="6"><input maxlength="75" size="50" name="address_line2" value="'.$address_line2.'" tabindex="8"></td>
             </tr>
             <tr>
-              <td class="form_key"><strong>*&nbsp;City/State/Zip:</strong></td>
-              <td><input maxlength="50" size="25" name="city" value="'.$city.'" tabindex="9"></td>
-              <td><input maxlength="2" size="2" name="state" value="'.$state.'" tabindex="10"></td>
-              <td><input maxlength="10" size="10" name="zip" value="'.$zip.'" tabindex="11"></td>
+              <td class="form_key"><strong>*&nbsp;Locale:</strong></td>
+              <td class="form_subkey"><strong>City</strong><br /><input maxlength="50" size="25" name="city" value="'.$city.'" tabindex="9"></td>
+              <td class="form_subkey"><strong>State</strong><br /><input maxlength="2" size="2" name="state" value="'.$state.'" tabindex="10"></td>
+              <td class="form_subkey"><strong>Zip</strong><br /><input maxlength="10" size="10" name="zip" value="'.$zip.'" tabindex="11"></td>
               <td colspan="2">&nbsp;</td>
             </tr>
             <tr>
-              <td class="form_key"><strong>*&nbsp;County:</strong></td>
-              <td colspan="3"><input maxlength="75" size="25" name="county" value="'.$county.'" tabindex="12"></td>
+              <td class="form_key"></td>
+              <td colspan="3" class="form_subkey"><strong>County</strong> (for tax purposes)<br /><input maxlength="75" size="25" name="county" value="'.$county.'" tabindex="12"></td>
               <td class="form_key" colspan="2"><strong>Do Not Send Postal Mail:</strong></td>
               <td><input type="checkbox" name="no_postal_mail" value="1"'.$no_postal_mail_check.' tabindex="13"></td>
             </tr>
@@ -422,17 +422,18 @@ $display_form_html .= $error_message.'
           <table>
             <tr>
               <td class="form_key"><strong>Work&nbsp;Address:</strong></td>
-              <td colspan="3"><input maxlength="75" size="50" name="work_address_line1" value="'.$work_address_line1.'" tabindex="14"></td>
+              <td colspan="4"><input maxlength="75" size="50" name="work_address_line1" value="'.$work_address_line1.'" tabindex="14"></td>
             </tr>
             <tr>
               <td class="form_key"><strong>Work&nbsp;Address&nbsp;2:</strong></td>
-              <td colspan="3"><input maxlength="75" size="50" name="work_address_line2" value="'.$work_address_line2.'" tabindex="15"></td>
+              <td colspan="4"><input maxlength="75" size="50" name="work_address_line2" value="'.$work_address_line2.'" tabindex="15"></td>
             </tr>
             <tr>
-              <td class="form_key"><strong>City/State/Zip:</strong></td>
-              <td><input maxlength="50" size="25" name="work_city" value="'.$work_city.'" tabindex="16"></td>
-              <td><input maxlength="2" size="2" name="work_state" value="'.$work_state.'" tabindex="17"></td>
-              <td><input maxlength="10" size="10" name="work_zip" value="'.$work_zip.'" tabindex="18"></td>
+              <td class="form_key"><strong>Locale:</strong></td>
+              <td class="form_subkey"><strong>City</strong><br /><input maxlength="50" size="25" name="work_city" value="'.$work_city.'" tabindex="16"></td>
+              <td class="form_subkey"><strong>State</strong><br /><input maxlength="2" size="2" name="work_state" value="'.$work_state.'" tabindex="17"></td>
+              <td class="form_subkey"><strong>Zip</strong><br /><input maxlength="10" size="10" name="work_zip" value="'.$work_zip.'" tabindex="18"></td>
+              <td>&nbsp;</td>
             </tr>
           </table>
         </td>
@@ -495,8 +496,8 @@ $display_form_html .= '
             <tr>
               <td class="form_key"><strong>*&nbsp;Username:</strong></td>
               <td><input maxlength="20" size="25" name="username" value="'.$username.'" tabindex="27"></td>
-              <td class="form_key" rowspan="3" valign="top"><strong>*&nbsp;Enter the word</strong><br><input maxlength="10" size="10" name="human_check" value="" tabindex="30"></td>
-              <td rowspan="3" align="center"><img src="securimage_show.php?sid='.time().'" alt="Human validation text"><br>Human validation text</td>
+              <td class="form_key" rowspan="3" valign="top"><strong>*&nbsp;Enter the word</strong><br><input maxlength="10" size="10" name="human_check" value="" autocomplete="off" tabindex="30"></td>
+              <td rowspan="3" align="center"><img src="securimage_show.php?sid='.time().'" alt="Read this word to prove you are not a robot"><br>Read this word to prove you are not a robot</td>
             </tr>
             <tr>
               <td class="form_key"><strong>*&nbsp;Password:</strong></td>
