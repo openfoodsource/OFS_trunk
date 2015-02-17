@@ -488,18 +488,22 @@ $page_specific_javascript .= '
         backgroundColor:"#fff",
         borderColor:"#fff",
         height:"80%",
-        width:"80%",
+        width:"400px",
         padding:0
         },
       overlayClose:true
       });
     };
   // Close the simplemodal iframe after 500 ms
-  function close_modal_window() {
-    $.modal.close();
+// close_delivery_selector() is called from func.get_delivery_codes_list.php
+function close_delivery_selector() {
+  $.modal.close();
+    // If there was an add-to-cart action pending before opening the basket, then do it
+    if (add_to_cart_array.length == 3)
+    AddToCart (add_to_cart_array[0], add_to_cart_array[1], add_to_cart_array[2])
     }
 
-
+var add_to_cart_array = [];
 function AddToCart (product_id, product_version, action) {
   var elem;
   var message = "";
@@ -523,11 +527,15 @@ function AddToCart (product_id, product_version, action) {
     // If site is being inferred from a prior order, then notify of the assumption
     if (data.substr(0,16) == "site_id reverted") {
       popup_src(\'select_delivery_popup.php?first_call=true\');
+      // Set the requested product information so we can re-request it after the basket is handled
+      add_to_cart_array = [product_id, product_version, action];
       return false;
       }
     // If no site can be determined, then popup a window to set it.
     if (data == "site_id not set") {
       popup_src(\'select_delivery_popup.php?first_call=true\');
+      // Set the requested product information so we can re-request it after the basket is handled
+      add_to_cart_array = [product_id, product_version, action];
       return false;
       }
     var returned_array = data.split(":");

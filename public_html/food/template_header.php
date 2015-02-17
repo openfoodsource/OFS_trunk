@@ -137,7 +137,7 @@ if ($_SESSION['member_id'])
         // Add a style (later) to prevent scrolling the page
         // so it will stay shaded
         $renew_membership_form_css = '
-          <link rel="stylesheet" id="motd_styles"  href="'.PATH.'membership_renewal.css" type="text/css" media="all" />';
+          <link rel="stylesheet" id="membership_renewal_styles"  href="'.PATH.'membership_renewal.css" type="text/css" media="all" />';
       }
     // Set up the page tabs
     if (CurrentMember::auth_type('member'))

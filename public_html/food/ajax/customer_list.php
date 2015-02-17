@@ -36,7 +36,7 @@ if (! $basket_id)
       }
     $basket_id = $basket_info['basket_id'];
   }
-// Make sure the number we think is in the basket is the number that really is in the basket
+// Make sure the quantity we think is in the basket is the quantity that really is in the basket
 $query = '
   SELECT
     (
@@ -236,7 +236,6 @@ if (isset ($bpid))
     // Now post the message back, as needed
     if ($message != '' && $remove_basket_item != true)
       { // Update message
-
         $query = '
           INSERT INTO '.NEW_TABLE_MESSAGES.'
           SET

@@ -5,13 +5,8 @@ valid_auth('member');
 
 include_once ('func.get_delivery_codes_list.php');
 
-// If not the first_call (i.e. after being clicked), tell javascript to close the window.
-if ($_GET['first_call'] != 'true')
-  {
-    $javascript_close = ' onload="self.close();"';
-  }
 // Set content_top to show basket selector...
-$delivery_codes_list .= get_delivery_codes_list (array (
+$delivery_codes_list = get_delivery_codes_list (array (
   'action' => $_GET['action'],
   'member_id' => $_SESSION['member_id'],
   'delivery_id' => ActiveCycle::delivery_id(),
@@ -21,6 +16,8 @@ $delivery_codes_list .= get_delivery_codes_list (array (
 
 // Add styles to override delivery location dropdown
 $page_specific_css .= '
+  <link href="'.PATH.'stylesheet.css" rel="stylesheet" type="text/css">
+  <link href="'.PATH.'delivery_dropdown.css" rel="stylesheet" type="text/css">
   <style type="text/css">
   body {
     font-size:87%;
@@ -44,28 +41,16 @@ $page_specific_css .= '
     }
   </style>';
 
-// This is a stand-alone page -- not including the template_header -- so build it manually
-$content = '<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link href="'.PATH.'stylesheet.css" rel="stylesheet" type="text/css">
-    <link href="'.PATH.'delivery_dropdown.css" rel="stylesheet" type="text/css">';
+$page_specific_javascript = '
+  <script src="'.PATH.'ajax/jquery.js" type="text/javascript"></script>
+  <script src="'.PATH.'ajax/jquery-ui.js" type="text/javascript"></script>';
 
-// Include any page-specific CSS directives
-if ($page_specific_css)
-  {
-    $content .= '
-    '.$page_specific_css;
-  }
+// Always display this page as a popup...
+$display_as_popup = true;
 
-$content .= '
-    <script src="'.PATH.'ajax/jquery.js" type="text/javascript"></script>
-    <script src="'.PATH.'ajax/jquery-ui.js" type="text/javascript"></script>
-  </head>
-  <body'.$javascript_close.' lang="en-us">
-    '.$delivery_codes_list.'
-  </body>
-</html>';
-
-echo $content;
+include("template_header.php");
+echo '
+  <!-- CONTENT BEGINS HERE -->
+  '.$delivery_codes_list.'
+  <!-- CONTENT ENDS HERE -->';
+include("template_footer.php");
