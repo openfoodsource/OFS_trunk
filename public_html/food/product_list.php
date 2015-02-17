@@ -137,8 +137,7 @@ while (++$pager['page'] <= $pager['last_page'])
     $pager['display'] .= pager_display_calc($pager);
   }
 $pager_navigation_display = pager_navigation($pager);
-
-
+$order_cycle_navigation_display = order_cycle_navigation($pager);
 
 // Iterate through the returned results and display products
 while ( $row = mysql_fetch_array($result) )
@@ -374,7 +373,7 @@ if ($show_search) $search_display = '
 if (isset ($pager['found_rows']))
   {
     $search_display .= '
-      <span class="found_rows">'.$pager['found_rows'].' '.Inflect::pluralize_if ($pager['found_rows'], 'item').'</span>
+      <span class="found_rows">Found '.$pager['found_rows'].' '.Inflect::pluralize_if ($pager['found_rows'], 'item').'</span>
       <h4>'.(strlen (ActiveCycle::delivery_date ($_GET['delivery_id'])) > 0 ? 'Producer basket for '.ActiveCycle::delivery_date ($_GET['delivery_id']) : 'Cycle #'.$_GET['delivery_id'].' does not exist.').'</h4>';
   }
 
@@ -446,26 +445,19 @@ $page_specific_css .= '
   clear:both;
   }
 #delivery_id_nav {
-  background-color: #eef;
-  height: 1.5em;
   margin: 5px auto 0;
   max-width: 40rem;
-  width: 45%;
   text-align:center;
-  }
-#delivery_id_nav .next {
-  float: right;
-  }
-#delivery_id_nav .prior {
-  float: left;
   }
 #delivery_id_nav .delivery_id {
   font-weight:bold;
   }
-#delivery_id_nav .prior, #delivery_id_nav .next {
-  display: block;
+#delivery_id_nav .prior,
+#delivery_id_nav .next,
+#delivery_id_nav .delivery_id {
+  display: inline-block;
   line-height: 1.5;
-  padding: 0 5px;
+  padding: 0 15px;
   }
 </style>';
 
@@ -646,22 +638,6 @@ $csv_link = '
   <!-- <br><a href="'.$_SERVER['REQUEST_URI'].'&csv=true">Download full list as a CSV file</a> -->
   ';
 
-// Set up the previous/next order cycle (delivery_id) navigation
-$http_get_query = 
-    ($_GET['type'] ? '&type='.$_GET['type'] : '').
-    ($_GET['producer_id'] ? '&producer_id='.$_GET['producer_id'] : '').
-    ($_GET['category_id'] ? '&category_id='.$_GET['category_id'] : '').
-    ($_GET['subcat_id'] ? '&subcat_id='.$_GET['subcat_id'] : '').
-    ($_GET['query'] ? '&query='.$_GET['query'] : '').
-    ($_GET['a'] ? '&a='.$_GET['a'] : '');
-
-$order_cycle_navigation = '
-  <div id="delivery_id_nav">
-    <a class="prior" href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.($_GET['delivery_id'] ? ($_GET['delivery_id'] - 1) : ActiveCycle::delivery_id() - 1).$http_get_query.'">&larr; PRIOR CYCLE </a>
-    <span class="delivery_id">'.($_GET['delivery_id'] ? $_GET['delivery_id'] : ActiveCycle::delivery_id()).'</span>
-    <a class="next" href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.($_GET['delivery_id'] ? ($_GET['delivery_id'] + 1) : ActiveCycle::delivery_id() + 1).$http_get_query.'"> NEXT CYCLE &rarr;</a>
-  </div>';
-
 $content_list = 
   ($content_top ? '
     <div id="content_top">
@@ -670,8 +646,9 @@ $content_list =
   <div class="product_list">
     '.($message ? '<b><font color="#770000">'.$message.'</font></b>' : '').
     $search_display.
-    $producer_display.
-    $pager_navigation_display. // Only set for pages needing producer info
+    $producer_display.         // Only set for pages needing producer info
+    $order_cycle_navigation_display.
+    $pager_navigation_display.
     $display.
     $pager_navigation_display.
     $csv_link.'
@@ -698,7 +675,6 @@ else
     include("template_header.php");
     echo '
       <!-- CONTENT BEGINS HERE -->'.
-      $order_cycle_navigation.
       $content_list.'
       <!-- CONTENT ENDS HERE -->';
     include("template_footer.php");

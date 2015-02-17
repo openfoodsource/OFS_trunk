@@ -188,6 +188,13 @@ function pager_navigation($data)
     : '');
   };
 
+/*********************** ORDER CYCLE NAVIGATION SECTION *************************/
+
+function order_cycle_navigation($data)
+  {
+    return '';
+  };
+
 /*********************** OPEN BEGINNING OF PRODUCT LIST *************************/
 
 function open_list_top()

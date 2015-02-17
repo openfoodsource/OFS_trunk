@@ -59,7 +59,7 @@ function wholesale_text_html()
 
 function no_product_message()
   { return
-    '<h2>No products currently available</h2>';
+    '<h2>No products sold</h2>';
   };
 
 // RANDOM_WEIGHT_DISPLAY_CALC
@@ -197,6 +197,26 @@ function pager_navigation($data)
     '<div class="pager"><span class="pager_title">Page: </span>'.$data['display'].'</div>
   <div class="clear"></div>'
     : '');
+  };
+
+/*********************** ORDER CYCLE NAVIGATION SECTION *************************/
+
+function order_cycle_navigation($data)
+  {
+    // Set up the previous/next order cycle (delivery_id) navigation
+    $http_get_query = 
+      ($_GET['type'] ? '&type='.$_GET['type'] : '').
+      ($_GET['producer_id'] ? '&producer_id='.$_GET['producer_id'] : '').
+      ($_GET['category_id'] ? '&category_id='.$_GET['category_id'] : '').
+      ($_GET['subcat_id'] ? '&subcat_id='.$_GET['subcat_id'] : '').
+      ($_GET['query'] ? '&query='.$_GET['query'] : '').
+      ($_GET['a'] ? '&a='.$_GET['a'] : '');
+    return
+    '<div id="delivery_id_nav">
+    <a class="prior" href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.($_GET['delivery_id'] ? ($_GET['delivery_id'] - 1) : ActiveCycle::delivery_id() - 1).$http_get_query.'">&larr; PRIOR ORDER </a>
+    <span class="delivery_id">['.($_GET['delivery_id'] ? $_GET['delivery_id'] : ActiveCycle::delivery_id()).']</span>
+    <a class="next" href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.($_GET['delivery_id'] ? ($_GET['delivery_id'] + 1) : ActiveCycle::delivery_id() + 1).$http_get_query.'"> NEXT ORDER &rarr;</a>
+  </div>';
   };
 
 /*********************** OPEN BEGINNING OF PRODUCT LIST *************************/
