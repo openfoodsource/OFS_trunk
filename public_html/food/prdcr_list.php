@@ -19,8 +19,7 @@ else
     // We ALWAYS do not show suspended producers.
     // But on this condition, also do not show "unlisted" producers.
     $show_unlisted_query = '
-    AND '.TABLE_PRODUCER.'.unlisted_producer != 1
-    AND IF('.NEW_TABLE_PRODUCTS.'.inventory_id > 0, FLOOR('.TABLE_INVENTORY.'.quantity / '.NEW_TABLE_PRODUCTS.'.inventory_pull), 1)';
+    AND '.TABLE_PRODUCER.'.unlisted_producer != 1 /* NOT UNLISTED */';
   }
 
 $query = '
@@ -28,12 +27,7 @@ $query = '
     '.TABLE_PRODUCER.'.producer_id,
     '.TABLE_PRODUCER.'.business_name,
     '.TABLE_PRODUCER.'.producttypes,
-    (
-      SELECT COUNT(product_id)
-      FROM '.NEW_TABLE_PRODUCTS.'
-      WHERE '.NEW_TABLE_PRODUCTS.'.producer_id = '.TABLE_PRODUCER.'.producer_id
-        AND confirmed = 1
-    ) AS product_count
+    IF('.TABLE_PRODUCER.'.unlisted_producer < 1, COUNT('.NEW_TABLE_PRODUCTS.'.product_id), 0) AS product_count
   FROM
     '.TABLE_PRODUCER.'
   LEFT JOIN '.NEW_TABLE_PRODUCTS.' ON '.TABLE_PRODUCER.'.producer_id = '.NEW_TABLE_PRODUCTS.'.producer_id
@@ -41,7 +35,8 @@ $query = '
   WHERE
     '.NEW_TABLE_PRODUCTS.'.listing_auth_type = "member"
     AND '.TABLE_PRODUCER.'.pending = 0
-    AND '.TABLE_PRODUCER.'.unlisted_producer != 2'.
+    AND '.NEW_TABLE_PRODUCTS.'.confirmed = 1
+    AND '.TABLE_PRODUCER.'.unlisted_producer != 2 /* NOT SUSPENDED */'.
     $show_unlisted_query.'
   GROUP BY
     '.TABLE_PRODUCER.'.producer_id
@@ -61,7 +56,7 @@ while ( $row = mysql_fetch_array($result) )
         $display_top .= '
           <tr bgcolor="'.$row_color.'">
             <td width="25%"><font face="arial" size="3"><b><a href="product_list.php?type=producer_id&producer_id='.$producer_id.'">'.$business_name.'</a></b></td>
-            <td width="75%">'.strip_tags ($producttypes).' ('.number_format ($product_count, 0).' '.Inflect::pluralize_if ($product_count, 'product').')</font></td>
+            <td width="75%">'.strip_tags ($producttypes).' ('.($product_count > 0 ? number_format ($product_count, 0).' '.Inflect::pluralize_if ($product_count, 'product') : 'no products currently listed').')</font></td>
           </tr>';
         $row_count++;
       }
