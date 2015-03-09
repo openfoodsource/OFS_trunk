@@ -49,7 +49,7 @@ function generate_basket_list() {
       // Get the id of the element (that is the delivery_id, formatted like: delivery_id:9
       var element_id = c_arrElements[i].attributes["id"].value;
       document.getElementById('delivery_id').value = element_id.substr(12);
-      $.post("validate_customer_basket_items.php", {
+      jQuery.post("validate_customer_basket_items.php", {
         ajax:"yes",
         process:"get_basket_list",
         delivery_id:element_id.substr(12)
@@ -92,7 +92,7 @@ function process_basket_list() {
       // Get the id of the element (that is the delivery_id, formatted like: delivery_id:9
       var element_id = p_arrElements[j].attributes["id"].value;
 //      alert ("HERE");
-      $.post("validate_customer_basket_items.php", {
+      jQuery.post("validate_customer_basket_items.php", {
         ajax:"yes",
         process:"process_basket",
         basket_id:element_id.substr(12),
@@ -150,7 +150,7 @@ function skip_continue () {
 
 function update_db (update_field) {
   var source_id = 'update_'+update_field;
-  $.post("validate_customer_basket_items.php", {
+  jQuery.post("validate_customer_basket_items.php", {
     ajax:"yes",
     process:"update_db",
     delivery_id:document.getElementById('delivery_id').value,

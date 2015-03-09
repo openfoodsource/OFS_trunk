@@ -6,7 +6,6 @@ valid_auth('route_admin');
 if (isset ($_GET['delivery_id'])) $delivery_id = $_GET['delivery_id'];
 else $delivery_id = ActiveCycle::delivery_id();
 
-
 $query = '
   SELECT
     '.TABLE_ROUTE.'.route_id,

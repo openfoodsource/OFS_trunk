@@ -106,7 +106,7 @@ while ($row = mysql_fetch_object($result))
       }
     $content .= '
       <tr id="row_'.$row->site_id.'" class="'.$select_checked.'">
-        <td><input type="checkbox" name="select_'.$row->site_id.'"'.$select_checked.' onclick="$(\'#row_'.$row->site_id.'\').toggleClass(\'checked\');"></td>
+        <td><input type="checkbox" name="select_'.$row->site_id.'"'.$select_checked.' onclick="jQuery(\'#row_'.$row->site_id.'\').toggleClass(\'checked\');"></td>
         <td>'.$row->site_short.'</td>
         <td>'.$row->site_long.'</td>
         <td>'.$row->site_description.'</td>

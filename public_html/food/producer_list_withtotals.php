@@ -342,35 +342,7 @@ $page_specific_css = '
       }
   </style>';
 
-$page_specific_javascript .= '
-<script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-<script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>
-<script type="text/javascript">
-  // Display an external page using an iframe
-  // http://www.ericmmartin.com/projects/simplemodal/
-  // Set the simplemodal close button
-  $.modal.defaults.closeClass = "modalClose";
-  // Popup the simplemodal dialog for selecting a site
-  function popup_src(src) {
-    $.modal(\'<a class="modalCloseImg modalClose">&nbsp;</a><iframe src="\' + src + \'">\', {
-      opacity:70,
-      overlayCss: {backgroundColor:"#000"},
-      closeHTML:"",
-      containerCss:{
-        backgroundColor:"#fff",
-        borderColor:"#fff",
-        height:"80%",
-        width:"80%",
-        padding:0
-        },
-      overlayClose:true
-      });
-    };
-  // Close the simplemodal iframe after 500 ms
-  function close_modal_window() {
-    $.modal.close();
-    }
-</script>';
+$page_specific_javascript .= '';
 
 $page_title_html = '<span class="title">Delivery Cycle Functions</span>';
 $page_subtitle_html = '<span class="subtitle">Producer Orders with Totals</span>';

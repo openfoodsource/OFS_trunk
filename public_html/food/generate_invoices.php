@@ -64,7 +64,7 @@ function reset_cust_list() {
 
 function cust_generate_start() {
   // Delete the old html file before continuing
-  $.post("'.PATH.'ajax/compile_customer_invoices.php", { query_data: "delete_html:"+"'.$delivery_id.'" }, function(data) {
+  jQuery.post("'.PATH.'ajax/compile_customer_invoices.php", { query_data: "delete_html:"+"'.$delivery_id.'" }, function(data) {
     if (data != "DELETED_HTML") {
       alert ("ERROR C1: "+data+" \r\nPlease try again");
       }
@@ -86,7 +86,7 @@ function compile_customer_invoices() {
     if (c_arrElements[i].attributes["class"].value == \'c_incomplete\') {
       // Get the id of the element (that is the basket number, formatted like: basket_id2147
       var element_id = c_arrElements[i].attributes["id"].value;
-      $.post("'.PATH.'ajax/compile_customer_invoices.php", { query_data: ""+element_id+":'.$delivery_id.'" }, function(data) {
+      jQuery.post("'.PATH.'ajax/compile_customer_invoices.php", { query_data: ""+element_id+":'.$delivery_id.'" }, function(data) {
         if(data == "GENERATED_INVOICE") {
           var oldHTML = document.getElementById(\'customerList\').innerHTML;
           var c_progress_left = Math.floor (300 * i / c_arrElements.length);
@@ -95,7 +95,7 @@ function compile_customer_invoices() {
           document.getElementById("c_progress-left").innerHTML = Math.floor (c_progress_left / 3)+"%&nbsp;";
           document.getElementById("c_progress-right").style.width = c_progress_right+"px";
           document.getElementById(element_id).className = "c_complete";
-          // If we\'re done with the list, then show the PDF button
+          // If we are done with the list, then show the PDF button
           if (i == c_arrElements.length) {
             // And go generate the pdf
             document.getElementById("cust_progress").style.display = "none"; /* Hide the progress bar */
@@ -122,12 +122,12 @@ function cust_generate_pdf() {
   document.getElementById("load_customer_pdf").style.display = "none"; /* Hide the pdf link until regenerated */
   document.getElementById("cust_html2pdf_message").style.display = "block"; /* Show the html2pdf conversion message */
   // Delete the old pdf file before continuing
-  $.post("'.PATH.'ajax/compile_customer_invoices.php", { query_data: "delete_pdf:"+"'.$delivery_id.'" }, function(data) {
+  jQuery.post("'.PATH.'ajax/compile_customer_invoices.php", { query_data: "delete_pdf:"+"'.$delivery_id.'" }, function(data) {
     if (data != "DELETED_PDF") {
       alert ("ERROR C3: "+data+" \r\nPlease try again");
       }
     })
-  $.post("'.PATH.'ajax/compile_customer_invoices.php", { query_data: "html2pdf:"+"'.$delivery_id.'" }, function(data) {
+  jQuery.post("'.PATH.'ajax/compile_customer_invoices.php", { query_data: "html2pdf:"+"'.$delivery_id.'" }, function(data) {
     if(data != "HTML2PDF") {
       alert ("ERROR C4: "+data+" \r\nPlease try again");
       }
@@ -153,7 +153,7 @@ function reset_prod_list() {
 
 function prod_generate_start() {
   // Delete the old html file before continuing
-  $.post("'.PATH.'ajax/compile_producer_invoices.php", { query_data: "delete_html:"+"'.$delivery_id.'" }, function(data) {
+  jQuery.post("'.PATH.'ajax/compile_producer_invoices.php", { query_data: "delete_html:"+"'.$delivery_id.'" }, function(data) {
     if (data != "DELETED_HTML") {
       alert ("ERROR P1: "+data+" \r\nPlease try again");
       }
@@ -176,7 +176,7 @@ function compile_producer_invoices() {
       // Get the id of the element (that is the basket number, formatted like: basket_id2147
 //      alert ("DATA: "+data);
       var element_id = p_arrElements[i].attributes["id"].value;
-      $.post("'.PATH.'ajax/compile_producer_invoices.php", { query_data: ""+element_id+":'.$delivery_id.'" }, function(data) {
+      jQuery.post("'.PATH.'ajax/compile_producer_invoices.php", { query_data: ""+element_id+":'.$delivery_id.'" }, function(data) {
         if(data == "GENERATED_INVOICE") {
           var oldHTML = document.getElementById(\'producerList\').innerHTML;
           var p_progress_left = Math.floor (300 * i / p_arrElements.length);
@@ -212,12 +212,12 @@ function prod_generate_pdf() {
   document.getElementById("load_producer_pdf").style.display = "none"; /* Hide the pdf link until regenerated */
   document.getElementById("prod_html2pdf_message").style.display = "block"; /* Show the html2pdf conversion message */
   // Delete the old pdf file before continuing
-  $.post("'.PATH.'ajax/compile_producer_invoices.php", { query_data: "delete_pdf:"+"'.$delivery_id.'" }, function(data) {
+  jQuery.post("'.PATH.'ajax/compile_producer_invoices.php", { query_data: "delete_pdf:"+"'.$delivery_id.'" }, function(data) {
     if (data != "DELETED_PDF") {
       alert ("ERROR P3: "+data+" \r\nPlease try again");
       }
     })
-  $.post("'.PATH.'ajax/compile_producer_invoices.php", { query_data: "html2pdf:"+"'.$delivery_id.'" }, function(data) {
+  jQuery.post("'.PATH.'ajax/compile_producer_invoices.php", { query_data: "html2pdf:"+"'.$delivery_id.'" }, function(data) {
     if(data != "HTML2PDF") {
       alert ("ERROR P4: "+data+" \r\nPlease try again");
       }

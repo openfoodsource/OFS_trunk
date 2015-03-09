@@ -241,10 +241,10 @@ function get_make_payment_form ($delivery_id, $producer_id, $business_name, $err
 <!--
             <span class="nobr">
               <label for="payment_type_cash">Cash/Check</label>
-              <input type="radio" id="payment_type_cash_check" value="cash" name="payment_type" required'.$payment_type_cash.' onclick="$(\'#paypal_fee\').val(\'0.00\');">
+              <input type="radio" id="payment_type_cash_check" value="cash" name="payment_type" required'.$payment_type_cash.' onclick="jQuery(\'#paypal_fee\').val(\'0.00\');">
 
               <label for="payment_type_paypal">Paypal</label>
-              <input type="radio" id="payment_type_paypal" value="paypal" name="payment_type" required'.$payment_type_paypal.' onclick="$(\'#paypal_fee\').val((Math.round(($(\'#amount\').val()*0.029+0.30) * 100)/100).toFixed(2));">
+              <input type="radio" id="payment_type_paypal" value="paypal" name="payment_type" required'.$payment_type_paypal.' onclick="jQuery(\'#paypal_fee\').val((Math.round((jQuery(\'#amount\').val()*0.029+0.30) * 100)/100).toFixed(2));">
             </span>
 -->
             <input type="hidden" id="payment_type_cash_check" value="cash" name="payment_type">

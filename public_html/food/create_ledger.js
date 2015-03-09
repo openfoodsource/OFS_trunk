@@ -44,7 +44,7 @@ function generate_basket_list() {
       // Get the id of the element (that is the delivery_id, formatted like: delivery_id:9
       var element_id = c_arrElements[i].attributes["id"].value;
       document.getElementById('delivery_id').value = element_id.substr(12);
-      $.post("create_ledger.php", {
+      jQuery.post("create_ledger.php", {
         ajax:"yes",
         process:"get_basket_list",
         delivery_id:element_id.substr(12)
@@ -86,7 +86,7 @@ function process_basket_list() {
     if (p_arrElements[j].attributes["class"].value == 'basket_incomplete' && document.getElementById("pause").checked == false) {
       // Get the id of the element (that is the delivery_id, formatted like: delivery_id:9
       var element_id = p_arrElements[j].attributes["id"].value;
-        $.post("create_ledger.php", {
+        jQuery.post("create_ledger.php", {
         ajax:"yes",
         process:"process_basket",
         basket_id:element_id.substr(12),

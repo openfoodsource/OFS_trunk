@@ -259,7 +259,7 @@ while (($row = mysql_fetch_array($rsr)) || $count++ < 1)
 -->
             <tr>
               <td colspan="3">
-                <div style="float:left;padding:0.75em;">[<a class="show_hide_link" onclick="$(\'#sites_on_route_'.$route_id.'\').toggleClass(\'hidden\')">Show/hide '.$number_of_sites.' sites on &ldquo;'.$route_name.'&rdquo; route</a>]</div>
+                <div style="float:left;padding:0.75em;">[<a class="show_hide_link" onclick="jQuery(\'#sites_on_route_'.$route_id.'\').toggleClass(\'hidden\')">Show/hide '.$number_of_sites.' sites on &ldquo;'.$route_name.'&rdquo; route</a>]</div>
                 <input class="update_button" type="submit" name="action" value="Save changes to this route">
               </td>
             </tr>

@@ -173,6 +173,10 @@ li strike {
   font-weight:normal;
   }
 
+a {
+  cursor:pointer;
+  }
+
 ul.nav-menu ul li.basket_link a {
   background-color:#000;
   color:#aaa;
@@ -260,7 +264,7 @@ table.compact tr td img {
 
 .clear {
   display:block;
-  height:30px;
+  /* height:30px; */
   clear:both;
   }
 
@@ -964,6 +968,102 @@ a.warn {
   font-size:12px;
   color:#240;
   }
+
+  /* BEGIN STYLES FOR SIMPLEMODAL OVERLAYS */
+
+/* Set up the simplemodal close button */
+a.modalCloseImg {
+  background:url(/food/grfx/simplemodal_x.png) no-repeat; /* adjust url as required */
+  font-size:0;
+  width:40px;
+  height:46px;
+  display:inline;
+  z-index:3200;
+  position:absolute;
+  top:-20px;
+  right:-23px;
+  cursor:pointer;
+  }
+a.modalCloseImg:hover {
+  background:url(/food/grfx/simplemodal_x_hover.png) no-repeat; /* adjust url as required */
+  }
+/* Ensure data container fills the entire simplemodal-data container (vertically)
+   and hide the vertical scrollbar resulting from a slight vertical overflow */
+#simplemodal-data {
+  height:100%;
+  overflow:hidden;
+  }
+/* Ensure iframe fills the entire simplemodal-data container */
+#simplemodal-data iframe {
+  height:100%;
+  width:100%;
+  border-radius:15px;
+  background-color:#fff;
+  }
+.simplemodal-wrap {
+  border-radius:15px;
+  }
+.simplemodal-overlay {
+  background-color:#000;
+  }
+
+/* Style the simplemodal window relative to the parent window */
+.simplemodal-container {
+  box-shadow: 5px 5px 20px 20px #222;
+  opacity:1;
+  height:80%;
+  width:80%;
+  border-radius:15px;
+  /* min/max values will override the simplemodal size (at least in Firefox)
+  max-height:30%;
+  max-width:30%;
+  min-height:30%;
+  min-width:30%;
+  */
+  }
+/* Styles related only to simplemodal MOTD display */
+#simplemodal-container-motd {
+  height:80%;
+  width:50%;
+  }
+#simplemodal-container-select_delivery {
+  max-width:280px;
+  min-width:280px;
+  }
+
+/************* STYLES FOR MEMBERSHIP RENEWAL FORM ***************/
+#membership_renewal_content {
+  padding:1em;
+  }
+#renew_membership {
+  display:block;
+  margin:auto;
+  }
+.membership_message {
+  font-size:200%;
+  color:#660;
+  text-align:center;
+  margin:2em;
+  }
+.expire_message {
+  font-weight:bold;
+  }
+.same_renewal,
+.changed_renewal {
+  font-weight:bold;
+  padding-left:50px;
+  margin:10px 3px 3px 3px;
+  }
+.same_renewal_desc,
+.changed_renewal_desc {
+  font-style:italic;
+  margin:3px 20px 10px 100px;
+  padding:0.5em;
+  background-color:#eee;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  }
+
 /************* PRINT STYLES ***************/
 
 @media print {

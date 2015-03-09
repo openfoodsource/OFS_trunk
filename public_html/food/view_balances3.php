@@ -101,7 +101,7 @@ lt_options = {
     var parts = value.split(" ");
     document.getElementById("load_spec").value=parts.shift(); // could just use "data" but needs to be unshifted anyway
     document.getElementById("load_target").value=parts.join(" ");
-    $("#working_area").removeClass("open"); 
+    jQuery("#working_area").removeClass("open"); 
     get_ledger_head();
     get_ledger_body ();
     } // callback function
@@ -119,7 +119,7 @@ dd_options = {
     document.getElementById("delivery_id").value=data; // the delivery_id is already in the data variable
     // document.getElementById("delivery_date").value=parts[1]; // This is the date-part from above
     document.getElementById("delivery_date").value=value; // This is whole date-part
-    $("#working_area").removeClass("open"); 
+    jQuery("#working_area").removeClass("open"); 
     get_ledger_head();
     get_ledger_body ();
     } // callback function
@@ -160,13 +160,13 @@ function load_autocompletion () {
     lt_options;
     ahs_options;
     aht_options;
-    lt = $("#load_target").autocomplete
+    lt = jQuery("#load_target").autocomplete
       (lt_options);
-    dd = $("#delivery_date").autocomplete
+    dd = jQuery("#delivery_date").autocomplete
       (dd_options);
-    ahs = $("#ad_hoc_source").autocomplete
+    ahs = jQuery("#ad_hoc_source").autocomplete
       (ahs_options);
-    aht = $("#ad_hoc_target").autocomplete
+    aht = jQuery("#ad_hoc_target").autocomplete
       (aht_options);
     });
   }
@@ -175,7 +175,7 @@ function load_autocompletion () {
 // handling header and table information in the same get_ledger_info.php file
 function get_ledger_head () {
   var account_spec = document.getElementById("load_target").value;
-  $.post("'.PATH.'ajax/get_ledger_info.php'.'", {
+  jQuery.post("'.PATH.'ajax/get_ledger_info.php'.'", {
     action:"get_ledger_head",
     account_spec:account_spec,
     },
@@ -197,15 +197,15 @@ function get_ledger_body () {
 //     }
   var group_customer_fee = "";
   var group_producer_fee = "";
-  var group_customer_fee_with = $("input[name=\'group_customer_fee_with\']:checked").val();
-  var group_producer_fee_with = $("input[name=\'group_producer_fee_with\']:checked").val();
-  var group_weight_cost_with = $("input[name=\'group_weight_cost_with\']:checked").val();
-  var group_quantity_cost_with = $("input[name=\'group_quantity_cost_with\']:checked").val();
-  var group_extra_charge_with = $("input[name=\'group_extra_charge_with\']:checked").val();
-  var group_taxes_with = $("input[name=\'group_taxes_with\']:checked").val();
+  var group_customer_fee_with = jQuery("input[name=\'group_customer_fee_with\']:checked").val();
+  var group_producer_fee_with = jQuery("input[name=\'group_producer_fee_with\']:checked").val();
+  var group_weight_cost_with = jQuery("input[name=\'group_weight_cost_with\']:checked").val();
+  var group_quantity_cost_with = jQuery("input[name=\'group_quantity_cost_with\']:checked").val();
+  var group_extra_charge_with = jQuery("input[name=\'group_extra_charge_with\']:checked").val();
+  var group_taxes_with = jQuery("input[name=\'group_taxes_with\']:checked").val();
   // This is used for the "Reload" button
 //  if (account_spec == "null") { account_spec = document.getElementById("load_spec").value; }
-  $.post("'.PATH.'ajax/get_ledger_info.php'.'", {
+  jQuery.post("'.PATH.'ajax/get_ledger_info.php'.'", {
     action:"get_ledger_body",
     account_spec:account_spec,
     group_customer_fee_with:group_customer_fee_with,
@@ -226,26 +226,26 @@ function show_hide_detail (target, operation) {
   var target;
   var operation;
   if (operation == "show") {
-    $("."+target).removeClass("hid");
-    $("."+target).addClass("detail");
+    jQuery("."+target).removeClass("hid");
+    jQuery("."+target).addClass("detail");
     return("hide");
     }
   else {
-    $("."+target).addClass("hid");
+    jQuery("."+target).addClass("hid");
     return("show");
     }
   }
 
 // Get information from a clicked transaction row and call ajax to process it for editing.
 function row_click(transaction_id,bpid) {
-  $.post("'.PATH.'ajax/adjustment_interface.php'.'", {
+  jQuery.post("'.PATH.'ajax/adjustment_interface.php'.'", {
     action:"get_adjustment_dialog",
     transaction_id:transaction_id,
     bpid:bpid
     },
   function(adjustment_dialog) {
     document.getElementById("working_area").innerHTML = adjustment_dialog;
-    $("#working_area").addClass("open"); 
+    jQuery("#working_area").addClass("open"); 
     // Reload jQuery functions to re-enable the lookup hints
     load_autocompletion ();
     });
@@ -261,7 +261,7 @@ function update_basket_info(bpid) {
   var product_version = document.getElementById("edit_product_version").value;
   var delivery_id = document.getElementById("edit_delivery_id").value;
   var member_id = document.getElementById("edit_member_id").value;
-  $.post("'.PATH.'ajax/adjustment_interface.php'.'", {
+  jQuery.post("'.PATH.'ajax/adjustment_interface.php'.'", {
     action:"update_basket_info",
     quantity:quantity,
     weight:weight,
@@ -289,7 +289,7 @@ function add_modify_ledger_info(transaction_id,add_modify) {
   var target_key = target_spec[1];
   var text_key = document.getElementById("edit_text_key").value;
   var message = document.getElementById("edit_ledger_message").value;
-  $.post("'.PATH.'ajax/adjustment_interface.php'.'", {
+  jQuery.post("'.PATH.'ajax/adjustment_interface.php'.'", {
     action:"update_ledger_info",
     transaction_id:transaction_id,
     transaction_group_id:transaction_group_id,
@@ -309,7 +309,7 @@ function add_modify_ledger_info(transaction_id,add_modify) {
 
 // Close (hide) the editor
 function close_editor () {
-  $("#working_area").removeClass("open"); 
+  jQuery("#working_area").removeClass("open"); 
   }
 
 load_autocompletion();

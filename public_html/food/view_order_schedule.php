@@ -15,10 +15,10 @@ $display = '
   <fieldset class="controls">
     <div id="pager" class="internal">
       <label for="data_page">Page:</label>
-      <span id="decrement_data_page" class="decrement" onclick="decrement(\'data_page\', $(\'#this_page\').val());" style="display:none;">&#9664;</span>
-      <span id="data_page" onkeyup="constrain(\'data_page\', $(\'#this_page\').val());debounce_pager(\'data_page\', $(\'#this_page\').val());" onchange="constrain(\'data_page\', $(\'#this_page\').val());debounce_pager(\'data_page\', $(\'#this_page\').val());" onfocus="document.execCommand(\'selectAll\',false,null)" contenteditable>'.$found_pages.'</span>
+      <span id="decrement_data_page" class="decrement" onclick="decrement(\'data_page\', jQuery(\'#this_page\').val());" style="display:none;">&#9664;</span>
+      <span id="data_page" onkeyup="constrain(\'data_page\', jQuery(\'#this_page\').val());debounce_pager(\'data_page\', jQuery(\'#this_page\').val());" onchange="constrain(\'data_page\', jQuery(\'#this_page\').val());debounce_pager(\'data_page\', jQuery(\'#this_page\').val());" onfocus="document.execCommand(\'selectAll\',false,null)" contenteditable>'.$found_pages.'</span>
       <div id="maximum_data_page">/ 1</div>
-      <span id="increment_data_page" class="increment" onclick="increment(\'data_page\', $(\'#this_page\').val());">&#9654;</span>
+      <span id="increment_data_page" class="increment" onclick="increment(\'data_page\', jQuery(\'#this_page\').val());">&#9654;</span>
     </div>
     <input type="hidden" id="this_page" name="this_page" value="internal">
   </fieldset>
@@ -28,15 +28,13 @@ $display = '
 ';
 
 $page_specific_javascript = '
-  <script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-  <script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>
   <script type="text/javascript" src="'.PATH.'ajax/jquery-ui.js"></script>
 
   <script type="text/javascript">
   // Load the first page automatically
-  $( document ).ready(function() {
+  jQuery( document ).ready(function() {
     // Handler for .ready() called.
-    debounce_pager(\'data_page\', $(\'#this_page\').val());
+    debounce_pager(\'data_page\', jQuery(\'#this_page\').val());
     });
   // Set default values
   var minimum = new Array();
@@ -69,33 +67,33 @@ $page_specific_javascript = '
 
   // Pager functions for incrementing and decrementing target pages
   function increment (target, this_page) {
-    $("#"+target).html($("#"+target).html()*1+1);
+    jQuery("#"+target).html(jQuery("#"+target).html()*1+1);
     constrain (target, this_page);
     debounce_pager(target, this_page);
     }
   function decrement (target, this_page) {
-    $("#"+target).html($("#"+target).html()*1-1);
+    jQuery("#"+target).html(jQuery("#"+target).html()*1-1);
     constrain (target, this_page);
     debounce_pager(target, this_page);
     }
   // Constrain value to within min/max limits
   function constrain (target_id, target_type) {
-    if ($("#"+target_id).html() > maximum["order_schedule_page"]) {
-      $("#"+target_id).html(maximum["order_schedule_page"]);
-      $("#increment_"+target_id).hide();
+    if (jQuery("#"+target_id).html() > maximum["order_schedule_page"]) {
+      jQuery("#"+target_id).html(maximum["order_schedule_page"]);
+      jQuery("#increment_"+target_id).hide();
       }
     else {
-      $("#increment_"+target_id).show();
+      jQuery("#increment_"+target_id).show();
       }
-    if ($("#"+target_id).html() < minimum["order_schedule_page"]) {
-      $("#"+target_id).html(minimum["order_schedule_page"]);
-      $("#decrement_"+target_id).hide();
+    if (jQuery("#"+target_id).html() < minimum["order_schedule_page"]) {
+      jQuery("#"+target_id).html(minimum["order_schedule_page"]);
+      jQuery("#decrement_"+target_id).hide();
       }
     else {
-      $("#decrement_"+target_id).show();
+      jQuery("#decrement_"+target_id).show();
       }
     // Set the maximum_data_page text
-    $("#maximum_data_page").html(" / "+maximum["order_schedule_page"]);
+    jQuery("#maximum_data_page").html(" / "+maximum["order_schedule_page"]);
     }
   var debounce_pager = debounce(function(target, this_page) {
     get_order_cycles(target, this_page);
@@ -105,13 +103,13 @@ $page_specific_javascript = '
     if (document.getElementById(target).value != actual["order_schedule_page"]) {
       actual["order_schedule_page"] = document.getElementById(target).innerHTML;
       // Start the spinner (change color of the "order_schedule_page" field)
-      $("#data_page").addClass("spinning")
-      $.ajax({
+      jQuery("#data_page").addClass("spinning")
+      jQuery.ajax({
         type: "POST",
         url: "'.PATH.'ajax/display_order_schedule.php",
         cache: false,
         data: {
-          data_page: $("#"+target).html()
+          data_page: jQuery("#"+target).html()
           }
         })
       .done(function(json_schedule_info) {
@@ -120,45 +118,20 @@ $page_specific_javascript = '
         constrain (\'data_page\');
         constrain (\'data_page\', this_page);
         // Stop the spinner (restore color of the "order_schedule_page" field)
-        $("#data_page").removeClass("spinning")
-        $("#order_schedule_content").html(schedule_info.markup);
+        jQuery("#data_page").removeClass("spinning")
+        jQuery("#order_schedule_content").html(schedule_info.markup);
         });
       }
     }
 
   // Functions to highlight calendar segments
   function highlight_calendar(target) {
-    $(".cycle-"+target).addClass("highlight");
+    jQuery(".cycle-"+target).addClass("highlight");
     // document.getElementById("id-"+target).style.color="#880000";
     }
   function restore_calendar(target) {
-    $(".cycle-"+target).removeClass("highlight");
+    jQuery(".cycle-"+target).removeClass("highlight");
     // document.getElementById("id-"+target).style.color="#000000";
-    }
-
-  // Display an external page using an iframe
-  // http://www.ericmmartin.com/projects/simplemodal/
-  // Set the simplemodal close button
-  $.modal.defaults.closeClass = "modalClose";
-  // Popup the simplemodal dialog for selecting a site
-  function popup_src(src) {
-    $.modal(\'<a class="modalCloseImg modalClose">&nbsp;</a><iframe src="\' + src + \'">\', {
-      opacity:70,
-      overlayCss: {backgroundColor:"#000"},
-      closeHTML:"",
-      containerCss:{
-        backgroundColor:"#fff",
-        borderColor:"#fff",
-        height:"80%",
-        width:"80%",
-        padding:0
-        },
-      overlayClose:true
-      });
-    };
-  // Close the simplemodal iframe after 500 ms
-  function close_modal_window() {
-    $.modal.close();
     }
   </script>';
 
@@ -414,7 +387,7 @@ $page_specific_css = '
     }
   #simplemodal-data iframe {
     border:0;
-    height:95%;
+    height:100%;
     width:100%;
     }
   #simplemodal-container a.modalCloseImg {

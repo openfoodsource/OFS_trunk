@@ -158,35 +158,35 @@ $page_content = '
 <script type="text/javascript">
 jQuery.cachedScript = function( url, options ) {
   // Allow user to set any option except for dataType, cache, and url
-  options = $.extend( options || {}, {
+  options = jQuery.extend( options || {}, {
     dataType: "script",
     cache: true,
     url: url
     });
-  // Use $.ajax() since it is more flexible than $.getScript
+  // Use jQuery.ajax() since it is more flexible than jQuery.getScript
   // Return the jqXHR object so we can chain callbacks
   return jQuery.ajax( options );
   };
 // Ensure dependencies are loaded in order (this may be overkill, but it works)...
-$.cachedScript( "'.PATH.'js/tmpl.js" ).done(function() {
+jQuery.cachedScript( "'.PATH.'js/tmpl.js" ).done(function() {
   });
-$.cachedScript( "'.PATH.'ajax/load-image.js" ).done(function() {
-  $.cachedScript( "'.PATH.'ajax/load-image-meta.js" ).done(function() {
-    $.cachedScript( "'.PATH.'ajax/jquery-ui.js" ).done(function() {
-      $.cachedScript( "'.PATH.'ajax/jquery-ui-widget.js" ).done(function() {
-        $.cachedScript( "'.PATH.'js/jquery.fileupload.js" ).done(function() {
-          $.cachedScript( "'.PATH.'js/jquery.fileupload-ui.js" ).done(function() {
-          //$.cachedScript( "'.PATH.'js/jquery.fileupload-audio.js" ).done(function() {
+jQuery.cachedScript( "'.PATH.'ajax/load-image.js" ).done(function() {
+  jQuery.cachedScript( "'.PATH.'ajax/load-image-meta.js" ).done(function() {
+    jQuery.cachedScript( "'.PATH.'ajax/jquery-ui.js" ).done(function() {
+      jQuery.cachedScript( "'.PATH.'ajax/jquery-ui-widget.js" ).done(function() {
+        jQuery.cachedScript( "'.PATH.'js/jquery.fileupload.js" ).done(function() {
+          jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-ui.js" ).done(function() {
+          //jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-audio.js" ).done(function() {
           //  });
-          //$.cachedScript( "'.PATH.'js/jquery.fileupload-video.js" ).done(function() {
+          //jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-video.js" ).done(function() {
           //  });
-            $.cachedScript( "'.PATH.'js/jquery.fileupload-image.js" ).done(function() {
+            jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-image.js" ).done(function() {
               });
             });
-          $.cachedScript( "'.PATH.'js/jquery.fileupload-process.js" ).done(function() {
-            $.cachedScript( "'.PATH.'js/jquery.fileupload-validate.js" ).done(function() {
-              $.cachedScript( "'.PATH.'js/jquery.fileupload-main.js" ).done(function() {
-                $("#fileupload").fileupload({
+          jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-process.js" ).done(function() {
+            jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-validate.js" ).done(function() {
+              jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-main.js" ).done(function() {
+                jQuery("#fileupload").fileupload({
                   url: "receive_image_uploads.php"
                   }).on("fileuploadsubmit", function (e, data) {
                     data.formData = data.context.find(":input").serializeArray();
@@ -199,7 +199,7 @@ $.cachedScript( "'.PATH.'ajax/load-image.js" ).done(function() {
       });
     });
   });
-$.cachedScript( "'.PATH.'js/bootstrap.min.js" ).done(function() {
+jQuery.cachedScript( "'.PATH.'js/bootstrap.min.js" ).done(function() {
   });
 </script>
 </html>';

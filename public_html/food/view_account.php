@@ -44,15 +44,13 @@ $display = '
 // as soon as the page loads
 if ($account_type != '' && $account_key != '')
   $auto_load_request = '
-    $( document ).ready(function() {
+    jQuery( document ).ready(function() {
       // Handler for .ready() called.
       actual["data_page"] = 0; // needed to force loading
       get_account_info(\'data_page\');
       });';
 
 $page_specific_javascript = '
-  <script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-  <script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>
   <script type="text/javascript" src="'.PATH.'adjust_ledger.js"></script>
   <script type="text/javascript" src="'.PATH.'ajax/jquery-ui.js"></script>
 
@@ -96,45 +94,45 @@ $page_specific_javascript = '
 
   // Pager functions for advancing and going back on pages
   function increment (target) {
-    $("#"+target).html($("#"+target).html()*1+1);
+    jQuery("#"+target).html(jQuery("#"+target).html()*1+1);
     constrain (target);
     debounce_pager(target);
     }
   function decrement (target) {
-    $("#"+target).html($("#"+target).html()*1-1);
+    jQuery("#"+target).html(jQuery("#"+target).html()*1-1);
     constrain (target);
     debounce_pager(target);
     }
   // Constrain value to within min/max limits
   function constrain (target) {
-    if ($("#"+target).html() > maximum[target]) {
-      $("#"+target).html(maximum[target]);
-      $("#increment_"+target).hide();
+    if (jQuery("#"+target).html() > maximum[target]) {
+      jQuery("#"+target).html(maximum[target]);
+      jQuery("#increment_"+target).hide();
       }
     else {
-      $("#increment_"+target).show();
+      jQuery("#increment_"+target).show();
       }
-    if ($("#"+target).html() < minimum[target]) {
-      $("#"+target).html(minimum[target]);
-      $("#decrement_"+target).hide();
+    if (jQuery("#"+target).html() < minimum[target]) {
+      jQuery("#"+target).html(minimum[target]);
+      jQuery("#decrement_"+target).hide();
       }
     else {
-      $("#decrement_"+target).show();
+      jQuery("#decrement_"+target).show();
       }
     // Set the maximum_data_page text
-    $("#maximum_data_page").html(" / "+maximum["data_page"]);
+    jQuery("#maximum_data_page").html(" / "+maximum["data_page"]);
     }
   var debounce_pager = debounce(function(target) {
     get_account_info(target);
     }, 1000);
   function get_account_info(target) {
     // Clear the current #ledger_container content
-//    $("#ledger_container").html("");
+//    jQuery("#ledger_container").html("");
     if (document.getElementById(target).innerHTML != actual[target]) {
       actual[target] = document.getElementById(target).innerHTML;
       // Start the spinner (change color of the "data_page" field)
-      $("#data_page").addClass("spinning")
-      $.ajax({
+      jQuery("#data_page").addClass("spinning")
+      jQuery.ajax({
         type: "POST",
         url: "'.PATH.'ajax/display_account_info.php",
         cache: false,
@@ -149,19 +147,19 @@ $page_specific_javascript = '
         maximum["data_page"] = account_info.maximum_data_page;
         constrain (\'data_page\');
         // Stop the spinner (restore color of the "data_page" field)
-        $("#data_page").removeClass("spinning")
-        $("#ledger_container").html(account_info.markup);
+        jQuery("#data_page").removeClass("spinning")
+        jQuery("#ledger_container").html(account_info.markup);
         });
       }
     }
 
   // Functions to highlight links between transactions and their replacements
   function highlight_replacement(target) {
-    $("#id-"+target).addClass("replacement");
+    jQuery("#id-"+target).addClass("replacement");
     // document.getElementById("id-"+target).style.color="#880000";
     }
   function restore_replacement(target) {
-    $("#id-"+target).removeClass("replacement");
+    jQuery("#id-"+target).removeClass("replacement");
     // document.getElementById("id-"+target).style.color="#000000";
     }
 
@@ -174,7 +172,7 @@ $page_specific_javascript = '
   // Set up autocomplete for finding accounts
   jQuery(function() {
     function lookup(account_key) {
-      $.ajax({
+      jQuery.ajax({
         type: "POST",
         url: "'.PATH.'ajax/display_account_info.php",
         cache: false,
@@ -188,7 +186,7 @@ $page_specific_javascript = '
         account_info = JSON.parse(json_account_info);
         maximum["data_page"] = account_info.maximum_data_page;
         constrain (\'data_page\');
-        $("#ledger_container").html(account_info.markup);
+        jQuery("#ledger_container").html(account_info.markup);
         });
       }
     jQuery("#account_name").autocomplete({
@@ -216,9 +214,9 @@ $page_specific_javascript = '
       minLength: 3,
       select: function( event, ui ) {
         // Clear the current #ledger_container content
-        $("#ledger_container").html("");
+        jQuery("#ledger_container").html("");
         // Restore to data_page=1
-        $("#data_page").html("1");
+        jQuery("#data_page").html("1");
         document.getElementById("account_key").value = ui.item.key;
         lookup( ui.item.key);
         },
@@ -230,31 +228,6 @@ $page_specific_javascript = '
         }
       })
     });
-
-  // Display an external page using an iframe
-  // http://www.ericmmartin.com/projects/simplemodal/
-  // Set the simplemodal close button
-  $.modal.defaults.closeClass = "modalClose";
-  // Popup the simplemodal dialog for selecting a site
-  function popup_src(src) {
-    $.modal(\'<a class="modalCloseImg modalClose">&nbsp;</a><iframe src="\' + src + \'">\', {
-      opacity:70,
-      overlayCss: {backgroundColor:"#000"},
-      closeHTML:"",
-      containerCss:{
-        backgroundColor:"#fff",
-        borderColor:"#fff",
-        height:"80%",
-        width:"80%",
-        padding:0
-        },
-      overlayClose:true
-      });
-    };
-  // Close the simplemodal iframe after 500 ms
-  function close_modal_window() {
-    $.modal.close();
-    }
   </script>';
 
 $page_specific_css = '

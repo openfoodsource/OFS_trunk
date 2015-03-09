@@ -51,7 +51,7 @@ if ($_GET['action'] == 'select_image')
     // Display the upload link
     $page_content .= '
           <div class="gallery_block">
-            <div id="image-upload" class="gallery_image" onclick="popup_src(\'upload_images.php\')">
+            <div id="image-upload" class="gallery_image" onclick="popup_src(\'upload_images.php\', \'upload_image\')">
               <div class="upload_icon" title="Upload new image">&#8686;</div>
             </div>
           <figcaption>upload new image</figcaption>
@@ -89,7 +89,7 @@ if ($_GET['action'] == 'select_image')
         $page_content .= '
           <div class="gallery_block">
             <div id="image-'.$image_id.'" class="gallery_image'.($image_id == $image_id_target ? ' selected' : '').'" title="'.$product_list.'">
-              <input id="edit-'.$image_id.'" class="image_edit" type="button" title="Edit this image" value="&#9998;" onclick="popup_src(\''.$_SERVER['SCRIPT_NAME'].'?action=edit_image&image_id='.$image_id.'\')"></input>
+              <input id="edit-'.$image_id.'" class="image_edit" type="button" title="Edit this image" value="&#9998;" onclick="popup_src(\''.$_SERVER['SCRIPT_NAME'].'?action=edit_image&image_id='.$image_id.'\', \'upload_image\')"></input>
               '.(strlen ($product_list) == 0 ? '<input id="delete-'.$image_id.'" class="image_delete" type="button" title="Delete this image" value="&#215;" onclick="delete_image(this,\'set\')" onblur="delete_image(this,\'clear\')"></input>' : '').'
               <input id="select-'.$image_id.'" class="image_select" type="button" title="Select this image" value="&#10004;" onclick="set_image('.$image_id.')"></input>
               <img src="'.get_image_path_by_id ($image_id).'">
@@ -520,7 +520,7 @@ $page_specific_css = '
       }
     #simplemodal-data iframe {
       width:100%;
-      height:98%;
+      height:100%;
       border:0;
       }
     .modalCloseImg.modalClose {
@@ -550,34 +550,33 @@ $page_specific_css = '
   </style>';
 
 $page_specific_javascript = '
-  <script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>
   <script type="text/javascript">
     // This function requires two clicks to delete, changing style between.
     function delete_image (obj, action) {
       var image_id = obj.id.split("-")[1];
       if (action == "set") {
-        if ($(obj).hasClass("warn")) {
-          $.get("'.BASE_URL.PATH.'receive_image_uploads.php?action=delete&image_id="+image_id, function(data) {
+        if (jQuery(obj).hasClass("warn")) {
+          jQuery.get("'.BASE_URL.PATH.'receive_image_uploads.php?action=delete&image_id="+image_id, function(data) {
             // If the return value is deleted
             if (data == "deleted") {
               // Remove the image from our list
-              $("#image-"+image_id).parent().remove();
+              jQuery("#image-"+image_id).parent().remove();
               }
             })
           }
-        $(obj).addClass("warn");
+        jQuery(obj).addClass("warn");
         }
       if (action == "clear") {
-        $(obj).removeClass("warn");
+        jQuery(obj).removeClass("warn");
         }
       }
 
     var old_image_id = '.$image_id_target.';
     function set_image(image_id) {
-      var select_all_versions = $("#select_all_versions").prop("checked"); // gives true/false
+      var select_all_versions = jQuery("#select_all_versions").prop("checked"); // gives true/false
       var product_id = "'.preg_replace("/[^0-9]/",'',$_GET['product_id']).'";
       var product_version = "'.preg_replace("/[^0-9]/",'',$_GET['product_version']).'";
-      $.ajax({
+      jQuery.ajax({
         type: "POST",
         url: "'.BASE_URL.PATH.'set_product_image.php",
         cache: false,
@@ -594,42 +593,14 @@ $page_specific_javascript = '
         returned = JSON.parse(return_values);
         if (returned["result"] == "success") {
           var new_image_id = returned["new_image_id"];
-          $("#image-"+old_image_id).removeClass("selected");
-          $("#image-"+new_image_id).addClass("selected");
+          jQuery("#image-"+old_image_id).removeClass("selected");
+          jQuery("#image-"+new_image_id).addClass("selected");
           old_image_id = new_image_id;
           }
         else {
           alert ("Sorry, the image was not updated");
           }
         });
-      }
-
-    // Display an external page using an iframe
-    // http://www.ericmmartin.com/projects/simplemodal/
-    // Set the simplemodal close button
-    $.modal.defaults.closeClass = "modalClose";
-    // Popup the simplemodal dialog for selecting a site
-    function popup_src(src) {
-      $.modal(\'<a class="modalCloseImg modalClose">&nbsp;</a><iframe src="\' + src + \'">\', {
-        opacity:70,
-        overlayCss: {backgroundColor:"#000"},
-        closeHTML:"",
-        onClose: function (reload) {
-          location.reload();
-          },
-        containerCss:{
-          backgroundColor:"#fff",
-          borderColor:"#fff",
-          height:"80%",
-          width:"80%",
-          padding:0
-          },
-        overlayClose:true
-        });
-      };
-    // Close the simplemodal iframe after 500 ms
-    function close_modal_window() {
-      $.modal.close();
       }
   </script>';
 

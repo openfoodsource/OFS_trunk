@@ -71,7 +71,7 @@ if ($_GET['action'] == 'Search' &&
                 if (strlen ($row['producer_id']) > 0)
                   {
                     $producer_info_temporary = '
-                      <li class="producer" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</li>';
+                      <li class="producer" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</li>';
                   }
               }
             // Otherwise this is the same member as before so continue with the additional producer_info_line
@@ -81,7 +81,7 @@ if ($_GET['action'] == 'Search' &&
                   {
                     // Add to the producer_info_temporary and recreate the member_list_temporary
                     $producer_info_temporary .= '
-                      <li class="producer" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</li>';
+                      <li class="producer" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</li>';
                   }
               }
             $member_list_temporary = '
@@ -96,9 +96,9 @@ if ($_GET['action'] == 'Search' &&
                 <div class="result email'.$discontinued_class.'"><a href="mailto:'.$row['email_address'].'">'.$row['email_address'].'</a>'.(strlen ($row['email_address_2']) > 0 ? '<br><a href="mailto:'.$row['email_address_2'].'">'.$row['email_address_2'].'</a>' : '').'</div>
                 <div class="result username'.$discontinued_class.'">'.$row['username'].'</div>
                 <div class="result links">
-                  <a class="popup" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$row['member_id'].'&display_as=popup\')">Edit</a>
+                  <a class="popup" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$row['member_id'].'&display_as=popup\', \'edit_member\')">Edit</a>
                   &nbsp;/&nbsp;
-                  <a class="popup" onclick="popup_src(\'member_information.php?member_id='.$row['member_id'].'&display_as=popup\')">View</a>
+                  <a class="popup" onclick="popup_src(\'member_information.php?member_id='.$row['member_id'].'&display_as=popup\', \'member_information\')">View</a>
                 </div>
               </div>';
             $member_id_prior = $row['member_id'];
@@ -288,35 +288,7 @@ $page_specific_css = '
     }
   </style>';
 
-$page_specific_javascript .= '
-<script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-<script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>
-<script type="text/javascript">
-  // Display an external page using an iframe
-  // http://www.ericmmartin.com/projects/simplemodal/
-  // Set the simplemodal close button
-  $.modal.defaults.closeClass = "modalClose";
-  // Popup the simplemodal dialog for selecting a site
-  function popup_src(src) {
-    $.modal(\'<a class="modalCloseImg modalClose">&nbsp;</a><iframe src="\' + src + \'">\', {
-      opacity:70,
-      overlayCss: {backgroundColor:"#000"},
-      closeHTML:"",
-      containerCss:{
-        backgroundColor:"#fff",
-        borderColor:"#fff",
-        height:"80%",
-        width:"80%",
-        padding:0
-        },
-      overlayClose:true
-      });
-    };
-  // Close the simplemodal iframe after 500 ms
-  function close_modal_window() {
-    $.modal.close();
-    }
-</script>';
+$page_specific_javascript .= '';
 
 include("template_header.php");
 echo '

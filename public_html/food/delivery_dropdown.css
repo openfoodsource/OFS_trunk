@@ -1,10 +1,6 @@
 /* Styles for all the dropdowns */
 .dropdown {
-  -transition:height 0.7s cubic-bezier(1,0,0.5,1);
-  -webkit-transition:height 0.7s cubic-bezier(1,0,0.5,1);
-  -moz-transition:height 0.7s cubic-bezier(1,0,0.5,1);
-  -o-transition:height 0.7s cubic-bezier(1,0,0.5,1);
-  -ie-transition:height 0.7s cubic-bezier(1,0,0.5,1);
+  transition:height 0.7s cubic-bezier(1,0,0.5,1);
   }
 /* Styles for the delivery dropdown */
 a:hover {

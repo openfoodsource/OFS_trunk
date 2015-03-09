@@ -462,39 +462,7 @@ $page_specific_css .= '
 </style>';
 
 $page_specific_javascript .= '
-<script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-<script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>
 <script type="text/javascript">
-
-  // Display an external page using an iframe
-  // http://www.ericmmartin.com/projects/simplemodal/
-  // Set the simplemodal close button
-  $.modal.defaults.closeClass = "modalClose";
-  // Popup the simplemodal dialog for selecting a site
-  function popup_src(src) {
-    $.modal(\'<a class="modalCloseImg modalClose">&nbsp;</a><iframe src="\' + src + \'">\', {
-      opacity:70,
-      overlayCss: {backgroundColor:"#000"},
-      closeHTML:"",
-      containerCss:{
-        backgroundColor:"#fff",
-        borderColor:"#fff",
-        height:"80%",
-        width:"400px",
-        padding:0
-        },
-      overlayClose:true
-      });
-    };
-  // Close the simplemodal iframe after 500 ms
-// close_delivery_selector() is called from func.get_delivery_codes_list.php
-function close_delivery_selector() {
-  $.modal.close();
-    // If there was an add-to-cart action pending before opening the basket, then do it
-    if (add_to_cart_array.length == 3)
-    AddToCart (add_to_cart_array[0], add_to_cart_array[1], add_to_cart_array[2])
-    }
-
 var add_to_cart_array = [];
 function AddToCart (product_id, product_version, action) {
   var elem;
@@ -506,7 +474,7 @@ function AddToCart (product_id, product_version, action) {
   if (elem = document.getElementById("member_id")) member_id = elem.value;
   var delivery_id = "";
   if (elem = document.getElementById("delivery_id")) delivery_id = elem.value;
-  $.post("'.PATH.'ajax/'.$template_type.'.php", {
+  jQuery.post("'.PATH.'ajax/'.$template_type.'.php", {
     product_id:product_id,
     product_version:product_version,
     action:action,
@@ -518,14 +486,14 @@ function AddToCart (product_id, product_version, action) {
   function(data) {
     // If site is being inferred from a prior order, then notify of the assumption
     if (data.substr(0,16) == "site_id reverted") {
-      popup_src(\'select_delivery_popup.php?first_call=true\');
+      popup_src(\'select_delivery_popup.php?first_call=true\', \'select_delivery\');
       // Set the requested product information so we can re-request it after the basket is handled
       add_to_cart_array = [product_id, product_version, action];
       return false;
       }
     // If no site can be determined, then popup a window to set it.
     if (data == "site_id not set") {
-      popup_src(\'select_delivery_popup.php?first_call=true\');
+      popup_src(\'select_delivery_popup.php?first_call=true\', \'select_delivery\');
       // Set the requested product information so we can re-request it after the basket is handled
       add_to_cart_array = [product_id, product_version, action];
       return false;
@@ -535,7 +503,6 @@ function AddToCart (product_id, product_version, action) {
     var new_inventory = returned_array[1];
     var checked_out = returned_array[2];
     var alert_text = returned_array[3];
-//alert(data);
     if (document.getElementById("basket_qty" + product_id))
       {
         document.getElementById("basket_qty" + product_id).innerHTML = new_quantity;
@@ -597,7 +564,7 @@ function SetItem (bpid, action) {
   if (action == "set_weight") {
     document.getElementById("weight"+bpid).style.color = "#f80";
     }
-  $.post("'.PATH.'ajax/producer_basket.php", {
+  jQuery.post("'.PATH.'ajax/producer_basket.php", {
     bpid:bpid,
     ship_quantity:ship_quantity,
     weight:weight,

@@ -272,7 +272,7 @@ if ( !$member_id ) array_push ($error_array, 'Member ID is unknown.  You must ac
 // Assemble any errors encountered so far
 $error_message = '';
 if (count ($error_array) > 0) $error_message = '
-  <div class="error_message open" onmouseover="$(this).removeClass(\'open\')">
+  <div class="error_message open" onmouseover="jQuery(this).removeClass(\'open\')">
     <p class="message">The information was not accepted. Please correct the following problems and resubmit.
       <ul class="error_list">
         <li>'.implode ("</li>\n<li>", $error_array).'</li>
@@ -1180,7 +1180,7 @@ function check_producer_link () {
     {
       document.getElementById("producer_link_message").innerHTML = "";
       // Use Ajax to check if the producer_link is available
-      $.post
+      jQuery.post
         (
           "'.PATH.'ajax/check_producer_link.php",
             {

@@ -208,7 +208,7 @@ if ($_GET['content'] == 'members')
       <script type="text/javascript">
         function update_member_info(member_id, field_name, new_value)
           {
-            $.post("'.PATH.'ajax/update_member_info.php", { query_data: ""+member_id+":"+field_name+":"+new_value }, function(data) {
+            jQuery.post("'.PATH.'ajax/update_member_info.php", { query_data: ""+member_id+":"+field_name+":"+new_value }, function(data) {
                 if (data == "Unauthorizied access") {
                   alert ("Your session has timed out or you are not authorized to perform this operation");
                   }
@@ -224,8 +224,8 @@ if ($_GET['content'] == 'members')
               });
           }
         // Hide the regular "submit" button after loading the page iff JQuery is up and running
-        $(document).ready(function() {
-          $("#submit_button").css("visibility","hidden");
+        jQuery(document).ready(function() {
+          jQuery("#submit_button").css("visibility","hidden");
           });
         function update_data(member_id) {
           var new_data = "";

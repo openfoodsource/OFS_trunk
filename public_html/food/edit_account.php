@@ -7,7 +7,7 @@ valid_auth('cashier');
 $account_id = isset($_GET['account_key']) ? mysql_real_escape_string($_GET['account_key']) : '';
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
 $need_query = true;
-$close_modal = false;
+$modal_action = '';
 $display = '';
 
 if ($action == 'Update')
@@ -106,7 +106,7 @@ if ($action == 'Update')
         $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 759321 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
 
         // Do something here to close the modal
-        $close_modal = true;
+        $modal_action = 'reload_parent';
       }
   }
 if ($action == 'add')
@@ -181,31 +181,14 @@ elseif ($action == 'edit' && $account_id > 0)
       </div>';
   }
 
-function display_page_header ($close_modal)
-  {
-    echo '<!DOCTYPE html>
-<html>
-  <head>
-    <title>Edit Account</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <link href="'.PATH.'stylesheet.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" type="text/css" href="'.PATH.'edit_account.css">
-    <script src="'.PATH.'ajax/jquery.js" type="text/javascript"></script>
-    <script src="'.PATH.'ajax/jquery-ui.js" type="text/javascript"></script>
-  </head>
-  <body lang="en-us"'.($close_modal == true ? ' onload="parent.close_modal_window();"' : '').'>';
-  }
+$page_specific_javascript = '';
+$page_specific_css = '
+    <link rel="stylesheet" type="text/css" href="'.PATH.'edit_account.css">';
+$display_as_popup = true;
 
-function display_page_footer ()
-  {
-    echo '
-  </body>
-</html>';
-  }
-
-
-display_page_header ($close_modal);
-echo $display;
-display_page_footer ();
-
+include("template_header.php");
+echo '
+  <!-- CONTENT BEGINS HERE -->
+  '.$display.'
+  <!-- CONTENT ENDS HERE -->';
+include("template_footer.php");

@@ -69,7 +69,7 @@ function delivery_selector ($current_delivery_id)
       }
     // Display the order cycles and baskets...
     $display .= '
-        <div id="basket_dropdown" class="dropdown" onclick="$(this).toggleClass(\'clicked\')">
+        <div id="basket_dropdown" class="dropdown" onclick="jQuery(this).toggleClass(\'clicked\')">
           <h1 class="cycle_history">
             '.$list_title.'
           </h1>

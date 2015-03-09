@@ -44,7 +44,7 @@ function generate_basket_list() {
       // Get the id of the element (that is the delivery_id, formatted like: delivery_id:9
       var element_id = c_arrElements[i].attributes["id"].value;
       document.getElementById('delivery_id').value = element_id.substr(12);
-      $.post("create_basket_items_products_tables.php", {
+      jQuery.post("create_basket_items_products_tables.php", {
         ajax:"yes",
         process:"get_product_list",
         delivery_id:element_id.substr(12)
@@ -86,7 +86,7 @@ function process_product_list() {
     if (p_arrElements[j].attributes["class"].value == 'bpid_incomplete' && document.getElementById("pause").checked == false) {
       // Get the id of the element (that is the delivery_id, formatted like: delivery_id:9
       var element_id = p_arrElements[j].attributes["id"].value;
-      $.post("create_basket_items_products_tables.php", {
+      jQuery.post("create_basket_items_products_tables.php", {
         ajax:"yes",
         process:"process_product",
         bpid:element_id.substr(5)

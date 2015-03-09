@@ -38,10 +38,10 @@ $display = '
   <fieldset class="controls">
     <div id="pager" class="internal">
       <label for="data_page">Page:</label>
-      <span id="decrement_data_page" class="decrement" onclick="decrement(\'data_page\', $(\'#this_tab\').val());" style="display:none;">&#9664;</span>
-      <span id="data_page" onkeyup="constrain(\'data_page\', $(\'#this_tab\').val());debounce_pager(\'data_page\', $(\'#this_tab\').val());" onchange="constrain(\'data_page\', $(\'#this_tab\').val());debounce_pager(\'data_page\', $(\'#this_tab\').val());" onfocus="document.execCommand(\'selectAll\',false,null)" contenteditable>1</span>
+      <span id="decrement_data_page" class="decrement" onclick="decrement(\'data_page\', jQuery(\'#this_tab\').val());" style="display:none;">&#9664;</span>
+      <span id="data_page" onkeyup="constrain(\'data_page\', jQuery(\'#this_tab\').val());debounce_pager(\'data_page\', jQuery(\'#this_tab\').val());" onchange="constrain(\'data_page\', jQuery(\'#this_tab\').val());debounce_pager(\'data_page\', jQuery(\'#this_tab\').val());" onfocus="document.execCommand(\'selectAll\',false,null)" contenteditable>1</span>
       <div id="maximum_data_page">/ 1</div>
-      <span id="increment_data_page" class="increment" onclick="increment(\'data_page\', $(\'#this_tab\').val());">&#9654;</span>
+      <span id="increment_data_page" class="increment" onclick="increment(\'data_page\', jQuery(\'#this_tab\').val());">&#9654;</span>
     </div>
     <input type="hidden" id="this_tab" name="this_tab" value="internal">
   </fieldset>
@@ -64,9 +64,9 @@ $page_specific_javascript = '
 
   <script type="text/javascript">
   // Load the first page automatically
-  $( document ).ready(function() {
+  jQuery( document ).ready(function() {
     // Handler for .ready() called.
-    debounce_pager(\'data_page\', $(\'#this_tab\').val());
+    debounce_pager(\'data_page\', jQuery(\'#this_tab\').val());
     });
   // Set default values
   var minimum = new Array();
@@ -86,24 +86,24 @@ $page_specific_javascript = '
   maximum["tax_page"] = 1;      // Default value until we have additional data
 
   function set_tab (this_tab) {
-    var old_tab = $(".tab_active").attr("id").substr(4);
+    var old_tab = jQuery(".tab_active").attr("id").substr(4);
     // Now switch the active tabs (class="tab_active")...
-    $("#tab_"+old_tab).removeClass("tab_active");
-    $("#tab_"+this_tab).addClass("tab_active");
+    jQuery("#tab_"+old_tab).removeClass("tab_active");
+    jQuery("#tab_"+this_tab).addClass("tab_active");
     // Now assign the new tab to the input "this_tab"
-    $("#this_tab").val(this_tab);
+    jQuery("#this_tab").val(this_tab);
 
     // Hide the results for the old tab
-    $("#"+old_tab+"_content").hide();
+    jQuery("#"+old_tab+"_content").hide();
     // Show the results for the new tab
-    $("#"+this_tab+"_content").show();
+    jQuery("#"+this_tab+"_content").show();
 
     // Set the page number to the "actual[]" stored value
-    $("#data_page").html(actual[this_tab+"_page"]);
+    jQuery("#data_page").html(actual[this_tab+"_page"]);
     // Convert the pager to correctly display for this page
-    constrain ("data_page", $("#this_tab").val());
+    constrain ("data_page", jQuery("#this_tab").val());
     // If the page data is not loaded, then do it
-    if (actual[this_tab+"_page"] != $("#data_page").html) {
+    if (actual[this_tab+"_page"] != jQuery("#data_page").html) {
       debounce_pager(\'data_page\', this_tab);
       }
     }
@@ -130,33 +130,33 @@ $page_specific_javascript = '
 
   // Pager functions for incrementing and decrementing target pages
   function increment (target, this_tab) {
-    $("#"+target).html($("#"+target).html()*1+1);
+    jQuery("#"+target).html(jQuery("#"+target).html()*1+1);
     constrain (target, this_tab);
     debounce_pager(target, this_tab);
     }
   function decrement (target, this_tab) {
-    $("#"+target).html($("#"+target).html()*1-1);
+    jQuery("#"+target).html(jQuery("#"+target).html()*1-1);
     constrain (target, this_tab);
     debounce_pager(target, this_tab);
     }
   // Constrain value to within min/max limits
   function constrain (target_id, target_type) {
-    if ($("#"+target_id).html() > maximum[target_type+"_page"]) {
-      $("#"+target_id).html(maximum[target_type+"_page"]);
-      $("#increment_"+target_id).hide();
+    if (jQuery("#"+target_id).html() > maximum[target_type+"_page"]) {
+      jQuery("#"+target_id).html(maximum[target_type+"_page"]);
+      jQuery("#increment_"+target_id).hide();
       }
     else {
-      $("#increment_"+target_id).show();
+      jQuery("#increment_"+target_id).show();
       }
-    if ($("#"+target_id).html() < minimum[target_type+"_page"]) {
-      $("#"+target_id).html(minimum[target_type+"_page"]);
-      $("#decrement_"+target_id).hide();
+    if (jQuery("#"+target_id).html() < minimum[target_type+"_page"]) {
+      jQuery("#"+target_id).html(minimum[target_type+"_page"]);
+      jQuery("#decrement_"+target_id).hide();
       }
     else {
-      $("#decrement_"+target_id).show();
+      jQuery("#decrement_"+target_id).show();
       }
     // Set the maximum_data_page text
-    $("#maximum_data_page").html(" / "+maximum[target_type+"_page"]);
+    jQuery("#maximum_data_page").html(" / "+maximum[target_type+"_page"]);
     }
   var debounce_pager = debounce(function(target, this_tab) {
     get_account_chart(target, this_tab);
@@ -166,14 +166,14 @@ $page_specific_javascript = '
     if (document.getElementById(target).value != actual[this_tab+"_page"]) {
       actual[this_tab+"_page"] = document.getElementById(target).innerHTML;
       // Start the spinner (change color of the "data_page" field)
-      $("#data_page").addClass("spinning")
-      $.ajax({
+      jQuery("#data_page").addClass("spinning")
+      jQuery.ajax({
         type: "POST",
         url: "'.PATH.'ajax/display_account_chart.php",
         cache: false,
         data: {
           account_type: this_tab,
-          data_page: $("#"+target).html()
+          data_page: jQuery("#"+target).html()
           }
         })
       .done(function(json_chart_info) {
@@ -182,34 +182,10 @@ $page_specific_javascript = '
         constrain (\'data_page\');
         constrain (\'data_page\', this_tab);
         // Stop the spinner (restore color of the "data_page" field)
-        $("#data_page").removeClass("spinning")
-        $("#"+this_tab+"_content").html(chart_info.markup);
+        jQuery("#data_page").removeClass("spinning")
+        jQuery("#"+this_tab+"_content").html(chart_info.markup);
         });
       }
-    }
-
-  // Display an external page using an iframe
-  // http://www.ericmmartin.com/projects/simplemodal/
-  // Set the simplemodal close button
-  $.modal.defaults.closeClass = "modalClose";
-  // Popup the simplemodal dialog for selecting a site
-  function popup_src(src) {
-    $.modal(\'<a class="modalCloseImg modalClose">&nbsp;</a><iframe src="\' + src + \'">\', {
-      opacity:70,
-      overlayCss: {backgroundColor:"#000"},
-      closeHTML:"",
-      containerCss:{
-        backgroundColor:"#fff",
-        borderColor:"#fff",
-        height:"80%",
-        width:"80%",
-        padding:0
-        },
-      overlayClose:true
-      });
-    };
-  function close_modal_window() {
-    $.modal.close();
     }
   </script>';
 
@@ -359,6 +335,7 @@ $page_specific_css = '
     top:-15px; left:200px;
     height:15px;
     width:275px;
+    overflow:hidden;
     }
   .account_balance {
     position:relative;

@@ -19,7 +19,7 @@ function get_transactions_types (ttype_parent) {
   var li_begin = '<ul>';
   var li_end = '</ul>';
   // Send the ajax request
-  $.post("transactions_to_ledger2.php", {
+  jQuery.post("transactions_to_ledger2.php", {
     ajax:"yes",
     process:"get_transaction_types",
     ttype_parent:ttype_parent
@@ -32,7 +32,7 @@ function get_transactions_types (ttype_parent) {
 // Make the list of transactions and display it
 function get_transaction_list (ttype_id) {
   // Send the ajax request
-  $.post("transactions_to_ledger2.php", {
+  jQuery.post("transactions_to_ledger2.php", {
     ajax:"yes",
     process:"get_transaction_list",
     ttype_id:ttype_id
@@ -49,7 +49,7 @@ function get_transaction_info(transaction_id) {
   var transaction_info;
   var stop_for_inquiry = "";
   // Send the ajax request
-  $.post("transactions_to_ledger2.php", {
+  jQuery.post("transactions_to_ledger2.php", {
     ajax:"yes",
     process:"get_transaction_info",
     transaction_id:transaction_id
@@ -57,131 +57,131 @@ function get_transaction_info(transaction_id) {
   function(transaction_info) {
     this_transaction = JSON.parse(transaction_info);
     // Clear any values that will not be automatically overwritten below
-    $("input#source_type").val("");
-    $("input#source_key").val("");
-    $("input#target_type").val("");
-    $("input#target_key").val("");
-    $("input#amount").val("");
+    jQuery("input#source_type").val("");
+    jQuery("input#source_key").val("");
+    jQuery("input#target_type").val("");
+    jQuery("input#target_key").val("");
+    jQuery("input#amount").val("");
 
 // Probably need to add other table linkage elements here
 
-    $("input#posted_by").val("");
-    $("input#timestamp").val("");
-    $("input#batchno").val("");
-    $("input#memo").val("");
-    $("input#comments").val("");
+    jQuery("input#posted_by").val("");
+    jQuery("input#timestamp").val("");
+    jQuery("input#batchno").val("");
+    jQuery("input#memo").val("");
+    jQuery("input#comments").val("");
 
     // We do not actually use this value, but it might be useful to see
-    $("input#delivery_id").val(this_transaction.transaction_delivery_id);
+    jQuery("input#delivery_id").val(this_transaction.transaction_delivery_id);
     // Assign values for soruce_type and source_key
     if (document.getElementById("source_key:"+this_transaction.transaction_type).value == "[member_id]") {
-      $("input#source_type").val("member");
-      $("input#source_key").val(this_transaction.transaction_member_id);
+      jQuery("input#source_type").val("member");
+      jQuery("input#source_key").val(this_transaction.transaction_member_id);
       }
     else if(document.getElementById("source_key:"+this_transaction.transaction_type).value == "[producer_id]") {
-      $("input#source_type").val("producer");
-      $("input#source_key").val(this_transaction.transaction_producer_id);
+      jQuery("input#source_type").val("producer");
+      jQuery("input#source_key").val(this_transaction.transaction_producer_id);
       }
     else if(document.getElementById("source_internal:"+this_transaction.transaction_type).checked == true) {
-      $("input#source_type").val("internal");
-      $("input#source_key").val(document.getElementById("source_key:"+this_transaction.transaction_type).value);
+      jQuery("input#source_type").val("internal");
+      jQuery("input#source_key").val(document.getElementById("source_key:"+this_transaction.transaction_type).value);
       }
     else if(document.getElementById("source_tax:"+this_transaction.transaction_type).checked == true) {
-      $("input#source_type").val("tax");
-      $("input#source_key").val(document.getElementById("source_key:"+this_transaction.transaction_type).value);
+      jQuery("input#source_type").val("tax");
+      jQuery("input#source_key").val(document.getElementById("source_key:"+this_transaction.transaction_type).value);
       }
     else {
       stop_for_inquiry = "trouble with source parameters";
       }
     // Assign values for target_type and target_key
     if (document.getElementById("target_key:"+this_transaction.transaction_type).value == "[member_id]") {
-      $("input#target_type").val("member");
-      $("input#target_key").val(this_transaction.transaction_member_id);
+      jQuery("input#target_type").val("member");
+      jQuery("input#target_key").val(this_transaction.transaction_member_id);
       }
     else if(document.getElementById("target_key:"+this_transaction.transaction_type).value == "[producer_id]") {
-      $("input#target_type").val("producer");
-      $("input#target_key").val(this_transaction.transaction_producer_id);
+      jQuery("input#target_type").val("producer");
+      jQuery("input#target_key").val(this_transaction.transaction_producer_id);
       }
     else if(document.getElementById("target_internal:"+this_transaction.transaction_type).checked == true) {
-      $("input#target_type").val("internal");
-      $("input#target_key").val(document.getElementById("target_key:"+this_transaction.transaction_type).value);
+      jQuery("input#target_type").val("internal");
+      jQuery("input#target_key").val(document.getElementById("target_key:"+this_transaction.transaction_type).value);
       }
     else if(document.getElementById("target_tax:"+this_transaction.transaction_type).checked == true) {
-      $("input#target_type").val("tax");
-      $("input#target_key").val(document.getElementById("target_key:"+this_transaction.transaction_type).value);
+      jQuery("input#target_type").val("tax");
+      jQuery("input#target_key").val(document.getElementById("target_key:"+this_transaction.transaction_type).value);
       }
     else {
       stop_for_inquiry = "trouble with target parameters";
       }
     // Set the amount based on the old amount and the base_multiplier
-    $("input#amount").val(Math.round(document.getElementById("base_multiplier:"+this_transaction.transaction_type).value * this_transaction.transaction_amount * 100) / 100);
+    jQuery("input#amount").val(Math.round(document.getElementById("base_multiplier:"+this_transaction.transaction_type).value * this_transaction.transaction_amount * 100) / 100);
     // Set the transaction_id
-    $("input#transaction_id").val(this_transaction.transaction_id);
+    jQuery("input#transaction_id").val(this_transaction.transaction_id);
     if (document.getElementById("transaction_id").value == "") {
       stop_for_inquiry = "no value for transaction_id";
       }
     // Set the basket_id
-    $("input#basket_id").val(this_transaction.basket_id);
+    jQuery("input#basket_id").val(this_transaction.basket_id);
     if (document.getElementById("basket_id").value == "") {
       stop_for_inquiry = "no value for basket_id";
       }
     // Set the site_id
-    $("input#site_id").val(this_transaction.site_id);
+    jQuery("input#site_id").val(this_transaction.site_id);
     if (document.getElementById("site_id").value == "") {
       stop_for_inquiry = "no value for site_id";
       }
     // See if we have a valid transaction_user from the database
     if (this_transaction.user_member_id >= 0) {
-      $("input#posted_by").val(this_transaction.user_member_id);
-      $("input#posted_by_text").val(this_transaction.user_member_text);
+      jQuery("input#posted_by").val(this_transaction.user_member_id);
+      jQuery("input#posted_by_text").val(this_transaction.user_member_text);
       }
     // ... or possibly from the configuration (as a fallback option)
     else if (document.getElementById("user:"+this_transaction.transaction_type).value != "") {
-      $("input#posted_by").val(document.getElementById("user:"+this_transaction.transaction_type).value );
+      jQuery("input#posted_by").val(document.getElementById("user:"+this_transaction.transaction_type).value );
       }
     else {
       stop_for_inquiry = "no useful value for posted_by";
       }
     // Set the text_key (first try for a configured value, otherwise use "adjustment"
     if (document.getElementById("text_key:"+this_transaction.transaction_type).value != "") {
-      $("input#text_key").val(document.getElementById("text_key:"+this_transaction.transaction_type).value);
+      jQuery("input#text_key").val(document.getElementById("text_key:"+this_transaction.transaction_type).value);
       }
     else {
-      $("input#text_key").val("adjustment");
+      jQuery("input#text_key").val("adjustment");
       }
 
     // Set the text_key (first try for a configured value, otherwise use "adjustment"
     if (document.getElementById("transaction_group_id:"+this_transaction.transaction_type).value != "") {
-      $("input#transaction_group_id").val(document.getElementById("transaction_group_id:"+this_transaction.transaction_type).value);
+      jQuery("input#transaction_group_id").val(document.getElementById("transaction_group_id:"+this_transaction.transaction_type).value);
       }
     else {
-      $("input#transaction_group_id").val("legacy-transaction");
+      jQuery("input#transaction_group_id").val("legacy-transaction");
       }
 
     if (this_transaction.transaction_timestamp != "") {
-      $("input#timestamp").val(this_transaction.transaction_timestamp);
+      jQuery("input#timestamp").val(this_transaction.transaction_timestamp);
       }
     else {
       stop_for_inquiry = "no timestamp";
       }
     // Assign either the actual batchno, memo, and comment text, or anything in the configuration setup
     if (this_transaction.transaction_batchno != 0) {
-      $("input#batchno").val(this_transaction.transaction_batchno);
+      jQuery("input#batchno").val(this_transaction.transaction_batchno);
       }
     else if (document.getElementById("batchno:"+this_transaction.transaction_type).value != 0) {
-      $("input#batchno").val(document.getElementById("batchno:"+this_transaction.transaction_type).value);
+      jQuery("input#batchno").val(document.getElementById("batchno:"+this_transaction.transaction_type).value);
       }
     if (this_transaction.transaction_memo != "") {
-      $("input#memo").val(this_transaction.transaction_memo);
+      jQuery("input#memo").val(this_transaction.transaction_memo);
       }
     else if (document.getElementById("memo:"+this_transaction.transaction_type).value != 0) {
-      $("input#memo").val(document.getElementById("memo:"+this_transaction.transaction_type).value);
+      jQuery("input#memo").val(document.getElementById("memo:"+this_transaction.transaction_type).value);
       }
     if (this_transaction.transaction_comments != "") {
-      $("input#comments").val(this_transaction.transaction_comments);
+      jQuery("input#comments").val(this_transaction.transaction_comments);
       }
     else if (document.getElementById("comments:"+this_transaction.transaction_type).value != 0) {
-      $("input#comments").val(document.getElementById("comments:"+this_transaction.transaction_type).value);
+      jQuery("input#comments").val(document.getElementById("comments:"+this_transaction.transaction_type).value);
       }
     // If target_type = "internal" and target_key is not set, then use text_key as a directive to the ledger
     // to create a new internal account type based on that text key
@@ -221,7 +221,7 @@ function process_ledger_data (requested_action) {
   var memo = document.getElementById("memo").value;
   var comments = document.getElementById("comments").value;
   // Send the ajax request
-  $.post("transactions_to_ledger2.php", {
+  jQuery.post("transactions_to_ledger2.php", {
     ajax:"yes",
     process:"post_to_ledger",
     requested_action:requested_action,

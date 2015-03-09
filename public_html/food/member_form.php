@@ -136,7 +136,7 @@ if ($_POST['action'] == 'Submit')
 
 // Assemble any errors encountered so far
 if (count ($error_array) > 0) $error_message = '
-  <div class="error_message open" onmouseover="$(this).removeClass(\'open\')">
+  <div class="error_message open" onmouseover="jQuery(this).removeClass(\'open\')">
     <p class="message">The information was not accepted. Please correct the following problems and resubmit.</p>
     <ul class="error_list">
       <li>'.implode ("</li>\n<li>", $error_array).'</li>

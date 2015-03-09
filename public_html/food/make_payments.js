@@ -4,7 +4,7 @@
 function show_make_payment_form(producer_id,delivery_id,business_name) {
   // Get the make_payment_form
   // var element_id = p_arrElements[j].attributes["id"].value;
-  $.post("ajax/make_payments_process.php", {
+  jQuery.post("ajax/make_payments_process.php", {
     process:"get_make_payment_form",
     producer_id:producer_id,
     delivery_id:delivery_id,
@@ -15,26 +15,26 @@ function show_make_payment_form(producer_id,delivery_id,business_name) {
     close_make_payment_form();
     // Add the new receive payment form
     if (delivery_id != 0)
-      $(make_payment_form).appendTo('#detail_producer_id'+producer_id);
+      jQuery(make_payment_form).appendTo('#detail_producer_id'+producer_id);
 //     else
-//       $(make_payment_form).appendTo('#detail_producer_id'+producer_id);
+//       jQuery(make_payment_form).appendTo('#detail_producer_id'+producer_id);
     });
   }
 
 // Post the make_payment information
 function make_payment(producer_id,delivery_id) {
-  $.post("ajax/make_payments_process.php", {
+  jQuery.post("ajax/make_payments_process.php", {
     process:"make_payment",
     producer_id:producer_id,
     delivery_id:delivery_id,
-    amount:$("#amount").val(),
-    effective_datetime:$("#effective_datetime").val(),
-    payment_type:$("#payment_type_cash_check").val(),
-    paypal_fee:$("#paypal_fee").val(),
-    paypal_comment:$("#paypal_comment").val(),
-    memo:$("#memo").val(),
-    batch_number:$("#batch_number").val(),
-    comment:$("#comment").val()
+    amount:jQuery("#amount").val(),
+    effective_datetime:jQuery("#effective_datetime").val(),
+    payment_type:jQuery("#payment_type_cash_check").val(),
+    paypal_fee:jQuery("#paypal_fee").val(),
+    paypal_comment:jQuery("#paypal_comment").val(),
+    memo:jQuery("#memo").val(),
+    batch_number:jQuery("#batch_number").val(),
+    comment:jQuery("#comment").val()
     },
   function(make_payment) {
     // Returned value has first ten fixed characters indicating status
@@ -50,7 +50,7 @@ function make_payment(producer_id,delivery_id) {
       // Payment failed for some reason so clear the form and show it form again
       close_make_payment_form();
       // Add the new receive payment form
-      $(make_payment_result).appendTo('#detail_producer_id'+producer_id);
+      jQuery(make_payment_result).appendTo('#detail_producer_id'+producer_id);
       }
     else {
       }
@@ -58,18 +58,18 @@ function make_payment(producer_id,delivery_id) {
   }
 
 function close_make_payment_form() {
-  if ($('#make_payment_row').length) {
-    $('#make_payment_row').replaceWith("");
+  if (jQuery('#make_payment_row').length) {
+    jQuery('#make_payment_row').replaceWith("");
     }
   }
 
 function reload_detail_line (producer_id,delivery_id) {
-  $.post("ajax/make_payments_detail.php", {
+  jQuery.post("ajax/make_payments_detail.php", {
     request:"producer_total_and_payments",
     producer_id:producer_id,
     delivery_id:delivery_id
     },
   function(make_payments_detail_data) {
-    $("#detail_producer_id"+producer_id).html(make_payments_detail_data);
+    jQuery("#detail_producer_id"+producer_id).html(make_payments_detail_data);
     });
   }
