@@ -216,7 +216,7 @@ CREATE TABLE IF NOT EXISTS ofs_membership_types (
   membership_description varchar(255) NOT NULL,
   pending tinyint(4) NOT NULL DEFAULT '1',
   enabled_type tinyint(4) NOT NULL,
-  revert_to varchar(255) NOT NULL,
+  may_convert_to varchar(255) NOT NULL,
   renew_cost float NOT NULL,
   expire_after int(11) NOT NULL,
   expire_type enum('day','week','month','year','calendar year','cycle','order') NOT NULL,

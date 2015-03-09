@@ -54,7 +54,7 @@ function get_member ($member_id)
       // 'membership_description',
       // 'pending',
       // 'enabled_type',
-      // 'revert_to',
+      // 'may_convert_to',
       // 'renew_cost',
       // 'expire_after',
       // 'expire_type',

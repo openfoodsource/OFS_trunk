@@ -1,4 +1,4 @@
-INSERT INTO ofs_membership_types (membership_type_id, set_auth_type, initial_cost, order_cost, order_cost_type, customer_fee_percent, producer_fee_percent, membership_class, membership_description, pending, enabled_type, revert_to, renew_cost, expire_after, expire_type, expire_message) VALUES
+INSERT INTO ofs_membership_types (membership_type_id, set_auth_type, initial_cost, order_cost, order_cost_type, customer_fee_percent, producer_fee_percent, membership_class, membership_description, pending, enabled_type, may_convert_to, renew_cost, expire_after, expire_type, expire_message) VALUES
 (1, '+member', 150, 0, 'fixed', 25.000, 10.000, 'Charter member', '$150.00 for the first year &mdash; plus $25.00 per year thereafter.', 0, 3, '1,2,3', 25, 12, 'month', ''),
 (2, '+member', 75, 0, 'fixed', 25.000, 10.000, 'Regular member', '$75.00 annual membership.', 0, 3, '2,1,3', 75, 12, 'month', ''),
 (3, '+member', 0, 10, 'fixed', 25.000, 100.000, 'Occasional shopper', 'No annual dues, but $10.00 will be added to each order.<br><em>Visitors are not be permitted to sell without upgrading to an annually-paid membership option.</em>', 0, 3, '3,1,2', 0, 0, '', ''),

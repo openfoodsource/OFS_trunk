@@ -22,7 +22,7 @@ while ( $row = mysql_fetch_object($sql) )
     $membership_types_array[$row->membership_type_id]['order_cost'] = $row->order_cost;
     $membership_types_array[$row->membership_type_id]['order_cost_type'] = $row->order_cost_type;
     $membership_types_array[$row->membership_type_id]['revert_cost'] = $row->revert_cost;
-    $membership_types_array[$row->membership_type_id]['revert_to_type_id'] = $row->revert_to_type_id;
+    $membership_types_array[$row->membership_type_id]['may_convert_to'] = $row->may_convert_to;
     $membership_types_array[$row->membership_type_id]['membership_class'] = $row->membership_class;
     $membership_types_array[$row->membership_type_id]['membership_description'] = $row->membership_description;
     $membership_types_array[$row->membership_type_id]['pending'] = $row->pending;
@@ -61,7 +61,7 @@ while ( $row = mysql_fetch_object($sql) )
             <span class="initial_cost">Initial Cost: $&nbsp;'.number_format ($row->initial_cost, 2).'</span><br>
             <span class="order_cost">Cost for each order: '.$order_cost_display.'</span><br>
             <span class="revert_cost">Cost each year: $&nbsp;'.number_format ($row->revert_cost, 2).'</span><br>
-            <span class="revert_to_type_id">When expired, revert to: '.$row->revert_to_type_id.'</span><br>
+            <span class="may_convert_to">When expired, revert to: '.$row->may_convert_to.'</span><br>
             <span class="pending">Begin as pending? '.$row->pending.'</span><br>
           </div>
           <div id="form'.$row->membership_type_id.'" style="display:none;">
@@ -70,7 +70,7 @@ while ( $row = mysql_fetch_object($sql) )
             Initial Cost: $&nbsp;<input type="text" name="initial_cost['.$row->membership_type_id.']" size="5" value="'.number_format($row->initial_cost, 2).'"><br>
             Order Cost: '.$form_order_cost_unit.'<input type="text" name="order_cost['.$row->membership_type_id.']" size="5" value="'.number_format($row->order_cost, 2).'"> '.$form_cost_type_display.'<br>
             Annual Cost: $&nbsp;<input type="text" name="revert_cost['.$row->membership_type_id.']" size="5" value="'.number_format($row->revert_cost, 2).'"><br>
-            On Expiration, Revert to Type: <input type="text" name="revert_to_type_id['.$row->membership_type_id.']" size="5" value="'.$row->revert_to_type_id.'"><br>
+            On Expiration, Revert to Type: <input type="text" name="may_convert_to['.$row->membership_type_id.']" size="5" value="'.$row->may_convert_to.'"><br>
             Pending? <input type="text" name="pending['.$row->membership_type_id.']" size="5" value="'.$row->pending.'"><br>
           </div>
         </fieldset>

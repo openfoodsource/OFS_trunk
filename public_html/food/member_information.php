@@ -232,7 +232,7 @@ $member_content .= '
 // last_name                        // mobile_phone                      // membership_description
 // first_name                       // fax                               // pending
 // last_name_2                      // toll_free                         // enabled_type
-// first_name_2                     // home_page                         // revert_to
+// first_name_2                     // home_page                         // may_convert_to
 // no_postal_mail                   // membership_type_id                // renew_cost
 // address_line1                    // customer_fee_percent              // expire_after
 // address_line2                    // membership_date                   // expire_type

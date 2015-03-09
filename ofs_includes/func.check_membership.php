@@ -14,7 +14,7 @@ include_once('func.update_ledger.php');
 //   membership_description
 //   pending
 //   enabled_type
-//   revert_to
+//   may_convert_to
 //   renew_cost
 //   expire_after
 //   expire_type
@@ -497,7 +497,7 @@ function renew_membership ($member_id, $membership_type_id)
     $membership_info = get_membership_info ($member_id);
     $renewal_info = check_membership_renewal ($membership_info);
     // Compare the member's current membership_type to what they have requested
-    if (! in_array ($membership_type_id, explode (',', $membership_info['revert_to'])))
+    if (! in_array ($membership_type_id, explode (',', $membership_info['may_convert_to'])))
       {
         // Requested membership_type is not allowed for this membership_type
         return ('Requested membership_type is not allowed.');
@@ -511,7 +511,7 @@ function renew_membership ($member_id, $membership_type_id)
       WHERE (
         enabled_type = "2"
           OR enabled_type = "3")
-        AND membership_type_id = "'.mysql_real_escape_string($membership_type_id).'"';
+        AND FIND_IN_SET(membership_type_id,"'.$membership_info['may_convert_to'].'")';
     $result_membership_type = mysql_query($query_membership_type, $connection) or die(debug_print ("ERROR: 683080 ", array ($query_membership_type,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
     if (! $row_membership_type = mysql_fetch_array($result_membership_type))
       {
@@ -574,7 +574,7 @@ function renew_membership ($member_id, $membership_type_id)
   }
 
 // Select all membership types that a current member may convert into (enabled_type = 2 or 3)
-function membership_renewal_form ($membership_type_id) {
+function membership_renewal_form ($membership_info) {
     global $connection;
     $query = '
       SELECT
@@ -582,8 +582,9 @@ function membership_renewal_form ($membership_type_id) {
       FROM
         '.TABLE_MEMBERSHIP_TYPES.'
       WHERE
-        enabled_type = 2
-        OR enabled_type = 3';
+        (enabled_type = 2
+          OR enabled_type = 3)
+        AND FIND_IN_SET(membership_type_id,"'.$membership_info['may_convert_to'].'")';
     $sql = mysql_query ($query);
     while ( $row = mysql_fetch_object($sql) )
       {
@@ -596,35 +597,32 @@ function membership_renewal_form ($membership_type_id) {
         //  $row->membership_description
         //  $row->pending
         //  $row->enabled_type
-        //  $row->revert_to
+        //  $row->may_convert_to
         //  $row->renew_cost
         //  $row->expire_after
         //  $row->expire_type
         //  $row->expire_message
-        $revert_to = explode (',', $row->revert_to);
+        $may_convert_to = explode (',', $row->may_convert_to);
         $checked = '';
         // In most cases, the conversion cost will be initial cost for the new membership type
         $conversion_cost = $row->initial_cost;
-        if ($row->membership_type_id == $membership_type_id)
+        $expire_message = '<span class="expire_message">'.$membership_info['expire_message'].'</span>';
+        if ($row->membership_type_id == $membership_info['membership_type_id'])
           {
             // This is a reversion to the same membership type, so select it and set the conversion_cost to the renew cost
             $checked = ' checked';
             $conversion_cost = $row->renew_cost;
-            $expire_message = '<div class="expire_message">'.$row->expire_message.'</div>';
           }
-        if ($row->membership_type_id == $membership_type_id && in_array($row->membership_type_id, $revert_to))
+        if ($row->membership_type_id == $membership_info['membership_type_id'] && in_array($row->membership_type_id, $may_convert_to))
           {
             // This is the member's current type (if it is okay to renew as the same type)
-            $same_renewal_intro .= '<div class="same_renewal_intro">You may renew with the same membership type:</div>';
             $same_renewal .= '
               <div class="same_renewal"><input type="radio" name="membership_type_id" value="'.$row->membership_type_id.'"'.$checked.'> <span class="cost">$'.number_format ($conversion_cost, 2).'</span> '.$row->membership_class.' (RENEWAL)</div>
               <div class="same_renewal_desc">'.$row->membership_description.'</div>';
           }
-        elseif (in_array($row->membership_type_id, $revert_to))
+        else
           {
             // If it is okay to convert to this type from the current type
-            $changed_renewal_intro = '
-              <div class="changed_renewal_intro">You may switch to another membership type:</div>';
             $changed_renewal .= '
               <div class="changed_renewal"><input type="radio" name="membership_type_id" value="'.$row->membership_type_id.'"'.$checked.'> <span class="cost">$'.number_format ($conversion_cost, 2).'</span> '.$row->membership_class.'</div>
               <div class="changed_renewal_desc">'.$row->membership_description.'</div>';
@@ -632,9 +630,7 @@ function membership_renewal_form ($membership_type_id) {
       }
     return array (
       'expire_message' => $expire_message,
-      'same_renewal_intro' => $same_renewal_intro,
       'same_renewal' => $same_renewal,
-      'changed_renewal_intro' => $changed_renewal_intro,
       'changed_renewal' => $changed_renewal);
   }
 
