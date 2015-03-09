@@ -14,13 +14,13 @@ $display_cashier = '
           <li class="last_of_group"><a href="view_balances3.php">View Ledger</a></li>
           <li class="last_of_group"><a href="report_per_subcat.php">Sales Per Subcategory</a></li>
         </ul>
-        <img src="'.DIR_GRAPHICS.'ksirc.png" width="32" height="32" align="left" hspace="2" alt="Helpful PDF Forms for Download"><br>
+<!--    <img src="'.DIR_GRAPHICS.'ksirc.png" width="32" height="32" align="left" hspace="2" alt="Helpful PDF Forms for Download"><br>
         <b>Helpful PDF Forms for Download</b>
         <ul class="fancyList1">
           <li><a href="pdf/payments_received.pdf" target="_blank">Payments Received Form</a></li>
           <li class="last_of_group"><a href="pdf/invoice_adjustments.pdf" target="_blank">Invoice Adjustments Chart</a></li>
         </ul>
-      </td>
+-->   </td>
       <td align="left" width="50%">
         <img src="'.DIR_GRAPHICS.'kspread.png" width="32" height="32" align="left" hspace="2" alt="Treasurer Functions"><br>
         <b>Treasurer Functions</b>
