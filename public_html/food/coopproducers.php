@@ -45,9 +45,9 @@ function prdcr_contact_info($start, $half)
       {
         $producer_id = $row['producer_id'];
         $business_name = $row['business_name'];
+        $unlisted_producer = $row['unlisted_producer'];
         $first_name = $row['first_name'];
         $last_name = $row['last_name'];
-        $business_name = $row['business_name'];
         $address_line1 = $row['address_line1'];
         $address_line2 = $row['address_line2'];
         $city = $row['city'];
@@ -62,52 +62,53 @@ function prdcr_contact_info($start, $half)
         $toll_free = $row['toll_free'];
         $home_page = $row['home_page'];
         $membership_date = $row['membership_date'];
-        $display .= $business_name.'<br>';
-        $display .= $first_name.' '.$last_name.'<br>';
-        $display .= $address_line1.'<br>';
+        $display .= '<div class="'.($unlisted_producer == 0 ? 'listed' : 'unlisted').'">';
+        $display .= $business_name.'<br />';
+        $display .= $first_name.' '.$last_name.'<br />';
+        $display .= $address_line1.'<br />';
         if( $address_line2 )
           {
-            $display .= $address_line2.'<br>';
+            $display .= $address_line2.'<br />';
           }
-        $display .= $city.', '.$state.' '.$zip.'<br>';
+        $display .= $city.', '.$state.' '.$zip.'<br />';
         if ( $email_address )
           {
-            $display .= '<a href="mailto:'.$email_address.'">'.$email_address.'</a><br>';
+            $display .= '<a href="mailto:'.$email_address.'">'.$email_address.'</a><br />';
           }
         if ( $email_address_2 )
           {
-            $display .= '<a href="mailto:'.$email_address_2.'">'.$email_address_2.'</a><br>';
+            $display .= '<a href="mailto:'.$email_address_2.'">'.$email_address_2.'</a><br />';
           }
         if ( $home_phone )
           {
-            $display .= $home_phone.' (home)<br>';
+            $display .= $home_phone.' (home)<br />';
           }
         if ( $work_phone )
           {
-            $display .= $work_phone.' (work)<br>';
+            $display .= $work_phone.' (work)<br />';
           }
         if ( $mobile_phone )
           {
-            $display .= $mobile_phone.' (cell)<br>';
+            $display .= $mobile_phone.' (cell)<br />';
           }
         if ( $fax )
           {
-            $display .= $fax.' (fax)<br>';
+            $display .= $fax.' (fax)<br />';
           }
         if ( $toll_free )
           {
-            $display .= $toll_free.' (toll free)<br>';
+            $display .= $toll_free.' (toll free)<br />';
           }
         if ( $home_page )
           {
-            $display .= $home_page.'<br>';
+            $display .= $home_page.'<br />';
           }
         $year = substr ($membership_date, 0, 4);
         $month = substr ($membership_date, 5, 2);
         $day = substr ($membership_date, 8);
         $member_since = date('F j, Y',mktime(0, 0, 0, $month, $day, $year));
-        $display .= 'Member since '.$member_since.'<br>';
-        $display .= '<br>';
+        $display .= 'Member since '.$member_since.'<br />';
+        $display .= '<br /></div>';
       }
     return $display;
   }
@@ -116,8 +117,11 @@ $query = '
     COUNT(producer_id) AS count
   FROM
     '.TABLE_PRODUCER.'
+  LEFT JOIN
+    '.TABLE_MEMBER.' USING(member_id)
   WHERE
-    unlisted_producer = "0"';
+    unlisted_producer != 2
+    AND membership_discontinued != 1';
 $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 427857 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
 $pid_count = mysql_result($result, 0, 'count');
 $pid_half = ceil ($pid_count / 2);
@@ -127,9 +131,10 @@ $content_list = '
   <tr>
     <td colspan="2" align="center">
       <h3>'.$pid_count.' Producers</h3>
-      Click here for <a href="prdcr_list.php"><b>Further details about each producer</b></a>
-      <br>Contact us at <a href="mailto:'.MEMBERSHIP_EMAIL.'">'.MEMBERSHIP_EMAIL.'</a> if your contact information needs to be updated.
-      <br><br>
+      This list contains <span class="listed">listed</span> and <span class="unlisted">unlisted</span> (but not suspended) producers.
+      <br />Click here for <a href="prdcr_list.php"><b>Further details about each producer</b></a>
+      <br />Contact us at <a href="mailto:'.MEMBERSHIP_EMAIL.'">'.MEMBERSHIP_EMAIL.'</a> if your contact information needs to be updated.
+      <br /><br />
     </td>
   </tr>
   <tr>
@@ -144,9 +149,17 @@ $content_list = '
 
 $page_specific_css .= '
 <style type="text/css">
-table.center {
-  margin:auto;
-  }
+  table.center {
+    margin:auto;
+    }
+  .listed,
+  .listed a {
+    color:#000;
+    }
+  .unlisted,
+  .unlisted a {
+    color:#888;
+    }
 </style>';
 
 $page_title_html = '<span class="title">Reports</span>';
