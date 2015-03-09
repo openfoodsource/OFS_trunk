@@ -52,7 +52,9 @@ Model for the overall product list display might look something like this:
 
 /********************** MISC MARKUP AND CALCULATIONS *************************/
 
-include_once ('paypal_utilities.php');
+// Make sure the paypal_utilities know this is not paypal calling and include the file
+$not_from_paypal = true;
+include_once (FILE_PATH.PATH.'paypal_utilities.php');
 
 function wholesale_text_html(&$product, &$unique)
   { return
