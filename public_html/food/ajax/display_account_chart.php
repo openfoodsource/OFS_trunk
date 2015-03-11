@@ -196,14 +196,22 @@ $found_pages = ceil ($found_accounts / $per_page);
 
 while ($row = mysql_fetch_array($result))
   {
+    // Set up the edit links (easiest just to set up all possibilities)
+      $edit_link['member'] = '
+        <div class="edit_link" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$row['account_key'].'&display_as=popup\', \'edit_member\');">Edit</a></div>';
+      $edit_link['producer'] = '
+        <div class="edit_link" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['account_key'].'&display_as=popup\', \'edit_producer\');">Edit</a></div>';
+      $edit_link['internal'] = '
+        <div class="edit_link" onclick="popup_src(\'edit_account.php?action=edit&account_key='.$row['account_key'].'&display_as=popup\', \'edit_member\');">Edit</a></div>';
+      $edit_link['tax'] = '';
     // build the ledger output
     $ledger_data['markup'] .= '
       <div id="id-'.$row['account_number'].'" class="account_row '.$account_type.'">
         '.$top_special_markup.'
         <div class="account_number">'.$row['account_number'].'</div>
         <div class="account_description"><a href="'.PATH.'view_account.php?account_type='.$account_type.'&account_key='.$row['account_key'].'&account_name='.$row['account_description'].'" target="_blank">'.$row['account_description'].'</a></div>
-        <div class="account_balance">'.number_format ($row['account_balance'], 2).'</div>
-        <div class="edit_link" onclick="popup_src(\'edit_account.php?action=edit&account_key='.$row['account_key'].'\');">Edit</a></div>
+        <div class="account_balance">'.number_format ($row['account_balance'], 2).'</div>'.
+        $edit_link[$account_type].'
       </div>';
     $top_special_markup = '';
   }
