@@ -130,7 +130,7 @@ switch ($account_type)
           account_id
         LIMIT '.$limit_clause;
       $top_special_markup = '
-        <div class="add_link"><a onclick="popup_src(\'edit_account.php?action=add&account_key=1\');">Add new account</a></div>';
+        <div class="add_link"><a onclick="popup_src(\'edit_account.php?action=add&account_key=1\', \'add_new_account\');">Add new account</a></div>';
     break;
 
     case "tax":

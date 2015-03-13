@@ -536,7 +536,7 @@ function show_product_row(&$product, &$unique)
         $tax_display = ($product[$this_row]['taxable'] == 1 ? '* ' : '');
         $display_line = '
           <tr align="center" class="'.$adjustment_class.'">
-            <td width="40" align="right" valign="top">'.($unique['view'] == 'editable' ? '<img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=product&amp;target='.$product[$this_row]['bpid'].'\');">' : '').'</td>
+            <td width="40" align="right" valign="top">'.($unique['view'] == 'editable' ? '<img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=product&amp;target='.$product[$this_row]['bpid'].'\', \'edit_transaction\');">' : '').'</td>
             <td width="50" align="right" valign="top">'.$product[$this_row]['product_id'].'&nbsp;&nbsp;</td>
 
             <td align="left" valign="top">'.$product[$this_row]['product_name'].
@@ -633,7 +633,7 @@ function show_adjustment_row(&$adjustment, &$unique)
                 <td colspan="1">&nbsp;</td>
                 <td colspan="5" align="right" style="text-align:right;">'.
                   ($unique['view'] == 'editable' ? '
-                  <img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=single&target='.$adjustment[$this_row]['transaction_id'].'\');">' : '').'
+                  <img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=single&target='.$adjustment[$this_row]['transaction_id'].'\', \'edit_transaction\');">' : '').'
                   '.ucfirst ($adjustment[$this_row]['text_key']).'
                   ('.date ('M d, Y', strtotime ($adjustment[$this_row]['effective_datetime'])).')'.
                   (strlen ($adjustment[$this_row]['ledger_message']) > 0 ? '<span class="adjustment"><br>'.$adjustment[$this_row]['ledger_message'].'</span>' : '').'
@@ -653,7 +653,7 @@ function show_adjustment_row(&$adjustment, &$unique)
             <td colspan="1">&nbsp;</td>
             <td colspan="5" align="right" style="text-align:right;">'.
               ($unique['view'] == 'editable' ? '
-              <img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=single&amp;target='.$adjustment[$this_row]['transaction_id'].'\');">' : '').'
+              <img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=single&amp;target='.$adjustment[$this_row]['transaction_id'].'\', \'edit_transaction\');">' : '').'
               '.ucfirst ($adjustment[$this_row]['text_key']).'
               ('.date ('M d, Y', strtotime ($adjustment[$this_row]['effective_datetime'])).')'.
               (strlen ($adjustment[$this_row]['ledger_message']) > 0 ? '<span class="adjustment"><br>'.$adjustment[$this_row]['ledger_message'].'</span>' : '').'

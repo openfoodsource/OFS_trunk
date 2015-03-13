@@ -19,5 +19,5 @@ function popup_html(html, modalID = "", closeTarget = "") {
 
 // This is just a special case of popup_html()
 function popup_src(src, modalID = "", closeTarget = "") {
-  popup_html('<iframe src="'+src+'" id="simplemodal-iframe-'+modalID+'">', modalID = "", closeTarget = "");
+  popup_html('<iframe src="'+src+'" id="simplemodal-iframe-'+modalID+'">', modalID = modalID, closeTarget = closeTarget);
   }

@@ -73,7 +73,7 @@ if ($_SESSION['member_id'])
     // Check if this is a forced update or if it is member-requested
     if ($_SESSION['renewal_info']['membership_expired'] && $update_membership_page != true)
       {
-        $page_specific_javascript .= '
+        $popup_renew_membership .= '
           <script type="text/javascript">
             jQuery(document).ready(function() {
               popup_src("update_membership.php?display_as=popup", "membership_renewal", "index.php?action=logout");
@@ -87,7 +87,7 @@ if ($_SESSION['member_id'])
             strlen (MOTD_CONTENT) > 0 &&
             ! ofs_get_status ('motd_viewed', $_SESSION['member_id']))
       {
-        $page_specific_javascript .= '
+        $popup_motd .= '
           <script type="text/javascript">
             jQuery(document).ready(function() {
               popup_src("motd.php?display_as=popup", "motd", "");
@@ -179,8 +179,8 @@ if ($display_as_popup == true)
     $favicon.'
     <link href="'.PATH.'stylesheet.css" rel="stylesheet" type="text/css">'.
     (isset ($page_specific_css) ? $page_specific_css : '').'
-    <script type="text/javascript" src="'.PATH.'/ajax/jquery.js"></script>
-    <script type="text/javascript" src="'.PATH.'/ajax/jquery-simplemodal.js"></script>
+    <script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
+    <script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>
     <script src="'.PATH.'javascript.js" type="text/javascript"></script>
     <script type="text/javascript">
       function init() {
@@ -211,7 +211,7 @@ else
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script src="'.PATH.'ajax/jquery.js" type="text/javascript"></script>
     <script src="'.PATH.'ajax/jquery-ui.js" type="text/javascript"></script>
-    <script type="text/javascript" src="'.PATH.'/ajax/jquery-simplemodal.js"></script>'.
+    <script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>'.
     $favicon.'
     <link href="'.PATH.'stylesheet.css" rel="stylesheet" type="text/css">'.
     $motd_css.
@@ -228,7 +228,8 @@ else
         }
       window.onload = init;
     </script>'.
-    $motd_javascript.
+    (isset ($popup_renew_membership) ? $popup_renew_membership : ''). // not on popup pages to prevent recursion
+    (isset ($popup_motd) ? $popup_motd : '').                         // not on popup pages to prevent recursion
     (isset ($page_specific_javascript) ? $page_specific_javascript : '').'
   </head>
   <body>'.
@@ -258,9 +259,7 @@ else
       // Menus above will be shown to members with approved auth_types
       // Menu below will be shown when no member is logged in
       $login_menu.'
-    </div><!-- #menu -->'.
-    $motd.
-    $renew_membership_form.'
+    </div><!-- #menu -->
     <div id="content">
       '.$page_title_html.'
       '.$page_subtitle_html.'

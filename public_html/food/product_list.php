@@ -373,8 +373,7 @@ if ($show_search) $search_display = '
 if (isset ($pager['found_rows']))
   {
     $search_display .= '
-      <span class="found_rows">Found '.$pager['found_rows'].' '.Inflect::pluralize_if ($pager['found_rows'], 'item').'</span>
-      <h4>'.(strlen (ActiveCycle::delivery_date ($_GET['delivery_id'])) > 0 ? 'Producer basket for '.ActiveCycle::delivery_date ($_GET['delivery_id']) : 'Cycle #'.$_GET['delivery_id'].' does not exist.').'</h4>';
+      <span class="found_rows">Found '.$pager['found_rows'].' '.Inflect::pluralize_if ($pager['found_rows'], 'item').'</span>';
   }
 
 $page_specific_css .= '
@@ -450,7 +449,11 @@ $page_specific_css .= '
   text-align:center;
   }
 #delivery_id_nav .delivery_id {
+  display:block;
   font-weight:bold;
+  background-color:#464;
+  color:#fff;
+  border-radius:10px;
   }
 #delivery_id_nav .prior,
 #delivery_id_nav .next,

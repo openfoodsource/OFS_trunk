@@ -227,7 +227,7 @@ function order_cycle_navigation($data)
     return
     '<div id="delivery_id_nav">
     <a class="prior" href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.($_GET['delivery_id'] ? ($_GET['delivery_id'] - 1) : ActiveCycle::delivery_id() - 1).$http_get_query.'">&larr; PRIOR ORDER </a>
-    <span class="delivery_id">['.($_GET['delivery_id'] ? $_GET['delivery_id'] : ActiveCycle::delivery_id()).']</span>
+    <span class="delivery_id">'.date (DATE_FORMAT_CLOSED, strtotime(ActiveCycle::delivery_date($_GET['delivery_id']))).'</span>
     <a class="next" href="'.$_SERVER['SCRIPT_NAME'].'?delivery_id='.($_GET['delivery_id'] ? ($_GET['delivery_id'] + 1) : ActiveCycle::delivery_id() + 1).$http_get_query.'"> NEXT ORDER &rarr;</a>
   </div>';
   };

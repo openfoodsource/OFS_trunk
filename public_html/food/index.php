@@ -151,16 +151,16 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
         $form_block .= '
           <form class="login" method="post" action="'.$_SERVER['SCRIPT_NAME'].'?action=login" name="login">
             <fieldset>
-              <button type="submit" name="submit">go</button>
+              <button type="submit" name="submit" tabindex="3">go</button>
               <label>Username</label>
-              <input id="load_target" type="text" name="username" placeholder="Username">
+              <input id="load_target" type="text" name="username" placeholder="Username" tabindex="1">
               <label>Password</label>
-              <input type="password" name="password" placeholder="Password">
+              <input type="password" name="password" placeholder="Password" tabindex="2">
               <label>
-                <a href="reset_password.php">Forgot your password?</a>
+                <a href="reset_password.php" tabindex="4">Forgot your password?</a>
               <label>
               </label>
-                <a href="member_form.php">Register as a new member...</a>
+                <a href="member_form.php" tabindex="5">Register as a new member...</a>
               </label>
             </fieldset>
           </form>';
@@ -176,7 +176,7 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
     $page_title = 'Login';
     $page_tab = 'login';
   }
-elseif (! $_SESSION['member_id'])
+else
   {
     // Not login and not logged in, so show basic "info" screen
     $content .= 
@@ -191,16 +191,12 @@ elseif (! $_SESSION['member_id'])
           <li><a href="'.PATH.'member_form.php">Membership Application Form</a></li>
           <li><a href="'.PATH.'index.php?action=login">Login to Order</a></li>
         </ul>
-      </div>';
+      </div>
+      <div style="clear:both;"></div>';
     $page_title_html = '<span class="title">'.SITE_NAME.'</span>';
     $page_subtitle_html = '<span class="subtitle">Information</span>';
     $page_title = 'Information';
     $page_tab = 'login';
-  }
-else
-  {
-    header('Location: motd.php');
-    exit(0);
   }
 
 $page_specific_javascript = '';
@@ -238,25 +234,9 @@ fieldset {
   padding-left:10px;
   border:1px solid #b7a777;
   border-bottom-right-radius: 100px;
-    -moz-border-radius-bottomright: 100px;
-    -webkit-border-bottom-right-radius: 100px;
-    -ie-border-bottom-right-radius: 100px;
-    -o-border-bottom-right-radius: 100px;
   border-top-right-radius: 100px;
-    -moz-border-radius-topright: 100px;
-    -webkit-border-top-right-radius: 100px;
-    -ie-border-top-right-radius: 100px;
-    -o-border-top-right-radius: 100px;
   border-top-left-radius: 10px;
-    -moz-border-radius-topleft: 10px;
-    -webkit-border-top-left-radius: 10px;
-    -ie-border-top-left-radius: 10px;
-    -o-border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
-    -moz-border-radius-bottomleft: 10px;
-    -webkit-border-bottom-left-radius: 10px;
-    -ie-border-bottom-left-radius: 10px;
-    -o-border-bottom-left-radius: 10px;
   }
 label {
   display:block;
@@ -286,11 +266,13 @@ button {
   margin:20px 25px;
   border:1px solid #b7a777;
   border-radius: 65px;
-  -moz-border-radius: 65px;
-  -webkit-border-radius: 65px;
-  -ie-border-radius: 65px;
-  -o-border-radius: 65px;
   background-color:#97a97b;
+  outline:0;
+  }
+button:focus,
+button::-moz-focus-inner {  
+  border:0;
+  color:#f1e021;
   }
 button:hover {
   color:#f1e021;

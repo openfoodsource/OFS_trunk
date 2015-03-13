@@ -19,6 +19,12 @@ UPDATE ofs_configuration
   WHERE ofs_configuration.section = '3. File Setup'
   AND ofs_configuration.name = 'food_coop_store_path';
 
+-- Set new software version
+UPDATE ofs_configuration
+  SET options = 'read_only=\r\nOFSv0.9.0\r\nOFSv0.9.1\r\nOFSv0.9.2\r\nOFSv0.9.3\r\nOFSv1.0.0\r\nOFSv1.0.1\r\nOFSv1.1.0',
+    value = 'OFSv1.1.0'
+  WHERE ofs_configuration.section = '1. Server Setup'
+    AND ofs_configuration.name = 'current_version';
 -- Insert defaults for new configuration options
 
 INSERT INTO ofs_configuration (section, name, constant, options, value, description) VALUES
