@@ -71,7 +71,7 @@ if ($_GET['action'] == 'Search' &&
                 if (strlen ($row['producer_id']) > 0)
                   {
                     $producer_info_temporary = '
-                      <li class="producer" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</li>';
+                      <li class="producer" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\', \'\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</li>';
                   }
               }
             // Otherwise this is the same member as before so continue with the additional producer_info_line
@@ -81,7 +81,7 @@ if ($_GET['action'] == 'Search' &&
                   {
                     // Add to the producer_info_temporary and recreate the member_list_temporary
                     $producer_info_temporary .= '
-                      <li class="producer" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</li>';
+                      <li class="producer" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\', \'\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</li>';
                   }
               }
             $member_list_temporary = '
@@ -96,9 +96,9 @@ if ($_GET['action'] == 'Search' &&
                 <div class="result email'.$discontinued_class.'"><a href="mailto:'.$row['email_address'].'">'.$row['email_address'].'</a>'.(strlen ($row['email_address_2']) > 0 ? '<br><a href="mailto:'.$row['email_address_2'].'">'.$row['email_address_2'].'</a>' : '').'</div>
                 <div class="result username'.$discontinued_class.'">'.$row['username'].'</div>
                 <div class="result links">
-                  <a class="popup" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$row['member_id'].'&display_as=popup\', \'edit_member\')">Edit</a>
+                  <a class="popup" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$row['member_id'].'&display_as=popup\', \'edit_member\', \'\')">Edit</a>
                   &nbsp;/&nbsp;
-                  <a class="popup" onclick="popup_src(\'member_information.php?member_id='.$row['member_id'].'&display_as=popup\', \'member_information\')">View</a>
+                  <a class="popup" onclick="popup_src(\'member_information.php?member_id='.$row['member_id'].'&display_as=popup\', \'member_information\', \'\')">View</a>
                 </div>
               </div>';
             $member_id_prior = $row['member_id'];

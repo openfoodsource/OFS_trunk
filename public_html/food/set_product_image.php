@@ -51,7 +51,7 @@ if ($_GET['action'] == 'select_image')
     // Display the upload link
     $page_content .= '
           <div class="gallery_block">
-            <div id="image-upload" class="gallery_image" onclick="popup_src(\'upload_images.php\', \'upload_image\')">
+            <div id="image-upload" class="gallery_image" onclick="popup_src(\'upload_images.php\', \'upload_image\', \'\')">
               <div class="upload_icon" title="Upload new image">&#8686;</div>
             </div>
           <figcaption>upload new image</figcaption>
@@ -89,7 +89,7 @@ if ($_GET['action'] == 'select_image')
         $page_content .= '
           <div class="gallery_block">
             <div id="image-'.$image_id.'" class="gallery_image'.($image_id == $image_id_target ? ' selected' : '').'" title="'.$product_list.'">
-              <input id="edit-'.$image_id.'" class="image_edit" type="button" title="Edit this image" value="&#9998;" onclick="popup_src(\''.$_SERVER['SCRIPT_NAME'].'?action=edit_image&image_id='.$image_id.'\', \'upload_image\')"></input>
+              <input id="edit-'.$image_id.'" class="image_edit" type="button" title="Edit this image" value="&#9998;" onclick="popup_src(\''.$_SERVER['SCRIPT_NAME'].'?action=edit_image&image_id='.$image_id.'\', \'upload_image\', \'\')"></input>
               '.(strlen ($product_list) == 0 ? '<input id="delete-'.$image_id.'" class="image_delete" type="button" title="Delete this image" value="&#215;" onclick="delete_image(this,\'set\')" onblur="delete_image(this,\'clear\')"></input>' : '').'
               <input id="select-'.$image_id.'" class="image_select" type="button" title="Select this image" value="&#10004;" onclick="set_image('.$image_id.')"></input>
               <img src="'.get_image_path_by_id ($image_id).'">

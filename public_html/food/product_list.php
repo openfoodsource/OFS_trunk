@@ -489,14 +489,14 @@ function AddToCart (product_id, product_version, action) {
   function(data) {
     // If site is being inferred from a prior order, then notify of the assumption
     if (data.substr(0,16) == "site_id reverted") {
-      popup_src(\'select_delivery_popup.php?first_call=true\', \'select_delivery\');
+      popup_src(\'select_delivery_popup.php?first_call=true\', \'select_delivery\', \'\');
       // Set the requested product information so we can re-request it after the basket is handled
       add_to_cart_array = [product_id, product_version, action];
       return false;
       }
     // If no site can be determined, then popup a window to set it.
     if (data == "site_id not set") {
-      popup_src(\'select_delivery_popup.php?first_call=true\', \'select_delivery\');
+      popup_src(\'select_delivery_popup.php?first_call=true\', \'select_delivery\', \'\');
       // Set the requested product information so we can re-request it after the basket is handled
       add_to_cart_array = [product_id, product_version, action];
       return false;

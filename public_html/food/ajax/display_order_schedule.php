@@ -230,13 +230,13 @@ foreach ($order_cycle_array as $row=>$order_cycle_data)
   {
     // build the order schedule output
     $ledger_data['markup'] .= '
-      <div id="id-'.$order_cycle_data['delivery_id'].'" class="order_cycle_row" onclick="popup_src(\'edit_order_schedule.php?delivery_id='.$order_cycle_data['delivery_id'].'\', \'edit_order\');" onmouseout="restore_calendar(\''.$order_cycle_data['delivery_id'].'\')" onmouseover="highlight_calendar(\''.$order_cycle_data['delivery_id'].'\')">
+      <div id="id-'.$order_cycle_data['delivery_id'].'" class="order_cycle_row" onclick="popup_src(\'edit_order_schedule.php?delivery_id='.$order_cycle_data['delivery_id'].'\', \'edit_order\', \'\');" onmouseout="restore_calendar(\''.$order_cycle_data['delivery_id'].'\')" onmouseover="highlight_calendar(\''.$order_cycle_data['delivery_id'].'\')">
         <div class="delivery_id">'.$order_cycle_data['delivery_id'].'</div>
         <div class="date_open">'.$order_cycle_data['date_open'].'</div>
         <div class="date_closed">'.$order_cycle_data['date_closed'].'</div>
         <div class="order_fill_deadline">'.$order_cycle_data['order_fill_deadline'].'</div>
         <div class="delivery_date">'.$order_cycle_data['delivery_date'].'</div>
-        <!-- <div class="edit_link" onclick="popup_src(\'edit_account.php?action=edit&account_key='.$order_cycle_data['account_key'].'\');">Edit</a></div> -->
+        <!-- <div class="edit_link" onclick="popup_src(\'edit_account.php?action=edit&account_key='.$order_cycle_data['account_key'].'\', \'edit_account\', \'\');">Edit</a></div> -->
       </div>';
     $top_special_markup = '';
   }

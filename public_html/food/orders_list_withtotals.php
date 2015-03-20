@@ -205,9 +205,9 @@ while ( $row = mysql_fetch_array($result) )
       }
     $display .= '</td>
       <td class="member_links">'.
-        (CurrentMember::auth_type('member_admin') == true ? '<a class="popup" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$member_id.'&display_as=popup\')">Edit</a>' : '').
+        (CurrentMember::auth_type('member_admin') == true ? '<a class="popup" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$member_id.'&display_as=popup\', \'edit_producer\', \'\')">Edit</a>' : '').
         (CurrentMember::auth_type('member_admin') == true && CurrentMember::auth_type('cashier') == true ? ' | ' : '').
-        (CurrentMember::auth_type('cashier') == true ? '<a class="popup" onclick="popup_src(\'member_information.php?member_id='.$member_id.'&display_as=popup\')">View</a>' : '').'
+        (CurrentMember::auth_type('cashier') == true ? '<a class="popup" onclick="popup_src(\'member_information.php?member_id='.$member_id.'&display_as=popup\', \'edit_member\', \'\')">View</a>' : '').'
       </td>
       <td class="order_links" valign="top"><a href="product_list.php?type=basket&amp;delivery_id='.$delivery_id.'&amp;member_id='.$member_id.'&amp;basket_id='.$basket_id.'">Basket</a>&nbsp;|&nbsp;<a href="show_report.php?type=customer_invoice&amp;delivery_id='.$delivery_id.'&amp;member_id='.$member_id.'">Invoice</a></td>
     </tr>';
