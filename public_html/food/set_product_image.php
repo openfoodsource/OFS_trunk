@@ -556,7 +556,7 @@ $page_specific_javascript = '
       var image_id = obj.id.split("-")[1];
       if (action == "set") {
         if (jQuery(obj).hasClass("warn")) {
-          jQuery.get("'.BASE_URL.PATH.'receive_image_uploads.php?action=delete&image_id="+image_id, function(data) {
+          jQuery.get("'.PATH.'receive_image_uploads.php?action=delete&image_id="+image_id, function(data) {
             // If the return value is deleted
             if (data == "deleted") {
               // Remove the image from our list
@@ -578,7 +578,7 @@ $page_specific_javascript = '
       var product_version = "'.preg_replace("/[^0-9]/",'',$_GET['product_version']).'";
       jQuery.ajax({
         type: "POST",
-        url: "'.BASE_URL.PATH.'set_product_image.php",
+        url: "'.PATH.'set_product_image.php",
         cache: false,
         data: {
           select_all_versions: select_all_versions,

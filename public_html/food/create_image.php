@@ -3,9 +3,9 @@ include_once 'config_openfood.php';
 // The purpose of this page is to capture 404 errors when image files are not found
 // and create them so, at least next time, they will be found
 
-// Just to stop bogus hits on this process, only handle requests from this server
-$parsed_referer = parse_url($_SERVER['HTTP_REFERER']);
-if (BASE_URL != $parsed_referer['scheme'].'://'.$parsed_referer['host']) exit;
+// Just to stop bogus hits on this process, ensure the request came from an "approved" server
+// PSEUDOCODE: if (! in_array ("www.openfoodsource.org", array("www.openfoodsource.org", "openfoodsource.org")))
+if (! in_array (parse_url($_SERVER['HTTP_REFERER'])['host'], preg_split("/[\n\r]+/", DOMAIN_NAME))) exit;
 
 // Get the image file that was requested
 $file = basename ($_SERVER['REQUEST_URI'],'.png');

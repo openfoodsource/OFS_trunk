@@ -94,10 +94,10 @@ if ( ! $_SESSION['member_id'] )
               'Account security notice:
 
                 The password for an account registered with this email address
-                has been reset from the website at '.DOMAIN_NAME.'
+                has been reset from the website at '.(preg_split("/[\n\r]+/", DOMAIN_NAME)[0]).'
                 Username: '.$valid_username.'
                 The new password is: '.$password;
-            mail ( $valid_email, 'Updated account info for '.DOMAIN_NAME, $message, "from: ".MEMBERSHIP_EMAIL);
+            mail ( $valid_email, 'Updated account info for '.(preg_split("/[\n\r]+/", DOMAIN_NAME)[0]), $message, "from: ".MEMBERSHIP_EMAIL);
             header( 'refresh: 7; url='.PATH );
             $display_password .= '
               <table width="50%" align="center" cellspacing="5">

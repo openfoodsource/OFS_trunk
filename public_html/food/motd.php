@@ -70,7 +70,7 @@ $page_specific_javascript = '
   function reset_motd (obj, action) {
     if (action == "set") {
       if (jQuery(obj).hasClass("warn")) {
-        jQuery.get("'.BASE_URL.PATH.'motd.php?action=reset_motd", function(data) {
+        jQuery.get("'.PATH.'motd.php?action=reset_motd", function(data) {
           // The returned value is the "total_views" text
           jQuery("#total_views").html(data);
           jQuery(obj).removeClass("warn");

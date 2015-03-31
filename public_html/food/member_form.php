@@ -751,10 +751,10 @@ if (count ($error_array) == 0 && $_POST['action'] == 'Submit') // For new member
 
     $email_headers  = "From: ".MEMBERSHIP_EMAIL."\n";
     $email_headers .= "Reply-To: ".MEMBERSHIP_EMAIL."\n";
-    $email_headers .= "Errors-To: web@".DOMAIN_NAME."\n";
+    $email_headers .= "Errors-To: web@".(preg_split("/[\n\r]+/", DOMAIN_NAME)[0])."\n";
     $email_headers .= "MIME-Version: 1.0\n";
     $email_headers .= "Content-type: multipart/alternative; boundary=\"$boundary\"\n";
-    $email_headers .= "Message-ID: <".md5(uniqid(time()))."@".DOMAIN_NAME.">\n";
+    $email_headers .= "Message-ID: <".md5(uniqid(time()))."@".(preg_split("/[\n\r]+/", DOMAIN_NAME)[0]).">\n";
     $email_headers .= "X-Mailer: PHP ".phpversion()."\n";
     $email_headers .= "X-Priority: 3\n";
     $email_headers .= "X-AntiAbuse: This is a machine-generated response to a user-submitted form at ".SITE_NAME.".\n\n";

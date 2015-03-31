@@ -1,22 +1,10 @@
 <?php
 // Initialize some values
-$import_button_text = 'SHOW old configuration data';
 $save_button_text = 'SAVE changes';
-$preload_from_old_config = false;
 $post_changes_to_database = false;
 $status_message = '';
 $update_queries = array();
 
-// Do we need to preload values from the [old] configuration file?
-if (isset ($_POST['action']) && $_POST['action'] == $import_button_text)
-  {
-    $preload_from_old_config = true;
-    $status_message .= '
-      Now showing values from the original configuration file. Configuration names with values
-      matching current settings are shown in <span class="name_style">this</span> color. Names
-      and values where the original configuration is <em>different</em> are shown in
-      <span class="from_old_config">this</span> color.';
-  }
 if (isset ($_POST['action']) && $_POST['action'] == $save_button_text)
   {
     $post_changes_to_database = true;
@@ -27,15 +15,7 @@ if (isset ($_POST['action']) && $_POST['action'] == $save_button_text)
     this</span> color.';
   }
 
- // If we need the old configuration values, then include old configuration instead of new one
-if ($preload_from_old_config)
-  {
-    @include_once 'config_openfood.php';
-    $database_config['db_prefix'] = DB_PREFIX;
-    $database_config['openfood_config'] = 'openfood_config';
-  }
 include_once 'config_openfood.php';
-
 session_start();
 valid_auth('site_admin');
 
@@ -51,21 +31,19 @@ function set_update_query($update_queries, $name, $value)
     array_push ($update_queries, $query);
     return $update_queries;
   }
-
 // Begin content generation
 $content = '
             <p class="status_message">Make changes and press "'.$save_button_text.'" at the bottom
             of the page. Be aware that some changes (particularly the database table names) can
-            severely break your installation. If upgrading from a prior version, with hard-coded
-            configuration settings, there is a button at the bottom "'.$import_button_text.'"
-            that will display settings from the old configuration file, to aid with the conversion.</p>
+            severely break your installation.</p>
             <p class="status_message">NOTE: Items marked with <span class="star">&#9733;</span> are set from
             the override file and may not represent the normal configuration. Override values are shown
             in <span class="from_override">this</span> color.</p>
             <p class="status_message">'.$status_message.'</p>
             <form name="ofs_config" action="'.$_SERVER['SCRIPT_NAME'].'" method="post">
             <div class="ofs_config">';
-
+$stored_value = '';
+$this_value = '';
 $query = '
   SELECT
     *
@@ -78,25 +56,6 @@ $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 864302 "
 $section_prior = '';
 while ($row = mysql_fetch_object($result))
   {
-    // If we are preloading from the configuration file, then clobber the $row->value
-    if ($preload_from_old_config
-        && $row->constant != ''
-        && defined ($row->constant))
-      {
-        // If this is a table, then we need to remove the prefix
-        if (substr ($row->constant, 0, 6) == 'TABLE_' || substr ($row->constant, 0, 10) == 'NEW_TABLE_')
-          {
-            $prefix_length = strlen ($db_prefix);
-            if (substr (constant ($row->constant), 0, $prefix_length) == $db_prefix) $constant_value = substr (constant ($row->constant), $prefix_length);
-            else $constant_value = constant ($row->constant);
-          }
-        else $constant_value = constant ($row->constant);
-      }
-
-
-
-
-
     // Sanitize values to remove quotes and other html-troublesome characters
     $section_header = false;
     // Start a new section, if section has changed
@@ -134,15 +93,9 @@ while ($row = mysql_fetch_object($result))
               if ($override_config[$row->name] != $option_data[1] && $override_config[$row->name] != true) $override_config[$row->name] = $option_data[0];
               else $override_config[$row->name] = $option_data[1];
             }
-          // Set up value for old configuration data
-          if ($preload_from_old_config)
-            {
-              if ($constant_value != $option_data[1] && $constant_value != true) $constant_value = $option_data[0];
-              else $constant_value = $option_data[1];
-            }
           if ($post_changes_to_database)
             {
-              if ($_POST[$row->name] == $option_data[1]) $posted_value = $option_data[1];
+              if (isset ($_POST[$row->name]) && $_POST[$row->name] == $option_data[1]) $posted_value = $option_data[1];
               else $posted_value = $option_data[0];
               $this_value = $posted_value;
             }
@@ -152,7 +105,6 @@ while ($row = mysql_fetch_object($result))
             }
           $input_field = '<input type="checkbox" class="value" name="'.$row->name.'" value="'.htmlentities ($option_data[1]).'"'.($this_value != $option_data[1] && $this_value != false ? '' : ' checked="checked"').'> '.htmlentities ($option_data[1]).'?';
           break;
-
         // Display input as a text area
         case 'text_area':
           $stored_value = $row->value;
@@ -168,7 +120,6 @@ while ($row = mysql_fetch_object($result))
           $input_field = '
                   <textarea class="value" name="'.$row->name.'">'.htmlentities ($this_value).'</textarea>';
           break;
-
         // Display input as a text field with a validation pattern
         case 'input_pattern=':
           $stored_value = $row->value;
@@ -185,7 +136,6 @@ while ($row = mysql_fetch_object($result))
           $input_field .= '
                   <input type="text" class="value" name="'.$row->name.'" value="'.htmlentities ($this_value).'" pattern="'.$pattern.'">';
           break;
-
         // Display input as a text-input with hint-options on the following lines
         case 'input_options=':
           $stored_value = $row->value;
@@ -212,7 +162,6 @@ while ($row = mysql_fetch_object($result))
                 </datalist>
                   <input type="text" class="value" name="'.$row->name.'" value="'.htmlentities ($this_value).'" list="'.$row->name.'_options">';
           break;
-
         // Display input as a select list with options on the following lines
         case 'select=':
           $stored_value = $row->value;
@@ -236,7 +185,6 @@ while ($row = mysql_fetch_object($result))
           $input_field .= '
                   </select>';
           break;
-
         // Display input as a multi-select list options on the following lines; result will be comma-separated values
         case 'multi_options=':
           $stored_value = $row->value;
@@ -264,7 +212,6 @@ while ($row = mysql_fetch_object($result))
           $input_field .= '
                   </select>';
           break;
-
         // Display input as a hidden field with value displayed as text
         case 'read_only=':
           $stored_value = $row->value;
@@ -275,7 +222,6 @@ while ($row = mysql_fetch_object($result))
                   <input type="hidden" class="value" name="'.$row->name.'" value="'.htmlentities ($this_value).'">
                   '.$row->value;
           break;
-
         // If no option_type was chosen, then just clear the values
         default:
           $pattern = '';
@@ -286,7 +232,6 @@ while ($row = mysql_fetch_object($result))
 //           $this_value = '';
           break;
       }
-
     // If there was a change for this item, set the update query
     if ($this_value != $stored_value)
       {
@@ -297,26 +242,6 @@ while ($row = mysql_fetch_object($result))
       {
         $changed_class = '';
       }
-
-    // Handle data that is pre-loaded from the old configuration file
-    if ($preload_from_old_config
-        && $row->constant != ''
-        && defined ($row->constant))
-      {
-        if ($constant_value != $row->value)
-          {
-            $old_config_content = '<div class="alt_info">Old configuration:<div class="alt_value from_old_config">'.$constant_value.'</div></div>';
-            // $row->value = $constant_value; // Uncomment this to prefill form elements with old values
-            $from_old_config_style = ' from_old_config';
-          }
-        else
-          {
-            $old_config_class = '';
-            $old_config_content = '';
-            $from_old_config_style = '';
-          }
-      }
-
     // If an override value has been set, then flag and display the override values
     if (isset ($override_config[$row->name]))
       {
@@ -330,7 +255,6 @@ while ($row = mysql_fetch_object($result))
         $override_flag = '';
         $override_content = '';
       }
-
     // Create the display and add it to the page content
     if ($section_header != true)
       {
@@ -338,11 +262,10 @@ while ($row = mysql_fetch_object($result))
               <div id="'.$row->name.'" class="config_row">
                 <div class="section">'.$row->section.'</div>
                 <div class="constant">'.$row->constant.'</div>
-                <fieldset><label class="name name_style'.$changed_class.$from_old_config_style.'">'.
+                <fieldset><label class="name name_style'.$changed_class.'">'.
                   $override_flag.$row->name.'</label>'.
                   $input_field.'<br />'.
-                  $override_content.
-                  $old_config_content.'
+                  $override_content.'
                 </fieldset>
                 <div class="description">'.$row->description.'</div>
               </div>';
@@ -351,24 +274,15 @@ while ($row = mysql_fetch_object($result))
   $input_field = '';
   $section_prior = $row->section;
   }
-
 // Now close the the last data section if there were any sections to begin with
 if ($section_prior != '')
   {
     $content .= '
             </div>';
   }
-// Only show the button for including the old configuration if the file exists
-if (stream_resolve_include_path ('config_foodcoop.php'))
-  {
-    $content .= '
-            <input type="submit" name="action" value="'.$import_button_text.'">';
-  }
-// and close the page form
 $content .= '
             <input type="submit" name="action" value="'.$save_button_text.'">
           </form>';
-
 // Now that we're almost done, go back and post all new data values
 if (count ($update_queries) > 0)
   {    
@@ -377,7 +291,6 @@ if (count ($update_queries) > 0)
         $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 758932 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
       }
   }
-
 $page_specific_css = '
   <style type="text/css">
     .status_message {
@@ -445,9 +358,6 @@ $page_specific_css = '
       float:right;
       text-align:left;
       font-family:monospace;
-      }
-    .from_old_config {
-      color:#368;
       }
     .from_override {
       color:#863;

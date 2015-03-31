@@ -16,6 +16,8 @@ $logout_menu = '';
 $basket_menu = '';
 $login_menu = '';
 $header_title = '';
+if (!isset ($display_as_popup)) $display_as_popup = false;
+
 
 // Set $google_analytics
 if (strlen (GOOGLE_ANALYTICS_TRACKING_ID) > 0)

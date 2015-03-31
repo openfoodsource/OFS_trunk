@@ -44,7 +44,7 @@ if ( $_POST['pending'] )
                 $headers .= "Errors-To: ".GENERAL_EMAIL."\n";
                 $headers .= "MIME-Version: 1.0\n";
                 $headers .= "Content-type: text/plain; charset=us-ascii\n";
-                $headers .= "Message-ID: <".md5(uniqid(time()))."@".DOMAIN_NAME.">\n";
+                $headers .= "Message-ID: <".md5(uniqid(time()))."@".(preg_split("/[\n\r]+/", DOMAIN_NAME)[0]).">\n";
                 $headers .= "X-Mailer: PHP ".phpversion()."\n";
                 $headers .= "X-Priority: 3\n";
                 $headers .= 'X-AntiAbuse: This is a user-submitted email through the '.SITE_NAME." producer approval page.\n\n";

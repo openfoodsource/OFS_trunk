@@ -34,7 +34,7 @@ if (isset ($_FILES['files']['error'][$image_index])) $error = mysql_real_escape_
 if (isset ($_FILES['files']['size'][$image_index])) $content_size = mysql_real_escape_string ($_FILES['files']['size'][$image_index]);
 
 
-if ($_GET['action'] == 'delete')
+if (isset ($_GET['action']) && $_GET['action'] == 'delete')
   {
     // Cycle through all files matching the image number and delete them
     $deleted = true;
@@ -93,8 +93,8 @@ elseif (!$error && $content_size)
     $return_info[$image_index]['name'] = $file_name;
     $return_info[$image_index]['size'] = $content_size;
     $return_info[$image_index]['type'] = $mime_type;
-    $return_info[$image_index]['url'] = BASE_URL.PATH.'product_images/img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png';
-    $return_info[$image_index]['thumbnailUrl'] = BASE_URL.PATH.'product_images/img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png';
+    $return_info[$image_index]['url'] = PATH.'product_images/img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png';
+    $return_info[$image_index]['thumbnailUrl'] = PATH.'product_images/img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png';
     $return_info[$image_index]['deleteUrl'] = $_SERVER['SCRIPT_NAME'].'?action=delete&image_id='.$image_id;
     $return_info[$image_index]['deleteType'] = 'DELETE';
 
