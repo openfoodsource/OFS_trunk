@@ -8,6 +8,8 @@ function get_baskets_list ()
     // Get a list of the order cycles since the member joined
     $delivery_id_array = array();
     $delivery_attrib = array ();
+    $after_current_count = 0;
+    $current = false;
     $query = '
       SELECT 
         delivery_id,
@@ -23,7 +25,7 @@ function get_baskets_list ()
       ORDER BY
         delivery_date DESC';
     $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 898034 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    WHILE ($row = mysql_fetch_array($result))
+    while ($row = mysql_fetch_array($result))
       {
         array_push ($delivery_id_array, $row['delivery_id']);
         $delivery_attrib[$row['delivery_id']]['date_open'] = $row['date_open'];
@@ -32,6 +34,11 @@ function get_baskets_list ()
         $delivery_attrib[$row['delivery_id']]['time_closed'] = strtotime($row['date_closed']);
         $delivery_attrib[$row['delivery_id']]['order_fill_deadline'] = $row['order_fill_deadline'];
         $delivery_attrib[$row['delivery_id']]['delivery_date'] = $row['delivery_date'];
+        // Initialize these array elements
+        $delivery_attrib[$row['delivery_id']]['basket_id'] = '';
+        $delivery_attrib[$row['delivery_id']]['site_id'] = '';
+        $delivery_attrib[$row['delivery_id']]['delivery_type'] = '';
+        $delivery_attrib[$row['delivery_id']]['checked_out'] = '';
       }
     // Now get this customer's baskets
     $query = '
@@ -44,7 +51,7 @@ function get_baskets_list ()
       ORDER BY
         delivery_id DESC';
     $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 898034 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    WHILE ($row = mysql_fetch_array($result))
+    while ($row = mysql_fetch_array($result))
       {
         $delivery_attrib[$row['delivery_id']]['basket_id'] = $row['basket_id'];
         $delivery_attrib[$row['delivery_id']]['site_id'] = $row['site_id'];
@@ -52,7 +59,7 @@ function get_baskets_list ()
         $delivery_attrib[$row['delivery_id']]['checked_out'] = $row['checked_out'];
       }
     // Display the order cycles and baskets...
-    $display .= '
+    $display = '
         <div id="basket_dropdown" class="dropdown">
           <a href="'.$_SERVER['SCRIPT_NAME'].'?action=basket_list_only"><h1 class="basket_history">
             Ordering History

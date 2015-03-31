@@ -876,6 +876,10 @@ form input.error {
   overlfow:auto;
   cursor:pointer;
   }
+#logout .button,
+#edit_profile .button {
+  padding:0px;
+  }
 
 /* Set color for disabled text */
 input[type="text"]:disabled
@@ -1074,10 +1078,11 @@ a.modalCloseImg:hover {
   #header,
   #menu,
   #footer,
-  #payment_options {
+  #user_menu,
+  #payment_options,
+  .current_view {
     display:none;
     }
-
   }
 
 

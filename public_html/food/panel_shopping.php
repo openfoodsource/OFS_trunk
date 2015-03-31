@@ -49,17 +49,17 @@ else
   }
 
 // Set content_top to show basket selector...
-$delivery_codes_list .= get_delivery_codes_list (array (
-  'action' => $_GET['action'],
+$delivery_codes_list = get_delivery_codes_list (array (
+  'action' => (isset ($_GET['action']) ? $_GET['action'] : ''),
   'member_id' => $_SESSION['member_id'],
   'delivery_id' => ActiveCycle::delivery_id(),
-  'site_id' => $_GET['site_id'],
-  'delivery_type' => $_GET['delivery_type']
+  'site_id' => (isset ($_GET['site_id']) ? $_GET['site_id'] : ''),
+  'delivery_type' => (isset ($_GET['delivery_type']) ? $_GET['delivery_type'] : '')
   ));
-$baskets_list .= get_baskets_list ();
+$baskets_list = get_baskets_list ();
 
 // Generate the display output
-$display .= '
+$display = '
   <table width="100%" class="compact">
     <tr valign="top">
       <td align="left" width="50%">'.
@@ -99,7 +99,7 @@ $display .= '
 $search_display = '
   <form action="product_list.php" method="get">
     <input type="hidden" name="type" value="search">
-    <input type="text" name="query" value="'.$_GET['query'].'">
+    <input type="text" name="query" value="'.(isset ($_GET['query']) ? $_GET['query'] : '').'">
     <input type="submit" name="action" value="Search">
   </form>';
 
@@ -124,9 +124,9 @@ $display .= '
     </tr>
   </table>';
 
-$page_specific_javascript .= '';
+$page_specific_javascript = '';
 
-$page_specific_css .= '
+$page_specific_css = '
 <link rel="stylesheet" type="text/css" href="delivery_dropdown.css">
 <link rel="stylesheet" type="text/css" href="basket_dropdown.css">
 <style type="text/css">
@@ -140,7 +140,7 @@ $page_specific_css .= '
 </style>';
 
 // Show the delivery-location chooser ONLY...
-if ($_GET['action'] == 'delivery_list_only' && $delivery_codes_list)
+if (isset ($_GET['action']) && $_GET['action'] == 'delivery_list_only' && $delivery_codes_list)
   {
     // Clobber the display and only show the delivery location list
     $display = $delivery_codes_list;
@@ -167,7 +167,7 @@ if ($_GET['action'] == 'delivery_list_only' && $delivery_codes_list)
       </style>';
   }
 
-if ($_GET['action'] == 'basket_list_only' && $baskets_list)
+if (isset ($_GET['action']) && $_GET['action'] == 'basket_list_only' && $baskets_list)
   {
     // Clobber the display and only show the delivery location list
     $display = $baskets_list;

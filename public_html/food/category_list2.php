@@ -28,26 +28,6 @@ session_start();
 ///                                                                          ///
 ////////////////////////////////////////////////////////////////////////////////
 
-//Configure dividers for between the category text and the number of items
-$classA_divider = ' ';
-$classB_divider = '&nbsp;&mdash; ';
-$classC_divider = '&nbsp;&mdash; ';
-
-// Set up the "listing_auth_type" field condition based on whether the member is an "institution" or not
-// Only institutions are allowed to see listing_auth_type=3 (wholesale products)
-if (CurrentMember::auth_type('institution') && $seconds_until_close < INSTITUTION_WINDOW)
-  {
-    $where_auth_type = '
-                AND (
-                  '.NEW_TABLE_PRODUCTS.'.listing_auth_type = "member"
-                  OR '.NEW_TABLE_PRODUCTS.'.listing_auth_type = "institution")';
-  }
-else
-  {
-    $where_auth_type = '
-                AND '.NEW_TABLE_PRODUCTS.'.listing_auth_type = "member"';
-  }
-
 // Normally, do not show producers that are pending (1) or suspended (2)
 $where_producer_pending = '
                 AND '.TABLE_PRODUCER.'.pending = 0';
@@ -57,7 +37,7 @@ $where_unlisted_producer = '
                 AND unlisted_producer = "0"';
 
 // Set the default subquery_confirmed to look only at confirmed products
-$where_confirmed .= '
+$where_confirmed = '
     AND '.NEW_TABLE_PRODUCTS.'.confirmed = "1"';
 
 // Set up an exception for hiding zero-inventory products
@@ -79,27 +59,17 @@ $order_by = '
     '.NEW_TABLE_PRODUCTS.'.unit_price ASC';
 
 //Set default depth to a large number
-if (! $_GET['depth'])
-  {
-    $_GET['depth'] = 100;
-  }
-else
-  {
-    $_GET['depth'] = floor ($_GET['depth']);
-  }
+$_GET['depth'] = (isset ($_GET['depth']) ? floor ($_GET['depth']) : 100);
 
 //Make sure offset is numeric
-$_GET['offset'] = floor ($_GET['offset']);
+$_GET['offset'] = (isset ($_GET['offset']) ? floor ($_GET['offset']) : 0);
+
+//Set the show_parts or default
+$_GET['show_parts'] = (isset ($_GET['show_parts']) ? $_GET['show_parts'] : '');
 
 //Set up the root for the categories tree
-if ($_GET['category_id'])
-  {
-    $base_category = preg_replace("/[^0-9]/","",$_GET['category_id']);
-  }
-else
-  {
-    $base_category = 0;
-  }
+$base_category = (isset ($_GET['category_id']) ? preg_replace("/[^0-9]/","",$_GET['category_id']) : 0);
+
 $list_markup = '';
 
 //If an order-cycle is open, then use the product_list table.  Otherwise use the product_list_prep table.
@@ -120,15 +90,13 @@ else
 ///                                                                          ///
 ////////////////////////////////////////////////////////////////////////////////
 
-if (! $list_categories_defined)
+if (! isset ($list_categories_defined))
   {
     function listCategories ($parent_id, $level)
       {
         global
           $connection,
           $list_categories_defined,
-          $classB_divider,
-          $classC_divider,
           $product_list,
           $where_producer_pending,
           $where_confirmed,
@@ -137,6 +105,9 @@ if (! $list_categories_defined)
           $where_zero_inventory,
           $where_order_by;
         $list_categories_defined = true;
+        $list_markup = '';
+        $total = 0;
+        $total_new = 0;
         $query = '
           SELECT *
           FROM
@@ -150,7 +121,8 @@ if (! $list_categories_defined)
           { //There are more categories (or subcategories) to look at
             if ($level <= $_GET['depth'])
               {
-                $list_markup .= '<ul class="list-markup'.$level.'">';
+                $list_markup .= '
+                  <ul class="list-markup'.$level.'">';
               }
             $total = 0;
             $total_new = 0;
@@ -168,39 +140,29 @@ if (! $list_categories_defined)
                 $total_new = $total_new + $subtotal_new;
                 if ($level <= $_GET['depth'])
                   { //Prepare output formatting
-                    if ($total > 1)
-                      {
-                        $plural = 's';
-                      }
-                    else
-                      {
-                        $plural = '';
-                      };
-                    $item_count_markup = $subtotal.'&nbsp;item'.$plural;
-                    if ($subtotal_new > 0)
-                      {
-                        $item_new_count_markup = '('.$subtotal_new.'&nbsp;new)';
-                      }
-                    else
-                      {
-                        $item_new_count_markup = "";
-                      }
+                    $subtotal_root = number_format(floor(sqrt($subtotal)), 0);
+                    $plural = ($total > 1 ? ' plural' : '');
+                    $subtotal_new_root = number_format(floor(sqrt($subtotal_new)), 0);
                     //$list_markup .= '<li class="cat'.$level.'"><a href="'.$_SERVER['SCRIPT_NAME'].'?category_id='.$category_id.'">'.$category_name."</a>$item_count_markup $item_new_count_markup</li>\n";
                     //Only display if there are items in the category
                     if ($subtotal > 0)
                       {
-                        $list_markup .= '<li>
-                          <a href="category_list2.php?category_id='.$category_id.'&offset='.$level.'">'.$category_name.'</a>'.$classB_divider.'<span class="levelY">
-                          <a href="product_list.php?type=full&category_id='.$category_id.'">'.$item_count_markup.'</a>
-                          <a href="product_list.php?type=new&category_id='.$category_id.'">'.$item_new_count_markup."</a>
-                          </span>\n";
-                        $list_markup .= $sublist_markup."</li>\n";
+                        $list_markup .= '
+                          <li class="category cat-'.$category_id.'">
+                            <a href="category_list2.php?category_id='.$category_id.'&offset='.$level.'" class="cat root-'.$subtotal_root.'">'.$category_name.'</a>
+                            <span class="levelY">
+                              <a href="product_list.php?type=full&category_id='.$category_id.'" class="count root-'.$subtotal_root.$plural.'">'.$subtotal.'</a>'.
+                              ($subtotal_new ? '<a href="product_list.php?type=new&category_id='.$category_id.'" class="count_new root-'.$subtotal_new_root.'">'.$subtotal_new.'</a>' : '').'
+                            </span>'.
+                            $sublist_markup.'
+                          </li>';
                       }
                   }
               }
             if ($level <= $_GET['depth'])
               {
-                $list_markup .= "</ul>\n";
+                $list_markup .= '
+                  </ul>';
               }
           }
         else
@@ -233,7 +195,8 @@ if (! $list_categories_defined)
             $sql2 = @mysql_query($query2, $connection) or die(debug_print ("ERROR: 905656 ", array ($query2,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
             if ($level <= $_GET['depth'])
               {
-                $list_markup .= '<ul class="list-markup'.$level.'">';
+                $list_markup .= '
+                  <ul class="list-markup'.$level.'">';
               }
             while ($row2 = mysql_fetch_array($sql2))
               {
@@ -245,33 +208,23 @@ if (! $list_categories_defined)
                 $total_new = $total_new + $subtotal_new;
                 if ($level <= $_GET['depth'])
                   { //Prepare output formatting
-                    if ($total > 1)
-                      {
-                        $plural = 's';
-                      }
-                    else
-                      {
-                        $plural = '';
-                      };
-                    $item_count_markup = $subtotal.'&nbsp;item'.$plural;
-                    if ($subtotal_new > 0)
-                      {
-                        $item_new_count_markup = '('.$subtotal_new.'&nbsp;new)';
-                      }
-                    else
-                      {
-                        $item_new_count_markup = "";
-                      }
-                    $list_markup .= '<li>
-                      <a href="product_list.php?type=full&subcat_id='.$subcategory_id.'">'.$subcategory_name.'</a>'.$classC_divider.'<span class="levelZ">
-                      <a href="product_list.php?type=full&subcat_id='.$subcategory_id.'">'.$item_count_markup.'</a>
-                      <a href="product_list.php?type=new&subcat_id='.$subcategory_id.'">'.$item_new_count_markup."</a>
-                      </span></li>\n";
+                    $subtotal_root = number_format(floor(sqrt($subtotal)), 0);
+                    $plural = ($subtotal > 1 ? ' plural' : '');
+                    $subtotal_new_root = number_format(floor(sqrt($subtotal_new)), 0);
+                    $list_markup .= '
+                      <li class="subcategory subcat-'.$subcategory_id.'">
+                        <a href="product_list.php?type=full&subcat_id='.$subcategory_id.'" class="subcat root-'.$subtotal_root.'">'.$subcategory_name.'</a>
+                        <span class="levelZ">
+                          <a href="product_list.php?type=full&subcat_id='.$subcategory_id.'" class="count root-'.$subtotal_root.$plural.'">'.$subtotal.'</a>'.
+                          ($subtotal_new ? '<a href="product_list.php?type=new&subcat_id='.$subcategory_id.'" class="count_new root-'.$subtotal_new_root.'">'.$subtotal_new.'</a>' : '').'
+                        </span>
+                      </li>';
                   }
               }
             if ($level <= $_GET['depth'])
               {
-                $list_markup .= "</ul>\n";
+                $list_markup .= '
+                  </ul>';
               }
           }
         return (array ($total, $total_new, $list_markup));
@@ -289,13 +242,19 @@ $row = mysql_fetch_array($sql);
 if ($base_category == 0)
   {
     $overall_parent_id = '0';
-    $overall_category_name = '<h3 class="inline">Browse Products by Category</h3>';
+    $overall_category_name = '
+      <h3 class="inline">Browse Products by Category</h3>';
     $overall_category_desc = '';
   }
 else
   {
     $overall_parent_id = $row['parent_id']; //Might be useful for climbing back up the tree
-    $overall_category_name = '<h3 class="inline"><a href="'.$_SERVER['SCRIPT_NAME'].'?category_id='.$overall_parent_id.'&offset='.($_GET['offset'] - 1).'"><strong>&laquo;'.$row['category_name'].'</strong></a></h3>';
+    $overall_category_name = '
+      <h3 class="inline">
+        <a href="'.$_SERVER['SCRIPT_NAME'].'?category_id='.$overall_parent_id.'&offset='.($_GET['offset'] - 1).'">
+          <strong>&laquo;'.$row['category_name'].'</strong>
+        </a>
+      </h3>';
     if ($_GET['show_parts'] == 'list_only') $overall_category_name = $row['category_name'];
     $overall_category_desc = $row['category_desc'];
   }
@@ -303,28 +262,16 @@ $return_value = listCategories ($base_category, $_GET['offset'] + 1);
 $total = $return_value[0];
 $total_new = $return_value[1];
 $sublist_markup = $return_value[2];
-if ($total > 1)
-  {
-    $plural = 's';
-  }
-else
-  {
-    $plural = '';
-  };
-$item_count_markup = $total.'&nbsp;item'.$plural;
-if ($total_new > 0)
-  {
-    $item_new_count_markup = '('.$total_new.'&nbsp;new)';
-  }
-else
-  {
-    $item_new_count_markup = "";
-  }
+$plural = ($total > 1 ? ' plural' : '');
+
+$total_root = number_format(floor(sqrt($total)), 0);
+$total_new_root = number_format(floor(sqrt($total_new)), 0);
+
 $list_markup = $overall_category_name.'
   <div class="category_list2">
     <span class="levelX">
-      <a href="product_list.php?type=full&category_id='.$base_category.'">'.$item_count_markup.'</a>&nbsp;&nbsp;
-      <a href="product_list.php?type=new&category_id='.$base_category.'">'.$item_new_count_markup.'</a>
+      <a href="product_list.php?type=full&category_id='.$base_category.'" class="count root-'.$total_root.$plural.'">'.$total.'</a>&nbsp;&nbsp;
+      <a href="product_list.php?type=new&category_id='.$base_category.'" class="count_new root-'.$total_new_root.'">'.$total_new.'</a>
     </span>
     '.$sublist_markup.'
   </div>';
@@ -341,7 +288,30 @@ $page_title = 'Products - Browse Categories';
 $page_tab = 'shopping_panel';
 
 $page_specific_css = '
-<link rel="stylesheet" type="text/css" href="'.PATH.'product_list.css">';
+<link rel="stylesheet" type="text/css" href="'.PATH.'product_list.css">
+<style type="text/css">
+  .levelY::before,
+  .levelZ::before {
+    content:" \2014";
+    }
+  .count_new::before {
+    content:" (";
+    }
+  .count_new::after {
+    content:" new)";
+    }
+  .count::after {
+    content:" item";
+    }
+  .count.plural::after {
+    content:" items";
+    }
+
+
+
+
+</style>
+';
 
 //Display the header unless only sending style or list
 if ($_GET['show_parts'] != 'list_only' && $_GET['show_parts'] != 'style_only') include("template_header.php");

@@ -10,7 +10,7 @@ include_once ('func.update_ledger.php');
 include_once ('func.update_basket.php');
 // include_once ('func.open_basket.php');
 
-session_start();
+if (!isset ($_SESSION)) session_start();
 // debug_print ('INFO: Session:', $_SESSION);
 //valid_auth('cashier,site_admin');
 

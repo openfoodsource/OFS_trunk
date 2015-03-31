@@ -213,7 +213,7 @@ while ($row = mysql_fetch_object($result))
                   </select>';
           break;
         // Display input as a hidden field with value displayed as text
-        case 'read_only=':
+        case 'read_only':
           $stored_value = $row->value;
           $posted_value = $stored_value;
           $this_value = $stored_value;

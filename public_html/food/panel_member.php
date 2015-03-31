@@ -6,9 +6,10 @@ valid_auth('member');
 // So paypal_utilities knows this is a local request and not a paypal request
 $not_from_paypal = true;
 include_once ('paypal_utilities.php');
+$basket_status = '';
 
 // Do we need to post membership changes?
-if ($_POST['update_membership'] == 'true')
+if (isset ($_POST['update_membership']) && $_POST['update_membership'] == 'true')
   {
     include_once ('func.check_membership.php');
     renew_membership ($_SESSION['member_id'], $_POST['membership_type_id']);
@@ -84,7 +85,7 @@ if ($row = mysql_fetch_object($result))
 
 
 // Generate the display output
-$display .= '
+$display = '
   <table width="100%" class="compact">
     <tr valign="top">
       <td align="left" width="50%">

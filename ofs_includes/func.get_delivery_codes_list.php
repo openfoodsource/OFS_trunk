@@ -233,8 +233,8 @@ function get_delivery_codes_list ($request_data)
                 </ul>
               </div>
             </div>';
+        return $display;
       }
-    return $display;
   }
 
 ?>

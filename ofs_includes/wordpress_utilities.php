@@ -6,35 +6,35 @@ function wordpress_show_usermenu ()
     if (isset ($_SESSION['member_id']))
       {
         $content_login = '
-          <form method="post" action="/food/member_form.php" id="edit_profile"></form>
-          <form method="post" action="/food/index.php" id="logout"></form>
           <div id="user_menu">
             <img id="user_image" alt="user image" src="//www.gravatar.com/avatar/'.$_SESSION['gravatar_hash'].'?s=64&amp;d=mm&amp;r=PG" class="avatar avatar-64 photo" height="64" width="64" />
             <ul id="user_actions">
-              <li id="user_menu_identity"><div class="display-name">'.$_SESSION['show_name'].'</div></li>
-              <li id="user_menu_logout">
-                <input type="submit" form="edit_profile" value="Edit profile">
-                <input type="hidden" name="action" value="logout" form="logout">
-                <input type="submit" form="logout" value="Log out">
-              </li>
+              <form method="post" action="/food/member_form.php" id="edit_profile">
+                <li id="user_menu_identity"><div class="display-name">'.$_SESSION['show_name'].'</div></li>
+                <li id="user_menu_profile" class="button"><input type="submit" form="edit_profile" value="Edit profile"></li>
+              </form>
+              <form method="post" action="/food/index.php" id="logout">
+                <li id="user_menu_action_logout"><input type="hidden" name="action" value="logout" form="logout"></li>
+                <li id="user_menu_logout" class="button"><input type="submit" form="logout" value="Log out"></li>
+              </form>
             </ul>
           </div>';
       }
     else
       {
         $content_login = '
-          <form method="post" action="/food/index.php" id="login"></form>
-          <form method="get" action="/food/member_form.php" id="sign_up"></form>
           <div id="user_menu">
             <img id="user_image" alt="utility image" src="'.DIR_GRAPHICS.'gear.png" class="avatar avatar-64 photo" height="64" width="64" />
-            <input type="hidden" name="action" value="login" form="login">
             <ul id="user_actions">
-              <li id="login_username"><input type="text" placeholder="Username" name="username" form="login"></li>
-              <li id="login_password"><input type="password" placeholder="Password" name="password" form="login"></li>
-              <li id="login_new_account">
-                <input type="submit" form="login" value="Login">
-                <input type="submit" value="Sign up now!" form="sign_up">
-              </li>
+              <form method="post" action="/food/index.php" id="login">
+                <input type="hidden" name="action" value="login" form="login">
+                <li id="login_username"><input type="text" placeholder="Username" name="username" form="login"></li>
+                <li id="login_password"><input type="password" placeholder="Password" name="password" form="login"></li>
+                <li id="login_new_account" class="button"><input type="submit" form="login" value="Login"></li>
+              </form>
+              <form method="get" action="/food/member_form.php" id="sign_up">
+                <li id="login_new_account" class="button"><input type="submit" value="Sign up now!" form="sign_up"></li>
+              </form>
             </ul>
           </div>';
       }

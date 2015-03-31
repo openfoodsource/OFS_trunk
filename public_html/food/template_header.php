@@ -16,6 +16,8 @@ $logout_menu = '';
 $basket_menu = '';
 $login_menu = '';
 $header_title = '';
+$site_is_down = false;
+
 if (!isset ($display_as_popup)) $display_as_popup = false;
 
 
