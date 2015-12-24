@@ -164,7 +164,7 @@ if (count ($error_array) == 0 &&
      $_REQUEST['action'] == 'Add New'))
   {
     // Close the modal dialog and reload the parent when completed.
-    $modal_action = 'reload_parent';
+    $modal_action = 'reload_parent()';
     // Get the auth_types from checkboxes
     // Prepare the database insert or update
     $query_values = '

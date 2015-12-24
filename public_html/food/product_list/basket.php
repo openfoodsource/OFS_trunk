@@ -1,9 +1,11 @@
 <?php
-include_once ('func.get_baskets_list.php');
 valid_auth('member');
 
 // Set content_top to show basket selector...
-$content_top .= get_baskets_list ();
+$content_top = 
+  (strlen (CurrentBasket::site_short()) > 0 ? 'Site: '.CurrentBasket::site_long().'.' : 'Nothing ordered.</li><li class="last_of_group">Select a routing location:').'
+  [<a onClick="popup_src(\''.PATH.'select_delivery_popup.php?after_select=reload_parent()#target_site\', \'select_delivery\', \'\');">Change</a>]<br />
+  [<a onClick="popup_src(\''.PATH.'select_order_history_popup.php\', \'select_order_history\', \'\');">View my past orders</a>]';
 
 // Do not show search on non-shopping pages
 $show_search = false;

@@ -3,10 +3,6 @@ include_once 'config_openfood.php';
 session_start();
 valid_auth('member');
 
-include_once ('func.open_update_basket.php');
-include_once ('func.get_baskets_list.php');
-include_once ('func.get_delivery_codes_list.php');
-
 /////////////// FINISH PRE-PROCESSING AND BEGIN PAGE GENERATION /////////////////
 
 // Get basket status information
@@ -35,63 +31,93 @@ if ( ActiveCycle::ordering_window() == 'open')
   {
     if ($basket_id)
       {
-        $basket_status = 'Ready for shopping<br>'.$basket_quantity.' '.Inflect::pluralize_if($basket_quantity, 'item').' in basket';
+        $basket_status = '
+        <li>
+          Site: <strong>'.CurrentBasket::site_long().'</strong>
+          [<a onClick="popup_src(\''.PATH.'select_delivery_popup.php?after_select=reload_parent()#target_site\', \'select_delivery\', \'\');">Change</a>]
+        </li>
+        <li>
+          '.$basket_quantity.' '.Inflect::pluralize_if($basket_quantity, 'item').' in basket.
+        </li>
+        <li>
+          <a href="'.PATH.'product_list.php?type=basket">View current basket</a>.
+        </li>
+        <li class="last_of_group">
+          <a href="show_report.php?type=customer_invoice">View current invoice</a>
+        </li>
+        <li>
+          <em class="warn">NOTE: Invoice will be blank until checked-out by an admin. All items in your basket will be checked out when the order closes.</em>
+        </li>';
       }
     else
       {
         $basket_status = '
-          <em>Use Select Location (above) to open a shopping basket</em>';
+        <li class="last_of_group">
+          [<a onClick="popup_src(\''.PATH.'select_delivery_popup.php?after_select=reload_parent()#target_site\', \'select_delivery\', \'\');">Select your site</a>] to begin shopping.
+        </li>';
       }
   }
 else
   {
-    $basket_status = 'Ordering is currently closed<br>'.$basket_quantity.' '.Inflect::pluralize_if($basket_quantity, 'item').' in basket';
+    $basket_status = '
+      Ordering has closed.<br />
+      Basket has '.$basket_quantity.' '.Inflect::pluralize_if($basket_quantity, 'item').'.<br />
+      Ordering will open again on '.(date ('l, F jS', strtotime (ActiveCycle::date_open_next ())));
   }
+// Set up English grammar for ordering dates
+$relative_text = '';
+$close_suffix = '';
+$open_suffix = '';
+// Which order are we looking at?
+if ( strtotime (ActiveCycle::date_open_next()) < time ()  && strtotime (ActiveCycle::date_closed_next()) > time ())
+  $relative_text = 'Current&nbsp;';
+elseif ( strtotime (ActiveCycle::date_closed_next()) > time () )
+  $relative_text = 'Next&nbsp;';
+else // strtotime (ActiveCycle::delivery_date_next()) < time ()
+  $relative_text = 'Prior&nbsp;';
+if ( strtotime (ActiveCycle::date_open_next()) < time () )
+  $open_suffix = 'ed'; // Open[ed]
+else
+  $open_suffix = 's'; // Open[s]
+// Order closing suffix
+if ( strtotime (ActiveCycle::date_closed_next()) < time () )
+  $close_suffix = 'd'; // Close[d]
+else
+  $close_suffix = 's'; // Close[s]
 
-// Set content_top to show basket selector...
-$delivery_codes_list = get_delivery_codes_list (array (
-  'action' => (isset ($_GET['action']) ? $_GET['action'] : ''),
-  'member_id' => $_SESSION['member_id'],
-  'delivery_id' => ActiveCycle::delivery_id(),
-  'site_id' => (isset ($_GET['site_id']) ? $_GET['site_id'] : ''),
-  'delivery_type' => (isset ($_GET['delivery_type']) ? $_GET['delivery_type'] : '')
-  ));
-$baskets_list = get_baskets_list ();
 
 // Generate the display output
 $display = '
   <table width="100%" class="compact">
-    <tr valign="top">
-      <td align="left" width="50%">'.
-        ($delivery_codes_list ? '<div class="content_top">'.
-        $delivery_codes_list.'
-        </div>' : '').'
-      </td>
-      <td align="right" width="50%">'.
-        ($baskets_list ? '<div class="content_top" style="float:right;">'.
-        $baskets_list.'
-        </div>' : '').'
-      </td>
-    </tr>
     <tr>
-      <td>';
-
-$display .= '
-    <img src="'.DIR_GRAPHICS.'shopping.png" width="32" height="32" align="left" hspace="2" alt="Basket Status"><br>
-    <strong>Basket Status</strong>
+      <td>
+        <img src="'.DIR_GRAPHICS.'current.png" width="32" height="32" align="left" hspace="2" alt="Order"><br>
+        <strong>'.$relative_text.'Order</strong>
         <ul class="fancyList1">
-          <li class="last_of_group">'.$basket_status.'</li>
+          <li><strong>
+            Open'.$open_suffix.':</strong>&nbsp;'.date ('M&\n\b\s\p;j,&\n\b\s\p;g:i&\n\b\s\p;A&\n\b\s\p;(T)', strtotime (ActiveCycle::date_open_next())).'
+          </li>
+          <li>
+            <strong>Close'.$close_suffix.':</strong>&nbsp;'.date ('M&\n\b\s\p;j,&\n\b\s\p;g:i&\n\b\s\p;A&\n\b\s\p;(T)', strtotime (ActiveCycle::date_closed_next())).'
+          </li>
+          <li class="last_of_group">
+            <strong>Delivery:</strong>&nbsp;'.date ('F&\n\b\s\p;j', strtotime (ActiveCycle::delivery_date_next())).'
+          </li>
+        </ul>
+        <img src="'.DIR_GRAPHICS.'shopping.png" width="32" height="32" align="left" hspace="2" alt="Basket Status"><br>
+        <strong>Current Order Status</strong>
+        <ul class="fancyList1">
+          '.$basket_status.'
         </ul>
         <img src="'.DIR_GRAPHICS.'product.png" width="32" height="32" align="left" hspace="2" alt="Order Info"><br>
-        <b>Order Info</b>
+        <b>Past Orders</b>
         <ul class="fancyList1">
-          <li><a href="product_list.php?type=basket">View items in basket</a></li>
-          <li><a href="show_report.php?type=customer_invoice">View invoice</a><br />
-          <em>(Invoice is blank until after the order closes)</em></li>
-          <li class="last_of_group"><a href="past_customer_invoices.php?member_id='.$_SESSION['member_id'].'">Past Customer Invoices</a></li>
+          <li class="last_of_group">
+            [<a onClick="popup_src(\''.PATH.'select_order_history_popup.php\', \'select_order_history\', \'\');">View all baskets and invoices</a>]
+          </li>
         </ul>
       </td>
-      <td align="left" width="50%">
+      <td align="left" valign="top" width="50%">
         <img src="'.DIR_GRAPHICS.'invoices.png" width="32" height="32" align="left" hspace="2" alt="Available Products"><br>
         <b>'.(ActiveCycle::ordering_window() == 'open' ? 'Available Products' : 'Products (Shopping is closed)').'</b>
         <ul class="fancyList1">';
@@ -109,11 +135,11 @@ $display .= '
 if (CurrentMember::auth_type('unfi')) $display .= '
           <!-- <li><a href="product_list.php?type=unfi">All products (UNFI)</a></li> -->';
 $display .= '
-          <li>                        <a href=category_list2.php>                     Browse by category</a></li>
+          <li>                        <a href="category_list.php?display_as=grid">    Browse by category</a> <div style="display:inline-block;font-weight:bold;font-size:150%;color:#a00;font-family:\'Gloria Hallelujah\';">&larr; New features!</div></li>
           <li>                        <a href="prdcr_list.php">                       Browse by producer</a></li>
           <li class="last_of_group">  <a href="product_list.php?type=prior_baskets">  Previously ordered products</a></li>
-          <li>                        <a href="product_list.php?type=by_id">          All products by number</a></li>
-          <li class="last_of_group">  <a href="product_list.php?type=full">           All products by category</a></li>
+<!--      <li>                        <a href="product_list.php?type=by_id">          All products by number</a></li> -->
+<!--      <li class="last_of_group">  <a href="product_list.php?type=full">           All products by category</a></li> -->
           <li>                        <a href="product_list.php?type=organic">        Organic products</a></li>
           <li>                        <a href="product_list.php?type=new">            New products</a></li>
           <li>                        <a href="product_list.php?type=changed">        Changed products</a></li>'.
@@ -127,72 +153,14 @@ $display .= '
 $page_specific_javascript = '';
 
 $page_specific_css = '
-<link rel="stylesheet" type="text/css" href="delivery_dropdown.css">
-<link rel="stylesheet" type="text/css" href="basket_dropdown.css">
 <style type="text/css">
-.content_top {
-  margin-bottom:45px;
-  width:300px;
+.warn {
+  color:#844;
   }
-#basket_dropdown {
-  float:right;
+input[type="submit"] {
+  padding:5px 10px;
   }
 </style>';
-
-// Show the delivery-location chooser ONLY...
-if (isset ($_GET['action']) && $_GET['action'] == 'delivery_list_only' && $delivery_codes_list)
-  {
-    // Clobber the display and only show the delivery location list
-    $display = $delivery_codes_list;
-    // Add styles to override delivery location dropdown
-    $page_specific_css .= '
-      <style type="text/css">
-      /* OVERRIDE THE DROPDOWN CLOSURE FOR MOBILE DEVICES */
-      #delivery_dropdown {
-        position:static;
-        height:auto;
-        width:100%;
-        overflow:hidden;
-        }
-      #delivery_dropdown:hover {
-        width:100%;
-        }
-      #delivery_select {
-        width:100%;
-        height:auto;
-        }
-      #delivery_dropdown:hover {
-        height:auto;
-        }
-      </style>';
-  }
-
-if (isset ($_GET['action']) && $_GET['action'] == 'basket_list_only' && $baskets_list)
-  {
-    // Clobber the display and only show the delivery location list
-    $display = $baskets_list;
-    // Add styles to override delivery location dropdown
-    $page_specific_css .= '
-      <style type="text/css">
-      /* OVERRIDE THE DROPDOWN CLOSURE FOR MOBILE DEVICES */
-      #basket_dropdown {
-        position:static;
-        height:auto;
-        width:100%;
-        overflow:hidden;
-        }
-      #basket_dropdown:hover {
-        width:100%;
-        }
-      #basket_history {
-        width:100%;
-        height:auto;
-        }
-      #basket_dropdown:hover {
-        height:auto;
-        }
-      </style>';
-  }
 
 $page_title_html = '<span class="title">'.$_SESSION['show_name'].'</span>';
 $page_subtitle_html = '<span class="subtitle">Shopping Panel</span>';

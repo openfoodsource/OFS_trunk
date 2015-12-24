@@ -18,6 +18,10 @@ $distinct_cycles = 6;
 $days_array = array (0=>'Sun', 1=>'Mon', 2=>'Tue', 3=>'Wed', 4=>'Thu', 5=>'Fri', 6=>'Sat');
 $day_length = 24 * 3600; // Length of day in seconds
 $week_length = $day_length * 7; // Length of week in seconds
+$first_pass = 0;
+$first_month = 0;
+$display_month_prior = 0;
+$display_month = '';
 // Query for the order cycles
 $query = '
   SELECT
@@ -236,7 +240,6 @@ foreach ($order_cycle_array as $row=>$order_cycle_data)
         <div class="date_closed">'.$order_cycle_data['date_closed'].'</div>
         <div class="order_fill_deadline">'.$order_cycle_data['order_fill_deadline'].'</div>
         <div class="delivery_date">'.$order_cycle_data['delivery_date'].'</div>
-        <!-- <div class="edit_link" onclick="popup_src(\'edit_account.php?action=edit&account_key='.$order_cycle_data['account_key'].'\', \'edit_account\', \'\');">Edit</a></div> -->
       </div>';
     $top_special_markup = '';
   }
@@ -245,6 +248,6 @@ $ledger_data['query'] = $query;
 $ledger_data['maximum_data_page'] = $found_pages;
 $ledger_data['data_page'] = $data_page;
 // Send back the json data only when not called as an include file.
-if (! $call_display_as_include) echo json_encode ($ledger_data);
+if (! isset($call_display_as_include))  echo json_encode ($ledger_data);
 
 ?>

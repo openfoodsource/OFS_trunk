@@ -10,6 +10,9 @@ $show_update_button = false;
 $show_delete_button = false; 
 $order_cycle_info = array ();
 $error_array = array ();
+$error_message = '';
+$message = '';
+
 if (isset($_GET['delivery_id']))
   {
     $delivery_id = $_GET['delivery_id'];
@@ -112,7 +115,7 @@ if ($action == 'post_edit' && $errors_found == false)
     $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 759821 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
     $message = '<p class="message">Order cycle has been updated.</p>';
     // Close the modal and reload the cycle list
-    $modal_action = 'reload_parent';
+    $modal_action = 'reload_parent()';
   }
 elseif ($action == 'post_new' && $errors_found == false)
   {
@@ -141,7 +144,7 @@ elseif ($action == 'post_new' && $errors_found == false)
     $_POST['delivery_id'] = $delivery_id;
     $message = 'New order cycle has been added.';
     // Close the modal and reload the cycle list
-    $modal_action = 'reload_parent';
+    $modal_action = 'reload_parent()';
   }
 elseif ($action == 'delete')
   {
@@ -153,7 +156,7 @@ elseif ($action == 'delete')
     $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 759821 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
     $message = 'Order cycle has been deleted.';
     // Close the modal and reload the cycle list
-    $modal_action = 'reload_parent';
+    $modal_action = 'reload_parent()';
   }
 // Query for information about this order cycle
 if ($errors_found == true)

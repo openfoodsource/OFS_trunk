@@ -71,7 +71,7 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
                 // We are good to login
                 // Capture any information we are holding in the SESSION
                 // These will be the only elements retained into the new session
-                $request_uri = isset ($_SESSION['REQUEST_URI']) ? $_SESSION['REQUEST_URI'] : PATH.'panel_member.php';
+                $request_uri = isset ($_SESSION['REQUEST_URI']) ? $_SESSION['REQUEST_URI'] : PATH.'panel_shopping.php';
                 $_POST = $_SESSION['_POST'];
                 $_GET = $_SESSION['_GET'];
                 session_destroy();
