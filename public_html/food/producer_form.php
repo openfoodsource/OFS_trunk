@@ -1077,15 +1077,17 @@ if (count ($error_array) == 0 && ($_POST['action'] == 'Submit' || $_POST['action
     $email_preamble = '<p>Following is a copy of the producer information you submitted to '.SITE_NAME.'.</p>';
     $email_preamble .= $welcome_message;
 
+    // Need to break DOMAIN_NAME into an array of separate names so we can use the first element
+    $domain_names = preg_split("/[\n\r]+/", DOMAIN_NAME);
     // Disable all form elements for emailing
     $html_version = preg_replace ('/<(input|select|textarea)/', '<\1 disabled', $welcome_message.$display_form_html);
 
     $email_headers  = "From: ".STANDARDS_EMAIL."\r\n";
     $email_headers .= "Reply-To: ".STANDARDS_EMAIL."\r\n";
-    $email_headers .= "Errors-To: web@".(preg_split("/[\n\r]+/", DOMAIN_NAME)[0])."\r\n";
+    $email_headers .= "Errors-To: web@".($domain_names[0])."\r\n";
     $email_headers .= "MIME-Version: 1.0\r\n";
     $email_headers .= "Content-type: multipart/alternative; boundary=\"$boundary\"\r\n";
-    $email_headers .= "Message-ID: <".md5(uniqid(time()))."@".(preg_split("/[\n\r]+/", DOMAIN_NAME)[0]).">\r\n";
+    $email_headers .= "Message-ID: <".md5(uniqid(time()))."@".($domain_names[0]).">\r\n";
     $email_headers .= "X-Mailer: PHP ".phpversion()."\r\n";
     $email_headers .= "X-Priority: 3\r\n";
     $email_headers .= "X-AntiAbuse: This is a machine-generated response to a user-submitted form at ".SITE_NAME.".\r\n";

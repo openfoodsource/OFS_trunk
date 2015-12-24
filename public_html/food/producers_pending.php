@@ -32,9 +32,9 @@ if ( $_POST['pending'] )
               WHERE
                 producer_id="'.mysql_real_escape_string($producer_id).'"';
             $sql = mysql_query($query);
-
+            // Need to break DOMAIN_NAME into an array of separate names so we can use the first element
+            $domain_names = preg_split("/[\n\r]+/", DOMAIN_NAME);
             // Now send the confirmation email...
-
             if ( $producer_info )
               {
                 // Now send the "Newly Activated" email notice
@@ -44,7 +44,7 @@ if ( $_POST['pending'] )
                 $headers .= "Errors-To: ".GENERAL_EMAIL."\n";
                 $headers .= "MIME-Version: 1.0\n";
                 $headers .= "Content-type: text/plain; charset=us-ascii\n";
-                $headers .= "Message-ID: <".md5(uniqid(time()))."@".(preg_split("/[\n\r]+/", DOMAIN_NAME)[0]).">\n";
+                $headers .= "Message-ID: <".md5(uniqid(time()))."@".($domain_names[0]).">\n";
                 $headers .= "X-Mailer: PHP ".phpversion()."\n";
                 $headers .= "X-Priority: 3\n";
                 $headers .= 'X-AntiAbuse: This is a user-submitted email through the '.SITE_NAME." producer approval page.\n\n";

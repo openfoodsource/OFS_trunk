@@ -90,14 +90,16 @@ if ( ! $_SESSION['member_id'] )
                 WHERE
                   username = "'.mysql_real_escape_string ($valid_username).'"';
             $result = mysql_query ($query_update, $connection) or die(mysql_errno());
+            // Need to break DOMAIN_NAME into an array of separate names so we can use the first element
+            $domain_names = preg_split("/[\n\r]+/", DOMAIN_NAME);
             $message =
               'Account security notice:
 
                 The password for an account registered with this email address
-                has been reset from the website at '.(preg_split("/[\n\r]+/", DOMAIN_NAME)[0]).'
+                has been reset from the website at '.($domain_names[0]).'
                 Username: '.$valid_username.'
                 The new password is: '.$password;
-            mail ( $valid_email, 'Updated account info for '.(preg_split("/[\n\r]+/", DOMAIN_NAME)[0]), $message, "from: ".MEMBERSHIP_EMAIL);
+            mail ( $valid_email, 'Updated account info for '.($domain_names[0]), $message, "from: ".MEMBERSHIP_EMAIL);
             header( 'refresh: 7; url='.PATH );
             $display_password .= '
               <table width="50%" align="center" cellspacing="5">

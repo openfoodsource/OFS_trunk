@@ -5,7 +5,8 @@ include_once 'config_openfood.php';
 
 // Just to stop bogus hits on this process, ensure the request came from an "approved" server
 // PSEUDOCODE: if (! in_array ("www.openfoodsource.org", array("www.openfoodsource.org", "openfoodsource.org")))
-if (! in_array (parse_url($_SERVER['HTTP_REFERER'])['host'], preg_split("/[\n\r]+/", DOMAIN_NAME))) exit;
+$url_array = parse_url($_SERVER['HTTP_REFERER']);
+if (! in_array ($url_array['host'], preg_split("/[\n\r]+/", DOMAIN_NAME))) exit;
 
 // Get the image file that was requested
 $file = basename ($_SERVER['REQUEST_URI'],'.png');
