@@ -104,7 +104,7 @@ $display = '
         </ul>
 -->
     <img src="'.DIR_GRAPHICS.'type.png" width="32" height="32" align="left" hspace="2" alt="Membership Type"><br>
-    <strong>Membership Type</strong> [<a onClick="popup_src(\'update_membership.php?display_as=popup\', \'membership_renewal\', \'\');">Change</a>]
+    <strong>Membership Type</strong> [<a onClick="popup_src(\''.PATH.'update_membership.php?display_as=popup\', \'membership_renewal\', \'\');">Change</a>]
         <ul class="fancyList1">
           <li><strong>'.$_SESSION['renewal_info']['membership_class'].':</strong> '.$_SESSION['renewal_info']['membership_description'].'<br><br></li>
           <li class="last_of_group">'.$_SESSION['renewal_info']['membership_message'].'</li>
@@ -117,7 +117,7 @@ $display = '
     <img src="grfx/docs.png" width="32" height="32" align="left" hspace="2" alt="Documentation"><br>
     <strong>Documentation</strong>
         <ul class="fancyList1">
-          <li class="last_of_group"><a onClick="popup_src(\'motd.php?display_as=popup\', \'motd\', \'\');">Message of the day</a></li>
+          <li class="last_of_group">[<a onClick="popup_src(\''.PATH.'motd.php?display_as=popup\', \'motd\', \'\');">Message of the day</a>]</li>
         </ul>
       </td>
       <td align="left" width="50%">

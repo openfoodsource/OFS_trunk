@@ -3,7 +3,7 @@
 include_once 'general_functions.php'; // just in case it got missed from the base page
 include_once ('wordpress_utilities.php');
 $content_header = '';
-$google_analytics = '';
+$google_tracking_code = '';
 $panel_member_menu = '';
 $panel_shopping_menu = '';
 $panel_producer_menu = '';
@@ -16,24 +16,31 @@ $logout_menu = '';
 $basket_menu = '';
 $login_menu = '';
 $header_title = '';
+$onload_action = '';
+if (!isset($page_tab)) $page_tab = '';
+if (!isset($modal_action)) $modal_action = '';
+if (!isset ($display_as_popup)) $display_as_popup = false;
 $site_is_down = false;
 
-if (!isset ($display_as_popup)) $display_as_popup = false;
 
+$wordpress_menu = '';
+$wordpress_producer_menu = '';
+$wordpress_cashier_menu = '';
+$wordpress_board_menu = '';
 
-// Set $google_analytics
-if (strlen (GOOGLE_ANALYTICS_TRACKING_ID) > 0)
-  include_once (FILE_PATH.PATH.'template_analyticstracking.php');
+// Prepare google tracking code
+if (strlen (GOOGLE_TRACKING_ID) > 0)
+  include_once ('google_tracking.php');
 
 // Set $favicon
-if (FAVICON != '')
-  $favicon = '
-    <link rel="shortcut icon" href="'.FAVICON.'" type="image/x-icon">';
-if (SHOW_HEADER_LOGO)
-  $header_title .= '<img id="header_logo" src="'.DIR_GRAPHICS.'logo.jpg" border="0" alt="'.SITE_NAME.'">';
-if (SHOW_HEADER_SITENAME)
-  $header_title .= '<h1 id="header_site_name">'.SITE_NAME.'</h1>';
-
+$favicon = (FAVICON != '' ? '
+    <link rel="shortcut icon" href="'.FAVICON.'" type="image/x-icon">' : '');
+$header_title =
+  (SHOW_HEADER_LOGO ? '
+  <img id="header_logo" src="'.DIR_GRAPHICS.'logo.jpg" border="0" alt="'.SITE_NAME.'">' : '').
+  (SHOW_HEADER_SITENAME ? '
+  <h1 class="site-title">'.SITE_NAME.'</h1>' : '');
+$content_login = (WORDPRESS_ENABLED == true ? wordpress_show_usermenu() : '');
 
 // // Site down processing -- not yet implemented
 // $site_is_down = false;
@@ -49,7 +56,7 @@ if (SHOW_HEADER_SITENAME)
 // if (time() > strtotime($site_down_at_time) - $down_time_warning && time() < strtotime($site_down_at_time) + $down_time_duration) $warn_now = true;
 
 // Check if the member is logged in
-if ($_SESSION['member_id'])
+if (isset ($_SESSION['member_id']))
   {
     // Get basket information, but don't re-query if we already have it
     if (! isset ($basket_quantity) && ActiveCycle::delivery_id())
@@ -175,8 +182,9 @@ if ($display_as_popup == true)
   {
     // Since popups are often modal dialogues, we will sometimes need to close or refresh other windows
     // according to the information returned by the modal pages
-    if ($modal_action == 'just_close') $onload_action = ' onload="parent.close_modal_window();"';
-    if ($modal_action == 'reload_parent') $onload_action = ' onload="parent.location.reload(false);"';
+    // Functions just_close() and reload_parent() are defined in javascript.js, included from this header
+    // Other functions can be used by passing them in as something like: function_foo(parent.variable_bar)
+    // ... where the parent page will be responsible for supplying function_foo() and variable_bar
     $content_header = '<!DOCTYPE html>
 <html style="overflow:auto;">
   <head>'.
@@ -199,7 +207,8 @@ if ($display_as_popup == true)
     </script>'.
     (isset ($page_specific_javascript) ? $page_specific_javascript : '').'
   </head>
-  <body lang="en-us" '.$onload_action.'>';
+  <body lang="en-us"'.(strlen ($modal_action) > 0 ? ' onload="parent.'.$modal_action.'"' : '').' style="margin:0;">'.
+  $google_tracking_code;
   }
 ////////////////////////////////////////////////////////////////////////////////
 //////////////                                              ////////////////////
@@ -218,7 +227,6 @@ else
     <script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>'.
     $favicon.'
     <link href="'.PATH.'stylesheet.css" rel="stylesheet" type="text/css">'.
-    $motd_css.
     (isset ($page_specific_css) ? $page_specific_css : '').'
     <script src="'.PATH.'javascript.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -237,7 +245,7 @@ else
     (isset ($page_specific_javascript) ? $page_specific_javascript : '').'
   </head>
   <body>'.
-    $google_analytics.'
+    $google_tracking_code.'
     <div id="header">
       <a href="'.PATH.'">'.$header_title.'</a>
       <div class="header_mission">'.

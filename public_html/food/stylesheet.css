@@ -993,16 +993,29 @@ a.modalCloseImg:hover {
   }
 /* Ensure data container fills the entire simplemodal-data container (vertically)
    and hide the vertical scrollbar resulting from a slight vertical overflow */
+
+.simplemodal-container,
+.simplemodal-wrap,
+.simplemodal-data {
+  border-radius:15px;
+  }
+
 #simplemodal-data {
+  position:absolute;
+  -webkit-overflow-scrolling: touch !important;
   height:100%;
-  overflow:hidden;
+  width:100%;
+  overflow-y:auto;
+  overflow-x:hidden;
   }
 /* Ensure iframe fills the entire simplemodal-data container */
 #simplemodal-data iframe {
   height:100%;
   width:100%;
+  border-width:0;
   border-radius:15px;
   background-color:#fff;
+  margin-bottom:-5px;
   }
 .simplemodal-wrap {
   border-radius:15px;
@@ -1031,8 +1044,13 @@ a.modalCloseImg:hover {
   width:50%;
   }
 #simplemodal-container-select_delivery {
-  max-width:280px;
-  min-width:280px;
+  max-width:340px;
+  min-width:340px;
+  }
+/* Styles related only to simplemodal ordering_history_popup display */
+#simplemodal-container-select_order_history {
+    max-width: 340px;
+    min-width: 340px;
   }
 
 /************* STYLES FOR MEMBERSHIP RENEWAL FORM ***************/
@@ -1080,6 +1098,7 @@ a.modalCloseImg:hover {
   #footer,
   #user_menu,
   #payment_options,
+  #quick_link,
   .current_view {
     display:none;
     }

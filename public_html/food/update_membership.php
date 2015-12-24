@@ -27,7 +27,7 @@ if (isset ($_POST['update_membership']) && $_POST['update_membership'] == 'true'
     if (! $_SESSION['renewal_info']['membership_expired'])
       {
         // This flag is also used to determine whether the information was processed/accepted
-        $modal_action = 'reload_parent';
+        $modal_action = 'reload_parent()';
       }
   }
 $do_update_membership = false;
@@ -90,6 +90,6 @@ $message = '<div class="membership_message">'.($display_as_popup == true ? 'Relo
 include("template_header.php");
 echo '
   <!-- CONTENT BEGINS HERE -->
-  '.($modal_action != 'reload_parent' ? $renew_membership_form : $message).'
+  '.($modal_action != 'reload_parent()' ? $renew_membership_form : $message).'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
