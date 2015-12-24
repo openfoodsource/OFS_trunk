@@ -245,7 +245,7 @@ $page_specific_css = '
     border-right:1px solid #888;
     border-bottom:1px solid #888;
     border-left:1px solid #888;
-    overflow:auto;
+    overflow:none; /* prevent extra scroll area in chart of accounts */
     }
 
   /* BEGIN BASIC FORM STYLES */

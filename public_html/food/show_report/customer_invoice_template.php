@@ -191,116 +191,120 @@ function open_list_top(&$product, &$unique)
           '.(($unique['view'] != 'editable' && CurrentMember::auth_type('cashier') && $_GET['member_id'] != $member_id) ? '[<a href="'.$_SERVER['SCRIPT_NAME'].'?'.($_GET['type'] ? 'type='.$_GET['type'] : '').($_GET['delivery_id'] ? '&amp;delivery_id='.$_GET['delivery_id'] : '').($_GET['member_id'] ? '&amp;member_id='.$_GET['member_id'] : '').'&amp;view=editable">Editable</a>]': '').'
         invoice.
       </span>').'
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td align="left" valign="top"><!-- FOOTER LEFT "'.(strpos ($unique['auth_type'], 'institution') !== false ? $unique['business_name'] : '').$unique['last_name'].', '.$unique['first_name'].'" -->
-                <font size="+2"><b>'.$unique['preferred_name'].' '.(strpos ($unique['auth_type'], 'institution') !== false ? $unique['business_name'].'<br>(attn: '.$unique['first_name'].' '.$unique['last_name'].')' : '').'</b></font>
-              </td>
-              <td valign="top" align="right">
-                <table border="0" style="width:300px;float:right">
-                  <tr>
-                    <td align="center" style="text-align:center;">
-                      <img src="'.BASE_URL.DIR_GRAPHICS.'invoice_logo.gif" alt="logo" width="250" height="72">
-                    </td>
-                  </tr>
-                  <tr>
-                    <td align="center" style="text-align:center;">
-                      <font size="-2">'.SITE_CONTACT_INFO.'</font>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                  <tr>
-                    <td align="left">
-                      <font size="+2">'.$unique['member_id'].'-'.$unique['site_short'].' ('.$unique['site_long'].')</font>
-                    </td>
-                    <td align="right" style="text-align:right;">
-                      <font size="+2">'.date ("F j, Y", strtotime ($unique['delivery_date'])).'</font>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2" height="20"><img class="wide-line" src="'.BASE_URL.DIR_GRAPHICS.'black_pixel.gif" width="100%" height="1" alt="divider"></td>
-            </tr>
-            <tr>
-              <td valign="top"><strong>Customer info</strong>'.
+      <!-- BEGIN TABLE:member_info -->
+      <table class="invoice_header" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td align="left" valign="top"><!-- FOOTER LEFT "'.(strpos ($unique['auth_type'], 'institution') !== false ? $unique['business_name'] : '').$unique['last_name'].', '.$unique['first_name'].'" -->
+            <font size="+2"><b>'.$unique['preferred_name'].' '.(strpos ($unique['auth_type'], 'institution') !== false ? $unique['business_name'].'<br>(attn: '.$unique['first_name'].' '.$unique['last_name'].')' : '').'</b></font>
+          </td>
+          <td valign="top" align="right">
+            <table border="0" style="width:300px;float:right">
+              <tr>
+                <td align="center" style="text-align:center;">
+                  <img src="'.BASE_URL.DIR_GRAPHICS.'invoice_logo.gif" alt="logo" width="250" height="72">
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="text-align:center;">
+                  <font size="-2">'.SITE_CONTACT_INFO.'</font>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td align="left">
+                  <font size="+2">'.($unique['member_id'] ? $unique['member_id'].'-'.$unique['site_short'].' ('.$unique['site_long'].')' : '(Void Invoice)').'</font>
+                </td>
+                <td align="right" style="text-align:right;">
+                  <font size="+2">'.($unique['delivery_date'] ? date ("F j, Y", strtotime ($unique['delivery_date'])) : '(Void Invoice)').'</font>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" height="20"><img class="wide-line" src="'.BASE_URL.DIR_GRAPHICS.'black_pixel.gif" width="100%" height="1" alt="divider"></td>
+        </tr>
+        <tr>
+          <td valign="top"><strong>Customer info</strong>'.
 ($unique['delivery_type'] == 'H' || $unique['delivery_type'] == 'P' ? '
-                (home):<br><br>'.$unique['address_line1'].''.
+            (home):<br><br>'.$unique['address_line1'].''.
 ($unique['address_line2'] != '' ? '
-                <br>'.$unique['address_line2'].''
+            <br>'.$unique['address_line2'].''
 : '').'
-                <br>'.$unique['city'].', '.$unique['state'].', '.$unique['zip'].'<br>' :
+            <br>'.$unique['city'].', '.$unique['state'].', '.$unique['zip'].'<br>' :
 '').
 ($unique['delivery_type'] == 'W' ? '
-                (work):<br><br>'.$unique['work_address_line1'].''.
+            (work):<br><br>'.$unique['work_address_line1'].''.
 ($unique['work_address_line2'] != '' ? '
-                <br>'.$unique['work_address_line2'].''
+            <br>'.$unique['work_address_line2'].''
 : '').'
-                <br>'.$unique['work_city'].', '.$unique['work_state'].', '.$unique['work_zip'].'<br>'
+            <br>'.$unique['work_city'].', '.$unique['work_state'].', '.$unique['work_zip'].'<br>'
 : '').
 ($unique['email_address'] != '' ? '
-                <br><a href="mailto:'.$unique['email_address'].'">'.$unique['email_address'].'</a>'
+            <br><a href="mailto:'.$unique['email_address'].'">'.$unique['email_address'].'</a>'
 : '').
 ($unique['email_address_2'] != '' ? '
-                <br><a href="mailto:'.$unique['email_address_2'].'">'.$unique['email_address_2'].'</a>'
+            <br><a href="mailto:'.$unique['email_address_2'].'">'.$unique['email_address_2'].'</a>'
 : '').
 ($unique['home_phone'] != '' ? '
-                <br>'.$unique['home_phone'] .' (home)'
+            <br>'.$unique['home_phone'] .' (home)'
 : '').
 ($unique['work_phone'] != '' ? '
-                <br>'.$unique['work_phone'] .' (work)'
+            <br>'.$unique['work_phone'] .' (work)'
 : '').
 ($unique['mobile_phone'] != '' ? '
-                <br>'.$unique['mobile_phone'] .' (mobile)'
+            <br>'.$unique['mobile_phone'] .' (mobile)'
 : '').
 ($unique['fax'] != '' ? '
-                <br>'.$unique['fax'] .' (fax)'
+            <br>'.$unique['fax'] .' (fax)'
 : '').'<br><br>
-              </td>
-              <td valign="top"><strong>Delivery/pickup details:</strong>
-                <dl>
-                  <dt><font face="Times New Roman">'.$unique['site_long'].'</font></dt>
-                  <dd><pre><font face="Times New Roman">'.$unique['site_description'].'</font></pre></dd>
-                </dl>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                '.
+          </td>
+          <td valign="top"><strong>Delivery/pickup details:</strong>
+            <dl>
+              <dt><font face="Times New Roman">'.$unique['site_long'].'</font></dt>
+              <dd><pre><font face="Times New Roman">'.$unique['site_description'].'</font></pre></dd>
+            </dl>
+          </td>
+        </tr>'.
 ($unique['msg_all'] != '' ? '
-                <font color="#990000" size="-1">'.$unique['msg_all'].'</font>'
+        <tr>
+          <td colspan="2">
+            <font color="#990000" size="-1">'.$unique['msg_all'].'</font>
+          </td>
+        </tr>'
 : '').
 ($unique['msg_unique'] != '' ? '
-                <br><font color="#990000" size="-1">'.$unique['msg_unique'].'<br></font>'
+        <tr>
+          <td colspan="2">
+            <font color="#990000" size="-1">'.$unique['msg_unique'].'<br></font>
+          </td>
+        </tr>'
 : '').'
-              </td>
-            </tr>
-          </table>
-        <font face="arial">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0">'.
+          </td>
+        </tr>
+      </table>
+      <!-- END TABLE:member_info -->
+      <!-- BEGIN TABLE:product_list -->
+      <table class="invoice_body" width="100%" cellpadding="0" cellspacing="0" border="0">'.
 ($unique['checked_out'] != 0 ? '
-          <tr>
-            <td colspan="7"><br></td>
-          </tr>
-          <tr>
-            <th valign="bottom" bgcolor="#444444" width="40"></th>
-            <th valign="bottom" bgcolor="#444444" width="35"><font color="#ffffff" size="-1">#</font></th>
-            <th valign="bottom" bgcolor="#444444" align="left"><font color="#ffffff" size="-1">Product Name</font></th>
-            <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Price</font></th>
-            <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Quantity</font></th>
-            <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Weight</font></th>
-            <th valign="bottom" bgcolor="#444444" align=right width="8%"><font color="#ffffff" size="-1">Amount</font></th>
-          </tr>'
+        <tr>
+          <th valign="bottom" bgcolor="#444444" width="40"></th>
+          <th valign="bottom" bgcolor="#444444" width="35"><font color="#ffffff" size="-1">#</font></th>
+          <th valign="bottom" bgcolor="#444444" align="left"><font color="#ffffff" size="-1">Product Name</font></th>
+          <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Price</font></th>
+          <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Quantity</font></th>
+          <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Weight</font></th>
+          <th valign="bottom" bgcolor="#444444" align=right width="8%"><font color="#ffffff" size="-1">Amount</font></th>
+        </tr>'
 : '
-          <tr>
-            <td colspan="7" align="center"><br><br><br><br>EMPTY INVOICE<br>Nothing ordered<br><br><br></td>
-          </tr>');
+        <tr>
+          <td colspan="7" align="center"><br><br><br><br>EMPTY INVOICE<br>Nothing ordered<br><br><br></td>
+        </tr>');
     return $list_top;
   };
 
@@ -316,127 +320,132 @@ function close_list_bottom(&$product, &$adjustment, &$unique)
     $this_row = $product['this_row'];
     return
 ($product[$this_row]['adjustments_exist'] != '' ? '
-          <tr align="left">
-            <td></td>
-            <td>____</td>
-            <td colspan="5"><br><font face="arial" color="#770000" size="-1"><b>Adjustments</b></font></td>
-          </tr>
-          '.$product[$this_row]['adjustment_display_output']
+        <tr align="left">
+          <td></td>
+          <td>____</td>
+          <td colspan="5"><br><font face="arial" color="#770000" size="-1"><b>Adjustments</b></font></td>
+        </tr>
+        '.$product[$this_row]['adjustment_display_output']
 : '').'
 <!-- NEED 7 -->
-          <tr>
-            <td colspan="6" align="right" style="text-align:right;"><br><b>SUBTOTAL</b></td>
-            <td align="right" width="8%" style="text-align:right;"><br><b>$&nbsp;'.number_format($unique['total_order_amount'] - ($unique['invoice_price'] == 1 ? 0 : $unique['total_order_customer_fee']) - $unique['total_order_tax'], 2).'</b></td>
-          </tr>'.
+        <tr>
+          <td colspan="6" align="right" style="text-align:right;"><br><b>SUBTOTAL</b></td>
+          <td align="right" width="8%" style="text-align:right;"><br><b>$&nbsp;'.number_format($unique['total_order_amount'] - ($unique['invoice_price'] == 1 ? 0 : $unique['total_order_customer_fee']) - $unique['total_order_tax'], 2).'</b></td>
+        </tr>'.
 ($product[$this_row]['delivery_id'] >= DELIVERY_NO_PAYPAL && $unique['invoice_price'] == 0 && $unique['customer_fee_percent'] != 0 ? '
-          <tr>
-            <td colspan="6" align="right" style="text-align:right;"><b>+ '.number_format($unique['customer_fee_percent'], 0).'% Fee</b></td>
-            <td align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['total_order_customer_fee'], 2).'</b></td>
-          </tr>'
+        <tr>
+          <td colspan="6" align="right" style="text-align:right;"><b>+ '.number_format($unique['customer_fee_percent'], 0).'% Fee</b></td>
+          <td align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['total_order_customer_fee'], 2).'</b></td>
+        </tr>'
 : '').
 ($unique['total_order_tax'] != 0 ? '
-          <tr>
-            <td colspan="6" align="right" style="text-align:right;"><b>* Sales tax</b></td>
-            <td align="right" width="8%" style="text-align:right;"><b>$ '.number_format($unique['total_order_tax'], 2).'</b></td>
-          </tr>'
+        <tr>
+          <td colspan="6" align="right" style="text-align:right;"><b>* Sales tax</b></td>
+          <td align="right" width="8%" style="text-align:right;"><b>$ '.number_format($unique['total_order_tax'], 2).'</b></td>
+        </tr>'
 : '').
 ($product[$this_row]['exempt_adjustment_cost'] != 0 ? '
-          <tr>
-            <td colspan="6" align="right" style="text-align:right;"><b>Non-taxed Adjustments</b></td>
-            <td  align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($product[$this_row]['exempt_adjustment_cost'], 2).'</b></font></td>
-          </tr>'
+        <tr>
+          <td colspan="6" align="right" style="text-align:right;"><b>Non-taxed Adjustments</b></td>
+          <td  align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($product[$this_row]['exempt_adjustment_cost'], 2).'</b></font></td>
+        </tr>'
 : '').
 ($adjustment['total_delivery_cost'] != 0 ? '
-          <tr>
-            <td colspan="6" align="right" style="text-align:right;"><b>Extra Charge for Delivery </b></font></td>
-            <td  align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($adjustment['total_delivery_cost'], 2).'</b></td>
-          </tr>'
+        <tr>
+          <td colspan="6" align="right" style="text-align:right;"><b>Extra Charge for Delivery </b></font></td>
+          <td  align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($adjustment['total_delivery_cost'], 2).'</b></td>
+        </tr>'
 : '').'
-          <tr>
-            <td height="1" colspan="6"></td>
-            <td height="1"><img class="wide-line" width="90" height="1" src="'.BASE_URL.DIR_GRAPHICS.'black_pixel.gif"></td>
-          </tr>
-          <tr>
-            <td colspan="6" align="right" style="text-align:right;"><b>Invoice&nbsp;Total </b></td>
-            <td align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['total_order_amount'], 2).'</b></td>
-          </tr>'.
+        <tr>
+          <td height="1" colspan="6"></td>
+          <td height="1"><img class="wide-line" width="90" height="1" src="'.BASE_URL.DIR_GRAPHICS.'black_pixel.gif"></td>
+        </tr>
+        <tr>
+          <td colspan="6" align="right" style="text-align:right;"><b>Invoice&nbsp;Total </b></td>
+          <td align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['total_order_amount'], 2).'</b></td>
+        </tr>'.
 ($unique['balance_forward'] != 0 ? '
-          <tr>
-            <td colspan="6" align="right" style="text-align:right;"><b>Previous '.($unique['balance_forward'] < 0 ? 'Credit' : 'Balance Due').'</b></td>
-            <td align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['balance_forward'], 2).'</b></td>
-          </tr>'
+        <tr>
+          <td colspan="6" align="right" style="text-align:right;"><b>Previous '.($unique['balance_forward'] < 0 ? 'Credit' : 'Balance Due').'</b></td>
+          <td align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['balance_forward'], 2).'</b></td>
+        </tr>'
 : '').
 $unique['included_adjustments'].'
-          <tr>
-            <td colspan="5" height="1"></td>
-            <td colspan="2" height="1" align="right"><img class="wide-line" width="90" height="1" src="'.BASE_URL.DIR_GRAPHICS.'black_pixel.gif"></td>
-          </tr>
-          <tr>
-            <td colspan="6" align="right" style="text-align:right;"><font size="+2">PLEASE PAY:&nbsp;</font></td>
-            <td align="right" style="text-align:right;"><font size="+2">'.($product[$this_row]['unfilled_random_weight'] ? '<font size="-1">'.$product[$this_row]['display_weight_pending_text'].'</font>' : '$&nbsp;'.number_format ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['included_adjustment_total'], 2)).'</font></td>
-          </tr>'.
+        <tr>
+          <td colspan="5" height="1"></td>
+          <td colspan="2" height="1" align="right"><img class="wide-line" width="90" height="1" src="'.BASE_URL.DIR_GRAPHICS.'black_pixel.gif"></td>
+        </tr>
+        <tr>
+          <td colspan="6" align="right" style="text-align:right;"><font size="+2">PLEASE PAY:&nbsp;</font></td>
+          <td align="right" style="text-align:right;"><font size="+2">'.($product[$this_row]['unfilled_random_weight'] ? '<font size="-1">'.$product[$this_row]['display_weight_pending_text'].'</font>' : '$&nbsp;'.number_format ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['included_adjustment_total'], 2)).'</font></td>
+        </tr>'.
 // ADJUSTMENT DISPLAY
 $unique['excluded_adjustments'].
 (round ($product[$this_row]['most_recent_payment_amount'], 2) > 0 ? '
-          <tr>
-            <td colspan="6" align="right" style="text-align:right;">Thank you for your most recent payment of $&nbsp;'.number_format ($product[$this_row]['most_recent_payment_amount'], 2).'.</td>
-            <td></td>
-          </tr>'
+        <tr>
+          <td colspan="6" align="right" style="text-align:right;">Thank you for your most recent payment of $&nbsp;'.number_format ($product[$this_row]['most_recent_payment_amount'], 2).'.</td>
+          <td></td>
+        </tr>'
 : '').
 ($_GET['output'] != 'pdf' ? '
-          <tr id="payment_options">
-            <td colspan="7" align="right">
-              <table width="60%" border="0" cellspacing="10" align="center" style="margin:2em auto; width:60%;">
-                <tr>
-                  <td colspan="2" valign="top" align="left" style="padding:5px;">
-                    <font color="#880000">Please do not make payments until producers have had a chance to fill the orders, mark products out-of-stock if needed, and all weights are no longer zero.</font>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="2" valign="top" align="center" style="padding:5px;">
-                    <b>P A Y M E N T &nbsp; &nbsp; O P T I O N S</b>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="2" valign="top" style="padding:5px;height:21px;font-size:16px;">
-                    Pay $&nbsp;'.number_format ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['included_adjustment_total'], 2).' by cash or check at order pickup
-                  </td>
-                </tr>'.
+        <tr id="payment_options">
+          <td colspan="7" align="right">
+            <!-- BEGIN TABLE:payment_options -->
+            <table width="60%" border="0" cellspacing="10" align="center" style="margin:2em auto; width:60%;">
+              <tr>
+                <td valign="top" align="left" style="padding:5px;">
+                  <font color="#880000">Please do not make payments until producers have had a chance to fill the orders, mark products out-of-stock if needed, and all weights are no longer zero.</font>
+                </td>
+              </tr>
+              <tr>
+                <td valign="top" align="center" style="padding:5px;">
+                  <b>P A Y M E N T &nbsp; &nbsp; O P T I O N S</b>
+                </td>
+              </tr>
+              <tr>
+                <td valign="top" style="padding:5px;height:21px;font-size:16px;">
+                  Pay $&nbsp;'.number_format ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['included_adjustment_total'], 2).' by cash or check at order pickup
+                </td>
+              </tr>'.
 // Only show PayPal if PayPal is enabled and if there is a real basket_id for this order
 (PAYPAL_EMAIL && $unique['basket_id'] ? '
-                <tr>
-                  <td colspan="2" style="padding:15px 20px;">OR</td>
-                </tr>
-                <tr>
-                  <td colspan="2" style="padding:5px;">'.
-                  paypal_display_form (array (
-                    'form_id' => 'paypal_form1',
-                    'span1_content' => 'Pay now with PayPal &nbsp; &nbsp; $',
-                    'span2_content' => '',
-                    'form_target' => 'paypal',
-                    'allow_editing' => true,
-                    'amount' => number_format ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['included_adjustment_total'], 2),
-                    'business' => PAYPAL_EMAIL,
-                    'item_name' => htmlentities (ORGANIZATION_ABBR.' '.$unique['member_id'].' '.$unique['preferred_name']),
-                    'notify_url' => BASE_URL.PATH.'paypal_utilities.php',
-                    'custom' => htmlentities ('basket#'.$unique['basket_id']),
-                    'no_note' => '0',
-                    'cn' => 'Message:',
-                    'cpp_cart_border_color' => '#3f7300',
-                    'cpp_logo_image' => BASE_URL.DIR_GRAPHICS.'logo1_for_paypal.png',
-                    'return' => BASE_URL.PATH.'panel_member.php',
-                    'cancel_return' => BASE_URL.PATH.'panel_member.php',
-                    'rm' => '2',
-                    'cbt' => 'Return to '.SITE_NAME,
-                    'paypal_button_src' => 'https://www.paypal.com/en_US/i/btn/btn_buynow_SM.gif'
-                    )).'
-                    <div style="clear:both;font-size:80%;margin-top:1em;">If paying with PayPal, be sure to print/bring your PayPal receipt with you to order pickup as proof of payment.</div>
-                  </td>
-                </tr>'
+              <tr>
+                <td style="padding:15px 20px;">OR</td>
+              </tr>
+              <tr>
+                <td style="padding:5px;">'.
+                paypal_display_form (array (
+                  'form_id' => 'paypal_form1',
+                  'span1_content' => 'Pay now with PayPal &nbsp; &nbsp; $',
+                  'span2_content' => '',
+                  'form_target' => 'paypal',
+                  'allow_editing' => true,
+                  'amount' => number_format ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['included_adjustment_total'], 2),
+                  'business' => PAYPAL_EMAIL,
+                  'item_name' => htmlentities (ORGANIZATION_ABBR.' '.$unique['member_id'].' '.$unique['preferred_name']),
+                  'notify_url' => BASE_URL.PATH.'paypal_utilities.php',
+                  'custom' => htmlentities ('basket#'.$unique['basket_id']),
+                  'no_note' => '0',
+                  'cn' => 'Message:',
+                  'cpp_cart_border_color' => '#3f7300',
+                  'cpp_logo_image' => BASE_URL.DIR_GRAPHICS.'logo1_for_paypal.png',
+                  'return' => BASE_URL.PATH.'panel_member.php',
+                  'cancel_return' => BASE_URL.PATH.'panel_member.php',
+                  'rm' => '2',
+                  'cbt' => 'Return to '.SITE_NAME,
+                  'paypal_button_src' => 'https://www.paypal.com/en_US/i/btn/btn_buynow_SM.gif'
+                  )).'
+                  <div style="clear:both;font-size:80%;margin-top:1em;">If paying with PayPal, be sure to print/bring your PayPal receipt with you to order pickup as proof of payment.</div>
+                </td>
+              </tr>'
 : '&nbsp;')
 : '').'
-              </table>
-        </font>';
+            </table>
+            <!-- END TABLE:payment_options -->
+          </td>
+        </tr>
+      </table>
+      <!-- END TABLE:product_list -->';
   };
 
 /************************** OPEN MAJOR DIVISION ****************************/

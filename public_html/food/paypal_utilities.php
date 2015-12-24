@@ -326,7 +326,7 @@ function paypal_display_form ($paypal)
         <input type="hidden" name="cancel_return" value="'.$paypal['cancel_return'].'">
         <input type="hidden" name="rm" value="'.$paypal['rm'].'">
         <input type="hidden" name="cbt" value="'.$paypal['cbt'].'">
-        <input type="image" class="paypal_button" src="'.$paypal['paypal_button_src'].'" border="0" name="submit" alt="Make payments with PayPal - fast, free and secure!" style="border:0;"><br>
+        <input type="image" class="paypal_button" src="'.$paypal['paypal_button_src'].'" name="submit" alt="Make payments with PayPal - fast, free and secure!" style="border:0;"><br>
       </form>';
     return $paypal_form;
   }

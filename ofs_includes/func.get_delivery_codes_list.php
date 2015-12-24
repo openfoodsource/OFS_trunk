@@ -1,5 +1,7 @@
 <?php
 
+// DEPRECATED FUNCTION ??? //
+
 include_once ('func.open_update_basket.php');
 include_once ('func.get_basket.php');
 
@@ -152,9 +154,9 @@ function get_delivery_codes_list ($request_data)
               {
                 $show_site = true;
                 $active_class = ' active';
-                $select_link_href   = $_SERVER['SCRIPT_NAME'].'?action=open_basket&amp;site_id='.$site_id.'&amp;delivery_type=P';
-                $select_link_h_href = $_SERVER['SCRIPT_NAME'].'?action=open_basket&amp;site_id='.$site_id.'&amp;delivery_type=H';
-                $select_link_w_href = $_SERVER['SCRIPT_NAME'].'?action=open_basket&amp;site_id='.$site_id.'&amp;delivery_type=W';
+                $select_link_href   = $_SERVER['SCRIPT_NAME'].'?action=open_basket&amp;site_id='.$site_id.'&amp;delivery_type=P&modal_action='.$_GET['after_select'];
+                $select_link_h_href = $_SERVER['SCRIPT_NAME'].'?action=open_basket&amp;site_id='.$site_id.'&amp;delivery_type=H&modal_action='.$_GET['after_select'];
+                $select_link_w_href = $_SERVER['SCRIPT_NAME'].'?action=open_basket&amp;site_id='.$site_id.'&amp;delivery_type=W&modal_action='.$_GET['after_select'];
                 $delivery_type_class .= 'a'; // color
               }
             elseif ($inactive == 2)
@@ -199,7 +201,7 @@ function get_delivery_codes_list ($request_data)
                 if ($delivery_type == 'P')
                   {
                     $display .= '
-                  <li class="'.$delivery_type_class.$active_class.$select_class.'" '.($select_link_href != '' ? 'onclick="javascript:location.href=\''.$select_link_href : '').'\';parent.close_delivery_selector();">
+                  <li class="'.$delivery_type_class.$active_class.$select_class.'" '.($select_link_href != '' ? 'onclick="javascript:location.href=\''.$select_link_href : '').'\';">
                       <span class="site_long">'.$site_long.'</span>
                       <span class="site_action">'.$delivery_type_text.'</span>
                       <span class="site_description">'.br2nl($site_description).'</span>
@@ -210,7 +212,7 @@ function get_delivery_codes_list ($request_data)
                   {
                     if ($basket_info['delivery_type'] != 'H') $select_class = '';
                     $display .= '
-                  <li class="'.$delivery_type_class.$active_class.$select_class.'" '.($select_link_h_href != '' ? 'onclick="javascript:location.href=\''.$select_link_h_href : '').'\';parent.close_delivery_selector();">
+                  <li class="'.$delivery_type_class.$active_class.$select_class.'" '.($select_link_h_href != '' ? 'onclick="javascript:location.href=\''.$select_link_h_href : '').'\';">
                       <span class="site_long">'.$site_long.'</span>
                       <span class="site_action">'.$delivery_type_text_h.'</span>
                       <span class="site_description"><strong>To home address:</strong> '.$address.'<br>'.br2nl($site_description).'</span>
@@ -221,7 +223,7 @@ function get_delivery_codes_list ($request_data)
                   {
                     if ($basket_info['delivery_type'] != 'W') $select_class = '';
                     $display .= '
-                  <li class="'.$delivery_type_class.$active_class.$select_class.'" '.($select_link_w_href != '' ? 'onclick="javascript:location.href=\''.$select_link_w_href : '').'\';parent.close_delivery_selector();">
+                  <li class="'.$delivery_type_class.$active_class.$select_class.'" '.($select_link_w_href != '' ? 'onclick="javascript:location.href=\''.$select_link_w_href : '').'\';">
                       <span class="site_long">'.$site_long.'</span>
                       <span class="site_action">'.$delivery_type_text_w.'</span>
                       <span class="site_description"><strong>To work address:</strong> '.$work_address.'<br>'.br2nl($site_description).'</span>

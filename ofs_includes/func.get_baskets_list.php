@@ -1,5 +1,7 @@
 <?php
 
+// DEPRECATED FUNCTION ??? //
+
 // This function will get the html markup for a div containing formatted basket history.
 // Sample/suggested CSS is given at the end.
 function get_baskets_list ()

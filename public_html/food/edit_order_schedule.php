@@ -52,9 +52,9 @@ else
   }
 // Put together the customer_type value
 $customer_type_array = array ();
-if ($_POST['customer_type_institution'] == 'true')
+if (isset($_POST['customer_type_institution']) && $_POST['customer_type_institution'] == 'true')
   array_push ($customer_type_array, 'institution');
-if ($_POST['customer_type_member'] == 'true')
+if (isset($_POST['customer_type_member']) && $_POST['customer_type_member'] == 'true')
   array_push ($customer_type_array, 'member');
 $customer_type = implode (',', $customer_type_array);
 
@@ -192,7 +192,7 @@ $wholesale_markup = $order_cycle_info['wholesale_markup'];
 
 // See documentation for the auto-fill menu at http://api.jqueryui.com/autocomplete/
 
-$display .= '
+$display = '
   <h3>Configure Order Cycle '.$delivery_id.'</h3>
   '.$error_message.'
   '.$message.'

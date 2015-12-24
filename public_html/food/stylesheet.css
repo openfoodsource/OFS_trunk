@@ -213,6 +213,9 @@ li.suspended a {
   overflow:scroll;
   border:1px solid black;
   }
+table.compact td {
+  padding:8px 4px;
+  }
 table.compact tr td img {
   clear:both;
   }
@@ -476,17 +479,19 @@ table.compact tr td img {
   }
 
 .title {
-  display:block;
+  display:inline-block;
   color:#58673f;
   font-weight:bold;
   }
 .subtitle {
-  display:block;
+  display:inline-block;
   font-size:100%;
   color:#58673f;
   font-variant:small-caps
   }
-
+.subtitle::before {
+  content:"\00a0\2013\00a0";
+  }
 
 .sidebar .entry-header, .sidebar .entry-content, .sidebar .entry-summary, .sidebar .entry-meta {
     max-width: 1040px;
@@ -845,15 +850,24 @@ form input.error {
   background-color:#ffa;
   }
 
-
-.retail {
+/* DISPLAY OF PRICING ON PRODUCT-LIST TEMPLATES */
+.anon_price {
   font-style:normal;
-  color:#333;
+  color:#000;
   }
-.whsle {
-  font-style:italic;
-  color:#830;
+.cust_price {
+  font-style:normal;
+  color:#000;
   }
+.combine_price {
+  display:block;
+  color:#666;
+  text-align:center;
+  }
+.extra_price {
+  color:#000;
+  }
+
 .producer_control {
   font-size: 80%;
   font-weight:normal;

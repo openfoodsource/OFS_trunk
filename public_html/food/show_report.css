@@ -53,6 +53,14 @@ tr.adjusted td {
 
 /* Following styles are for show_report.php */
 
+table.invoice_header pre {
+  padding:5px;
+  margin:0;
+  }
+table.invoice_header {
+  margin-bottom:0.5em;
+  border-bottom:0;
+  }
 table tr td {
   vertical-align:top;
   }

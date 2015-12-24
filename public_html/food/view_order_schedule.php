@@ -141,10 +141,7 @@ $page_specific_css = '
 /* BEGIN TAB STYLES */
 
   #main_content {
-    width:100%;
-    border-right:1px solid #888;
-    border-bottom:1px solid #888;
-    border-left:1px solid #888;
+    margin:20px;
     overflow:auto;
     }
 

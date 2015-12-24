@@ -156,7 +156,7 @@ $page_specific_css = '
   fieldset.lookup input {
     font-size:12px;
     padding:6px 8px;
-    line-height:1;
+    line-height:1.2;
     margin:2px;
     border-width:0;
     border-style:none;
