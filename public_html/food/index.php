@@ -187,7 +187,7 @@ else
           <li><a href="'.PATH.'locations.php">Food Pickup/Delivery Locations</a></li>
           <li><a href="'.PATH.'prdcr_list.php">Active Producers</a></li>
           <li><a href="'.PATH.'contact.php">Contacts</a></li>
-          <li><a href="'.PATH.'product_list.php?type=full">Current Product Listings</a></li>
+          <li><a href="'.PATH.'category_list.php?display_as=grid">Current Product Listings</a></li>
           <li><a href="'.PATH.'member_form.php">Membership Application Form</a></li>
           <li><a href="'.PATH.'index.php?action=login">Login to Order</a></li>
         </ul>
