@@ -363,7 +363,7 @@ class CurrentMember
     private static $last_name_2 = false;
     private static function get_member_info ()
       {
-        if (self::$query_complete === false)
+        if (isset ($_SESSION['member_id']) && self::$query_complete === false)
           {
             global $connection;
             $query = '
