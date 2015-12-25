@@ -5,19 +5,6 @@
 // Show search box on product shopping pages
 $show_search = false;
 
-if (isset ($_SESSION['member_id']))
-  {
-    $where_auth = '
-    AND '.TABLE_MEMBER.'.member_id = "'.mysql_real_escape_string ($_SESSION['member_id']).'"
-    AND FIND_IN_SET('.NEW_TABLE_PRODUCTS.'.listing_auth_type, auth_type) > 0';
-  }
-else
-  {
-    // Cases where there is no member_id (someone who is not logged in) use just "member" auth
-    $where_auth = '
-    AND FIND_IN_SET('.NEW_TABLE_PRODUCTS.'.listing_auth_type, "member") > 0';
-  }
-
 $where_old_basket_items = '
     AND old_baskets.member_id = "'.mysql_real_escape_string ($member_id).'"
     AND old_baskets.delivery_id < "'.mysql_real_escape_string ($delivery_id).'"';
@@ -96,7 +83,7 @@ $query = '
     '.TABLE_PRODUCT_TYPES.'.prodtype,
     '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_type,
     '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_code,
-    '.TABLE_MEMBER.'.auth_type,
+    COALESCE('.NEW_TABLE_BASKETS.'.customer_fee_percent, (SELECT customer_fee_percent FROM '.TABLE_MEMBER.' WHERE member_id = "'.$_SESSION['member_id'].'")) AS customer_fee_percent,
     FLOOR('.TABLE_INVENTORY.'.quantity / '.NEW_TABLE_PRODUCTS.'.inventory_pull) AS inventory_quantity,
     '.NEW_TABLE_BASKET_ITEMS.'.total_weight,
     '.NEW_TABLE_BASKET_ITEMS.'.product_fee_percent,
@@ -112,8 +99,7 @@ $query = '
     '.TABLE_MEMBER.')
   LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' old_basket_items USING(basket_id)
   LEFT JOIN '.NEW_TABLE_PRODUCTS.' old_products USING(product_id,product_version)
-
-  LEFT JOIN '.NEW_TABLE_PRODUCTS.' ON('.NEW_TABLE_PRODUCTS.'.product_id = old_products.product_id)
+  LEFT JOIN '.NEW_TABLE_PRODUCTS.' ON ('.NEW_TABLE_PRODUCTS.'.product_id = old_products.product_id)
   LEFT JOIN '.TABLE_PRODUCER.' ON '.TABLE_PRODUCER.'.producer_id = '.NEW_TABLE_PRODUCTS.'.producer_id
   LEFT JOIN '.TABLE_SUBCATEGORY.' ON '.TABLE_SUBCATEGORY.'.subcategory_id = '.NEW_TABLE_PRODUCTS.'.subcategory_id
   LEFT JOIN '.TABLE_CATEGORY.' ON '.TABLE_CATEGORY.'.category_id = '.TABLE_SUBCATEGORY.'.category_id
@@ -128,17 +114,16 @@ $query = '
     AND '.NEW_TABLE_BASKET_ITEMS.'.basket_id > 0)
   LEFT JOIN '.NEW_TABLE_MESSAGES.' ON (referenced_key1 = '.NEW_TABLE_BASKET_ITEMS.'.bpid AND message_type_id =
     (SELECT message_type_id FROM '.NEW_TABLE_MESSAGE_TYPES.' WHERE description = "customer notes to producer"))
+  LEFT JOIN '.NEW_TABLE_BASKETS.' ON ('.NEW_TABLE_BASKETS.'.basket_id = '.NEW_TABLE_BASKET_ITEMS.'.basket_id)
   WHERE'.
     $where_producer_pending.
     $where_unlisted_producer.
     $where_catsubcat.
     $where_zero_inventory.
     $where_confirmed.
-    $where_old_basket_items.
-    $where_auth.'
+    $where_old_basket_items.'
+    AND FIND_IN_SET('.NEW_TABLE_PRODUCTS.'.listing_auth_type, COALESCE((SELECT auth_type FROM '.TABLE_MEMBER.' WHERE member_id = "'.$_SESSION['member_id'].'"), "member")) > 0
   GROUP BY CONCAT('.NEW_TABLE_PRODUCTS.'.product_id, "-", '.NEW_TABLE_PRODUCTS.'.product_version)
   ORDER BY'.
     $order_by;
-
-// echo "<pre>$query</pre>";
 ?>

@@ -86,10 +86,10 @@ function total_display_calc($data, &$unique)
         $unique['weight_needed'] = true;
       }
     // Only show zero amounts when there is no extra charge
-    if ($data['customer_adjusted_cost'] != 0 || $data['extra_charge'] == 0)
+    if ($data['display_adjusted_customer_price'] != 0 || $data['extra_charge'] == 0)
       {
         $total_display = '
-          <span id="customer_adjusted_cost'.$data['bpid'].'" class="'.$estimate_class.'">'.$estimate_text.'$'.number_format($data['customer_adjusted_cost'], 2).'</span>';
+          <span id="customer_adjusted_cost'.$data['bpid'].'" class="'.$estimate_class.'">'.$estimate_text.'$'.number_format($data['display_adjusted_customer_price'], 2).'</span>';
       }
     // If there is any content so far, then add a newline
     if ($total_display)
@@ -107,50 +107,32 @@ function total_display_calc($data, &$unique)
   };
 
 // PRICING_DISPLAY_CALC
-// function pricing_display_calc($data)
-//   { return
-//     ($data['display_retail_price'] && $data['display_unit_retail_price'] ?
-//     '<span class="retail">'.($_GET['type'] == 'producer_list' ? 'Retail: ' : '').'$'.number_format(round($data['display_unit_retail_price'], 2), 2).'/'.Inflect::singularize ($data['pricing_unit']).'</span><br>'
-//     : '' ).
-//     ($data['display_wholesale_price'] && $data['display_unit_wholesale_price'] ?
-//     '<span class="whsle">'.($_GET['type'] == 'producer_list' ? 'Whsle: ' : '').'$'.number_format($data['display_unit_wholesale_price'], 2).'/'.Inflect::singularize ($data['pricing_unit']).'</span><br>'
-//     : '').
-//     ((($data['display_wholesale_price'] && $data['display_unit_wholesale_price']) || ($data['display_retail_price'] && $data['display_unit_retail_price'])) && ($data['extra_charge'] != 0) ?
-//     'plus<br>'
-//     : '').
-//     ($data['extra_charge'] != 0 ?
-//     '<span class="extra">'.($data['extra_charge'] > 0 ? '+' : '-').'&nbsp;$&nbsp;'.number_format (abs (round($data['extra_charge'], 2)), 2).'/'.Inflect::singularize ($data['ordering_unit']).'</span><br>'
-//     : '');
-//   };
 function pricing_display_calc($data)
   {
-    if ($data['display_retail_price'] &&
-        $data['display_unit_retail_price'])
+    $pricing_display_calc = '';
+    $per_pricing_unit = ' / ';
+    if (preg_match ('/[0-9]+.*/', $data['pricing_unit'])) $per_pricing_unit = ' per ';
+    $per_ordering_unit = ' / ';
+    if (preg_match ('/[0-9]+.*/', $data['ordering_unit'])) $per_ordering_unit = ' per ';
+    if ($data['display_base_customer_price'])
       {
         $pricing_display_calc .= '
-          <span class="retail">'.($_GET['type'] == 'producer_list' ? 'Retail: ' : '').'$'.number_format(round($data['display_unit_retail_price'], 2), 2).'/'.Inflect::singularize ($data['pricing_unit']).'</span>';
+          <span class="basket_price">$'.number_format($data['display_base_customer_price'], 2).$per_pricing_unit.Inflect::singularize ($data['pricing_unit']).'</span>';
       }
-    if ($data['display_wholesale_price'] &&
-        $data['display_unit_wholesale_price'])
+    if (strlen ($pricing_display_calc) > 0 &&
+        $data['extra_charge'] != 0)
       {
-        $pricing_display_calc .= '
-          <span class="whsle">'.($_GET['type'] == 'producer_list' ? 'Whsle: ' : '').'$'.number_format($data['display_unit_wholesale_price'], 2).'/'.Inflect::singularize ($data['pricing_unit']).'</span>';
+        $pricing_display_calc .= ($data['extra_charge'] > 0 ? '
+        <span class="combine_price">plus</span>' : '
+        <span class="combine_price">minus</span>').'
+        <span class="extra_price">&nbsp;$'.number_format (abs ($data['extra_charge']), 2).$per_ordering_unit.Inflect::singularize ($data['ordering_unit']).'</span>';
       }
-    if ((($data['display_wholesale_price'] &&
-          $data['display_unit_wholesale_price']) ||
-         ($data['display_retail_price'] &&
-          $data['display_unit_retail_price'])) &&
-        ($data['extra_charge'] != 0))
-      {
-//         $pricing_display_calc .= '
-//           <br>and<br>';
-      }
-    if ($data['extra_charge'] != 0)
-      {
-        $pricing_display_calc .= '
-          <span class="extra">'.($data['extra_charge'] > 0 ? '' : '-&nbsp;').'$'.number_format (abs (round($data['extra_charge'], 2)), 2).'/'.Inflect::singularize ($data['ordering_unit']).'</span>';
-      }
-    return ($pricing_display_calc);
+    elseif ($data['extra_charge'] != 0)
+    {
+      $pricing_display_calc .= '
+        <span class="extra_price">'.($data['extra_charge'] > 0 ? '' : '- ').'$'.number_format (abs ($data['extra_charge']), 2).$per_ordering_unit.Inflect::singularize ($data['ordering_unit']).'</span>';
+    }
+    return $pricing_display_calc;
   };
 
 // ORDERING_UNIT_DISPLAY_CALC
@@ -244,6 +226,7 @@ function pager_display_calc($data)
     '<a href="'.$_SERVER['SCRIPT_NAME'].'?'.
     ($_GET['type'] ? 'type='.$_GET['type'] : '').
     ($_GET['producer_id'] ? '&producer_id='.$_GET['producer_id'] : '').
+    ($_GET['producer_link'] ? '&producer_link='.$_GET['producer_link'] : '').
     ($_GET['category_id'] ? '&category_id='.$_GET['category_id'] : '').
     ($_GET['delivery_id'] ? '&delivery_id='.$_GET['delivery_id'] : '').
     ($_GET['subcat_id'] ? '&subcat_id='.$_GET['subcat_id'] : '').

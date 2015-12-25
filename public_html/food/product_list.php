@@ -57,8 +57,8 @@ if ((ActiveCycle::ordering_window() == 'open' && ActiveCycle::delivery_id() == $
   CurrentMember::auth_type('orderex')) $order_open = true;
 
 // Initialize display of wholesale and retail to false
-$display_wholesale_price = false;
-$display_retail_price = false;
+$display_base_price = false;
+$display_anonymous_price = false;
 $is_wholesale_item = false;
 
 // SET UP QUERY PARAMETERS THAT APPLY TO MOST LISTS
@@ -152,17 +152,19 @@ while ( $row = mysql_fetch_array($result) )
     // Add non-database variables to the $row array so they are available in function calls
     if ($row_counter++ < 1) // only do this once
       {
-        if (in_array ('institution', explode (',', $row['auth_type'])))
+        if (isset ($_SESSION['member_id']))
           {
-            $display_wholesale_price = true;
+            $display_base_price = true;
+            $display_anonymous_price = false;
           }
         else
           {
-            $display_retail_price = true;
+            $display_base_price = false;
+            $display_anonymous_price = true;
           }
       }
-    $row['display_retail_price'] = $display_retail_price;
-    $row['display_wholesale_price'] = $display_wholesale_price;
+    $row['display_base_price'] = $display_base_price;
+    $row['display_anonymous_price'] = $display_anonymous_price;
     $row['is_wholesale_item'] = $is_wholesale_item;
     $row['availability_array'] = explode (',', $row['availability_list']);
     // $row['site_id_you'] = CurrentBasket::site_id();
@@ -226,9 +228,10 @@ while ( $row = mysql_fetch_array($result) )
       {
         $row['cost_multiplier'] = ($row['basket_quantity'] - $row['out_of_stock']) * $row['unit_price'];
       }
-
+    // Following are for products that are in the customer's basket
     $row['producer_adjusted_cost'] = round($row['cost_multiplier'], 2)
                                      - round($row['producer_customer_adjust_fee'] * $row['cost_multiplier'], 2)
+                                     - round($row['producer_product_adjust_fee'] * $row['cost_multiplier'], 2)
                                      - round($row['producer_subcat_adjust_fee'] * $row['cost_multiplier'], 2)
                                      - round($row['producer_producer_adjust_fee'] * $row['cost_multiplier'], 2);
     $row['customer_adjusted_cost'] = round($row['cost_multiplier'], 2)
@@ -236,30 +239,37 @@ while ( $row = mysql_fetch_array($result) )
                                      + round($row['customer_product_adjust_fee'] * $row['cost_multiplier'], 2)
                                      + round($row['customer_subcat_adjust_fee'] * $row['cost_multiplier'], 2)
                                      + round($row['customer_producer_adjust_fee'] * $row['cost_multiplier'], 2);
-    // Following values are for generalalized -- not-logged-in calculations
-    $row['retail_unit_cost'] = round($row['unit_price'], 2)
-                               + (PAYS_CUSTOMER_FEE == 'customer' ? round(ActiveCycle::retail_markup_next () * $row['unit_price'], 2) : 0)
-                               + round($row['customer_product_adjust_fee'] * $row['unit_price'], 2)
-                               + round($row['customer_subcat_adjust_fee'] * $row['unit_price'], 2)
-                               + round($row['customer_producer_adjust_fee'] * $row['unit_price'], 2);
-    $row['wholesale_unit_cost'] = round($row['unit_price'], 2)
-                                + (PAYS_CUSTOMER_FEE == 'customer' ? round(ActiveCycle::wholesale_markup_next () * $row['unit_price'], 2) : 0)
-                                + round($row['customer_product_adjust_fee'] * $row['unit_price'], 2)
-                                + round($row['customer_subcat_adjust_fee'] * $row['unit_price'], 2)
-                                + round($row['customer_producer_adjust_fee'] * $row['unit_price'], 2);
+    // Following are for products that are NOT in a customer's basket
+    $row['base_producer_cost'] = round($row['unit_price'], 2)
+                                 - round($row['producer_customer_adjust_fee'] * $row['unit_price'], 2)
+                                 - round($row['producer_product_adjust_fee'] * $row['unit_price'], 2)
+                                 - round($row['producer_subcat_adjust_fee'] * $row['unit_price'], 2)
+                                 - round($row['producer_producer_adjust_fee'] * $row['unit_price'], 2);
+    $row['base_customer_cost'] = round($row['unit_price'], 2)
+                                 + round($row['customer_customer_adjust_fee'] * $row['unit_price'], 2)
+                                 + round($row['customer_product_adjust_fee'] * $row['unit_price'], 2)
+                                 + round($row['customer_subcat_adjust_fee'] * $row['unit_price'], 2)
+                                 + round($row['customer_producer_adjust_fee'] * $row['unit_price'], 2);
+    // Following are for products where the customer is NOT logged in
+    $row['base_anonymous_cost'] = round($row['unit_price'], 2)
+                                      + round(ANONYMOUS_MARKUP_PERCENT * $row['unit_price'] / 100, 2)
+                                      + round($row['customer_product_adjust_fee'] * $row['unit_price'], 2)
+                                      + round($row['customer_subcat_adjust_fee'] * $row['unit_price'], 2)
+                                      + round($row['customer_producer_adjust_fee'] * $row['unit_price'], 2);
+    // These are per-item values based on the SHOW_ACTUAL_PRICE setting in baskets
+    if (SHOW_ACTUAL_PRICE) $row['display_adjusted_producer_price'] = $row['producer_adjusted_cost'];
+    else $row['display_adjusted_producer_price'] = $row['unit_price'];
+    if (SHOW_ACTUAL_PRICE) $row['display_adjusted_customer_price'] = $row['customer_adjusted_cost'];
+    else $row['display_adjusted_customer_price'] = $row['unit_price'];
+    // These are per-item values based on the SHOW_ACTUAL_PRICE setting NOT in baskets
+    if (SHOW_ACTUAL_PRICE) $row['display_base_producer_price'] = $row['base_producer_cost'];
+    else $row['display_base_producer_price'] = $row['unit_price'];
+    if (SHOW_ACTUAL_PRICE) $row['display_base_customer_price'] = $row['base_customer_cost'];
+    else $row['display_base_customer_price'] = $row['unit_price'];
+    if (SHOW_ACTUAL_PRICE) $row['display_base_anonymous_price'] = $row['base_anonymous_cost'];
+    else $row['display_base_anonymous_price'] = $row['unit_price'];
 
-    // These are per-item values baseed on the SHOW_ACTUAL_PRICE setting
-    if (SHOW_ACTUAL_PRICE) $row['display_unit_wholesale_price'] = $row['wholesale_unit_cost'];
-    else $row['display_unit_wholesale_price'] = $row['unit_price'];
-    if (SHOW_ACTUAL_PRICE) $row['display_unit_retail_price'] = $row['retail_unit_cost'];
-    else $row['display_unit_retail_price'] = $row['unit_price'];
-
-    // These are line-item totals based on the SHOW_ACTUAL_PRICE setting
-    if (SHOW_ACTUAL_PRICE) $row['customer_display_cost'] = $row['customer_adjusted_cost'];
-    else $row['customer_display_cost'] = $row['cost_multiplier'];
-    if (SHOW_ACTUAL_PRICE) $row['producer_display_cost'] = $row['producer_adjusted_cost'];
-    else $row['customer_display_cost'] = $row['cost_multiplier'];
-
+// echo "<pre>".print_r($row,true)."</pre>";
     // Set up wholesale flag
     if ($row['listing_auth_type'] == "institution") $row['is_wholesale_item'] = true;
     else $row['is_wholesale_item'] = false;

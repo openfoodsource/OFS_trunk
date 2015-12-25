@@ -9,19 +9,6 @@ $where_misc = '
     AND DATEDIFF(NOW(), '.NEW_TABLE_PRODUCTS.'.created) < '.DAYS_CONSIDERED_NEW.
     $where_catsubcat;
 
-if (isset ($_SESSION['member_id']))
-  {
-    $where_auth = '
-    AND '.TABLE_MEMBER.'.member_id = "'.mysql_real_escape_string ($_SESSION['member_id']).'"
-    AND FIND_IN_SET(listing_auth_type, auth_type) > 0';
-  }
-else
-  {
-    // Cases where there is no member_id (someone who is not logged in) use just "member" auth
-    $where_auth = '
-    AND FIND_IN_SET(listing_auth_type, "member") > 0';
-  }
-
 $order_by = '
     '.TABLE_CATEGORY.'.sort_order ASC,
     '.TABLE_CATEGORY.'.category_name ASC,
@@ -96,7 +83,7 @@ $query = '
     '.TABLE_PRODUCT_TYPES.'.prodtype,
     '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_type,
     '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_code,
-    '.TABLE_MEMBER.'.auth_type,
+    COALESCE('.NEW_TABLE_BASKETS.'.customer_fee_percent, (SELECT customer_fee_percent FROM '.TABLE_MEMBER.' WHERE member_id = "'.$_SESSION['member_id'].'")) AS customer_fee_percent,
     FLOOR('.TABLE_INVENTORY.'.quantity / '.NEW_TABLE_PRODUCTS.'.inventory_pull) AS inventory_quantity,
     '.NEW_TABLE_BASKET_ITEMS.'.total_weight,
     '.NEW_TABLE_PRODUCTS.'.product_fee_percent,
@@ -122,13 +109,14 @@ $query = '
     AND '.NEW_TABLE_BASKET_ITEMS.'.basket_id > 0)
   LEFT JOIN '.NEW_TABLE_MESSAGES.' ON (referenced_key1 = bpid AND message_type_id =
     (SELECT message_type_id FROM '.NEW_TABLE_MESSAGE_TYPES.' WHERE description = "customer notes to producer"))
+  LEFT JOIN '.NEW_TABLE_BASKETS.' USING(basket_id)
   WHERE'.
     $where_producer_pending.
     $where_unlisted_producer.
     $where_misc.
     $where_zero_inventory.
-    $where_confirmed.
-    $where_auth.'
+    $where_confirmed.'
+    AND FIND_IN_SET(listing_auth_type, COALESCE((SELECT auth_type FROM '.TABLE_MEMBER.' WHERE member_id = "'.$_SESSION['member_id'].'"), "member")) > 0
   GROUP BY CONCAT('.NEW_TABLE_PRODUCTS.'.product_id, "-", '.NEW_TABLE_PRODUCTS.'.product_version)
   ORDER BY'.
     $order_by;
