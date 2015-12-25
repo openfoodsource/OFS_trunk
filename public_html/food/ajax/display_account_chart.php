@@ -9,7 +9,6 @@ valid_auth('member_admin,site_admin,cashier');
 $account_type = isset($_POST['account_type']) ? mysql_real_escape_string ($_POST['account_type']) : '';
 $data_page = isset($_POST['data_page']) ? mysql_real_escape_string ($_POST['data_page']) : 1;
 $per_page = isset($_POST['per_page']) ? mysql_real_escape_string ($_POST['per_page']) : PER_PAGE;
-$per_page = 25;
 $top_special_markup = '';
 $limit_clause = mysql_real_escape_string (floor (($data_page - 1) * $per_page).", ".floor ($per_page));
 
@@ -21,8 +20,15 @@ if ($account_type == '')
     exit (1);
   }
 
-// Set up the appropriate queries for the chart of accounts, depending on the account type
+// Set the accounting datetime limit (for constraining totals over time following the zero-date)
+$constrain_accounting_datetime = '';
+if (defined ('ACCOUNTING_ZERO_DATETIME') && strlen (ACCOUNTING_ZERO_DATETIME) > 0)
+  {
+    $constrain_accounting_datetime = '
+              AND effective_datetime >= "'.ACCOUNTING_ZERO_DATETIME.'"';
+  }
 
+// Set up the appropriate queries for the chart of accounts, depending on the account type
 switch ($account_type)
   {
     case "member":
@@ -51,7 +57,8 @@ switch ($account_type)
               '.TABLE_MEMBER.' ON (source_key = member_id)
             WHERE
               source_type = "member"
-              AND source_key = member_id
+              AND source_key = member_id'.
+              $constrain_accounting_datetime.'
             GROUP BY member_id)
           UNION ALL
             (SELECT
@@ -68,7 +75,8 @@ switch ($account_type)
               '.TABLE_MEMBER.' ON (target_key = member_id)
             WHERE
               target_type = "member"
-              AND target_key = member_id
+              AND target_key = member_id'.
+              $constrain_accounting_datetime.'
             GROUP BY member_id)
           ) foo
         GROUP BY member_id
@@ -89,11 +97,12 @@ switch ($account_type)
             FROM
               '.NEW_TABLE_LEDGER.'
             WHERE
-              ( source_type = "producer"
+              (( source_type = "producer"
                 AND source_key = producer_id)
               OR
               ( target_type = "producer"
-                AND target_key = producer_id)
+                AND target_key = producer_id))'.
+              $constrain_accounting_datetime.'
           ) AS account_balance
         FROM
           '.TABLE_PRODUCER.'
@@ -105,7 +114,6 @@ switch ($account_type)
       $query = '
         SELECT
           SQL_CALC_FOUND_ROWS
-          /* account_id AS account_number */
           account_id AS account_key,
           CONCAT(
             account_number, " / ", sub_account_number) AS account_number,
@@ -116,11 +124,12 @@ switch ($account_type)
             FROM
               '.NEW_TABLE_LEDGER.'
             WHERE
-              ( source_type = "internal"
+              (( source_type = "internal"
                 AND source_key = account_id)
               OR
               ( target_type = "internal"
-                AND target_key = account_id)
+                AND target_key = account_id))'.
+              $constrain_accounting_datetime.'
           ) AS account_balance
         FROM
           '.NEW_TABLE_ACCOUNTS.'
@@ -157,7 +166,8 @@ switch ($account_type)
             LEFT JOIN
               '.NEW_TABLE_TAX_RATES.' ON (tax_id = source_key)
             WHERE
-              source_type = "tax"
+              source_type = "tax"'.
+              $constrain_accounting_datetime.'
             GROUP BY region_code)
           UNION ALL
             (SELECT
@@ -173,7 +183,8 @@ switch ($account_type)
             LEFT JOIN
               '.NEW_TABLE_TAX_RATES.' ON (tax_id = target_key)
             WHERE
-              target_type = "tax"
+              target_type = "tax"'.
+              $constrain_accounting_datetime.'
             GROUP BY region_code)
           ) foo
         GROUP BY region_code

@@ -202,7 +202,16 @@ $query_product = '
     '.NEW_TABLE_PRODUCTS.'.product_id,
     FIND_IN_SET('.NEW_TABLE_LEDGER.'.text_key, "quantity cost,weight cost,extra charge,customer fee,producer fee,delivery cost") DESC';
 
-// echo "<pre>$query_product</pre>";
+// Set the accounting datetime limit (for constraining totals over time following the zero-date)
+$constrain_accounting_datetime = '';
+$constrain_effective_datetime = '';
+if (defined ('ACCOUNTING_ZERO_DATETIME') && strlen (ACCOUNTING_ZERO_DATETIME) > 0)
+  {
+    $constrain_accounting_datetime = '
+    AND '.TABLE_ORDER_CYCLES.'.date_closed > "'.ACCOUNTING_ZERO_DATETIME.'"';
+    $constrain_effective_datetime = '
+    AND effective_datetime > "'.ACCOUNTING_ZERO_DATETIME.'"';
+  }
 
 // Get the closing date for this member's most recent prior order
 $query_prior_closing = '
@@ -215,28 +224,33 @@ $query_prior_closing = '
     '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   WHERE
     '.NEW_TABLE_BASKETS.'.member_id = "'.mysql_real_escape_string($member_id).'"
-    AND '.TABLE_ORDER_CYCLES.'.date_closed < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysql_real_escape_string($delivery_id).'")
+    AND '.TABLE_ORDER_CYCLES.'.date_closed < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysql_real_escape_string($delivery_id).'")'.
+    $constrain_accounting_datetime.'
   ORDER BY
     '.TABLE_ORDER_CYCLES.'.date_closed DESC
   LIMIT
     0,1';
 // echo "<pre>$query_prior_closing </pre>";
 $result_prior_closing = mysql_query($query_prior_closing, $connection) or die(debug_print ("ERROR: 754932 ", array ($query_prior_closing,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$and_since_prior_closing_date = '';
+$and_since_prior_closing_date = ''; // NOT USED???
 $and_since_prior_delivery_date = '';
 $and_before_prior_delivery_date = '';
 if ($row_prior_closing = mysql_fetch_array ($result_prior_closing))
   {
-    $unique['prior_closing'] = $row_prior_closing['date_closed'];
-    $unique['prior_delivery'] = $row_prior_closing['delivery_date'];
-    $and_since_prior_closing_date = 'AND '.NEW_TABLE_LEDGER.'.effective_datetime > "'.$unique['prior_closing'].'"';
-    $and_since_prior_delivery_date = 'AND '.NEW_TABLE_LEDGER.'.effective_datetime > "'.$unique['prior_delivery'].'"';
-    $and_before_prior_delivery_date = 'AND '.NEW_TABLE_LEDGER.'.effective_datetime < "'.$unique['prior_delivery'].'"';
+    $and_since_prior_closing_date = 'AND '.NEW_TABLE_LEDGER.'.effective_datetime > "'.$row_prior_closing['date_closed'].'"';
+    $and_since_prior_delivery_date = '
+        AND '.NEW_TABLE_LEDGER.'.effective_datetime > "'.$row_prior_closing['delivery_date'].'"';
+    $and_before_prior_delivery_date = '
+    AND '.NEW_TABLE_LEDGER.'.effective_datetime < "'.$row_prior_closing['delivery_date'].'"';
   }
 else
   {
-    // There was no prior delivery date, so set it to "zero"
-    $and_before_prior_delivery_date = 'AND '.NEW_TABLE_LEDGER.'.effective_datetime < "0000-00-00 00:00:00"';
+    // There was no prior delivery date, so use the accounting datetime limit (for constraining totals over time following the zero-date)
+    $and_since_prior_delivery_date = '
+        AND '.NEW_TABLE_LEDGER.'.effective_datetime > "'.ACCOUNTING_ZERO_DATETIME.'"';
+    // $and_since_prior_delivery_date = ''; // Clobber the above
+    $and_before_prior_delivery_date = '
+    AND '.NEW_TABLE_LEDGER.'.effective_datetime < "0000-00-00 00:00:00"';
   }
 
 // This multi-row content comprises the non-product body of the report
@@ -277,8 +291,8 @@ $query_adjustment = '
     AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL
     AND '.NEW_TABLE_LEDGER.'.amount != 0 /* no need to show null adjustments */
     AND '.NEW_TABLE_LEDGER.'.bpid IS NULL /* do not consider basket items */
-    AND (('.NEW_TABLE_LEDGER.'.effective_datetime < (SELECT delivery_date FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysql_real_escape_string($delivery_id).'")
-        '.$and_since_prior_delivery_date.')
+    AND (('.NEW_TABLE_LEDGER.'.effective_datetime < (SELECT delivery_date FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysql_real_escape_string($delivery_id).'")'.
+        $and_since_prior_delivery_date.')
       OR ('.NEW_TABLE_LEDGER.'.delivery_id = "'.mysql_real_escape_string($delivery_id).'"
         AND ('.NEW_TABLE_LEDGER.'.text_key = "payment received"
           OR '.NEW_TABLE_LEDGER.'.text_key = "payment made")))
@@ -300,8 +314,9 @@ $query_balance = '
       AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysql_real_escape_string($member_id).'"))
     AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL
     /* Only consider charges prior to the order closing time */
-    /* AND '.NEW_TABLE_LEDGER.'.effective_datetime < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysql_real_escape_string($delivery_id).'") */
-    '.$and_before_prior_delivery_date;
+    /* AND '.NEW_TABLE_LEDGER.'.effective_datetime < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysql_real_escape_string($delivery_id).'") */'.
+    $and_before_prior_delivery_date.
+    $constrain_effective_datetime;
 // echo "<pre>$query_balance</pre>";
 $result_balance = mysql_query($query_balance, $connection) or die(debug_print ("ERROR: 675930 ", array ($query_balance,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
 if ($row_balance = mysql_fetch_array ($result_balance))

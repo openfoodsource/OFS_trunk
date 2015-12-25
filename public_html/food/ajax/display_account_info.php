@@ -10,8 +10,6 @@ $account_type = isset($_POST['account_type']) ? mysql_real_escape_string ($_POST
 $data_page = isset($_POST['data_page']) ? mysql_real_escape_string ($_POST['data_page']) : 1;
 $per_page = isset($_POST['per_page']) ? mysql_real_escape_string ($_POST['per_page']) : PER_PAGE;
 
-$per_page = 200;
-
 $limit_begin_row = ($data_page - 1) * $per_page;
 $limit_query = mysql_real_escape_string (floor ($limit_begin_row).", ".floor ($per_page));
 
@@ -21,6 +19,16 @@ if ($account_key == '' || $account_type == '')
   {
     echo "Invalid request. Invalid account number or type.";
     exit (1);
+  }
+
+// Set the accounting datetime limit (for constraining totals over time following the zero-date)
+$constrain_accounting_datetime = '
+              AND effective_datetime < "0"';
+if (defined ('ACCOUNTING_ZERO_DATETIME') && strlen (ACCOUNTING_ZERO_DATETIME) > 0)
+  {
+    // The amount we will subtract from balances in order to cross zero at the "zero datetime"
+    $constrain_accounting_datetime = '
+              AND effective_datetime < "'.ACCOUNTING_ZERO_DATETIME.'"';
   }
 
 if ($account_type == 'tax') // Handle the tax query differently because we want group tax-codes rather than tax_ids
@@ -44,7 +52,7 @@ if ($account_type == 'tax') // Handle the tax query differently because we want 
               '.NEW_TABLE_TAX_RATES.' ON (tax_id = source_key)
             WHERE
               source_type = "tax"
-              AND region_code="'.$account_key.'")
+              AND region_code="'.$account_key.'"CONSTRAINT)
           UNION ALL
              (SELECT
               transaction_id,
@@ -55,7 +63,7 @@ if ($account_type == 'tax') // Handle the tax query differently because we want 
               '.NEW_TABLE_TAX_RATES.' ON (tax_id = target_key)
             WHERE
               target_type = "tax"
-              AND region_code="'.$account_key.'")
+              AND region_code="'.$account_key.'"CONSTRAINT)
           ) foo
         ORDER BY transaction_id DESC
         LIMIT) bar';
@@ -162,11 +170,11 @@ else
           FROM
             '.NEW_TABLE_LEDGER.'
           WHERE
-            ( source_type = "'.$account_type.'"
+            ((source_type = "'.$account_type.'"
               AND source_key = "'.$account_key.'")
             OR
             ( target_type = "'.$account_type.'"
-              AND target_key = "'.$account_key.'")
+              AND target_key = "'.$account_key.'"))CONSTRAINT
           ORDER BY transaction_id DESC
           LIMIT
         ) AS foo';
@@ -240,18 +248,28 @@ $row_found_rows = mysql_fetch_array($result_found_rows);
 $found_rows = $row_found_rows['found_rows'];
 $found_pages = ceil ($found_rows / $per_page);
 
-// Apply the 
+// Apply the limit to get the running total
 $limit_running_total = 'LIMIT '.mysql_real_escape_string (floor ($limit_begin_row).', '.floor ($found_rows - $limit_begin_row));
-$query_balance = str_replace("LIMIT", "$limit_running_total", $query_balance);
+$query_balance_unlimited = str_replace('LIMIT', '', $query_balance);
+$query_balance_unlimited = str_replace('CONSTRAINT', $constrain_accounting_datetime, $query_balance_unlimited);
+$query_balance_limited = str_replace('LIMIT', $limit_running_total, $query_balance);
+$query_balance_limited = str_replace('CONSTRAINT', '', $query_balance_limited);
 
-//echo "<pre>$query_balance</pre>";
+// Get the running total for all transactions
+$result_balance_unlimited = mysql_query($query_balance_unlimited, $connection) or die(debug_print ("ERROR: 567392 ", array ($query_balance_unlimited,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+if ($row_balance_unlimited = mysql_fetch_array($result_balance_unlimited))
+  {
+    $running_total_unlimited = $row_balance_unlimited['running_total'];
+  }
 
 // Get the running total for this set of transactions
-$result_balance = mysql_query($query_balance, $connection) or die(debug_print ("ERROR: 567392 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-if ($row_balance = mysql_fetch_array($result_balance))
+$result_balance_limited = mysql_query($query_balance_limited, $connection) or die(debug_print ("ERROR: 567392 ", array ($query_balance_limited,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+if ($row_balance_limited = mysql_fetch_array($result_balance_limited))
   {
-    $running_total = $row_balance['running_total'];
+    $running_total_limited = $row_balance_limited['running_total'];
   }
+
+$running_total = $running_total_limited - $running_total_unlimited;
 
 while ($row = mysql_fetch_array($result_data))
   {
