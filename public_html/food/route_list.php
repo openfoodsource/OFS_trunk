@@ -45,6 +45,7 @@ if ($type == 'pickup')
         '.TABLE_PRODUCER.'.business_name,
         '.TABLE_PRODUCER.'.producer_id,
         '.NEW_TABLE_BASKET_ITEMS.'.quantity,
+        '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock,
         '.NEW_TABLE_PRODUCTS.'.ordering_unit
       FROM
         '.NEW_TABLE_BASKET_ITEMS.'
@@ -69,10 +70,11 @@ if ($type == 'pickup')
         $and_producer_id.'
       ORDER BY
         '.TABLE_PRODUCER.'.business_name,
+        '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_code,
+        '.NEW_TABLE_BASKETS.'.basket_id,
         '.NEW_TABLE_SITES.'.site_short,
         '.NEW_TABLE_BASKETS.'.member_id,
-        '.NEW_TABLE_BASKET_ITEMS.'.product_id,
-        '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_code';
+        '.NEW_TABLE_BASKET_ITEMS.'.product_id';
     $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 783022 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
     while ( $row = mysql_fetch_object($result) )
       {
@@ -124,6 +126,7 @@ elseif ($type == 'dropoff')
         '.TABLE_HUBS.'.*,
         '.TABLE_MEMBER.'.*,
         '.NEW_TABLE_BASKET_ITEMS.'.quantity,
+        '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock,
         '.NEW_TABLE_PRODUCTS.'.ordering_unit
       FROM
         '.NEW_TABLE_BASKET_ITEMS.'
