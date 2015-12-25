@@ -757,7 +757,7 @@ function update_basket_item (array $data)
                 tax_percent
               FROM '.NEW_TABLE_TAX_RATES.'
               WHERE
-                postal_code = "'.mysql_real_escape_string ($basket_info['delivery_postal_code']).'"
+                "'.mysql_real_escape_string ($basket_info['delivery_postal_code']).'" LIKE postal_code
                 AND order_id_start <= "'.mysql_real_escape_string ($data['delivery_id']).'"
                 AND (
                   order_id_stop >= "'.mysql_real_escape_string ($data['delivery_id']).'"
