@@ -3,41 +3,55 @@ include_once 'config_openfood.php';
 session_start();
 valid_auth('site_admin,cashier');
 
-
 $num_cycles = 20; # should be 1 higher than the actual number of cycles you want
+$start = 1;
+$stop = mysql_real_escape_string (ActiveCycle::delivery_id());
+if (isset($_GET['start']) && isset($_GET['stop']))
+  {
+    $start = $_GET['start'];
+    $stop = $_GET['stop'];
+    $display = 'range';
+  }
+else
+  {
+    if (isset ($_GET['num_cycles'])) $num_cycles = $_GET['num_cycles'];
+    $start = $stop - $num_cycles + 1;
+    $display = 'history';
+  }
 
 $query = '
   SELECT
-    '.NEW_TABLE_BASKETS.'.delivery_id,
+    '.NEW_TABLE_LEDGER.'.delivery_id,
+    '.NEW_TABLE_LEDGER.'.source_key,
     '.TABLE_ORDER_CYCLES.'.delivery_date,
-    '.TABLE_SUBCATEGORY.'.subcategory_name,
     '.TABLE_CATEGORY.'.category_name,
-    /* (!out_of_stock * if('.NEW_TABLE_PRODUCTS.'.random_weight = 1, '.NEW_TABLE_BASKET_ITEMS.'.item_price * total_weight, '.NEW_TABLE_BASKET_ITEMS.'.item_price * quantity)) AS real_price */
-    ((1 - out_of_stock) * (('.NEW_TABLE_PRODUCTS.'.random_weight * '.NEW_TABLE_PRODUCTS.'.unit_price * total_weight) + ((1 - '.NEW_TABLE_PRODUCTS.'.random_weight) * '.NEW_TABLE_PRODUCTS.'.unit_price * quantity))) AS real_price
+    '.TABLE_SUBCATEGORY.'.subcategory_name,
+    SUM('.NEW_TABLE_LEDGER.'.amount) AS amount
   FROM
-    '.NEW_TABLE_BASKETS.'
-  LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' ON '.NEW_TABLE_BASKET_ITEMS.'.basket_id = '.NEW_TABLE_BASKETS.'.basket_id
-  LEFT JOIN '.TABLE_ORDER_CYCLES.' ON '.TABLE_ORDER_CYCLES.'.delivery_id = '.NEW_TABLE_BASKETS.'.delivery_id
-  LEFT JOIN '.NEW_TABLE_PRODUCTS.' ON ('.NEW_TABLE_PRODUCTS.'.product_id = '.NEW_TABLE_BASKET_ITEMS.'.product_id AND '.NEW_TABLE_PRODUCTS.'.product_version = '.NEW_TABLE_BASKET_ITEMS.'.product_version)
-  LEFT JOIN '.TABLE_SUBCATEGORY.' ON '.TABLE_SUBCATEGORY.'.subcategory_id = '.NEW_TABLE_PRODUCTS.'.subcategory_id
-  LEFT JOIN '.TABLE_CATEGORY.' ON '.TABLE_CATEGORY.'.category_id = '.TABLE_SUBCATEGORY.'.category_id
+    '.NEW_TABLE_LEDGER.'
+  LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(pvid)
+  LEFT JOIN '.TABLE_SUBCATEGORY.' USING(subcategory_id)
+  LEFT JOIN '.TABLE_CATEGORY.' USING(category_id)
+  LEFT JOIN '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   WHERE
-    '.NEW_TABLE_BASKETS.'.delivery_id <= "'.mysql_real_escape_string (ActiveCycle::delivery_id()).'"
-    AND '.NEW_TABLE_BASKETS.'.delivery_id > "'.mysql_real_escape_string (ActiveCycle::delivery_id() - $num_cycles).'"
+    '.NEW_TABLE_LEDGER.'.delivery_id <= "'.mysql_real_escape_string($stop).'"
+    AND '.NEW_TABLE_LEDGER.'.delivery_id >= "'.mysql_real_escape_string($start).'"
+    AND replaced_by IS NULL
   GROUP BY
-    '.NEW_TABLE_BASKET_ITEMS.'.bpid';
+    '.TABLE_ORDER_CYCLES.'.delivery_date,
+    '.TABLE_CATEGORY.'.category_name,
+    '.TABLE_SUBCATEGORY.'.subcategory_name';
 $main_sql = mysql_query($query);
-
 $categories = array ();
 $cat_total = array ();
 while ($row = mysql_fetch_array($main_sql))
   {
-    if ($row["category_name"] && $row["subcategory_name"] && $row["delivery_date"])
+    if ($row['category_name'] && $row['subcategory_name'] && $row['delivery_date'])
       {
-        if (isset($categories[$row["category_name"]][$row["subcategory_name"]][$row["delivery_date"]]))
-          $categories[$row["category_name"]][$row["subcategory_name"]][$row["delivery_date"]] += $row["real_price"];
+        if (isset($categories[$row['category_name']][$row['subcategory_name']][$row['delivery_date']]))
+          $categories[$row['category_name']][$row['subcategory_name']][$row['delivery_date']] += $row['amount'];
         else
-          $categories[$row["category_name"]][$row["subcategory_name"]][$row["delivery_date"]] = $row["real_price"];
+          $categories[$row['category_name']][$row['subcategory_name']][$row['delivery_date']] = $row['amount'];
       }
   }
 
@@ -47,8 +61,8 @@ $query = '
   FROM
     '.TABLE_ORDER_CYCLES.'
   WHERE
-    delivery_id <= "'.mysql_real_escape_string (ActiveCycle::delivery_id()).'"
-    AND delivery_id > "'.mysql_real_escape_string (ActiveCycle::delivery_id() - $num_cycles).'"
+    delivery_id <= "'.mysql_real_escape_string($stop).'"
+    AND delivery_id >= "'.mysql_real_escape_string($start).'"
   ORDER BY
     delivery_date DESC';
 $dates_sql = mysql_query($query);
@@ -115,7 +129,17 @@ $content = '
   <table id="report_container">
     <tr>
       <td>
-        <h2>Sales By Subcategory (last '.$num_cycles.' cycles)</h2>
+        <form id="report_range" action="'.$_SERVER['SCRIPT_NAME'].'" method="get">
+          Show <input class="text" type="text" name="number_of_cycles" value="'.$num_cycles.'"> cycles history from present
+          <input class="submit_button" type="submit" value="Show History">
+        </form>
+          OR
+        <form id="report_range" action="'.$_SERVER['SCRIPT_NAME'].'" method="get">
+          Show from cycle <input class="text" type="text" name="start" value="'.$start.'"> to <input class="text" type="text" name="stop" value="'.$stop.'">
+          <input class="submit_button" type="submit" value="Show Range">
+        </form>
+        <h2>Sales By Subcategory ('.($display == 'history' ?'last '.$num_cycles.' cycles' : 'cycles '.$start.' &ndash; '.$stop).')</h2>
+        <p>Totals include all transactions associated with baskets products, i.e. damaged/written-off items as well as actual purchases.</p>
         <form>
           <label for="spreadsheet">Spreadsheet copyable data (click to select all, then copy):</label><br>
           <textarea style="margin-bottom: 1em;" id="spreadsheet" onclick="this.select();">'.$spreadsheet.'</textarea>
@@ -134,6 +158,11 @@ $page_specific_css = '
     th {
       font-weight:bold;
       font-size:70%;
+      position:relative;
+      }
+    th.date {
+      transform: rotate(-90deg);
+      height:150px;
       }
     #subcat_sales {
       table-layout:fixed;
@@ -178,6 +207,12 @@ $page_specific_css = '
       }
     #content {
       overflow-x:scroll;
+      }
+    #report_range .text {
+      width:50px;
+      }
+    #report_range .submit_button {
+      padding:3px 20px;
       }
   </style>';
 $page_specific_javascript = '';
