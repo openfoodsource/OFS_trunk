@@ -508,10 +508,8 @@ function renew_membership ($member_id, $membership_type_id)
         *
       FROM
         '.TABLE_MEMBERSHIP_TYPES.'
-      WHERE (
-        enabled_type = "2"
-          OR enabled_type = "3")
-        AND FIND_IN_SET(membership_type_id,"'.$membership_info['may_convert_to'].'")';
+      WHERE
+        membership_type_id = "'.$membership_type_id.'"';
     $result_membership_type = mysql_query($query_membership_type, $connection) or die(debug_print ("ERROR: 683080 ", array ($query_membership_type,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
     if (! $row_membership_type = mysql_fetch_array($result_membership_type))
       {
