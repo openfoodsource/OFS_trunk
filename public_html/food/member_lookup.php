@@ -19,6 +19,7 @@ if ($_GET['action'] == 'Search' &&
         '.TABLE_MEMBER.'.business_name AS member_business_name,
         email_address,
         email_address_2,
+        membership_discontinued,
         '.TABLE_PRODUCER.'.business_name AS producer_business_name,
         producer_id
       FROM
