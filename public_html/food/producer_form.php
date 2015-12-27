@@ -447,7 +447,7 @@ $display_form_html .= $error_message.'
       <tbody>
 './* Section I */'
       <tr>
-        <th class="memberform">Section 1: Credentials and Privacy</th>
+        <th class="producerform">Section 1: Credentials and Privacy</th>
       </tr>
 
       <tr>
@@ -546,7 +546,7 @@ $display_form_html .= $error_message.'
       </tr>
 './* Section II */'
       <tr>
-        <th class="memberform">Section 2: General Producer Information<p style="font-weight:normal;">Answers to these questions will appear on your producer information page and may be updated by you at any time.</p></th>
+        <th class="producerform">Section 2: General Producer Information<p style="font-weight:normal;">Answers to these questions will appear on your producer information page and may be updated by you at any time.</p></th>
       </tr>
 
       <tr>
@@ -635,7 +635,7 @@ $display_form_html .= $error_message.'
       </tr>
 './* Section III */'
       <tr>
-        <th class="memberform">Section 3: Production Specifics &ndash; Producer Questionnaire<p style="font-weight:normal;">This information is a part of your original producer questionnaire and will available for review on the website as a link from your producer information page.</p></th>
+        <th class="producerform">Section 3: Production Specifics &ndash; Producer Questionnaire<p style="font-weight:normal;">This information is a part of your original producer questionnaire and will available for review on the website as a link from your producer information page.</p></th>
       </tr>
 
       <tr>
@@ -775,7 +775,7 @@ $display_form_html .= $error_message.'
       </tr>
 './* Section IV */'
       <tr>
-        <th class="memberform">Section 4: Certifications<p style="font-weight:normal;">This information is a part of your original producer questionnaire and will available for review on the website as a link from your producer information page.</p></th>
+        <th class="producerform">Section 4: Certifications<p style="font-weight:normal;">This information is a part of your original producer questionnaire and will available for review on the website as a link from your producer information page.</p></th>
       </tr>
 
       <tr>
@@ -849,7 +849,7 @@ $display_form_html .= $error_message.'
       </tr>
 './* Section V */'
       <tr>
-        <th class="memberform">Section 5: Terms and Agreement<p style="font-weight:normal;">Affirmation of this agreement is a part of your original producer questionnaire and will available for review on the website as a link from your producer information page.</p></th>
+        <th class="producerform">Section 5: Terms and Agreement<p style="font-weight:normal;">Affirmation of this agreement is a part of your original producer questionnaire and will available for review on the website as a link from your producer information page.</p></th>
       </tr>
 
       <tr>
@@ -1141,7 +1141,45 @@ $page_specific_css = '
     float:right;
     text-align:right;
     }
-</style>';
+  th.producerform {
+    background:#cca;
+    }
+  td.form_key {
+    width:10em;
+    text-align:right;
+    }
+  td.form_key strong {
+    color:#230;
+    font-weight:bold;
+    }
+  td.form_subkey {
+    width:10px;
+    font-size:70%;
+    }
+  #producer_form .privacy {
+    width:49%;
+    float:left;
+    margin:3px;
+    }
+  #producer_form .business_info {
+    margin:3px;
+    }
+  #producer_form .denied {
+    display:none;
+    }
+  #producer_form .required {
+    background-color:#ecb;
+    }
+  #producer_form .optional {
+    background-color:#cdb;
+    }
+  #producer_form .bus_desc,
+  #producer_form .pub_desc,
+  #producer_form td.form_key strong {
+    color:#230;
+    font-weight:bold;
+    }
+  </style>';
 
 
 $page_specific_javascript = '

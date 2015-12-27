@@ -1,282 +1,143 @@
 /* CSS Document */
 
-/*attribute classes*/
+/*********************************************************/
+/*                                                       */
+/*       ---- SECTIONS ----                              */
+/*                                                       */
+/*       BASIC HTML TAGS                                 */
+/*       ATTRIBUTED HTML TAGS                            */
+/*       GENERALLY-USED CLASSES                          */
+/*       STYLES FOR THE HEADER                           */
+/*       MAIN PAGE CONTENT STYLES                        */
+/*       STYLES FOR SIMPLEMODAL OVERLAYS                 */
+/*       STYLES FOR ERROR MESSAGES                       */
+/*       STYLES FOR THE PRODUCT_LIST PAGER               */
+/*       OVERRIDE FOR CMS (E.G. WORDPRESS) STYLES        */
+/*       STYLES FOR TABLET SCREENS (PORTRAIT)            */
+/*       STYLES FOR TABLET SCREENS (LANDSCAPE)           */
+/*       STYLES FOR PHONE SCREENS (PORTRAIT)             */
+/*       STYLES FOR PHONE SCREENS (LANDSCAPE)            */
+/*       PRINT STYLES                                    */
+/*       DEPRECATED STYLES - TO BE REMOVED LATER         */
+/*                                                       */
+/*********************************************************/
 
-strike {
-  opacity:0.3;
-  }
-li strike {
-  display:none;
-  }
 
-.large {
-  font-weight: bold;
-  font-size: 16px;
-  font-family: Verdana, Arial, sans-serif;
-  }
+/******************** BASIC HTML TAGS ********************/
 
-.redBorder {
-  border-color: #DD0000;
+html,
+button,
+input,
+select,
+textarea {
+  font-family: "Source Sans Pro",Helvetica,sans-serif;
   }
-
-.salmonBG {
-  background-color: #F4E9E8;
-  }
-.whiteBG {
-  background-color: #FFFFFF;
-  }
-
-.yellowBG {
-  background-color: #FDFECF;
-  }
-
-.funkyPinkBG {
-  background-color: #EE6666;
-  }
-
-.magentaBG {
-  background-color: #EE77EE;
-  }
-
-.lightBlueBG {
-  background-color: #C7E0E9;
-  }
-.heinousOrangeBG {
-  background-color: #FFCC66;
-  }
-
-.dashedTopLine {
-  border-top: 1px dashed red;
-  width: 85%;
-  }
-.dottedBox {
-  border: 1px dotted orange;
-  width: 85%;
-  }
-
-.footnote {
-  font-size:0.9em;
-  color:#758954;
-  text-align:left;
-  }
-
-.alignRight {
-  text-align: right;
-  }
-.neg_2 {
-  font-size: 8pt;
-  }
-
-.a_neg1 {
-  font: 11px sans-serif;
-  }
-
-.large {
-  font-weight: bold;
-  font-size: 16px;
-  font-family: Verdana, Arial, sans-serif;
-  }
-.neutralSize {
-  font-family: Verdana, Arial, sans-serif;
-  font-size: 12px;
-  }  
-.compact {
-  font-family: Verdana, Arial, sans-serif;
-  font-size: 12px;
-  color: #222222;
-  }
-
-.roseBG {
-  background-color: #EEE6E6;
-  }
-
-.maroonText {
-  color: #770000;
-  }
-
-.redText {
-  color: #DD0000;
-  }
-
-.px12 {
-  font-family: Verdana, Arial, sans-serif;
-  font-size: 12px;
-  }
-
-.px10 {
-  font-family: Verdana, Arial, sans-serif;
-  font-size: 10px;
-  }
-
-.grayBorder {
-  border: 1px solid #AAAAAA;
-  }
-
-.topSpace {
-  margin-top: 15px; 
-  }
-.bottom3px {
-  margin-bottom: 3px;
-  }
-
-.lGrayBG {
-  background-color: #EEEEEE;
-  }
-
-.menuBox {
-  /*border-top: 1px solid #003366;
-  border-bottom: 1px solid #003366;*/
-  border: 1px solid #003366;
-  padding: 2px;
-  margin-bottom: 10px;
-  width: 98%;
-  background-color: #FFFFFF;/*#EDF3FC*/
-  }
-
-.menuBox2 {
-  border-right: 1px solid #333;
-  border-bottom: 1px solid #333;
-  border-top: 1px solid #ccc;
-  border-left: 1px solid #ccc;
-  padding: 2px 2px 2px;
-  background-color: #FFFFFF;/*#CFF7C8;*/
-  }
-.menuBox3 {
-  /*border-top: 1px solid #003366;
-  border-bottom: 1px solid #003366;*/
-  /*border: 1px solid #003366;*/
-  padding: 0px;
-  margin-bottom: 0px;
-  width: 99%;
-  background-color: #FFFFFF; /*#EDF3FC*/
-  }
-.menuBox4 {
-  /*border-top: 1px solid #003366;
-  border-bottom: 1px solid #003366;*/
-  /*border: 1px solid #003366;*/
-  padding: 0px;
-  margin-bottom: 0px;
-  width: 99%;
-  background-color: #EDF3FC; /*#EDF3FC*/
-  }
-
-.fancyList1 {
-  list-style-position: outside;
-  list-style-image: url(/food/grfx/dots.png);
-  }
-
-.fancyList1 li.current  {
-  list-style-image: url(/food/grfx/red_arrow.png);
-  }
-.fancyList1 li.current a  {
-  font-size:1.7em;
-  font-weight:normal;
-  }
-
 a {
   cursor:pointer;
   }
-
-ul.nav-menu ul li.basket_link a {
-  background-color:#000;
-  color:#aaa;
-  font-size:1em;
+dl {
+  color:#230;
+  font-weight:normal;
   }
-ul.nav-menu ul li.basket_link a:hover {
-  background-color:#341;
-  color:#ffc;
+dt {
+  text-decoration:underline;
+  font-style:italic;
+  margin-top:0.5em;
+  font-size:1.1em;
+  }
+dd {
+  font-size:0.9em;
+  margin-top: 0.3em;
+  }
+em {
+  font-style:italic;
+  color: #758954;
+  color: #444;
+  }
+h3 {
+  color:#58673f;
+  font-size: 150%;
+  font-family: Verdana, Arial, sans-serif;
+  }
+hr {
+  border: 0;
+  height: 1px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-color: #D6D6D6; 
+  margin: 0%;
+  }
+input {
+  font-size: 12px; 
+   font-family:"Lucida Console", monospace;
+  /* background-color: #F5F5F5; DEE8ED*/
+   color:#000;
+   /*border: 1px solid #666666;*/
+  }
+pre {
+  text-align:left;
+  margin-left:1em;
+  }
+textarea{ 
+   width:90%;
+   font-size: 12px; 
+   font-family:"Lucida Console", monospace;
+   background-color: #F5F5F5; 
+   color:#000;
+   border: 1px solid #666666;
   }
 
+/******************** ATTRIBUTED HTML TAGS ********************/
+
+a:link {
+  color: #58673f;
+  text-decoration: none;
+  background-color: transparent;
+  }
+a:visited {
+  color: #283510;
+  text-decoration: none;
+  font-style:italic;
+  background-color: transparent;
+  }
+a:hover {
+  color: #5f4f1f;
+  text-decoration: underline;
+  background-color:transparent;
+  }
 input[type="radio"],
 input[type="checkbox"] {
   vertical-align: middle;
   margin:2px;
   }
-
-li.listed a {
+input[type="text"]:disabled
+  {
+  background-color:#ddd;
+  color:#666;
+  } 
+/* Set background color for input/textarea placeholders */
+:-ms-input-placeholder {
+  color:#999;
   }
-li.unlisted a {
-  color:#888;
+::-webkit-input-placeholder {
+  color:#999;
   }
-li.suspended a {
-  color:#900;
-  }
-.height_300 {
-  height:300px;
-  width:90%;
-  overflow:scroll;
-  border:1px solid black;
-  }
-.height_400 {
-  height:400px;
-  width:90%;
-  overflow:scroll;
-  border:1px solid black;
-  }
-table.compact td {
-  padding:8px 4px;
-  }
-table.compact tr td img {
-  clear:both;
+:-moz-placeholder {
+  color:#999;
   }
 
-/* Styles for the product_list pager */
-.pager {
-  clear:both;
-  margin:1em 0em;
-  font-size: 120%;
-  }
-.pager .pager_title {
-  display:block;
-  float:left;
-  font-size: 100%;
-  padding:1px 4px;
-  border:1px solid #040;
-  border-right:0;
-  background-color:#ffc;
-//  max-width:7%;
-//  width:7%;
-  }
-.pager a {
-  display:block;
-  float:left;
-  text-align:center;
-  padding:1px 0;
-  border:1px solid #040;
-  border-right:0;
-  text-decoration:none;
-  background-color:#ffc;
-  overflow:hidden;
-  }
-.pager a.current {
-  background-color:#bdb;
-  min-width:5%;
-  }
-.pager a.first,
-.pager a.last {
-  min-width:5%;
-  }
-.pager a.last {
-  border-right:1px solid #040;
-  }
-.pager a:hover {
-  color:#000;
-  background-color:#8a8;
-  min-width:5%;
-  }
+/******************** GENERALLY-USED CLASSES ********************/
 
+strike {
+  opacity:0.3;
+  }
 .clear {
   display:block;
   /* height:30px; */
   clear:both;
   }
-
-
 .bold {
   font-weight: bold;
-  }
-.bolder {
-  font-weight: bolder;
   }
 .center {
   text-align:center;
@@ -287,237 +148,44 @@ table.compact tr td img {
 .right {
   text-align:right;
   }
-
-.noEndBox {
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-  background-color: #DDDDDD;
-  padding: 4px;
-  padding: 4px;
-  }
-
-/*firm objects*/
-#whiteBG{
-  background-color: #FFFFFF;
-  width: 100%;
-  }
-
-
-#noEndBox {
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-  background-color: #DDDDDD;
-  padding: 4px;
-  padding: 4px;
-  }
-
-.rightLine {
-  text-align: left;
-  width: 100%;
-  height: 100%;
-  border-right: 1px solid #AAAAAA;
-  padding-right: 5px;
-  }
-
-#blueWrapper {
-  width: 100%;/*780px;*/
-  background-color: #FFFFFF;/*#F3F8F7;*/
-  padding: 5px;
-  font-family: Verdana, Arial, sans-serif;
-  /*margin-left: 10px;*/
-  font-size: 12px;
-  color: #222222;
-  border: 1px solid #AAAAAA;
-  }
-#whiteWrapper {
-  width: 100%;/*790px;*/
-  background-color: #FFFFFF;
-  padding-bottom: 0px;
-  padding-right: 0px;
-  /*margin-left: 10px;*/
-  /*margin-top: 15px;*/
-  color: #222222;
-  border: 1px solid #AAAAAA;
-  }
-#yellowWrapper {
-  width: 95%;
-  background-color: #FDFECF;
-  text-align:center;
-  padding: 5px;
+.compact {
   font-family: Verdana, Arial, sans-serif;
   font-size: 12px;
   color: #222222;
-  border: 1px solid #AAAAAA;
   }
-
-#footerWrapper {
-  width: 100%;
-  background-color: #AEDE86;/*FFFF9A*/
-  padding: 4px;
-  /*margin-left: 10px;*/
-  color: #222222;
-  border-bottom: 1px solid #AAAAAA;
+.large {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
   }
-
-#grayWrapper {
-  width: 100%;
-  background-color: #EDF3FC;
-  padding: 4px;
-  /*margin-left: 10px;*/
-  color: #222222;
-  /*border-bottom: 1px solid #AAAAAA;*/
+/* Set color for disabled text */
+a.warn {
+  color:#800;
   }
-
-#uberWrapper {
-  width: 800px;
-  }
-
-
-/* Set up display settings for the header menu */
-#menu {
-  clear:both;
-  width:95%;
-  background-color:#758954;
-  margin:0 auto 0;
-  padding:2px 10px 0px;
-  border-top:2px solid #758954;
-  border-left:10px solid #758954;
-  border-right:10px solid #758954;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-  }
-
-#menu .tab_frame {
-  position:relative;
+.button {
   display:inline-block;
-  margin:0px 0px 2px;
-  padding:0;
+  border:1px solid #000;
+  background-color:#ddd;
+  padding:3px;
+  text-align:center;
+  overlfow:auto;
+  cursor:pointer;
   }
-
-#menu a {
-
-  display:block;
-  overflow:hidden;
-  padding:1px 4px;
-  font-size:12px;
-  font-weight:normal;
+/* Help links... i.e. on edit_product_screen.php */
+.help_link {
+  cursor:help;
   text-decoration:none;
-  text-align:center;
-  background-color:#ffe;
-  color:#607044;
   }
 
+/******************** STYLES FOR THE HEADER ********************/
 
-#menu div.left {
-  float:left;
-  }
-#menu div.right {
-  float:right;
-  }
-
-
-#menu a:hover {
-  background-color:#d4e8bb;
-  color:#607044;
-  }
-#menu a.current_tab {
-  background-color:#fdfecf;
-  }
-
-#footer {
-  width:95%;
-  background-color:#f5edd6;;
-  padding:20px;
-  text-align:center;
-  border:0;
-  margin:auto;
-  /* fallback */
-  background-color: #f5edd6;
-  background: url(/food/grfx/linear_bg.png);
-  background-repeat: repeat-x;
-  /* Safari 4-5, Chrome 1-9 */
-  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#758954), to(#f5edd6));
-  /* Safari 5.1, Chrome 10+ */
-  background: -webkit-linear-gradient(top, #758954, #f5edd6);
-  /* Firefox 3.6+ */
-  background: -moz-linear-gradient(top, #758954, #f5edd6);
-  /* IE 10 */
-  background: -ms-linear-gradient(top, #758954, #f5edd6);
-  /* Opera 11.10+ */
-  background: -o-linear-gradient(top, #758954, #f5edd6);
-  }
-
-#footer .site_name {
-  display:block;
-  font-weight:bold;
-  color:#58673f;
-  font-size:120%;
-  }
-#footer .contact_info {
-  display:block;
-  color:#000;
-  font-size:80%;
-  }
-#footer .links {
-  margin-bottom:1em;
-  display:block;
-  font-size:80%;
-  }
-
-#content {
-  border-right:10px solid #758954;
-  border-bottom:10px solid #758954;
-  border-left:10px solid #758954;
-  border-left:10px solid #758954;
-  padding:10px;
-  min-height:550px;
-  width:95%;
-  background-color:#fff;
-  margin:auto;
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
-  }
-
-.title {
-  display:inline-block;
-  color:#58673f;
-  font-weight:bold;
-  }
-.subtitle {
-  display:inline-block;
-  font-size:100%;
-  color:#58673f;
-  font-variant:small-caps
-  }
-.subtitle::before {
-  content:"\00a0\2013\00a0";
-  }
-
-.sidebar .entry-header, .sidebar .entry-content, .sidebar .entry-summary, .sidebar .entry-meta {
-    max-width: 1040px;
-    padding: 0 20px 0 20px;
-}
-
-.entry-header, .entry-content, .entry-summary, .entry-meta {
-    margin: 0 auto;
-    max-width: 95%;
-}
-
-.discontinued {
-  text-decoration: line-through;
-  }
-.info_links {
-  display:block;
-  }
-
-/* Set up style for the header logo div */
+/* Styles for the header logo and other related elements */
 #header {
   position:relative;
   min-height:140px; /* height of the logo */
   width:95%;
   padding:5px 10px;
   }
-
 #header_logo {
   margin:0 10px 0 0;
   }
@@ -547,246 +215,180 @@ table.compact tr td img {
 #header_mission {
   font-family:Brush-Script-MT;
   }
-
-/* Make sure the header logo (hyperlinked) doesn't have weird link attributes */
-#header_subtitle {
-  margin-left:50px;
+/* Styles for the menu */
+#menu {
+  clear:both;
+  width:95%;
+  background-color:#758954;
+  margin:0 auto 0;
+  padding:2px 10px 0px;
+  border-top:2px solid #758954;
+  border-left:10px solid #758954;
+  border-right:10px solid #758954;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
   }
-
-.mission {
-  padding:2em 5em;
-  font-style:italic;
+#menu .tab_frame {
+  position:relative;
+  display:inline-block;
+  margin:0px 0px 2px;
+  padding:0;
+  }
+#menu a {
+  display:block;
+  overflow:hidden;
+  padding:1px 4px;
+  font-size:12px;
+  font-weight:normal;
+  text-decoration:none;
+  text-align:center;
+  background-color:#ffe;
   color:#607044;
   }
-
-.default_font {
-  font-family: Verdana, Arial, sans-serif;
-  font-size:90%;
+#menu a:hover {
+  background-color:#d4e8bb;
+  color:#607044;
+  }
+#menu a.current_tab {
+  background-color:#fdfecf;
+  }
+#menu div.left {
+  float:left;
+  }
+#menu div.right {
+  float:right;
   }
 
-table.login tr th {
-  }
-table.login tr td input {
-  }
+/******************** MAIN PAGE CONTENT STYLES ********************/
 
-/*HTML Tags*/
-/*
-body {
-  font-family: Verdana, Arial, sans-serif;
-  font-size: 12px;
-  background-color: #d4e8bb;
-  margin: 0px;
+#content {
+  border-right:10px solid #758954;
+  border-bottom:10px solid #758954;
+  border-left:10px solid #758954;
+  border-left:10px solid #758954;
+  padding:10px;
+  min-height:550px;
+  width:95%;
+  background-color:#fff;
+  margin:auto;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
   }
-*/
-
-html,
-button,
-input,
-select,
-textarea {
-  font-family: "Source Sans Pro",Helvetica,sans-serif;
-  }
-
-a:link {
-  color: #58673f;
-  text-decoration: none;
-  background-color: transparent;
-  /* override the above */
-  }
-
-a:visited {
-  color: #283510;
-  text-decoration: none;
-  font-style:italic;
-  background-color: transparent;
-  /* override the above */
-  }
-
-a:hover {
-  color: #5f4f1f;
-  text-decoration: underline;
-  /* override the above */
-  background-color:transparent;
-  text-decoration:underline;
-  }
-
-.error_message a {
-  color:#ff0;
-  }
-.error_message a:hover {
-  color:#fd8;
-  }
-
-.submit { 
-   font-size: 12px; 
-   font-family:Tahoma, Geneva, sans-serif;
-   background-color: #ddd; /*DEE8ED*/
-   color:#000;
-   border: 1px solid #666666;
-  }
-
-input {
-  font-size: 12px; 
-   font-family:"Lucida Console", monospace;
-  /* background-color: #F5F5F5; DEE8ED*/
-   color:#000;
-   /*border: 1px solid #666666;*/
-  }
-
-textarea{ 
-   width:90%;
-   font-size: 12px; 
-   font-family:"Lucida Console", monospace;
-   background-color: #F5F5F5; 
-   color:#000;
-   border: 1px solid #666666;
-  }
-
-.levelX,
-h3 {
+/* Page title and subtitle style */
+.title {
+  display:inline-block;
   color:#58673f;
-  font-size: 150%;
-  font-family: Verdana, Arial, sans-serif;
+  font-weight:bold;
   }
-
-hr {
-  border: 0;
-  height: 1px;
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-color: #D6D6D6; 
-  margin: 0%;
+.subtitle {
+  display:inline-block;
+  font-size:100%;
+  color:#58673f;
+  font-variant:small-caps
   }
-
-pre {
-  text-align:left;
-  margin-left:1em;
+.subtitle::before {
+  content:"\00a0\2013\00a0";
   }
-
-/*
-img {
-  border-right: 1px solid #fff;
+/* Attributes used in panel tables */
+.fancyList1 {
+  list-style-position: outside;
+  list-style-image: url(/food/grfx/dots.png);
   }
-*/
-
-.updates {
-  position:fixed;
-  right:0px;
-  top:0px;
-  border:2px solid red;
-  background:#ffa;
-  width:300px;
-  max-height:200px;
-  overflow:auto;
-  padding:4px;
+.fancyList1 li.current  {
+  list-style-image: url(/food/grfx/red_arrow.png);
   }
-
+.fancyList1 li.current a  {
+  font-size:1.7em;
+  font-weight:normal;
+  }
+table.compact td {
+  padding:8px 4px;
+  }
+table.compact tr td img {
+  clear:both;
+  }
 li.last_of_group {
   margin-bottom:2em;
   }
 
-.list-markup1,
-.list-markup2,
-.list-markup3 {
-  text-align:left;
+  /********************  STYLES FOR SIMPLEMODAL OVERLAYS ********************/
+
+/* Set up the simplemodal close button */
+a.modalCloseImg {
+  background:url(/food/grfx/simplemodal_x.png) no-repeat; /* adjust url as required */
+  font-size:0;
+  width:40px;
+  height:46px;
+  display:inline;
+  z-index:3200;
+  position:absolute;
+  top:-20px;
+  right:-23px;
+  cursor:pointer;
+  }
+a.modalCloseImg:hover {
+  background:url(/food/grfx/simplemodal_x_hover.png) no-repeat; /* adjust url as required */
+  }
+/* Ensure data container fills the entire simplemodal-data container (vertically)
+   and hide the vertical scrollbar resulting from a slight vertical overflow */
+.simplemodal-container,
+.simplemodal-wrap,
+.simplemodal-data {
+  border-radius:15px;
+  }
+#simplemodal-data {
+  position:absolute;
+  -webkit-overflow-scrolling: touch !important;
+  height:100%;
+  width:100%;
+  overflow-y:auto;
+  overflow-x:hidden;
+  }
+/* Ensure iframe fills the entire simplemodal-data container */
+#simplemodal-data iframe {
+  height:100%;
+  width:100%;
+  border-width:0;
+  border-radius:15px;
+  background-color:#fff;
+  margin-bottom:-5px;
+  }
+.simplemodal-wrap {
+  border-radius:15px;
+  }
+.simplemodal-overlay {
+  background-color:#000;
+  }
+/* Style the simplemodal window relative to the parent window */
+.simplemodal-container {
+  box-shadow: 5px 5px 20px 20px #222;
+  opacity:1;
+  height:80%;
+  width:80%;
+  border-radius:15px;
+  /* min/max values will override the simplemodal size (at least in Firefox)
+  max-height:30%;
+  max-width:30%;
+  min-height:30%;
+  min-width:30%;
+  */
+  }
+/* Styles related only to simplemodal MOTD display */
+#simplemodal-container-motd {
+  height:80%;
+  width:50%;
+  }
+#simplemodal-container-select_delivery {
+  max-width:340px;
+  min-width:340px;
+  }
+/* Styles related only to simplemodal ordering_history_popup display */
+#simplemodal-container-select_order_history {
+    max-width: 340px;
+    min-width: 340px;
   }
 
-.list-markup1 {
-  display:block;
-  width:30em;
-  margin:auto;
-  }
-
-/***** STYLES FOR THE HEADER (NEEDED TO MATCH WORDPRESS) ******/
-
-#user_menu ul li input {
-  font-family: "Source Sans Pro",Helvetica,sans-serif;
-  }
-
-/***** FOLLOWING STYLES ARE FROM ORIGINAL /shop/members/header ******/
-
-/*
-body, p, td {
-  font-family: Verdana;
-  font-size: 9pt;
-  color: #000000;
-  }
-
-body {
-  margin-left:0;
-  margin-top:0;
-  background:#F5EDD6;
-  }
-*/
-
-/*
-h1 {
-  text-align:center;
-  }
-*/
-
-em {
-  font-style:italic;
-  color: #758954;
-  color: #444;
-  }
-th.memberform {
-  background:#cca;
-  }
-
-dl {
-  color:#230;
-  font-weight:normal;
-  }
-
-dt {
-  text-decoration:underline;
-  font-style:italic;
-  margin-top:0.5em;
-  font-size:1.1em;
-  }
-
-dd {
-  font-size:0.9em;
-  margin-top: 0.3em;
-  }
-
-td.form_key {
-  width:10em;
-  text-align:right;
-  }
-td.form_subkey {
-  width:10px;
-  font-size:70%;
-  }
-td.form_key strong {
-  color:#230;
-  font-weight:bold;
-  }
-
-#producer_form .privacy {
-  width:49%;
-  float:left;
-  margin:3px;
-  }
-#producer_form .business_info {
-  margin:3px;
-  }
-#producer_form .denied {
-  display:none;
-  }
-#producer_form .required {
-  background-color:#ecb;
-  }
-#producer_form .optional {
-  background-color:#cdb;
-  }
-#producer_form .bus_desc,
-#producer_form .pub_desc,
-#producer_form td.form_key strong {
-  color:#230;
-  font-weight:bold;
-  }
+/******************** STYLES FOR ERROR MESSAGES ********************/
 .error_message {
   background-image: url("/food/grfx/error.png");
   background-repeat:no-repeat;
@@ -810,7 +412,12 @@ td.form_key strong {
   box-shadow: 5px 5px 5px #000;
   transition:width 0.5s,height 1.5s;
   }
-div.open,
+.error_message a {
+  color:#ff0;
+  }
+.error_message a:hover {
+  color:#fd8;
+  }
 .error_message:hover {
   width:50%;
   height:auto;
@@ -849,262 +456,111 @@ form label.error {
 form input.error {
   background-color:#ffa;
   }
-
-/* DISPLAY OF PRICING ON PRODUCT-LIST TEMPLATES */
-.anon_price {
-  font-style:normal;
-  color:#000;
-  }
-.cust_price {
-  font-style:normal;
-  color:#000;
-  }
-.combine_price {
-  display:block;
-  color:#666;
-  text-align:center;
-  }
-.extra_price {
-  color:#000;
-  }
-
-.producer_control {
-  font-size: 80%;
-  font-weight:normal;
-  }
-.intangible {
-  color:#aaa;
-  font-style:italic;
-  }
-.help_link {
-  cursor:help;
-  text-decoration:none;
-  }
-
-.button {
-  display:inline-block;
-  border:1px solid #000;
-  background-color:#ddd;
-  padding:3px;
-  text-align:center;
-  overlfow:auto;
-  cursor:pointer;
-  }
-#logout .button,
-#edit_profile .button {
-  padding:0px;
-  }
-
-/* Set color for disabled text */
-input[type="text"]:disabled
-  {
-  background-color:#ddd;
-  color:#666;
-  } 
-
-a.warn {
-  color:#800;
-  }
-
-#errors {
-   border:1px solid red;
-   background:#fed;
-   padding:3px;
-   color:#800;
-   overflow:auto;
-   }
-
-#errors ul {
-  margin-left: 2em;
-  }
-#errors h1 {
-   font-size:4em;
-   float:left;
-   margin:0px 12px 0px 0px;
-   }
-
-#add_member_table {
-   max-width:550px;
-   margin:auto;
-   border:1px solid #000;
-   border-collapse:collapse;
-   }
-#add_member_table td {
-   border:0;
-   }
-
-/* Set background color for input/textarea placeholders */
-:-ms-input-placeholder {
-  color:#999;
-  }
-::-webkit-input-placeholder {
-  color:#999;
-  }
-:-moz-placeholder {
-  color:#999;
-  }
-
-/* formats for notification messages */
-#login_message {
-  width:75%;
-  padding:2em;
-  margin:3em auto;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-  /* fallback */
-  background-color: #f5edd6;
-  background: url(/food/grfx/linear_bg_tan.png);
-  background-repeat: repeat-x;
-  /* Safari 4-5, Chrome 1-9 */
-  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f5edd6), to(#fff));
-  /* Safari 5.1, Chrome 10+ */
-  background: -webkit-linear-gradient(top, #f5edd6, #fff);
-  /* Firefox 3.6+ */
-  background: -moz-linear-gradient(top, #f5edd6, #fff);
-  /* IE 10 */
-  background: -ms-linear-gradient(top, #f5edd6, #fff);
-  /* Opera 11.10+ */
-  background: -o-linear-gradient(top, #f5edd6, #fff);
-/*
-  border: 1px solid #000;
-  padding:1em;
-  background-color:#dfc;
-  width:80%;
-  margin-top:2em; */
-  }
-.notification_message h4 {
-  text-align: center;
-  font-weight:normal;
-  font-family:Verdana,Sans-serif;
-  font-size:14px;
-  color:#240;
-  }
-.notification_message p {
-  text-align: left;
-  font-family:Verdana,Sans-serif;
-  font-size:12px;
-  color:#240;
-  }
-
-  /* BEGIN STYLES FOR SIMPLEMODAL OVERLAYS */
-
-/* Set up the simplemodal close button */
-a.modalCloseImg {
-  background:url(/food/grfx/simplemodal_x.png) no-repeat; /* adjust url as required */
-  font-size:0;
-  width:40px;
-  height:46px;
-  display:inline;
-  z-index:3200;
-  position:absolute;
-  top:-20px;
-  right:-23px;
-  cursor:pointer;
-  }
-a.modalCloseImg:hover {
-  background:url(/food/grfx/simplemodal_x_hover.png) no-repeat; /* adjust url as required */
-  }
-/* Ensure data container fills the entire simplemodal-data container (vertically)
-   and hide the vertical scrollbar resulting from a slight vertical overflow */
-
-.simplemodal-container,
-.simplemodal-wrap,
-.simplemodal-data {
-  border-radius:15px;
-  }
-
-#simplemodal-data {
-  position:absolute;
-  -webkit-overflow-scrolling: touch !important;
-  height:100%;
-  width:100%;
-  overflow-y:auto;
-  overflow-x:hidden;
-  }
-/* Ensure iframe fills the entire simplemodal-data container */
-#simplemodal-data iframe {
-  height:100%;
-  width:100%;
-  border-width:0;
-  border-radius:15px;
-  background-color:#fff;
-  margin-bottom:-5px;
-  }
-.simplemodal-wrap {
-  border-radius:15px;
-  }
-.simplemodal-overlay {
-  background-color:#000;
-  }
-
-/* Style the simplemodal window relative to the parent window */
-.simplemodal-container {
-  box-shadow: 5px 5px 20px 20px #222;
-  opacity:1;
-  height:80%;
-  width:80%;
-  border-radius:15px;
-  /* min/max values will override the simplemodal size (at least in Firefox)
-  max-height:30%;
-  max-width:30%;
-  min-height:30%;
-  min-width:30%;
-  */
-  }
-/* Styles related only to simplemodal MOTD display */
-#simplemodal-container-motd {
-  height:80%;
+div.open {
   width:50%;
-  }
-#simplemodal-container-select_delivery {
-  max-width:340px;
-  min-width:340px;
-  }
-/* Styles related only to simplemodal ordering_history_popup display */
-#simplemodal-container-select_order_history {
-    max-width: 340px;
-    min-width: 340px;
+  height:auto;
+  opacity:0.9;
+  transition:0.5s,height 1.5s;
   }
 
-/************* STYLES FOR MEMBERSHIP RENEWAL FORM ***************/
-#membership_renewal_content {
-  padding:1em;
+/******************** STYLES FOR THE PRODUCT_LIST PAGER ********************/
+
+.pager {
+  clear:both;
+  margin:1em 0em;
+  font-size: 120%;
   }
-#renew_membership {
+.pager .pager_title {
   display:block;
-  margin:auto;
+  float:left;
+  font-size: 100%;
+  padding:1px 4px;
+  border:1px solid #040;
+  border-right:0;
+  background-color:#ffc;
   }
-.membership_message {
-  font-size:200%;
-  color:#660;
+.pager a {
+  display:block;
+  float:left;
   text-align:center;
-  margin:2em;
+  padding:1px 0;
+  border:1px solid #040;
+  border-right:0;
+  text-decoration:none;
+  background-color:#ffc;
+  overflow:hidden;
   }
-.expire_message {
-  font-weight:bold;
+.pager a.current {
+  background-color:#bdb;
+  min-width:5%;
   }
-.same_renewal,
-.changed_renewal {
-  font-weight:bold;
-  padding-left:50px;
-  margin:10px 3px 3px 3px;
+.pager a.first,
+.pager a.last {
+  min-width:5%;
   }
-.same_renewal_desc,
-.changed_renewal_desc {
-  font-style:italic;
-  margin:3px 20px 10px 100px;
-  padding:0.5em;
-  background-color:#eee;
-  border-right: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
+.pager a.last {
+  border-right:1px solid #040;
+  }
+.pager a:hover {
+  color:#000;
+  background-color:#8a8;
+  min-width:5%;
   }
 
-/************* PRINT STYLES ***************/
+/******************** OVERRIDE FOR CMS (E.G. WORDPRESS) STYLES ***************/
+
+
+
+
+
+
+
+
+
+
+/*               RESOURCE FOR CALCULATING BREAKPOINTS                      */
+/* https://css-tricks.com/snippets/css/media-queries-for-standard-devices/ */
+/*                                                                         */
+/*              (these breakpoints have not been vetted)                   */
+
+/******************** STYLES FOR TABLET SCREENS (PORTRAIT) ***************/
+@media
+  only screen and handheld and (min-width: 601px) (max-width: 1200px) and (-webkit-min-device-pixel-ratio: 1) and (orientation: portrait),
+  only screen and handheld and (min-width: 768px) (max-width: 768px)  and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait) {
+  }
+
+/******************** STYLES FOR TABLET SCREENS (LANDSCAPE) ***************/
+@media
+  only screen and handheld and (min-width: 906px)  (max-width: 1600px) and (-webkit-min-device-pixel-ratio: 1) and (orientation: landscape),
+  only screen and handheld and (min-width: 1024px) (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  }
+
+/******************** STYLES FOR PHONE SCREENS (PORTRAIT) ***************/
+@media
+  only screen and handheld and (min-width: 320px) (max-width: 375px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait),
+  only screen and handheld and (min-width: 320px) (max-width: 414px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
+  }
+
+/******************** STYLES FOR PHONE SCREENS (LANDSCAPE) ***************/
+@media
+  only screen and handheld and (min-width: 480px) (max-width: 667px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape),
+  only screen and handheld and (min-width: 640px) (max-width: 736px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: landscape) {
+  }
+
+
+
+
+
+
+
+
+/******************** PRINT STYLES ***************/
 
 @media print {
   #content {
     border:0;
     }
+  /* Hide certain page areas from printing */
   header,
   #header,
   #menu,
@@ -1118,3 +574,73 @@ a.modalCloseImg:hover {
   }
 
 
+/******************** DEPRECATED STYLES - TO BE REMOVED LATER ***************/
+
+/*
+
+#footer {
+  width:95%;
+  background-color:#f5edd6;;
+  padding:20px;
+  text-align:center;
+  border:0;
+  margin:auto;
+  background-color: #f5edd6;
+  background: url(/food/grfx/linear_bg.png);
+  background-repeat: repeat-x;
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#758954), to(#f5edd6));
+  background: -webkit-linear-gradient(top, #758954, #f5edd6);
+  background: -moz-linear-gradient(top, #758954, #f5edd6);
+  background: -ms-linear-gradient(top, #758954, #f5edd6);
+  background: -o-linear-gradient(top, #758954, #f5edd6);
+  }
+#footer .site_name {
+  display:block;
+  font-weight:bold;
+  color:#58673f;
+  font-size:120%;
+  }
+#footer .contact_info {
+  display:block;
+  color:#000;
+  font-size:80%;
+  }
+#footer .links {
+  margin-bottom:1em;
+  display:block;
+  font-size:80%;
+  }
+#header_subtitle {
+  margin-left:50px;
+  }
+.list-markup1,
+.list-markup2,
+.list-markup3 {
+  text-align:left;
+  }
+.list-markup1 {
+  display:block;
+  width:30em;
+  margin:auto;
+  }
+#errors {
+   border:1px solid red;
+   background:#fed;
+   padding:3px;
+   color:#800;
+   overflow:auto;
+   }
+#errors ul {
+  margin-left: 2em;
+  }
+#errors h1 {
+   font-size:4em;
+   float:left;
+   margin:0px 12px 0px 0px;
+   }
+#logout .button,
+#edit_profile .button {
+  padding:0px;
+  }
+
+*/

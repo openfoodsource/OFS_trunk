@@ -251,6 +251,11 @@ function set_view (view_type) {
 
 $page_specific_css = '
 <style type="text/css">
+  .levelX {
+    color:#58673f;
+    font-size: 150%;
+    font-family: Verdana, Arial, sans-serif;
+    }
   /* STYLES FOR THE VIEW OPTION SELECTORS */
   #view_option {
     /*

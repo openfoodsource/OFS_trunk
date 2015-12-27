@@ -286,6 +286,20 @@ $page_specific_css .= '
   border:3px solid #ddd;
   padding:0.5em;
   }
+li.listed a {
+  }
+li.unlisted a {
+  color:#888;
+  }
+li.suspended a {
+  color:#900;
+  }
+.height_400 {
+  height:400px;
+  width:90%;
+  overflow:scroll;
+  border:1px solid black;
+  }
 </style>';
 
 

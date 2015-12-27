@@ -37,11 +37,29 @@ ul.list-markup3 a:link {
 
 
 /* Following styles are for product_list.php */
-
 table tr td {
   vertical-align:top;
   }
-
+.anon_price {
+  font-style:normal;
+  color:#000;
+  }
+.cust_price {
+  font-style:normal;
+  color:#000;
+  }
+.combine_price {
+  display:block;
+  color:#666;
+  text-align:center;
+  }
+.extra_price {
+  color:#000;
+  }
+.producer_control {
+  font-size: 80%;
+  font-weight:normal;
+  }
 .product_image {
   float:left;
   width:100px;

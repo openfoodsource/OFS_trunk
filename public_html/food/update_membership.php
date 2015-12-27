@@ -9,7 +9,7 @@ if($_GET['display_as'] == 'popup')
   }
 else
   {
-    // Don't allow direct access to this page
+    // Redirect to the member panel instead of allowing access to this page
     header('Location: '.PATH.'panel_member.php');
   }
 
@@ -80,6 +80,41 @@ if ($do_update_membership == true)
         </form>
       </div>';
   }
+
+$page_specific_css = '
+  <style type="text/css">
+    #membership_renewal_content {
+      padding:1em;
+      }
+    #renew_membership {
+      display:block;
+      margin:auto;
+      }
+    .membership_message {
+      font-size:200%;
+      color:#660;
+      text-align:center;
+      margin:2em;
+      }
+    .expire_message {
+      font-weight:bold;
+      }
+    .same_renewal,
+    .changed_renewal {
+      font-weight:bold;
+      padding-left:50px;
+      margin:10px 3px 3px 3px;
+      }
+    .same_renewal_desc,
+    .changed_renewal_desc {
+      font-style:italic;
+      margin:3px 20px 10px 100px;
+      padding:0.5em;
+      background-color:#eee;
+      border-right: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      }
+  </style>';
 
 if($_GET['display_as'] == 'popup')
   $display_as_popup = true;

@@ -195,7 +195,7 @@ $content_edit = '
 
   <div align="center">
     <input type="hidden" name="producer_id" value="'.$producer_id.'">
-    <input class="submit" type="submit" name="producer_submit" value="Click here to save your info">
+    <input class="button" type="submit" name="producer_submit" value="Click here to save your info">
   </div>';
 
 $page_title_html = '<span class="title">'.$business_name.'</span>';

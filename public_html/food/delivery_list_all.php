@@ -310,6 +310,10 @@ $page_specific_css = '
     #delivery_id_nav .next {
       float:right;
       }
+    .intangible {
+      color:#aaa;
+      font-style:italic;
+      }
   </style>';
 
 $page_title_html = '<span class="title">All Members With Orders on Each Route</span>';

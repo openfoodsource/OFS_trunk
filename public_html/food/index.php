@@ -225,7 +225,6 @@ $page_specific_css .= '
   box-shadow: 3px 3px 8px 5px #000;
   background-color:#eee;
   }
-
 fieldset {
   width:425px;
   height:175px;
@@ -255,29 +254,29 @@ input {
   font-size:20px;
   border:1px solid #87753e;
   }
-button {
-  display:block;
-  float:right;
-  color:#b7a777;
-  font-weight:bold;
-  font-size:40px;
-  width:130px;
-  height:130px;
-  margin:20px 25px;
-  border:1px solid #b7a777;
-  border-radius: 65px;
-  background-color:#97a97b;
-  outline:0;
-  }
-button:focus,
+/* Style the big round button */
 button::-moz-focus-inner {  
   border:0;
-  color:#f1e021;
   }
+button {
+  border: 1px solid #b7a777;
+  border-radius: 65px;
+  box-shadow: -25px -25px 35px #97a97b inset;
+  color: #758954;
+  display: block;
+  float: right;
+  font-size: 40px;
+  font-weight: bold;
+  height: 130px;
+  margin: 20px 25px;
+  outline: 0 none;
+  width: 130px;
+  }
+button:focus,
 button:hover {
-  color:#f1e021;
+  box-shadow: -25px -25px 35px #758954 inset;
+  color:#556a35;
   border:1px solid #87753e;
-  background-color:#758954;
   }
 fieldset a {
   display:block;

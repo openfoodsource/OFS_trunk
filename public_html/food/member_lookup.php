@@ -85,16 +85,16 @@ if ($_GET['action'] == 'Search' &&
                   }
               }
             $member_list_temporary = '
-              <div class="result_row">
+              <div class="result_row'.$discontinued_class.'">
                 <div class="result member_id">'.$row['member_id'].'</div>
-                <div class="result member_name'.$discontinued_class.'">
+                <div class="result member_name">
                   <span style="color:#888;font-size:70%;">'.$row['first_name'].' '.$row['last_name'].' &nbsp; '.$row['first_name_2'].' '.$row['last_name_2'].'</span><br />
                   '.$row['preferred_name'].'<br />
-                  <span class="member_business_name'.$discontinued_class.'">'.$row['member_business_name'].
+                  <span class="member_business_name">'.$row['member_business_name'].
                   (strlen ($producer_info_temporary) > 0 ? '<ul class="producer_list">'.$producer_info_temporary.'</ul>' : '').'
                   </div>
-                <div class="result email'.$discontinued_class.'"><a href="mailto:'.$row['email_address'].'">'.$row['email_address'].'</a>'.(strlen ($row['email_address_2']) > 0 ? '<br><a href="mailto:'.$row['email_address_2'].'">'.$row['email_address_2'].'</a>' : '').'</div>
-                <div class="result username'.$discontinued_class.'">'.$row['username'].'</div>
+                <div class="result email"><a href="mailto:'.$row['email_address'].'">'.$row['email_address'].'</a>'.(strlen ($row['email_address_2']) > 0 ? '<br><a href="mailto:'.$row['email_address_2'].'">'.$row['email_address_2'].'</a>' : '').'</div>
+                <div class="result username">'.$row['username'].'</div>
                 <div class="result links">
                   <a class="popup" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$row['member_id'].'&display_as=popup\', \'edit_member\', \'\')">Edit</a>
                   &nbsp;/&nbsp;
@@ -246,45 +246,10 @@ $page_specific_css = '
   .lookup_options li + li:before {
     content:"\20\2022\20";
     }
-  /* BEGIN STYLES FOR SIMPLEMODAL OVERLAY */
-  a.popup {
-    cursor:pointer;
-    }
-  #simplemodal-data {
-    height:100%;
-    background-color:#fff;
-    }
-  #simplemodal-container {
-    box-shadow:10px 10px 10px #000;
-    }
-  #simplemodal-data iframe {
-    border:0;
-    height:95%;
-    width:100%;
-    }
-  #simplemodal-container a.modalCloseImg:hover {
-    background:url('.DIR_GRAPHICS.'/simplemodal_x_hover.png) no-repeat;
-    }
-  #simplemodal-container a.modalCloseImg {
-    background:url('.DIR_GRAPHICS.'/simplemodal_x.png) no-repeat;
-    width:40px;
-    height:46px;
-    display:inline;
-    z-index:3200;
-    position:absolute;
-    top:-20px;
-    right:-20px;
-    cursor:pointer;
-    }
-  ul.producer_list {
-    list-style-type:none;
-    margin:0;
-    padding-left:10px;
-    }
-  ul.producer_list li.producer {
-    font-size:80%;
-    color:#008;
-    cursor:pointer;
+  .discontinued,
+  .discontinued a {
+    text-decoration: line-through;
+    color:#ccc;
     }
   </style>';
 

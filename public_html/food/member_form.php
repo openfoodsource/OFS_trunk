@@ -833,6 +833,30 @@ $page_subtitle_html = '<span class="subtitle">'.($_SESSION['show_name'] ? 'Updat
 $page_title = 'Member Resources: '.($_SESSION['show_name'] ? 'Update Membership Info.' : 'New Member Form');
 $page_tab = 'member_panel';
 
+$page_specific_css = '
+  <style type="text/css">
+  th.memberform {
+    background:#cca;
+    }
+  td.form_key {
+    width:10em;
+    text-align:right;
+    }
+  td.form_key strong {
+    color:#230;
+    font-weight:bold;
+    }
+  td.form_subkey {
+    width:10px;
+    font-size:70%;
+    }
+  .footnote {
+    font-size:0.9em;
+    color:#758954;
+    text-align:left;
+    }
+  </style>';
+
 $page_specific_javascript = '
 <script type="text/javascript">
   function set_preferred_name() {
