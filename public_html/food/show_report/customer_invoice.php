@@ -308,17 +308,20 @@ $query_balance = '
     SUM(amount * IF('.NEW_TABLE_LEDGER.'.source_type = "member", 1, -1)) AS total
   FROM
     '.NEW_TABLE_LEDGER.'
+  LEFT JOIN
+    '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   WHERE
     (('.NEW_TABLE_LEDGER.'.source_type = "member"
       AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysql_real_escape_string($member_id).'")
     OR ('.NEW_TABLE_LEDGER.'.target_type = "member"
       AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysql_real_escape_string($member_id).'"))
     AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL
-    /* Only consider charges prior to the order closing time */
-    /* AND '.NEW_TABLE_LEDGER.'.effective_datetime < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysql_real_escape_string($delivery_id).'") */'.
-    $and_before_prior_delivery_date.
-    $constrain_effective_datetime;
+    AND IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL, '.NEW_TABLE_LEDGER.'.effective_datetime, '.TABLE_ORDER_CYCLES.'.delivery_date) > "'.ACCOUNTING_ZERO_DATETIME.'"
+    /* ALL CHARGES PRIOR TO PREVIOUS INVOICE DATE -- USING DELIVERY DATE FOR BASKET ITEMS */
+    AND IF('.NEW_TABLE_LEDGER.'.bpid IS NULL, '.NEW_TABLE_LEDGER.'.effective_datetime, '.TABLE_ORDER_CYCLES.'.delivery_date) <= "'.$row_prior_closing['delivery_date'].'"';
+
 // echo "<pre>$query_balance</pre>";
+
 $result_balance = mysql_query($query_balance, $connection) or die(debug_print ("ERROR: 675930 ", array ($query_balance,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
 if ($row_balance = mysql_fetch_array ($result_balance))
   {
