@@ -30,12 +30,17 @@ switch ($_POST['process'])
       // Validate the data: payment_type
       if ($_POST['payment_type'] != 'cash' &&
           $_POST['payment_type'] != 'check' &&
-          $_POST['payment_type'] != 'paypal')
+          $_POST['payment_type'] != 'paypal' &&
+          $_POST['payment_type'] != 'square')
         array_push ($error_array, 'Please select a payment type.');
       // Validate the data: paypal_fee
       if ($_POST['payment_type'] == 'paypal' &&
           preg_match('/^[0-9]*\.[0-9]{2}$/', $_POST['paypal_fee']) != 1)
         array_push ($error_array, 'Paypal fee must be numeric with decimal cents<br>(e.g. 98.76 or .43).');
+      // Validate the data: square_fee
+      if ($_POST['payment_type'] == 'square' &&
+          preg_match('/^[0-9]*\.[0-9]{2}$/', $_POST['square_fee']) != 1)
+        array_push ($error_array, 'Square fee must be numeric with decimal cents<br>(e.g. 98.76 or .43).');
       // Validate the data: memo
       if (preg_match('/^[0-9]*$/', $_POST['memo']) != 1)
         array_push ($error_array, 'Memo must be numeric.');
@@ -47,9 +52,13 @@ switch ($_POST['process'])
       // Validate the data: comment
       if (strlen($_POST['comment']) > 200)
         array_push ($error_array, 'Comment can not exceed 200 characters.');
-      // Validate the data: comment
+      // Validate the data: paypal_comment
       if (strlen($_POST['paypal_comment']) > 200)
         array_push ($error_array, 'Paypal comment can not exceed 200 characters.');
+      $payment_message_array = array();
+      // Validate the data: square_comment
+      if (strlen($_POST['square_comment']) > 200)
+        array_push ($error_array, 'Square comment can not exceed 200 characters.');
       $payment_message_array = array();
       // Assemble the payment_message array
       if (strlen($_POST['memo']) > 0)
@@ -63,6 +72,11 @@ switch ($_POST['process'])
       if ($_POST['payment_type'] == 'paypal' &&
           strlen($_POST['paypal_comment']) > 0)
         $paypal_message_array['ledger paypal comment'] = $_POST['paypal_comment'];
+      $square_message_array = array();
+      // Assemble the square_message array
+      if ($_POST['payment_type'] == 'square' &&
+          strlen($_POST['square_comment']) > 0)
+        $square_message_array['ledger square comment'] = $_POST['square_comment'];
       // If there is a basket, then get basket information from the database
       if ($_POST['basket_id'] != 0)
         {
@@ -115,6 +129,34 @@ switch ($_POST['process'])
           if (! is_numeric ($paypal_transaction_id))
             array_push ($error_array, 'DATABASE ERROR: Problem posting the paypal payment.');
         }
+      // Post the square fee, if any...
+      if (count($error_array) == 0 &&
+          $_POST['payment_type'] == 'square' &&
+          $_POST['square_fee'] != 0)
+        {
+          $transaction_group_id = get_new_transaction_group_id ();
+          include_once ('func.update_ledger.php');
+          $square_transaction_id = add_to_ledger (array (
+            'transaction_group_id' => $transaction_group_id,
+            'source_type' => 'member',
+            'source_key' => $_POST['member_id'],
+            'target_type' => 'internal',
+            'target_key' => 'payment sent',
+            'amount' => $_POST['square_fee'],
+            'text_key' => 'square charges',
+            'effective_datetime' => $_POST['effective_datetime'],
+            'posted_by' => $_SESSION['member_id'],
+            'replaced_by' => '',
+            'timestamp' => '',
+            'basket_id' => $row['basket_id'],
+            'bpid' => '',
+            'site_id' => $row['site_id'],
+            'delivery_id' => $row['delivery_id'],
+            'pvid' => '',
+            'messages' => $square_message_array));
+          if (! is_numeric ($square_transaction_id))
+            array_push ($error_array, 'DATABASE ERROR: Problem posting the square payment.');
+        }
       // if no errors, then post the payment, if any
       if (count($error_array) == 0 && 
           $_POST['amount'] != 0)
@@ -126,7 +168,7 @@ switch ($_POST['process'])
           $payment_transaction_id = add_to_ledger (array (
             'transaction_group_id' => $transaction_group_id,
             'source_type' => 'internal',
-            'source_key' => $text_key,
+            'source_key' => $text_key.' '.$_POST['payment_type'],
             'target_type' => 'member',
             'target_key' => $_POST['member_id'],
             'amount' => $_POST['amount'],
@@ -173,26 +215,36 @@ switch ($_POST['process'])
 
 function get_receive_payment_form ($member_id, $basket_id, $preferred_name, $error_message)
   {
-    // Set up payment_type selections and show-paypal option
+    // Set up payment_type selections
     if ($_POST['payment_type'] == 'cash')
       {
-        $payment_type_cash = ' checked="checked"';
+        $payment_type_cash = ' checked';
         $paypal_display_style = 'display:none;';
+        $square_display_style = 'display:none;';
       }
     elseif ($_POST['payment_type'] == 'check')
       {
-        $payment_type_check = ' checked="checked"';
+        $payment_type_check = ' checked';
         $paypal_display_style = 'display:none;';
+        $square_display_style = 'display:none;';
       }
     elseif ($_POST['payment_type'] == 'paypal')
       {
-        $payment_type_paypal = ' checked="checked"';
-        $paypal_display_style = 'display:inline;';
+        $payment_type_paypal = ' checked';
+        $paypal_display_style = 'display:block;';
+        $square_display_style = 'display:none;';
+      }
+    elseif ($_POST['payment_type'] == 'square')
+      {
+        $payment_type_square = ' checked';
+        $paypal_display_style = 'display:none;';
+        $square_display_style = 'display:block;';
       }
     else // Default
       {
-        $payment_type_check = ' checked="checked"';
+        $payment_type_cash = ' checked';
         $paypal_display_style = 'display:none;';
+        $square_display_style = 'display:none;';
       }
 
     // Problem with paypal not showing, so override the display:none directive
@@ -226,25 +278,6 @@ function get_receive_payment_form ($member_id, $basket_id, $preferred_name, $err
 
             <br>
 
-            <span class="nobr paypal_section" style="'.$paypal_display_style.'">
-              <label id="paypal_fee_label" for="paypal_fee">Paypal Fee</label>
-              <input id="paypal_fee" name="paypal_fee" pattern="[0-9]*\.[0-9]{2}" autocomplete="off" value="'.$_POST['paypal_fee'].'">
-            </span>
-
-            <span class="nobr paypal_section" style="'.$paypal_display_style.'">
-              <label id="paypal_comment_label" for="paypal_comment">Paypal&nbsp;Comment</label>
-              <input id="paypal_comment" name="paypal_comment" placeholder="Ex. Little lamsey divey. A kidley divey too." autocomplete="off" value="'.$_POST['paypal_comment'].'">
-            </span>
-
-            <br>
-
-            <span class="nobr">
-              <label for="payment_type_cash">Cash/Check</label>
-              <input type="radio" id="payment_type_cash_check" value="cash" name="payment_type" required'.$payment_type_cash.' onclick="jQuery(\'#paypal_fee\').val(\'0.00\');">
-              <label for="payment_type_paypal">Paypal</label>
-              <input type="radio" id="payment_type_paypal" value="paypal" name="payment_type" required'.$payment_type_paypal.' onclick="jQuery(\'#paypal_fee\').val((Math.round((jQuery(\'#amount\').val()*0.029+0.30) * 100)/100).toFixed(2));">
-            </span>
-
             <span class="nobr">
               <label id="memo_label" for="memo">Memo</label>
               <input id="memo" name="memo" placeholder="Ex. 12345" pattern="[0-9]*" autocomplete="off" value="'.$_POST['memo'].'">
@@ -253,21 +286,52 @@ function get_receive_payment_form ($member_id, $basket_id, $preferred_name, $err
             <span class="nobr">
               <label for="batch_number">Batch No</label>
               <input id="batch_number" name="batch_number" placeholder="Ex. AB-2468" autocomplete="off" value="'.$_POST['batch_number'].'">
-            </span>
-
+            </span>';
+    if (PAYPAL_ENABLED == true)
+      {
+        $form_content .= '
+            <div id="paypal_section" style="'.$paypal_display_style.'">
+              <span class="nobr">
+                <label id="paypal_fee_label" for="paypal_fee">Paypal Fee</label>
+                <input id="paypal_fee" name="paypal_fee" pattern="[0-9]*\.[0-9]{2}" autocomplete="off" value="'.$_POST['paypal_fee'].'">
+              </span>
+              <span class="nobr">
+                <label id="paypal_comment_label" for="paypal_comment">Paypal&nbsp;Comment</label>
+                <input id="paypal_comment" name="paypal_comment" placeholder="Ex. Little lamsey divey. A kidley divey too." autocomplete="off" value="'.$_POST['paypal_comment'].'">
+              </span>
+            </div>';
+      }
+    if (SQUARE_ENABLED == true)
+      {
+        $form_content .= '
+            <div id="square_section" style="'.$square_display_style.'">
+              <span class="nobr">
+                <label id="square_fee_label" for="square_fee">Square Fee</label>
+                <input id="square_fee" name="square_fee" pattern="[0-9]*\.[0-9]{2}" autocomplete="off" value="'.$_POST['square_fee'].'">
+              </span>
+              <span class="nobr">
+                <label id="square_comment_label" for="square_comment">Square&nbsp;Comment</label>
+                <input id="square_comment" name="square_comment" placeholder="Ex. Little lamsey divey. A kidley divey too." autocomplete="off" value="'.$_POST['square_comment'].'">
+              </span>
+            </div>';
+      }
+    $form_content .= '
             <div class="button" onclick="receive_payment('.$member_id.','.$basket_id.')">Enter<br>Payment</div>
+
+            <div id="select_payment_type" class="nobr">
+              <input type="radio" id="payment_type_cash" value="cash" name="payment_type" required'.$payment_type_cash.' onclick="jQuery(\'#square_fee\').val(\'0.00\');jQuery(\'#paypal_fee\').val(\'0.00\');jQuery(\'#paypal_section\').hide();jQuery(\'#square_section\').hide();">
+              <label for="payment_type_cash">Cash</label><br />
+              <input type="radio" id="payment_type_check" value="check" name="payment_type" required'.$payment_type_check.' onclick="jQuery(\'#square_fee\').val(\'0.00\');jQuery(\'#paypal_fee\').val(\'0.00\');jQuery(\'#paypal_section\').hide();jQuery(\'#square_section\').hide();">
+              <label for="payment_type_cash">Check</label><br />'.
+              (PAYPAL_ENABLED == true ? '
+              <input type="radio" id="payment_type_paypal" value="paypal" name="payment_type" required'.$payment_type_paypal.' onclick="jQuery(\'#paypal_section\').show();jQuery(\'#square_section\').hide();jQuery(\'#square_fee\').val(\'0.00\');jQuery(\'#paypal_fee\').val((Math.round((jQuery(\'#amount\').val()*0.029+0.30) * 100)/100).toFixed(2));">
+              <label for="payment_type_paypal">Paypal</label><br />' : '').
+              (SQUARE_ENABLED == true ? '
+              <input type="radio" id="payment_type_square" value="square" name="payment_type" required'.$payment_type_square.' onclick="jQuery(\'#square_section\').show();jQuery(\'#paypal_section\').hide();jQuery(\'#paypal_fee\').val(\'0.00\');jQuery(\'#square_fee\').val((Math.round((jQuery(\'#amount\').val()*0.0265) * 100)/100).toFixed(2));">
+              <label for="payment_type_square">Square</label><br />' : '' ).'
+            </div>
           </fieldset>
         </form>
       </div>';
     return $form_content;
   }
-
-
-
-
-
-
-
-
-
-

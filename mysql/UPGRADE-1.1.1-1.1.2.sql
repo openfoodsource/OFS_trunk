@@ -56,6 +56,17 @@ WHERE
   section = '7. Optional Modules'
   AND name = 'google_analytics_tracking_id';
 
+-- Enable Square functionality
+INSERT INTO
+  new_configuration
+SET
+  section = '7. Optional Modules',
+  name = 'square_enabled',
+  constant = 'SQUARE_ENABLED',
+  options = 'checkbox=\r\nfalse\r\ntrue',
+  value = 'false',
+  description= 'Select this option if the site is integrated with Square. NOTE: Payments through Square are not yet automatically posted.';
+
 -- Set new software version
 UPDATE ofs_configuration
   SET options = 'read_only',
@@ -63,3 +74,4 @@ UPDATE ofs_configuration
   WHERE
     section = '1. Server Setup'
     AND name = 'current_version';
+
