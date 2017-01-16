@@ -195,7 +195,7 @@ function open_list_top(&$product, &$unique)
       <table class="invoice_header" width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td align="left" valign="top"><!-- FOOTER LEFT "'.(strpos ($unique['auth_type'], 'institution') !== false ? $unique['business_name'] : '').$unique['last_name'].', '.$unique['first_name'].'" -->
-            <font size="+2"><b>'.$unique['preferred_name'].' '.(strpos ($unique['auth_type'], 'institution') !== false ? $unique['business_name'].'<br>(attn: '.$unique['first_name'].' '.$unique['last_name'].')' : '').'</b></font>
+            <font size="+2"><b>'.$unique['preferred_name'].' '.(strpos ($unique['auth_type'], 'institution') !== false ? $unique['business_name'].'<br>(attn: '.$unique['first_name'].' '.$unique['last_name'].')<br>Invoice No: '.$unique['basket_id'] : '').'</b></font>
           </td>
           <td valign="top" align="right">
             <table border="0" style="width:300px;float:right">
