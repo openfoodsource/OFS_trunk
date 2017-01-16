@@ -291,8 +291,9 @@ $query_adjustment = '
     AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL
     AND '.NEW_TABLE_LEDGER.'.amount != 0 /* no need to show null adjustments */
     AND '.NEW_TABLE_LEDGER.'.bpid IS NULL /* do not consider basket items */
-    AND (('.NEW_TABLE_LEDGER.'.effective_datetime < (SELECT delivery_date FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysql_real_escape_string($delivery_id).'")'.
+    AND (('.NEW_TABLE_LEDGER.'.effective_datetime < "'.$unique_data['delivery_date'].'"'.
         $and_since_prior_delivery_date.')
+    /* INCLUDE RELATED INFORMATION THAT DOES NOT ADJUST THIS INVOICE TOTAL */
       OR ('.NEW_TABLE_LEDGER.'.delivery_id = "'.mysql_real_escape_string($delivery_id).'"
         AND ('.NEW_TABLE_LEDGER.'.text_key = "payment received"
           OR '.NEW_TABLE_LEDGER.'.text_key = "payment made")))

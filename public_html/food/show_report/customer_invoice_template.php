@@ -580,48 +580,6 @@ function show_product_row(&$product, &$unique)
     return $display_line;
   };
 
-// /************************* LISTING FOR PRODUCT SORTS **************************/
-// 
-// function show_adjustment_row(&$adjustment, &$unique)
-//   {
-//     $this_row = $adjustment['this_row'];
-//     $display_line = '';
-//     $show_adjustment = true;
-// 
-//     // Do not show the delivery cost. It will be included in the invoice total
-//     if ($adjustment[$this_row]['text_key'] == 'delivery cost')
-//       {
-//         $adjustment['total_delivery_cost'] += $adjustment[$this_row]['amount'];
-//         $show_adjustment = false;
-//       }
-// 
-// // //adjustment_display_section
-// //     '
-// //               <tr align="center">
-// //                 <td></td>
-// //                 <td align="right" valign="top"><b> </b>&nbsp;&nbsp;</td>
-// //                 <td width="275" align="left" valign="top" colspan="'.($data['transaction_taxed'] ? '4' : '3').'"><b>'.$data['transaction_name'].$data['taxable_product'].'</b><br>'.$data['transaction_comments'].'</td>
-// //                 <td align="right" valign="top">$'.number_format($data['transaction_amount'], 2).'</td>
-// //                 '.($data['transaction_taxed'] ? '' : '<td>&nbsp;</td>').'
-// //               </tr>'
-// // EOT;
-// 
-//     // Show every adjustment row unless specified otherwise
-//     if ($show_adjustment == true)
-//       {
-//         $unique['adjustment_total'] += $adjustment[$this_row]['amount'];
-//         $display_line = '
-//           <tr align="center">
-//             <td colspan="2" align="left">'.$adjustment[$this_row]['ledger_message'].'</td>
-//             <td colspan="2" align="left">'.$adjustment[$this_row]['text_key'].'</td>
-//             <td colspan="2">&nbsp;</td>
-//             <td align="center" valign="top">'.$adjustment[$this_row]['amount'].'</td>
-//           </tr>';
-//         $adjustment['total_listed_adjustments'] += $adjustment[$this_row]['amount'];
-//       }
-//     return $display_line;
-//   };
-// 
 /************************* LISTING FOR PRODUCT SORTS **************************/
 
 function show_adjustment_row(&$adjustment, &$unique)
@@ -631,7 +589,9 @@ function show_adjustment_row(&$adjustment, &$unique)
 
     // If the adjustment is associated with this order, then it goes *BELOW* everything else and is not counted
     // in the totals.
-    if (($adjustment[$this_row]['text_key'] == 'payment received' || $adjustment[$this_row]['text_key'] == 'payment made') && $adjustment[$this_row]['delivery_id'] == $unique['delivery_id'])
+    if (($adjustment[$this_row]['text_key'] == 'payment received'
+          || $adjustment[$this_row]['text_key'] == 'payment made')
+        && $adjustment[$this_row]['delivery_id'] == $unique['delivery_id'])
       {
         // Do not show for "original" invoices
         if ($unique['view'] != 'original')
