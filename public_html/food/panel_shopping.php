@@ -135,7 +135,7 @@ $display .= '
 if (CurrentMember::auth_type('unfi')) $display .= '
           <!-- <li><a href="product_list.php?type=unfi">All products (UNFI)</a></li> -->';
 $display .= '
-          <li>                        <a href="category_list.php?display_as=grid">    Browse by category</a> <div style="display:inline-block;font-weight:bold;font-size:150%;color:#a00;font-family:\'Gloria Hallelujah\';">&larr; New features!</div></li>
+          <li>                        <a href="category_list.php?display_as=grid">    Browse by category</a></li>
           <li>                        <a href="prdcr_list.php">                       Browse by producer</a></li>
           <li class="last_of_group">  <a href="product_list.php?type=prior_baskets">  Previously ordered products</a></li>
 <!--      <li>                        <a href="product_list.php?type=by_id">          All products by number</a></li> -->
