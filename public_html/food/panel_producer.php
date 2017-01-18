@@ -188,9 +188,9 @@ $display .= '
 if ($list_status_html)
   {
     $display .= '
-        <img src="'.DIR_GRAPHICS.'status.png" width="32" height="32" align="left" hspace="2" alt="Status"><br>
+        <img src="'.DIR_GRAPHICS.'status.png" width="32" height="32" align="left" hspace="2" alt="Status">
         <b>Status:</b> '.$list_status_html.'
-        <img src="'.DIR_GRAPHICS.'producer.png" width="32" height="32" align="left" hspace="2" alt="Producer info."><br>
+        <img src="'.DIR_GRAPHICS.'producer.png" width="32" height="32" align="left" hspace="2" alt="Producer info.">
         <b>'.$active_business_name.' Producer Info.</b>
         <ul class="fancyList1">
           <li><a href="edit_producer_info.php">Edit Basic Producer Information</a></li>
@@ -201,7 +201,7 @@ if ($list_status_html)
 
 // If this member "owns" any producer identities, show them
 $display .= '
-    <img src="'.DIR_GRAPHICS.'producer3.png" width="32" height="32" align="left" hspace="2" alt="Producer identity"><br>
+    <img src="'.DIR_GRAPHICS.'producer3.png" width="32" height="32" align="left" hspace="2" alt="Producer identity">
     <b>Producer Identity</b>
     <p>For members with multiple producer identities (multiple businesses), select below to choose which one to work with.  Then all links will use that business, identified below with an arrow .</p>
     <ul class="fancyList1">'.$owner_list.'
@@ -213,14 +213,14 @@ $display .= '
 if ($_SESSION['producer_id_you'])
   {
     $display .= '
-        <img src="'.DIR_GRAPHICS.'labels.png" width="32" height="32" align="left" hspace="2" alt="Delivery Day Functions"><br>
+        <img src="'.DIR_GRAPHICS.'labels.png" width="32" height="32" align="left" hspace="2" alt="Delivery Day Functions">
         <b>'.$active_business_name.' Delivery Day Functions</b>
         <ul class="fancyList1">
           <!-- <li class="last_of_group"><a href="producer_select_site.php">Select Collection Point</a></li> -->
           <li><a href="product_list.php?&type=labels_bystoragecustomer">Labels &ndash; One per Customer/Storage</a></li>
           <li class="last_of_group"><a href="product_list.php?&type=labels_byproduct">Labels &ndash; One per Item</a></li>
         </ul>
-          <img src="'.DIR_GRAPHICS.'invoices.png" width="32" height="32" align="left" hspace="2" alt="Producer invoices"><br>
+          <img src="'.DIR_GRAPHICS.'invoices.png" width="32" height="32" align="left" hspace="2" alt="Producer invoices">
           <b>'.$active_business_name.' Producer Orders</b>
           <ul class="fancyList1">
             <li><a href="product_list.php?&type=producer_byproduct">Producer Basket (by product)</a></li>
@@ -234,7 +234,7 @@ if ($_SESSION['producer_id_you'])
             <li class="last_of_group"><a href="route_list.php?delivery_id='.ActiveCycle::delivery_id().'&type=dropoff&producer_id='.$_SESSION['producer_id_you'].'">Routing Checklist (by destination)</a></li>
 
           </ul>
-          <img src="'.DIR_GRAPHICS.'product.png" width="32" height="32" align="left" hspace="2" alt="Edit your products"><br>
+          <img src="'.DIR_GRAPHICS.'product.png" width="32" height="32" align="left" hspace="2" alt="Edit your products">
           <b>Edit '.$active_business_name.' Products</b>
           <ul class="fancyList1">
             <li><a href="product_list.php?a=retail&type=producer_list">Listed&nbsp;Retail</a></li>

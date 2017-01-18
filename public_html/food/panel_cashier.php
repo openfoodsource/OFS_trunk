@@ -8,13 +8,13 @@ $display_cashier = '
   <table width="100%" class="compact">
     <tr valign="top">
       <td align="left" width="50%">
-        <img src="'.DIR_GRAPHICS.'report.png" width="32" height="32" align="left" hspace="2" alt="Manage products"><br>
+        <img src="'.DIR_GRAPHICS.'report.png" width="32" height="32" align="left" hspace="2" alt="Manage products">
         <b>Reports</b>
         <ul class="fancyList1">
           <li class="last_of_group"><a href="view_balances3.php">View Ledger</a></li>
           <li class="last_of_group"><a href="report_per_subcat.php">Sales Per Subcategory</a></li>
         </ul>
-<!--    <img src="'.DIR_GRAPHICS.'ksirc.png" width="32" height="32" align="left" hspace="2" alt="Helpful PDF Forms for Download"><br>
+<!--    <img src="'.DIR_GRAPHICS.'ksirc.png" width="32" height="32" align="left" hspace="2" alt="Helpful PDF Forms for Download">
         <b>Helpful PDF Forms for Download</b>
         <ul class="fancyList1">
           <li><a href="pdf/payments_received.pdf" target="_blank">Payments Received Form</a></li>
@@ -22,7 +22,7 @@ $display_cashier = '
         </ul>
 -->   </td>
       <td align="left" width="50%">
-        <img src="'.DIR_GRAPHICS.'kspread.png" width="32" height="32" align="left" hspace="2" alt="Treasurer Functions"><br>
+        <img src="'.DIR_GRAPHICS.'kspread.png" width="32" height="32" align="left" hspace="2" alt="Treasurer Functions">
         <b>Treasurer Functions</b>
         <ul class="fancyList1">
           <li><a href="chart_of_accounts.php">Chart of Accounts</a>

@@ -180,9 +180,9 @@ $display .= '
 if ($list_status_html)
   {
     $display .= '
-        <img src="'.DIR_GRAPHICS.'status.png" width="32" height="32" align="left" hspace="2" alt="Status"><br>
+        <img src="'.DIR_GRAPHICS.'status.png" width="32" height="32" align="left" hspace="2" alt="Status">
         <b>Selected Producer Status:</b> '.$list_status_html.'
-        <img src="'.DIR_GRAPHICS.'producer.png" width="32" height="32" align="left" hspace="2" alt="Producer info."><br>
+        <img src="'.DIR_GRAPHICS.'producer.png" width="32" height="32" align="left" hspace="2" alt="Producer info.">
         <b>'.$active_business_name.' Producer Info.</b>
         <ul class="fancyList1">
           <li><a href="edit_producer_info.php">Edit Basic Producer Information</a></li>
@@ -192,7 +192,7 @@ if ($list_status_html)
 
 // Generate the administrative display list of producers
 $display .= '
-    <img src="'.DIR_GRAPHICS.'producer3.png" width="32" height="32" align="left" hspace="2" alt="Select producer identity"><br>
+    <img src="'.DIR_GRAPHICS.'producer3.png" width="32" height="32" align="left" hspace="2" alt="Select producer identity">
     <b>ADMIN: Select Producer Identity</b>
     <p>Producer administrators may choose an identity below to edit on behalf of the producer.</p>
     <div class="height_400">
@@ -208,14 +208,14 @@ if ($_SESSION['producer_id_you'])
     $display .= '
       <div id="this_producer">
         <div class="title">Links for '.$active_business_name.'</div>
-        <img src="'.DIR_GRAPHICS.'labels.png" width="32" height="32" align="left" hspace="2" alt="Delivery Day Functions"><br>
+        <img src="'.DIR_GRAPHICS.'labels.png" width="32" height="32" align="left" hspace="2" alt="Delivery Day Functions">
         <b>'.$active_business_name.' Delivery Day Functions</b>
         <ul class="fancyList1">
           <!-- <li class="last_of_group"><a href="producer_select_site.php">Select Collection Point</a></li> -->
           <li><a href="product_list.php?&type=labels_bystoragecustomer">Labels &ndash; One per Customer/Storage</a></li>
           <li class="last_of_group"><a href="product_list.php?&type=labels_byproduct">Labels &ndash; One per Item</a></li>
         </ul>
-          <img src="'.DIR_GRAPHICS.'invoices.png" width="32" height="32" align="left" hspace="2" alt="Producer invoices"><br>
+          <img src="'.DIR_GRAPHICS.'invoices.png" width="32" height="32" align="left" hspace="2" alt="Producer invoices">
           <b>'.$active_business_name.' Producer Orders</b>
           <ul class="fancyList1">
             <li><a href="product_list.php?&type=producer_byproduct">Producer Basket (by product)</a></li>
@@ -227,7 +227,7 @@ if ($_SESSION['producer_id_you'])
             <li><a href="route_list.php?delivery_id='.ActiveCycle::delivery_id().'&type=pickup&producer_id='.$_SESSION['producer_id_you'].'">Routing Checklist (by customer)</a></li>
             <li class="last_of_group"><a href="route_list.php?delivery_id='.ActiveCycle::delivery_id().'&type=dropoff&producer_id='.$_SESSION['producer_id_you'].'">Routing Checklist (by destination)</a></li>
           </ul>
-          <img src="'.DIR_GRAPHICS.'product.png" width="32" height="32" align="left" hspace="2" alt="Edit your products"><br>
+          <img src="'.DIR_GRAPHICS.'product.png" width="32" height="32" align="left" hspace="2" alt="Edit your products">
           <b>Edit '.$active_business_name.' Products</b>
           <ul class="fancyList1">
             <li><a href="product_list.php?a=retail&type=producer_list">Listed&nbsp;Retail</a></li>
@@ -243,25 +243,25 @@ if ($_SESSION['producer_id_you'])
 $display .= '
       <div id="all_producers">
         <div class="title">General producer links</div>
-          <img src="'.DIR_GRAPHICS.'producers.png" width="32" height="32" align="left" hspace="2" alt="Food Stamps"><br>
+          <img src="'.DIR_GRAPHICS.'producers.png" width="32" height="32" align="left" hspace="2" alt="Food Stamps">
           <b>Manage Producers and Products</b>
           <ul class="fancyList1">
             <!-- <li><a href="edit_prdcr_list.php">Producer/Product List</a></li> -->
             <li><a href="product_list.php?type=confirm">Confirm Changed Products</a></li>
             <li><a href="edit_info_list.php">Edit Producer Info</a></li>
           </ul>
-          <img src="'.DIR_GRAPHICS.'kcron.png" width="32" height="32" align="left" hspace="2" alt="Delivery Cycle Functions"><br>
+          <img src="'.DIR_GRAPHICS.'kcron.png" width="32" height="32" align="left" hspace="2" alt="Delivery Cycle Functions">
           <b>Delivery Cycle Functions</b>
           <ul class="fancyList1">
             <li class="last_of_group"><a href="orders_prdcr_list.php?delivery_id='.ActiveCycle::delivery_id().'">Producers with Customers this Cycle</a></li>
           </ul>
-          <img src="'.DIR_GRAPHICS.'bottom.png" width="32" height="32" align="left" hspace="2" alt="Producer Membership Information"><br>
+          <img src="'.DIR_GRAPHICS.'bottom.png" width="32" height="32" align="left" hspace="2" alt="Producer Membership Information">
           <b>Producer Membership Information</b>
           <ul class="fancyList1">
             <li><a href="producers_pending.php">Pending Producers</a></li>
             <li class="last_of_group"><a href="producer_applications.php">Producer Applications</a></li>
           </ul>
-          <img src="'.DIR_GRAPHICS.'report.png" width="32" height="32" align="left" hspace="2" alt="Manage products"><br>
+          <img src="'.DIR_GRAPHICS.'report.png" width="32" height="32" align="left" hspace="2" alt="Manage products">
           <b>Reports</b>
           <ul class="fancyList1">
             <li> <a href="producers_labels.php">All Producers</a></li>

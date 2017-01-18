@@ -27,13 +27,13 @@ $display = '
   <table width="100%" class="compact">
     <tr valign="top">
       <td align="left" width="50%">
-    <img src="'.DIR_GRAPHICS.'type.png" width="32" height="32" align="left" hspace="2" alt="Membership Type"><br>
+    <img src="'.DIR_GRAPHICS.'type.png" width="32" height="32" align="left" hspace="2" alt="Membership Type">
     <strong>Membership Type</strong> [<a onClick="popup_src(\''.PATH.'update_membership.php?display_as=popup\', \'membership_renewal\', \'\');">Change</a>]
         <ul class="fancyList1">
           <li><strong>'.$_SESSION['renewal_info']['membership_class'].':</strong> '.$_SESSION['renewal_info']['membership_description'].'<br><br></li>
           <li class="last_of_group">'.$_SESSION['renewal_info']['membership_message'].'</li>
         </ul>
-    <img src="'.DIR_GRAPHICS.'time.png" width="32" height="32" align="left" hspace="2" alt="Information"><br>
+    <img src="'.DIR_GRAPHICS.'time.png" width="32" height="32" align="left" hspace="2" alt="Information">
     <strong>Next Renewal Date</strong>
         <ul class="fancyList1">
           <li class="last_of_group">'.date('F j, Y', strtotime($_SESSION['renewal_info']['standard_renewal_date'])).'</li>
@@ -45,7 +45,7 @@ $display = '
         </ul>
       </td>
       <td align="left" width="50%">
-        <img src="'.DIR_GRAPHICS.'status.png" width="32" height="32" align="left" hspace="2" alt="Member Resources"><br>
+        <img src="'.DIR_GRAPHICS.'status.png" width="32" height="32" align="left" hspace="2" alt="Member Resources">
         <b>Member Resources</b>
         <ul class="fancyList1">
           <li><a href="locations.php">Food Pickup/Delivery Locations</a></li>
@@ -55,7 +55,7 @@ $display = '
           <li><a href="faq.php">How to Order FAQ</a></li>
           <li class="last_of_group"><a href="producer_form.php?action=new_producer">New Producer Application Form</a></li>
         </ul>
-        <img src="'.DIR_GRAPHICS.'money.png" width="32" height="32" align="left" hspace="2" alt="Payment Options"><br>
+        <img src="'.DIR_GRAPHICS.'money.png" width="32" height="32" align="left" hspace="2" alt="Payment Options">
         <b>Payment Options</b>
         <ul class="fancyList1">'.
         // Only show PayPal if PayPal is enabled and if there is a real member_id

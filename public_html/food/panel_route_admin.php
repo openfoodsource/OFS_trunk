@@ -8,7 +8,7 @@ $display_route = '
   <table width="100%" class="compact">
    <tr valign="top">
       <td align="left" width="50%">
-        <img src="'.DIR_GRAPHICS.'gnome2.png" width="32" height="32" align="left" hspace="2" alt="Route Information"><br>
+        <img src="'.DIR_GRAPHICS.'gnome2.png" width="32" height="32" align="left" hspace="2" alt="Route Information">
         <b>Route Information</b>
         <ul class="fancyList1">
           <li><a href="delivery.php">Deliveries and Pickups</a></li>
@@ -20,7 +20,7 @@ $display_route = '
         </ul>
       </td>
       <td align="left" width="50%">
-        <img src="'.DIR_GRAPHICS.'launch.png" width="32" height="32" align="left" hspace="2" alt="Delivery Cycle Functions"><br>
+        <img src="'.DIR_GRAPHICS.'launch.png" width="32" height="32" align="left" hspace="2" alt="Delivery Cycle Functions">
         <b>Delivery Cycle Functions</b>
         <ul class="fancyList1">
           <li><a href="orders_list_withtotals.php?delivery_id='.ActiveCycle::delivery_id().'">Customer orders with totals</a></li>

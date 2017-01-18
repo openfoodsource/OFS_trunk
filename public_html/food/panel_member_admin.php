@@ -8,7 +8,7 @@ $display_admin .= '
   <table width="100%" class="compact">
     <tr valign="top">
       <td align="left" width="50%">
-        <img src="'.DIR_GRAPHICS.'report.png" width="32" height="32" align="left" hspace="2" alt="Manage products"><br>
+        <img src="'.DIR_GRAPHICS.'report.png" width="32" height="32" align="left" hspace="2" alt="Manage products">
         <b>Reports</b>
         <ul class="fancyList1">
           <li class="last_of_group"><a href="view_balances3.php">View Ledger</a></li>
@@ -21,14 +21,14 @@ $display_admin .= '
         </ul>
       </td>
       <td align="left" width="50%">
-        <img src="'.DIR_GRAPHICS.'bottom.png" width="32" height="32" align="left" hspace="2" alt="Membership Information"><br>
+        <img src="'.DIR_GRAPHICS.'bottom.png" width="32" height="32" align="left" hspace="2" alt="Membership Information">
         <b>Membership Information</b>
         <ul class="fancyList1">
           <li><a href="member_lookup.php?action=find">Find/Edit Members</a></li>
           <li><a href="edit_member_types.php">Mass Edit Membership Types</a></li>
           <li><a href="edit_auth_types.php">Mass Edit Auth Types</a></li>
         </ul>
-        <img src="'.DIR_GRAPHICS.'kcron.png" width="32" height="32" align="left" hspace="2" alt="Delivery Cycle Functions"><br>
+        <img src="'.DIR_GRAPHICS.'kcron.png" width="32" height="32" align="left" hspace="2" alt="Delivery Cycle Functions">
         <b>Delivery Cycle Functions</b>
         <ul class="fancyList1">
           <li class="last_of_group"><a href="orders_list_withtotals.php?delivery_id='.ActiveCycle::delivery_id().'">Members with orders this cycle (with totals)</a></li>
