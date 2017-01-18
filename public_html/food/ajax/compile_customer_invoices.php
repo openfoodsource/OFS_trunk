@@ -73,7 +73,7 @@ if ($row = mysql_fetch_array($result))
       'type' => 'customer_invoice',
       'output' => 'pdf');
     include ('../show_report.php');
-    $customer_invoice = '<div class="invoice-container">'.$display.'</div>'.HTMLDOC_PAGING;
+    $customer_invoice = '<div class="invoice-container" style="page-break-after: always;">'.$display.'</div>'.HTMLDOC_PAGING;
     if ( strpos($customer_invoice, 'EMPTY INVOICE') === false )
       {
         fwrite($fp, $customer_invoice);

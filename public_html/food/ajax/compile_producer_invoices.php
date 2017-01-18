@@ -59,7 +59,7 @@ if ($delivery_id && $producer_id)
       'type' => 'producer_invoice',
       'output' => 'pdf');
     include ('../show_report.php');
-    $producer_invoice = '<div class="invoice-container">'.$display.'</div>'.HTMLDOC_PAGING;
+    $producer_invoice = '<div class="invoice-container" style="page-break-after: always">'.$display.'</div>'.HTMLDOC_PAGING;
     if ( strpos($producer_invoice, 'EMPTY INVOICE') === false )
       {
         fwrite($fp, $producer_invoice);

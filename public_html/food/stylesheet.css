@@ -507,6 +507,15 @@ div.open {
   min-width:5%;
   }
 
+/********************** STYLES FOR THE PRODUCT_LIST **********************/
+
+.basket_price {
+  font-style:normal;
+  color:#333;
+  }
+
+
+
 /******************** OVERRIDE FOR CMS (E.G. WORDPRESS) STYLES ***************/
 
 

@@ -86,7 +86,16 @@ function total_display_calc($data)
 
 // PRICING_DISPLAY_CALC
 function pricing_display_calc($data)
-  { return '';
+  { return
+    ($data['unit_price'] != 0 ?
+    '$&nbsp;'.number_format($data['unit_price'], 2).'/'.($data['random_weight'] ? $data['pricing_unit'] : $data['ordering_unit'])
+    : '').
+    ($data['unit_price'] != 0 && $data['extra_charge'] != 0 ?
+    '<br>'
+    : '').
+    ($data['extra_charge'] != 0 ?
+    '<span class="extra">'.($data['extra_charge'] > 0 ? '+' : '-').'&nbsp;$&nbsp;'.number_format (abs ($data['extra_charge']), 2).'/'.Inflect::singularize ($data['ordering_unit']).'</span><br>'
+    : '');
   };
 
 // ORDERING_UNIT_DISPLAY_CALC
