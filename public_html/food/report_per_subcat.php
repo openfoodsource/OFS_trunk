@@ -37,6 +37,10 @@ $query = '
     '.NEW_TABLE_LEDGER.'.delivery_id <= "'.mysql_real_escape_string($stop).'"
     AND '.NEW_TABLE_LEDGER.'.delivery_id >= "'.mysql_real_escape_string($start).'"
     AND replaced_by IS NULL
+    AND (
+      text_key = "quantity cost"
+      OR text_key= "weight cost"
+      )
   GROUP BY
     '.TABLE_ORDER_CYCLES.'.delivery_date,
     '.TABLE_CATEGORY.'.category_name,
@@ -57,6 +61,7 @@ while ($row = mysql_fetch_array($main_sql))
 
 $query = '
   SELECT
+    delivery_id,
     delivery_date
   FROM
     '.TABLE_ORDER_CYCLES.'
@@ -67,12 +72,12 @@ $query = '
     delivery_date DESC';
 $dates_sql = mysql_query($query);
 
-$delivery_dates = array ();
+$delivery_id = array ();
 $spreadsheet = "Subcategory / Date";
 $date_headers = "";
 while ($row = mysql_fetch_array($dates_sql))
   {
-    array_push($delivery_dates, $row["delivery_date"]);
+    array_push($delivery_id, $row["delivery_date"]);
     $date_headers .= '
       <th class="date">'.$row["delivery_date"].'</th>';
     $spreadsheet .= "\t".$row["delivery_date"];
@@ -94,7 +99,7 @@ foreach ($categories as $cat_name => $cat)
           <tr>
             <th class="subcat col1">'.$subcat_name.'</th>';
         $subcat_spreadsheet_rows .= $subcat_name;
-        foreach ($delivery_dates as $date)
+        foreach ($delivery_id as $date)
           {
 //            $value = (isset($subcat[$date]) && $subcat[$date] != 0) ? number_format($subcat[$date], 2) : "-";
             $value = (isset ($subcat[$date]) && $subcat[$date] != 0) ? round ($subcat[$date], 2) : 0.00;
@@ -110,7 +115,7 @@ foreach ($categories as $cat_name => $cat)
     // Put together the category totals
     $cat_totals_table_row = '';
     $cat_totals_spreadsheet_row = '';
-    foreach ($delivery_dates as $date)
+    foreach ($delivery_id as $date)
       {
         $value = (isset ($cat_total[$date]) && $cat_total[$date] != 0) ? round ($cat_total[$date], 2) : 0.00;
         $cat_totals_table_row .= '
