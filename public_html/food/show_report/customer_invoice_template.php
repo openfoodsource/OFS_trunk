@@ -412,7 +412,7 @@ $unique['excluded_adjustments'].
                 </td>
               </tr>'.
 // Only show PayPal if PayPal is enabled and if there is a real basket_id for this order
-(PAYPAL_EMAIL && $unique['basket_id'] ? '
+(PAYPAL_ENABLED == true && $unique['basket_id'] ? '
               <tr>
                 <td style="padding:15px 20px;">OR</td>
               </tr>
@@ -442,6 +442,18 @@ $unique['excluded_adjustments'].
                   <div style="clear:both;font-size:80%;margin-top:1em;">If paying with PayPal, be sure to print/bring your PayPal receipt with you to order pickup as proof of payment.</div>
                 </td>
               </tr>'
+: '&nbsp;')
+
+
+(SQUARE_ENABLED == true && $unique['basket_id'] && $product[$this_row]['unfilled_random_weight'] == false ? '
+                <tr>
+                  <td colspan="2" style="padding:15px 20px;">OR</td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="padding:5px;padding:5px;height:21px;font-size:16px;">
+                    Pay $&nbsp;'.(number_format (($unique['total_order_amount'] + $unique['balance_forward'] + $unique['included_adjustment_total']) * 1.0265, 2)).' by Square (2.65% added to cover Square fees).
+                  </td>
+                </tr>'
 : '&nbsp;')
 : '').'
             </table>
