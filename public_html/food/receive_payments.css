@@ -114,6 +114,7 @@ label#non_basket_payment_label {
 #batch_no {
   width:100px;
   }
+#square_comment,
 #paypal_comment,
 #comment {
   width:350px;

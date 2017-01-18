@@ -30,8 +30,10 @@ function make_payment(producer_id,delivery_id) {
     amount:jQuery("#amount").val(),
     effective_datetime:jQuery("#effective_datetime").val(),
     payment_type:jQuery("#payment_type_cash_check").val(),
-    paypal_fee:jQuery("#paypal_fee").val(),
-    paypal_comment:jQuery("#paypal_comment").val(),
+    paypal_fee:jQuery("#paypal_fee").length ? jQuery("#paypal_fee").val() : "",
+    paypal_comment:jQuery("#paypal_comment").length ? jQuery("#paypal_comment").val() : "",
+    square_fee:jQuery("#square_fee").length ? jQuery("#square_fee").val() : "",
+    square_comment:jQuery("#square_comment").length ? jQuery("#square_comment").val() : "",
     memo:jQuery("#memo").val(),
     batch_number:jQuery("#batch_number").val(),
     comment:jQuery("#comment").val()
