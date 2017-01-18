@@ -179,6 +179,7 @@ function pager_display_calc($data)
     '<a href="'.$_SERVER['SCRIPT_NAME'].'?'.
     ($_GET['type'] ? 'type='.$_GET['type'] : '').
     ($_GET['producer_id'] ? '&producer_id='.$_GET['producer_id'] : '').
+    ($_GET['producer_link'] ? '&producer_link='.$_GET['producer_link'] : '').
     ($_GET['category_id'] ? '&category_id='.$_GET['category_id'] : '').
     ($_GET['delivery_id'] ? '&delivery_id='.$_GET['delivery_id'] : '').
     ($_GET['subcat_id'] ? '&subcat_id='.$_GET['subcat_id'] : '').

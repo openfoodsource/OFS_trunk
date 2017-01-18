@@ -104,7 +104,7 @@ function pricing_display_calc($data)
     if ($data['display_base_customer_price'])
       {
         $pricing_display_calc .= '
-          <span class="basket_price">$'.number_format($data['display_base_customer_price'], 2).$per_pricing_unit.Inflect::singularize ($data['pricing_unit']).'</span>';
+          <span class="basket_price">$'.number_format($data['display_base_customer_price'], 2).($data['random_weight'] ? $per_pricing_unit.Inflect::singularize ($data['pricing_unit']) : $per_ordering_unit.Inflect::singularize ($data['ordering_unit'])).'</span>';
       }
     if (strlen ($pricing_display_calc) > 0 &&
         $data['extra_charge'] != 0)
