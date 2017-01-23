@@ -25,7 +25,7 @@ if ($action == "Update")
       FROM
         '.NEW_TABLE_SITES.'
       WHERE
-        site_type = "%customer%"';
+        site_type LIKE "%customer%"';
     $result = mysql_query($query, $connection) or die('<br><br>Whoops! You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:webmaster@'.$domainname.'">webmaster@'.$domainname.'</a><br><br><b>Error:</b> Current Delivery Cycle ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
     while ($row = mysql_fetch_object($result))
       {
@@ -57,7 +57,7 @@ $query = '
     '.NEW_TABLE_SITES.'
   LEFT JOIN '.TABLE_HUBS.' USING(hub_id)
   WHERE
-    site_type = "%customer%"
+    site_type LIKE "%customer%"
   ORDER BY
     site_short;';
 $result = mysql_query($query, $connection) or die('<br><br>Whoops! You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:webmaster@'.$domainname.'">webmaster@'.$domainname.'</a><br><br><b>Error:</b> Current Delivery Cycle ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
