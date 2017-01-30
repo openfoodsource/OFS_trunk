@@ -6,6 +6,7 @@ if (!defined (DIR_GRAPHICS)) define('DIR_GRAPHICS' ,'/food.new/grfx/');
 
 function wordpress_show_usermenu ()
   {
+    session_start ();
     // Check if the member is logged in
     if (isset ($_SESSION['member_id']))
       {
