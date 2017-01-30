@@ -11,8 +11,10 @@ $display_cashier = '
         <img src="'.DIR_GRAPHICS.'report.png" width="32" height="32" align="left" hspace="2" alt="Manage products">
         <b>Reports</b>
         <ul class="fancyList1">
-          <li class="last_of_group"><a href="view_balances3.php">View Ledger</a></li>
           <li class="last_of_group"><a href="report_per_subcat.php">Sales Per Subcategory</a></li>
+          <li><a href="report_member_balances.php?delivery_id='.ActiveCycle::delivery_id().'&balance=all">Member Balances (Current cycle)</a></li>
+          <li><a href="report_member_balances.php?balance=all">All Member Balances</a></li>
+          <li><a href="report_member_balances.php">Members with Non-Zero Balances (and have ever ordered)</a></li>
         </ul>
 <!--    <img src="'.DIR_GRAPHICS.'ksirc.png" width="32" height="32" align="left" hspace="2" alt="Helpful PDF Forms for Download">
         <b>Helpful PDF Forms for Download</b>

@@ -25,6 +25,7 @@ $display_route = '
         <ul class="fancyList1">
           <li><a href="orders_list_withtotals.php?delivery_id='.ActiveCycle::delivery_id().'">Customer orders with totals</a></li>
           <li><a href="producer_list_withtotals.php?delivery_id='.ActiveCycle::delivery_id().'">Producer orders with totals</a></li>
+          <li><a href="report_member_balances.php?delivery_id='.ActiveCycle::delivery_id().'">Customer balance report</a></li>
           <li><a href="members_list_emailorders.php?delivery_id='.ActiveCycle::delivery_id().'">Customer Email Addresses this cycle</a></li>
           <li><a href="orders_prdcr_list.php?delivery_id='.ActiveCycle::delivery_id().'">Producers with Customers this Cycle</a></li>
         </ul>
