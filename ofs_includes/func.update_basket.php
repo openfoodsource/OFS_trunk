@@ -113,9 +113,6 @@ $admin_override = true;
     // Update the basket with a new site and information related to the new site
     if ($update_site)
       {
-
-debug_print ("ERROR: 892573 ", "UPDATE DELCODE", basename(__FILE__).' LINE '.__LINE__);
-
         if ($data['delivery_type'] == 'H' || $data['delivery_type'] == 'W') $query_delivery_type = 'D'; // H[ome] and W[ork] --> D[elivery]
         else $query_delivery_type = $data['delivery_type']; // P[ickup]
         // Could check for changes and abort otherwise, but this will force updating
@@ -144,9 +141,6 @@ debug_print ("ERROR: 892573 ", "UPDATE DELCODE", basename(__FILE__).' LINE '.__L
                 delivery_type = "'.mysql_real_escape_string($data['delivery_type']).'"
               WHERE basket_id = "'.mysql_real_escape_string($basket_info['basket_id']).'"';
             $result_update_basket = mysql_query($query_update_basket, $connection) or die(debug_print ("ERROR: 892764 ", array ($query_update_basket,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-
-debug_print ("INFO: 892573 ", $query_update_basket, basename(__FILE__).' LINE '.__LINE__);
-
             // Update the $basket_info with changes
             $basket_info['delivery_cost'] = $row_site['delivery_charge'];
             $initiate_delivery_charge = true;
@@ -193,11 +187,6 @@ debug_print ("INFO: 892573 ", $query_update_basket, basename(__FILE__).' LINE '.
         $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 892764 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
         // Sync the variable we just changed
         $basket_info['checked_out'] = $checked_out ;
-
-
-
-
-
         // If there is an order cost (fixed), then post it (or clear it if wrongly set).
         if ($basket_info['order_cost'] != 0 &&
             $basket_info['order_cost_type'] == 'fixed' &&
@@ -256,11 +245,6 @@ debug_print ("INFO: 892573 ", $query_update_basket, basename(__FILE__).' LINE '.
               'match_keys' => array ('source_type','source_key','target_type','target_key','text_key','basket_id')
               ));
           }
-
-
-
-
-
       }
     // For checkout, synchronize ledger entries to all basket_items
     if ($initiate_checkout_items || $synch_ledger_items)

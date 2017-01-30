@@ -16,7 +16,7 @@ include_once ('func.get_account_info.php');
 // and $data['target_key'] will be identified for this update. Obviously, in that case,          //
 // many matching transactions will be returned, so it is not a good choice.                      //
 //                                                                                               //
-// The $data['messages'] field can contain an associative arry of messages to post as            //
+// The $data['messages'] field can contain an associative array of messages to post as           //
 // linked to this transaction.                                                                   //
 //                                                                                               //
 // NOTE: The $data['match_keys'] should sufficiently narrow the query to a SINGLE result.        //
