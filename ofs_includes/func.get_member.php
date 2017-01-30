@@ -7,7 +7,7 @@ function get_member ($member_id)
     // Expose additional parameters as they become needed.
     $selected_fields = array (
       // 'member_id', <------ don't use this (you already know it)
-      'pending',
+      TABLE_MEMBER.'.pending',
       'username',
       'password',
       'auth_type',

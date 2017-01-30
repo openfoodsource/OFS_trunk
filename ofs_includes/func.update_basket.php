@@ -3,7 +3,7 @@ include_once 'config_openfood.php';
 
 // include_once ('func.get_basket_item.php');
 include_once ('func.get_basket.php');
-// include_once ('func.get_member.php');
+include_once ('func.get_member.php');
 // include_once ('func.get_producer.php');
 // include_once ('func.get_product.php');
 include_once ('func.update_ledger.php');
@@ -72,6 +72,7 @@ $admin_override = true;
           die(debug_print('ERROR: 679217 ', 'unexpected request', basename(__FILE__).' LINE '.__LINE__));
           break;
       }
+    $member_info = get_member ($data['member_id']);
     // Get  information about the basket for this member
     // Prefer to access basket by basket_id
     if ($data['basket_id'] != 0)

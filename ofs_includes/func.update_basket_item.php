@@ -507,7 +507,8 @@ function update_basket_item (array $data)
         // And make sure the basket is also checked out
         $test_info = update_basket (array (
           'action' => 'set_checkout',
-          'basket_id' => $basket_info['basket_id']
+          'basket_id' => $basket_info['basket_id'],
+          'member_id' => $data['member_id']
           ));
         // Sync the checked_out field
         $basket_info['checked_out'] = $test_info['checked_out'];
