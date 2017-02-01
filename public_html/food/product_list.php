@@ -618,6 +618,18 @@ function SetItem (bpid, action) {
     });
   return false;
   }
+// This function is for updating product list images from the image upload screen
+function update_image (product_id, product_version, new_image_id) {
+  var get_image_src = "'.get_image_path_by_id('XXX').'";
+  if (new_image_id == 0) { // Remove the image
+    jQuery("#image-"+product_id+"-"+product_version).attr("src", "'.DIR_GRAPHICS.'no_image_set.png");
+    jQuery("#image-"+product_id+"-"+product_version).attr("class", "no_product_image");
+    }
+  else { // Switch the image
+    jQuery("#image-"+product_id+"-"+product_version).attr("src", get_image_src.replace("XXX", new_image_id));
+    jQuery("#image-"+product_id+"-"+product_version).attr("class", "product_image");
+    }
+  }
 </script>
 ';
 

@@ -170,6 +170,19 @@ textarea.message {
   width:80px;
   background-color:#eda;
   }
+img.no_product_image {
+  opacity:0.5;
+  }
+figcaption.edit_product_image {
+  position: relative;
+  height:0;
+  text-align:center;
+  top:0;
+  color: #fff;
+  text-shadow:0 0 3px #000, 0 0 3px #000;
+  font-size:1.5rem;
+  z-index: 2;
+  }
 .header_major {
   font-size:120%;
   font-weight:bold;

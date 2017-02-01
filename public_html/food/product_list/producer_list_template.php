@@ -132,10 +132,17 @@ function inventory_display_calc($data)
 
 // IMAGE_DISPLAY_CALC
 function image_display_calc($data)
-  { return
-    ($data['image_id'] ?
-    '<img src="'.get_image_path_by_id ($data['image_id']).'" class="product_image">'
-    : '');
+  {
+    $image_display = '
+      <figure class="product_image">
+        <figcaption class="edit_product_image" onclick="popup_src(\'set_product_image.php?display_as=popup&action=select_image&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&a='.$_REQUEST['a'].'\', \'edit_product_image\', \'\', \'true\');">Click to Edit</figcaption>'.
+        ($data['image_id'] ? '
+        <img id="image-'.$data['product_id'].'-'.$data['product_version'].'" src="'.get_image_path_by_id ($data['image_id']).'" class="product_image" onclick="popup_src(\'set_product_image.php?display_as=popup&action=select_image&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&a='.$_REQUEST['a'].'\', \'edit_product_image\', \'\', \'true\');">'
+        : '
+        <img id="image-'.$data['product_id'].'-'.$data['product_version'].'" src="'.DIR_GRAPHICS.'no_image_set.png" class="no_product_image" onclick="popup_src(\'set_product_image.php?display_as=popup&action=select_image&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&a='.$_REQUEST['a'].'\', \'edit_product_image\', \'\', \'true\');">'
+        ).'
+     </figure>';
+    return $image_display;
   };
 
 // PRODTYPE_DISPLAY_CALC
@@ -157,8 +164,7 @@ function row_activity_link_calc($data, $pager)
   { return
     '<td class="basket_control">'.
       '<span class="producer_control">
-      <a href="edit_products.php?product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&producer_id='.$_SESSION['producer_id_you'].'&a='.$_REQUEST['a'].'">Edit&nbsp;Product</a><br>
-      <a href="set_product_image.php?action=select_image&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&a='.$_REQUEST['a'].'">Set&nbsp;Image</a><br>'.
+      <a href="edit_products.php?product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&producer_id='.$_SESSION['producer_id_you'].'&a='.$_REQUEST['a'].'">Edit&nbsp;Product</a><br>'.
       ($_GET['type'] == 'list_versions' ?
         '<a href="product_order_history.php?product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&producer_id='.$_SESSION['producer_id_you'].'&a='.$_REQUEST['a'].'">Version&nbsp;History</a><br>'
         :

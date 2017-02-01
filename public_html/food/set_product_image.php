@@ -11,6 +11,11 @@ if (isset ($_GET['image_id'])) $image_id = mysql_real_escape_string($_GET['image
 if (isset ($_REQUEST['referrer'])) $referrer = mysql_real_escape_string($_REQUEST['referrer']);
 else $referrer = $_SERVER['HTTP_REFERER'];
 
+// 
+if($_GET['display_as'] == 'popup')
+  {
+    $display_as_popup = true;
+  }
 // Section for setting an image for a particular product
 if ($_GET['action'] == 'select_image')
   {
@@ -55,6 +60,12 @@ if ($_GET['action'] == 'select_image')
               <div class="upload_icon" title="Upload new image">&#8686;</div>
             </div>
           <figcaption>upload new image</figcaption>
+          </div>
+          <div class="gallery_block">
+            <div id="image-remove" class="gallery_image" onclick="remove_image()">
+              <div class="remove_icon" title="Remove image">&#9988;</div>
+            </div>
+          <figcaption>remove image from the product</figcaption>
           </div>';
     // Select all images from this producer
     $query = '
@@ -97,6 +108,35 @@ if ($_GET['action'] == 'select_image')
           <figcaption>'.$title.'</figcaption>
           </div>';
       }
+  }
+elseif ($_POST['action'] == 'remove_image')
+  {
+    // Variables used in remove_image
+    if (isset ($_POST['product_id'])) $product_id_target = mysql_real_escape_string($_POST['product_id']);
+    if (isset ($_POST['product_version'])) $product_version_target = mysql_real_escape_string($_POST['product_version']);
+    if ($_POST['select_all_versions'] != "true")
+      $query_where = 'AND '.NEW_TABLE_PRODUCTS.'.product_version = "'.$product_version_target.'"';
+    // Connect a new image to this product/version
+    if ($product_id_target != 0 &&
+        $product_version_target != 0)
+      {
+        $query = '
+          UPDATE
+            '.NEW_TABLE_PRODUCTS.'
+          SET
+            '.NEW_TABLE_PRODUCTS.'.image_id = ""
+          WHERE
+            '.NEW_TABLE_PRODUCTS.'.product_id = "'.$product_id_target.'"
+            '.$query_where;
+        $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 231831 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $json['result'] = "success";
+      }
+    else
+      {
+        $json['result'] = "failure";
+      }
+    echo json_encode ($json);
+    exit (0);
   }
 elseif ($_POST['action'] == 'set_image')
   {
@@ -439,8 +479,9 @@ $page_specific_css = '
       max-width:100px;
       max-height:100px;
       }
-    /* Appearance of the upload arrow icon */
-    .gallery_image .upload_icon {
+    /* Appearance of the upload and remove icons */
+    .gallery_image .upload_icon,
+    .gallery_image .remove_icon {
       position:absolute;
       width:100%;
       height:100%;
@@ -570,7 +611,35 @@ $page_specific_javascript = '
         jQuery(obj).removeClass("warn");
         }
       }
-
+    // Remove the image from a product
+    function remove_image(image_id) {
+      var select_all_versions = jQuery("#select_all_versions").prop("checked"); // gives true/false
+      var product_id = "'.preg_replace("/[^0-9]/",'',$_GET['product_id']).'";
+      var product_version = "'.preg_replace("/[^0-9]/",'',$_GET['product_version']).'";
+      jQuery.ajax({
+        type: "POST",
+        url: "'.PATH.'set_product_image.php",
+        cache: false,
+        data: {
+          select_all_versions: select_all_versions,
+          product_id: product_id,
+          product_version: product_version,
+          action: "remove_image"
+          }
+        })
+      .done(function(return_values) {
+        returned = JSON.parse(return_values);
+        if (returned["result"] == "success") {
+          var new_image_id = returned["new_image_id"];
+          jQuery("#image-"+old_image_id).removeClass("selected");
+          parent.update_image (product_id, product_version, 0);
+          }
+        else {
+          alert ("Sorry, the image was not removed");
+          }
+        });
+      }
+    // Change the image of a product
     var old_image_id = '.$image_id_target.';
     function set_image(image_id) {
       var select_all_versions = jQuery("#select_all_versions").prop("checked"); // gives true/false
@@ -596,6 +665,7 @@ $page_specific_javascript = '
           jQuery("#image-"+old_image_id).removeClass("selected");
           jQuery("#image-"+new_image_id).addClass("selected");
           old_image_id = new_image_id;
+          parent.update_image (product_id, product_version, new_image_id);
           }
         else {
           alert ("Sorry, the image was not updated");
