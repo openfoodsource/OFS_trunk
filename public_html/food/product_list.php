@@ -37,6 +37,7 @@ if ($_SESSION['member_id']) $member_id = $_SESSION['member_id'];
 // Allow cashier to override member_id
 if ($_GET['member_id'] && CurrentMember::auth_type('cashier')) $member_id = $_GET['member_id'];
 
+if ($_GET['subcat_id']) $subcat_id = $_GET['subcat_id'];
 if ($_GET['producer_id']) $producer_id = $_GET['producer_id'];
 if ($_GET['producer_link']) $producer_link = $_GET['producer_link'];
 if ($_SESSION['producer_id_you']) $producer_id_you = $_SESSION['producer_id_you'];
@@ -591,7 +592,6 @@ function SetItem (bpid, action) {
     action:action
     },
   function(data) {
-//alert(data);
     // Function returns [producer_adjusted_cost]:[extra_charge] OR [ERROR:alert_message]
     var returned_array = data.split(":");
     if (returned_array[0] == "ERROR") {

@@ -69,7 +69,7 @@ if (filter_var($_GET['delivery_id'], FILTER_VALIDATE_INT) == true)
     $filter_delivery_id = '
     (SELECT
       member_id
-      FROM ofs_baskets
+      FROM '.NEW_TABLE_BASKETS.'
       WHERE delivery_id = '.mysql_real_escape_string ($delivery_id).'
       AND member_id = foo.member_id) IS NOT NULL';
     $display_specific_cycle = true;
