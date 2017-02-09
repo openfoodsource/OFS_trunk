@@ -84,6 +84,7 @@ else
 if ($_GET['sort_by'] == 'account_balance'
     || $_GET['sort_by'] == 'preferred_name'
     || $_GET['sort_by'] == 'last_name'
+    || $_GET['sort_by'] == 'site_short'
     || $_GET['sort_by'] == 'business_name'
     || $_GET['sort_by'] == 'member_id')
   {
@@ -147,9 +148,9 @@ $query = '
       ) AS product_count'.
       ($display_specific_cycle != 0 ? ',
     (SELECT
-      SUM(amount)
+      SUM(amount
         * IF(source_type="member", -1, 1)
-        * IF(replaced_by IS NULL, 1, 0)
+        * IF(replaced_by IS NULL, 1, 0))
       FROM '.NEW_TABLE_LEDGER.'
       WHERE
         delivery_id = '.$delivery_id.'
