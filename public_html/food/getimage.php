@@ -18,11 +18,13 @@ if ( $_GET['image_id'] )
       FROM
         '.TABLE_PRODUCT_IMAGES.'
       WHERE
-        image_id = '.mysql_real_escape_string($_GET['image_id']);
-    $result = @mysql_query($query,$connection);
-    $data = @mysql_result($result, 0, "image_content");
-    $type = @mysql_result($result, 0, "mime_type");
+        image_id = '.mysqli_real_escape_string ($connection, $_GET['image_id']);
+    $result = @mysqli_query($connection, $query);
+    if ($row = mysqli_fetch_object ($result))
+      {
+        $data = $row->image_content;
+        $type = $row->mime_type;
+      }
     Header( "Content-type: $type");
     echo $data;
-  };
-?>
+  }

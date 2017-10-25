@@ -15,16 +15,16 @@ if (isset ($_GET['member_id']) && is_numeric ($_GET['member_id']))
         $member_id = $_GET['member_id'];
       }
     $query_where = '
-      WHERE '.NEW_TABLE_BASKETS.'.member_id = "'.mysql_real_escape_string($member_id).'"';
+      WHERE '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"';
     $query_member_name = '
       SELECT
         preferred_name
       FROM
         '.TABLE_MEMBER.'
       WHERE
-        member_id = "'.mysql_real_escape_string($member_id).'"';
-    $result_member_name = @mysql_query($query_member_name, $connection) or die("Couldn't execute query.");
-    if ( $row = mysql_fetch_array($result_member_name) )
+        member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"';
+    $result_member_name = @mysqli_query ($connection, $query_member_name) or die (debug_print ("ERROR: 782130 ", array ($query_member_name, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ( $row = mysqli_fetch_array ($result_member_name, MYSQLI_ASSOC) )
       {
         $preferred_name = $row['preferred_name'];
       }
@@ -50,8 +50,8 @@ $query_delieries = '
   $query_where.'
   ORDER BY
     delivery_id DESC';
-$result_deliveries = @mysql_query($query_delieries, $connection) or die("Couldn't execute query.");
-while ( $row = mysql_fetch_array($result_deliveries) )
+$result_deliveries = @mysqli_query ($connection, $query_delieries) or die (debug_print ("ERROR: 432743 ", array ($query_delieries, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_array ($result_deliveries, MYSQLI_ASSOC) )
   {
     if ($member_id > 0)
       {

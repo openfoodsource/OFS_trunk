@@ -110,4 +110,4 @@ echo '
   <!-- CONTENT BEGINS HERE -->
   '.$display.'
   <!-- CONTENT ENDS HERE -->';
-include("template_footer.php");
+include("template_footer.php")

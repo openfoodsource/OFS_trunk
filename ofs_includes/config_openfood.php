@@ -33,5 +33,3 @@ ini_set('display_errors', DEBUG);
 // Convert the comma-separated ERROR_FLAGS into boolean constants and bitwise-or them together
 if (!is_int (ERROR_FLAGS)) $error_flags = array_reduce (array_map ('constant', explode (',', ERROR_FLAGS)), function($a, $b) {return $a | $b;}, 0);
 error_reporting ($error_flags);
-
-?>

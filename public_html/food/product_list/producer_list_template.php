@@ -459,7 +459,3 @@ function show_listing_row($data, $row_type)
 //               <th align="center" bgcolor="#DDDDDD" width="10%">Type</th>
 //               <th align="center" bgcolor="#DDDDDD" width="15%">Price</th>
 //             </tr>
-
-
-
-?>

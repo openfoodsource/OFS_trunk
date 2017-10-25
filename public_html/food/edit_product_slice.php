@@ -16,10 +16,10 @@ if ($_POST['action'] == 'Update Subcategory Adjust Fee')
       UPDATE
         '.TABLE_SUBCATEGORY.'
       SET
-        subcategory_fee_percent = '.mysql_real_escape_string ($_POST['subcategory_fee_percent']).'
+        subcategory_fee_percent = '.mysqli_real_escape_string ($connection, $_POST['subcategory_fee_percent']).'
       WHERE
-        subcategory_id = "'.mysql_real_escape_string ($_POST['subcategory_id']).'"';
-    $result = @mysql_query($query, $connection) or die(mysql_error());
+        subcategory_id = "'.mysqli_real_escape_string ($connection, $_POST['subcategory_id']).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 493254 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 elseif ($_POST['action'] == 'Update Producer Adjust Fee')
   {
@@ -27,10 +27,10 @@ elseif ($_POST['action'] == 'Update Producer Adjust Fee')
       UPDATE
         '.TABLE_PRODUCER.'
       SET
-        producer_fee_percent = '.mysql_real_escape_string ($_POST['producer_fee_percent']).'
+        producer_fee_percent = '.mysqli_real_escape_string ($connection, $_POST['producer_fee_percent']).'
       WHERE
-        producer_id = "'.mysql_real_escape_string ($_POST['producer_id']).'"';
-    $result = @mysql_query($query, $connection) or die(mysql_error());
+        producer_id = "'.mysqli_real_escape_string ($connection, $_POST['producer_id']).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 742305 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 elseif ($_POST['action'] == 'Update Product Adjust Fee')
   {
@@ -38,10 +38,10 @@ elseif ($_POST['action'] == 'Update Product Adjust Fee')
       UPDATE
         '.NEW_TABLE_PRODUCTS.'
       SET
-        product_fee_percent = '.mysql_real_escape_string ($_POST['product_fee_percent']).'
+        product_fee_percent = '.mysqli_real_escape_string ($connection, $_POST['product_fee_percent']).'
       WHERE
-        product_id = "'.mysql_real_escape_string ($_POST['product_id']).'"';
-    $result = @mysql_query($query, $connection) or die(mysql_error());
+        product_id = "'.mysqli_real_escape_string ($connection, $_POST['product_id']).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 254524 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 
 // Set up the proper query, based upon what request we have received
@@ -77,9 +77,9 @@ $query = '
   FROM
     '.TABLE_ORDER_CYCLES.'
   WHERE
-    delivery_id = "'.mysql_real_escape_string (ActiveCycle::delivery_id_next()).'"';
-$result = @mysql_query($query, $connection) or die(mysql_error());
-if ( $row = mysql_fetch_array($result) )
+    delivery_id = "'.mysqli_real_escape_string ($connection, ActiveCycle::delivery_id_next()).'"';
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 893540 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+if ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
   {
     $delivery_date = date ("F j, Y", strtotime ($row['delivery_date']));
     $producer_markdown = $row['producer_markdown'] / 100;
@@ -111,8 +111,8 @@ $producer_id_prior = '';
 $subcategory_id_prior = '';
 
 // Cycle through the products/producers we need to display.
-$sql = @mysql_query($query, $connection) or die(debug_print ("ERROR: 572932 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ( $row = mysql_fetch_object($sql) )
+$sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 572932 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_object ($sql) )
   {
 
 // If needed, show a new subcategory subheader
@@ -290,4 +290,3 @@ echo '
   '.$content_edit.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-

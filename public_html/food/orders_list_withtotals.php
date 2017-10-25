@@ -78,15 +78,15 @@ $query = '
   LEFT JOIN '.TABLE_HUBS.' USING(hub_id)
   LEFT JOIN '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   WHERE
-    '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
+    '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
   GROUP BY
     '.NEW_TABLE_BASKETS.'.member_id
   '.$order_by;
 
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 785033 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$num_orders = mysql_numrows($result);
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 735933 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$num_orders = mysqli_num_rows ($result);
 
-while ( $row = mysql_fetch_array($result) )
+while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
   {
     $hub_short = $row['hub_short'];
     $site_id = $row['site_id'];
@@ -107,18 +107,18 @@ while ( $row = mysql_fetch_array($result) )
         SUM(amount * IF(source_type = "member", 1, -1)) AS invoice_total
       FROM '.NEW_TABLE_LEDGER.'
       WHERE
-        delivery_id = "'.mysql_real_escape_string($delivery_id).'"
+        delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
         AND (
-            (source_key = "'.mysql_real_escape_string($member_id).'"
+            (source_key = "'.mysqli_real_escape_string ($connection, $member_id).'"
             AND source_type = "member")
           OR
-            (target_key = "'.mysql_real_escape_string($member_id).'"
+            (target_key = "'.mysqli_real_escape_string ($connection, $member_id).'"
             AND target_type = "member"))
         AND text_key != "payment received"
         AND text_key != "payment made"
         AND replaced_by IS NULL';
-    $result_total = @mysql_query($query_total,$connection) or die(debug_print ("ERROR: 785033 ", array ($query_total,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ( $row_total = mysql_fetch_array($result_total) )
+    $result_total = @mysqli_query ($connection, $query_total) or die (debug_print ("ERROR: 281033 ", array ($query_total, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ( $row_total = mysqli_fetch_array ($result_total, MYSQLI_ASSOC) )
       {
         $invoice_total = $row_total['invoice_total'];
       }
@@ -148,10 +148,10 @@ while ( $row = mysql_fetch_array($result) )
       LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' USING(basket_id)
       LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(product_id, product_version)
       WHERE
-        basket_id = "'.mysql_real_escape_string($basket_id).'"
-        AND member_id="'.mysql_real_escape_string($member_id).'"';
-    $result_estimate = @mysql_query($query_estimate,$connection) or die(debug_print ("ERROR: 785033 ", array ($query_total,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ( $row_estimate = mysql_fetch_array($result_estimate) )
+        basket_id = "'.mysqli_real_escape_string ($connection, $basket_id).'"
+        AND member_id="'.mysqli_real_escape_string ($connection, $member_id).'"';
+    $result_estimate = @mysqli_query ($connection, $query_estimate) or die (debug_print ("ERROR: 785103 ", array ($query_estimate, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ( $row_estimate = mysqli_fetch_array ($result_estimate, MYSQLI_ASSOC) )
       {
         $estimate_total = $row_estimate['estimate_total'];
         $checked_out_count = $row_estimate['checked_out_count'];
@@ -191,15 +191,15 @@ while ( $row = mysql_fetch_array($result) )
       LEFT JOIN '.NEW_TABLE_BASKETS.' USING(basket_id)
       LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(product_id,product_version)
       WHERE
-        '.NEW_TABLE_BASKETS.'.member_id = "'.mysql_real_escape_string ($member_id).'"
-        AND '.NEW_TABLE_BASKETS.'.basket_id = "'.mysql_real_escape_string ($basket_id).'"
+        '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"
+        AND '.NEW_TABLE_BASKETS.'.basket_id = "'.mysqli_real_escape_string ($connection, $basket_id).'"
         AND '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock != '.NEW_TABLE_BASKET_ITEMS.'.quantity
         AND '.NEW_TABLE_PRODUCTS.'.random_weight != "0"
         AND '.NEW_TABLE_BASKET_ITEMS.'.total_weight = "0"
       ORDER BY producer_id ASC';
-    $resultprp = @mysql_query($sqlp, $connection) or die(debug_print ("ERROR: 785033 ", array ($sqlp,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $num = mysql_numrows($resultprp);
-    while ( $row = mysql_fetch_array($resultprp) )
+    $resultprp = @mysqli_query ($connection, $sqlp) or die (debug_print ("ERROR: 782933 ", array ($sqlp, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $num = mysqli_num_rows ($resultprp);
+    while ( $row = mysqli_fetch_array ($resultprp, MYSQLI_ASSOC) )
       {
         $display .= '<a href="product_list.php?&amp;type=producer_byproduct&amp;producer_id='.$row['producer_id'].'&amp;delivery_id='.$delivery_id.'">Weight needed: #'.$row['product_id'].'</a><br>';
       }
@@ -382,4 +382,3 @@ echo '
   '.$content_list.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-

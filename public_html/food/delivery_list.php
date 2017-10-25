@@ -26,15 +26,15 @@ $query = '
   LEFT JOIN '.TABLE_HUBS.' USING(hub_id)
   LEFT JOIN '.TABLE_ROUTE.' USING(route_id)
   WHERE
-    '.TABLE_ROUTE.'.route_id = "'.mysql_real_escape_string ($route_id).'"
+    '.TABLE_ROUTE.'.route_id = "'.mysqli_real_escape_string ($connection, $route_id).'"
     AND '.NEW_TABLE_SITES.'.route_id = '.TABLE_ROUTE.'.route_id
-    AND '.NEW_TABLE_SITES.'.site_id = "'.mysql_real_escape_string ($site_id).'"
-    AND '.TABLE_ORDER_CYCLES.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
+    AND '.NEW_TABLE_SITES.'.site_id = "'.mysqli_real_escape_string ($connection, $site_id).'"
+    AND '.TABLE_ORDER_CYCLES.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
     AND '.NEW_TABLE_SITES.'.site_type = "customer"
   ORDER BY
     route_name ASC';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 769302 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ( $row = mysql_fetch_array($result) )
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 269302 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
   {
     $site_array = (array) $row;
   }
@@ -73,17 +73,17 @@ $query = '
   LEFT JOIN '.TABLE_MEMBER.' USING(member_id)
   LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(product_id,product_version)
   WHERE
-    '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
-    AND '.NEW_TABLE_BASKETS.'.site_id = "'.mysql_real_escape_string ($site_array['site_id']).'"
+    '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
+    AND '.NEW_TABLE_BASKETS.'.site_id = "'.mysqli_real_escape_string ($connection, $site_array['site_id']).'"
     AND '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock != "1"
     AND '.NEW_TABLE_PRODUCTS.'.tangible = 1
   GROUP BY
     '.NEW_TABLE_BASKETS.'.basket_id
   ORDER BY
     last_name ASC';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 769302 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$num_orders = mysql_numrows($result);
-while ( $row = mysql_fetch_array($result) )
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 369702 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$num_orders = mysqli_num_rows ($result);
+while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
   {
     $member_array = (array) $row;
     $display .= '
@@ -169,16 +169,16 @@ $query = '
   LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(product_id,product_version)
   LEFT JOIN '.TABLE_PRODUCER.' USING(producer_id)
   WHERE
-    '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
-    AND '.NEW_TABLE_BASKETS.'.site_id = "'.mysql_real_escape_string ($site_array['site_id']).'"
+    '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
+    AND '.NEW_TABLE_BASKETS.'.site_id = "'.mysqli_real_escape_string ($connection, $site_array['site_id']).'"
     AND '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock != "1"
   GROUP BY
     '.NEW_TABLE_BASKET_ITEMS.'.product_id
   ORDER BY
     business_name,
     sum_p DESC';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 860342 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ($row = mysql_fetch_array($result))
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 560342 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     $product_id = $row['product_id'];
     $product_name = $row['product_name'];

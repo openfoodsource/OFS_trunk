@@ -16,7 +16,7 @@ $referrer = $_SERVER['HTTP_REFERER'];
 if (isset ($_GET['product_version']))
   {
     $where_version = '
-    AND '.NEW_TABLE_PRODUCTS.'.product_version = "'.mysql_real_escape_string ($_GET['product_version']).'"';
+    AND '.NEW_TABLE_PRODUCTS.'.product_version = "'.mysqli_real_escape_string ($connection, $_GET['product_version']).'"';
   }
 
 $query = '
@@ -57,13 +57,13 @@ $query = '
       ('.NEW_TABLE_MESSAGES.'.message_type_id = '.NEW_TABLE_MESSAGE_TYPES.'.message_type_id
       AND referenced_key1 = '.NEW_TABLE_BASKET_ITEMS.'.bpid)
   WHERE
-    '.NEW_TABLE_BASKET_ITEMS.'.product_id = "'.mysql_real_escape_string ($_GET['product_id']).'"
-    AND '.TABLE_PRODUCER.'.producer_id = "'.mysql_real_escape_string ($_GET['producer_id']).'"'.
+    '.NEW_TABLE_BASKET_ITEMS.'.product_id = "'.mysqli_real_escape_string ($connection, $_GET['product_id']).'"
+    AND '.TABLE_PRODUCER.'.producer_id = "'.mysqli_real_escape_string ($connection, $_GET['producer_id']).'"'.
     $where_version.'
   ORDER BY
     '.NEW_TABLE_BASKETS.'.delivery_id DESC';
-$sql = @mysql_query($query,$connection) or die(debug_print ("ERROR: 654219 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ($row = mysql_fetch_array($sql))
+$sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 654219 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ($row = mysqli_fetch_array ($sql, MYSQLI_ASSOC))
   {
     $delivery_id = $row['delivery_id'];
     $member_id = $row['member_id'];

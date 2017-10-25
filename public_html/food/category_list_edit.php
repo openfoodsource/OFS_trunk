@@ -56,16 +56,16 @@ function listCategoriesEdit ($parent_id, $level, $parent_category_name)
       FROM
         '.TABLE_CATEGORY.'
       WHERE
-        parent_id='.mysql_real_escape_string ($parent_id).'
+        parent_id='.mysqli_real_escape_string ($connection, $parent_id).'
       ORDER BY
         sort_order, category_name;';
-    $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY 1... $_query<br>\n");
-    if (mysql_affected_rows($connection) > 0)
+    $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 590423 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if (mysqli_affected_rows ($connection) > 0)
       { // There are more categories (or subcategories) to look at
         $list_html .= '<ul class="cat'.$level.'">';
         $total = 0;
         $total_new = 0;
-        while ($row = mysql_fetch_array($sql))
+        while ($row = mysqli_fetch_array ($sql, MYSQLI_ASSOC))
           {
             $category_id = $row['category_id'];
             $category_name = $row['category_name'];
@@ -135,12 +135,12 @@ function listCategoriesEdit ($parent_id, $level, $parent_category_name)
           FROM
             '.TABLE_SUBCATEGORY.'
           WHERE
-            category_id = "'.mysql_real_escape_string ($parent_id).'"
+            category_id = "'.mysqli_real_escape_string ($connection, $parent_id).'"
           ORDER BY
             subcategory_name';
-        $sql2 = @mysql_query($query2, $connection) or die("Couldn't execute QUERY 2... $_query2<br>\n");
+        $sql2 = @mysqli_query ($connection, $query2) or die (debug_print ("ERROR: 904568 ", array ($query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $list_html .= '<ul class="cat'.$level.'">';
-        while ($row2 = mysql_fetch_array($sql2))
+        while ($row2 = mysqli_fetch_array ($sql2, MYSQLI_ASSOC))
           {
             $subcategory_id = $row2['subcategory_id'];
             $subcategory_name = $row2['subcategory_name'];
@@ -177,9 +177,9 @@ if ($_GET['action'] == 'Edit')
           FROM
             '.TABLE_SUBCATEGORY.'
           WHERE
-            subcategory_id = "'.mysql_real_escape_string ($_GET['subcategory_id']).'"';
-        $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY 3... $_query<br>\n");
-        $row = mysql_fetch_array($sql);
+            subcategory_id = "'.mysqli_real_escape_string ($connection, $_GET['subcategory_id']).'"';
+        $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 902756 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $row = mysqli_fetch_array ($sql, MYSQLI_ASSOC);
         $subcategory_id = $row['subcategory_id'];
         $subcategory_name = $row['subcategory_name'];
         $taxable_subcategory = $row['taxable'];
@@ -196,9 +196,9 @@ if ($_GET['action'] == 'Edit')
           FROM
             '.NEW_TABLE_PRODUCTS.'
           WHERE
-            subcategory_id = "'.mysql_real_escape_string ($_GET['subcategory_id']).'"';
-        $sql = @mysql_query($query, $connection) or die(debug_print ("ERROR: 793702 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        $row = mysql_fetch_array($sql);
+            subcategory_id = "'.mysqli_real_escape_string ($connection, $_GET['subcategory_id']).'"';
+        $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 793702 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $row = mysqli_fetch_array ($sql, MYSQLI_ASSOC);
         $number_of_products = $row['count_prod'];
         $page_html .= '<form method="post" action="'.$_SERVER['SCRIPT_NAME'].'?action=Update"><table>'."<br>\n";
         $page_html .= '<tr><td>Subcategory ID: </td><td><input type="hidden" name="subcategory_id" value="'.$subcategory_id.'">'.$subcategory_id."<td></tr>\n";
@@ -239,9 +239,9 @@ if ($_GET['action'] == 'Edit')
           FROM
             '.TABLE_CATEGORY.'
           WHERE
-            category_id = "'.mysql_real_escape_string ($_GET['category_id']).'"';
-        $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY 3... $_query<br>\n");
-        $row = mysql_fetch_array($sql);
+            category_id = "'.mysqli_real_escape_string ($connection, $_GET['category_id']).'"';
+        $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 893274 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $row = mysqli_fetch_array ($sql, MYSQLI_ASSOC);
         $category_id = $row['category_id'];
         $category_name = $row['category_name'];
         $category_desc = $row['category_desc'];
@@ -259,9 +259,9 @@ if ($_GET['action'] == 'Edit')
           FROM
             '.TABLE_SUBCATEGORY.'
           WHERE
-            category_id = "'.mysql_real_escape_string ($_GET['category_id']).'"';
-        $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY 8... $_query<br>\n");
-        $row = mysql_fetch_array($sql);
+            category_id = "'.mysqli_real_escape_string ($connection, $_GET['category_id']).'"';
+        $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 754302 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $row = mysqli_fetch_array ($sql, MYSQLI_ASSOC);
         $number_of_cats = $row['count'];
         $query = '
           SELECT
@@ -269,9 +269,9 @@ if ($_GET['action'] == 'Edit')
           FROM
             '.TABLE_CATEGORY.'
           WHERE
-            parent_id = "'.mysql_real_escape_string ($_GET['category_id']).'"';
-        $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY 8... $_query<br>\n");
-        $row = mysql_fetch_array($sql);
+            parent_id = "'.mysqli_real_escape_string ($connection, $_GET['category_id']).'"';
+        $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 323854 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $row = mysqli_fetch_array ($sql, MYSQLI_ASSOC);
         $number_of_cats = $number_of_cats + $row['count'];
         $page_html .= '<form method="post" action="'.$_SERVER['SCRIPT_NAME'].'?action=Update"><table>'."<br>\n";
         $page_html .= '<tr><td>Category ID: </td><td><input type="hidden" name="category_id" value="'.$category_id.'">'.$category_id."<td></tr>\n";
@@ -317,32 +317,32 @@ if ($_GET['action'] == 'Exchange')
       FROM
         '.TABLE_CATEGORY.'
       WHERE
-        category_id='.mysql_real_escape_string ($category_id2);
-    $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY A1... $_query<br>\n");
+        category_id='.mysqli_real_escape_string ($connection, $category_id2);
+    $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 258230 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $query = '
       SELECT
         (@sort2:=sort_order)
       FROM
         '.TABLE_CATEGORY.'
       WHERE
-        category_id='.mysql_real_escape_string ($category_id1);
-    $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY A2... $_query<br>\n");
+        category_id='.mysqli_real_escape_string ($connection, $category_id1);
+    $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 085023 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $query = '
       UPDATE
         '.TABLE_CATEGORY.'
       SET
         sort_order = @sort2
       WHERE
-        category_id='.mysql_real_escape_string ($category_id2);
-    $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY A3... $_query<br>\n");
+        category_id='.mysqli_real_escape_string ($connection, $category_id2);
+    $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 594023 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $query = '
       UPDATE
         '.TABLE_CATEGORY.'
       SET
         sort_order = @sort1
       WHERE
-        category_id='.mysql_real_escape_string ($category_id1);
-    $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY A4... $_query<br>\n");
+        category_id='.mysqli_real_escape_string ($connection, $category_id1);
+    $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 375403 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $_GET['action'] = 'List';
   }
 
@@ -410,8 +410,8 @@ if ($_GET['action'] == 'Add')
             MAX(sort_order) AS sort_order
           FROM
             '.TABLE_CATEGORY;
-        $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY 5A... $_query<br>\n");
-        $row = mysql_fetch_array($sql);
+        $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 023854 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $row = mysqli_fetch_array ($sql, MYSQLI_ASSOC);
         $sort_order = $row['sort_order'];
         // Need to get unique sort_order value, so use one higher than current maximum value.
         $query = '
@@ -425,10 +425,10 @@ if ($_GET['action'] == 'Add')
               )
             VALUES
               (
-                "'.mysql_real_escape_string ($_POST['new_category_name']).'",
-                "'.mysql_real_escape_string ($_POST['new_category_desc']).'",
-                "'.mysql_real_escape_string ($_POST['new_parent_id']).'",
-                "'.mysql_real_escape_string (($sort_order + 1)).'"
+                "'.mysqli_real_escape_string ($connection, $_POST['new_category_name']).'",
+                "'.mysqli_real_escape_string ($connection, $_POST['new_category_desc']).'",
+                "'.mysqli_real_escape_string ($connection, $_POST['new_parent_id']).'",
+                "'.mysqli_real_escape_string ($connection, $sort_order + 1).'"
               )';
       }
     if ($_POST['type'] == 'Add Subcategory')
@@ -442,11 +442,11 @@ if ($_GET['action'] == 'Add')
               )
             VALUES
               (
-                "'.mysql_real_escape_string ($_POST['new_subcategory_name']).'",
-                "'.mysql_real_escape_string ($_POST['new_parent_id']).'"
+                "'.mysqli_real_escape_string ($connection, $_POST['new_subcategory_name']).'",
+                "'.mysqli_real_escape_string ($connection, $_POST['new_parent_id']).'"
               )';
       }
-    $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY 5B... $_query<br>\n");
+    $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 454235 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     // After doing the update, show the list again
     $_GET['action'] = 'List';
   }
@@ -488,8 +488,8 @@ if ($_GET['action'] == 'Update')
                 '.TABLE_SUBCATEGORY.'
               WHERE
                 subcategory_id = "'.$_POST['subcategory_id'].'"';
-            $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY 3... $_query<br>\n");
-            $row = mysql_fetch_array($sql);
+            $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 034856 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            $row = mysqli_fetch_array ($sql, MYSQLI_ASSOC);
             $subcategory_id = $row['subcategory_id'];
             $subcategory_name = $row['subcategory_name'];
             $taxable_subcategory = $row['taxable'];
@@ -519,9 +519,9 @@ if ($_GET['action'] == 'Update')
               FROM
                 '.TABLE_CATEGORY.'
               WHERE
-                category_id = "'.mysql_real_escape_string ($_POST['category_id']).'"';
-            $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY 3... $_query<br>\n");
-            $row = mysql_fetch_array($sql);
+                category_id = "'.mysqli_real_escape_string ($connection, $_POST['category_id']).'"';
+            $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 705847 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            $row = mysqli_fetch_array ($sql, MYSQLI_ASSOC);
             $category_id = $row['category_id'];
             $category_name = $row['category_name'];
             $category_desc = $row['category_name'];
@@ -532,7 +532,7 @@ if ($_GET['action'] == 'Update')
               DELETE FROM
                 '.TABLE_CATEGORY.'
               WHERE
-                category_id = "'.mysql_real_escape_string ($_POST['category_id']).'"';
+                category_id = "'.mysqli_real_escape_string ($connection, $_POST['category_id']).'"';
             $page_html .= 'Category '.$_POST['category_id'].' has been deleted. '."\n";
             $page_html .= '<form action="'.$_SERVER['SCRIPT_NAME'].'?action=Add" method="post">'."\n";
             $page_html .= '<input type="hidden" name="new_category_name" value="'.$category_name.'">'."\n";
@@ -545,7 +545,7 @@ if ($_GET['action'] == 'Update')
             $page_html .= '</form><br><br>'."\n";
           }
       }
-    $sql = @mysql_query($query, $connection) or die("Couldn't execute QUERY 5... $_query<br>\n");
+    $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 908346 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     // After doing the update, show the list again
     $_GET['action'] = 'List';
   }
@@ -589,4 +589,3 @@ echo '
   '.$content_edit.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-

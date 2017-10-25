@@ -68,5 +68,3 @@ if ($delivery_id && $producer_id)
   }
 
 echo 'GENERATED_INVOICE';
-
-?>

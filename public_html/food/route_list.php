@@ -12,7 +12,7 @@ if (isset ($_GET['producer_id']))
   {
     // Producers and Route Admins get the specified list, if requested.
     $and_producer_id = '
-      AND '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysql_real_escape_string ($_GET['producer_id']).'"';
+      AND '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysqli_real_escape_string ($connection, $_GET['producer_id']).'"';
     // Use only ONE checkbox on these listings
     $checkbox = ' <img src="'.DIR_GRAPHICS.'checkbox.gif" style="height:1em;vertical-align:text-top;">  ';
   }
@@ -64,7 +64,7 @@ if ($type == 'pickup')
       LEFT JOIN
         '.TABLE_MEMBER.' ON '.TABLE_MEMBER.'.member_id = '.NEW_TABLE_BASKETS.'.member_id
       WHERE
-        '.NEW_TABLE_BASKETS.'.delivery_id = '.mysql_real_escape_string ($delivery_id).'
+        '.NEW_TABLE_BASKETS.'.delivery_id = '.mysqli_real_escape_string ($connection, $delivery_id).'
         AND '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock != '.NEW_TABLE_BASKET_ITEMS.'.quantity
         AND '.NEW_TABLE_PRODUCTS.'.tangible = 1'.
         $and_producer_id.'
@@ -75,8 +75,8 @@ if ($type == 'pickup')
         '.NEW_TABLE_SITES.'.site_short,
         '.NEW_TABLE_BASKETS.'.member_id,
         '.NEW_TABLE_BASKET_ITEMS.'.product_id';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 783022 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ( $row = mysql_fetch_object($result) )
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 783022 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ( $row = mysqli_fetch_object ($result) )
       {
         if ($row->producer_id != $producer_id_prior)
           {
@@ -143,7 +143,7 @@ elseif ($type == 'dropoff')
       LEFT JOIN
         '.TABLE_MEMBER.' USING(member_id)
       WHERE
-        '.NEW_TABLE_BASKETS.'.delivery_id = '.mysql_real_escape_string ($delivery_id).'
+        '.NEW_TABLE_BASKETS.'.delivery_id = '.mysqli_real_escape_string ($connection, $delivery_id).'
         AND '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock != '.NEW_TABLE_BASKET_ITEMS.'.quantity
         AND '.NEW_TABLE_PRODUCTS.'.tangible = 1'.
         $and_producer_id.'
@@ -152,8 +152,8 @@ elseif ($type == 'dropoff')
         '.NEW_TABLE_BASKETS.'.member_id,
         '.NEW_TABLE_BASKET_ITEMS.'.product_id,
         '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_code';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 730302 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ( $row = mysql_fetch_object($result) )
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 730302 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ( $row = mysqli_fetch_object ($result) )
       {
         if ($row->site_id != $site_id_prior)
           {

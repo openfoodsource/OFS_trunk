@@ -10,8 +10,8 @@ $query = '
   SHOW COLUMNS FROM
     '.TABLE_MEMBER.'
   LIKE "auth_type"';
-$result= mysql_query($query) or die("Error: " . mysql_error());
-while ($row = mysql_fetch_object($result))
+$result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 742929 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ($row = mysqli_fetch_object ($result))
   // Get an array of all available auth_types
   {
     // $row->Type will give something like this:
@@ -35,11 +35,11 @@ if ($_GET['content'] == 'members' && $_POST['update'] == 'Make changes')
               UPDATE
                 '.TABLE_MEMBER.'
               SET
-                auth_type = "'.mysql_real_escape_string ($_POST['auth_type'][$member_id]).'"
+                auth_type = "'.mysqli_real_escape_string ($connection, $_POST['auth_type'][$member_id]).'"
               WHERE
                 member_id = "'.$member_id.'"';
 // echo "<pre>$query</pre>";
-//             $result= mysql_query($query) or die("Error: " . mysql_error());
+//             $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 782138 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
           }
       }
   }
@@ -67,8 +67,8 @@ if ($_GET['content'] == 'members')
         COUNT(member_id) AS number_of_members
       FROM
         '.TABLE_MEMBER;
-    $sql = @mysql_query($query, $connection) or die("Couldn't execute query 6.");
-    $row = mysql_fetch_object($sql);
+    $sql = @mysqli_query ($connection, $query) or die("Couldn't execute query 6.");
+    $row = mysqli_fetch_object ($sql);
     $number_of_pages = ceil ($row->number_of_members / PER_PAGE);
 
     for ( $page_number = 1; $page_number <= $number_of_pages; $page_number ++ )
@@ -105,12 +105,12 @@ if ($_GET['content'] == 'members')
       FROM
         '.TABLE_MEMBER.'
       ORDER BY
-        '.mysql_real_escape_string ($sort).'
+        '.mysqli_real_escape_string ($connection, $sort).'
       LIMIT
         '.(($page - 1) * PER_PAGE).', '.PER_PAGE;
-    $sql = @mysql_query($query, $connection) or die("Couldn't execute query 6.");
+    $sql = @mysqli_query ($connection, $query) or die("Couldn't execute query 6.");
 
-    while ( $row = mysql_fetch_object($sql) )
+    while ( $row = mysqli_fetch_object ($sql) )
       {
         $class_pending = '';
         $pending_statement = '';
@@ -258,4 +258,3 @@ echo '
   '.$content_types.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-

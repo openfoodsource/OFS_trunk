@@ -46,8 +46,8 @@ else
         member_id';
   }
 //echo "<pre>$query</pre>";
-$sql = mysql_query($query);
-while ( $row = mysql_fetch_array($sql) )
+$sql = mysqli_query ($connection, $query);
+while ( $row = mysqli_fetch_array ($sql, MYSQLI_ASSOC) )
   {
     $member_data[] = $row;
   }

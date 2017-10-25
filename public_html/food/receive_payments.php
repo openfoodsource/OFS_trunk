@@ -57,14 +57,14 @@ $query = '
   LEFT JOIN '.NEW_TABLE_SITES.' USING(site_id)
   LEFT JOIN '.TABLE_HUBS.' USING(hub_id)
   WHERE
-    '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
+    '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
   GROUP BY
     '.NEW_TABLE_BASKETS.'.member_id
   ORDER BY
     '.$order_by;
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 672323 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$num_orders = mysql_numrows($result);
-while ( $row = mysql_fetch_array($result) )
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 672123 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$num_orders = mysqli_num_rows ($result);
+while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
   {
     $basket_id = $row['basket_id'];
     $member_id = $row['member_id'];
@@ -110,4 +110,3 @@ echo '
   '.$page_data.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-

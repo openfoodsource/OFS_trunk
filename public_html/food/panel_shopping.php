@@ -15,13 +15,13 @@ $query = '
     '.NEW_TABLE_BASKETS.'
   LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' ON '.NEW_TABLE_BASKETS.'.basket_id = '.NEW_TABLE_BASKET_ITEMS.'.basket_id
   WHERE
-    '.NEW_TABLE_BASKETS.'.member_id = "'.mysql_real_escape_string ($_SESSION['member_id']).'"
-    AND '.NEW_TABLE_BASKETS.'.delivery_id = '.mysql_real_escape_string (ActiveCycle::delivery_id()).'
+    '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"
+    AND '.NEW_TABLE_BASKETS.'.delivery_id = '.mysqli_real_escape_string ($connection, ActiveCycle::delivery_id()).'
   GROUP BY
     '.NEW_TABLE_BASKETS.'.member_id';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 657922 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$basket_quantity = 0;
-if ($row = mysql_fetch_object($result))
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 756321 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$current_basket_quantity = 0;
+if ($row = mysqli_fetch_object ($result))
   {
     $basket_quantity = $row->basket_quantity;
     $basket_id = $row->basket_id;

@@ -15,8 +15,8 @@ if ($type == 'reserve_transaction_group_id')
       INSERT INTO
         '.NEW_TABLE_ADJUSTMENT_GROUP_ENUM.'
       VALUES (NULL)';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 752930 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $inserted_row = mysql_insert_id();
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 782930 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $inserted_row = mysqli_insert_id ($connection);
     // Return the row to the ajax query
     echo $inserted_row;
   }
@@ -38,11 +38,11 @@ if ($type == 'single')
       FROM
         '.NEW_TABLE_LEDGER.'
       WHERE
-        '.NEW_TABLE_LEDGER.'.transaction_group_id = "'.mysql_real_escape_string($transaction_data['transaction_group_id']).'"
+        '.NEW_TABLE_LEDGER.'.transaction_group_id = "'.mysqli_real_escape_string ($connection, $transaction_data['transaction_group_id']).'"
         AND '.NEW_TABLE_LEDGER.'.transaction_group_id != ""
-        AND '.NEW_TABLE_LEDGER.'.transaction_id != "'.mysql_real_escape_string($target).'"';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 752930 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ($row = mysql_fetch_array ($result))
+        AND '.NEW_TABLE_LEDGER.'.transaction_id != "'.mysqli_real_escape_string ($connection, $target).'"';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 759930 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         $transaction_id = $row['transaction_id'];
         // Get the target transaction
@@ -87,11 +87,11 @@ if ($type == 'product')
       FROM
         '.NEW_TABLE_LEDGER.'
       WHERE
-        '.NEW_TABLE_LEDGER.'.bpid = "'.mysql_real_escape_string($target).'"
+        '.NEW_TABLE_LEDGER.'.bpid = "'.mysqli_real_escape_string ($connection, $target).'"
         AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 752930 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 753930 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $row_markup = '';
-    while ($row = mysql_fetch_array ($result))
+    while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         $transaction_id = $row['transaction_id'];
         // Get the target transaction
@@ -235,7 +235,7 @@ if ($type == 'update')
         $query = '
           REPLACE INTO '.NEW_TABLE_MESSAGES.'
           SET
-            message = "'.mysql_real_escape_string($new_adjustment_message).'",
+            message = "'.mysqli_real_escape_string ($connection, $new_adjustment_message).'",
             message_type_id = 
               COALESCE((
                 SELECT message_type_id
@@ -243,8 +243,8 @@ if ($type == 'update')
                 WHERE description = "'.mysql_real_escape_string('adjustment group memo').'"
                 LIMIT 1
                 ),0),
-            referenced_key1 = "'.mysql_real_escape_string($new_transaction_group_id).'"';
-        $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 759302 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+            referenced_key1 = "'.mysqli_real_escape_string ($connection, $new_transaction_group_id).'"';
+        $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 759302 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $original_transaction_data['transaction_group_id'] = $new_transaction_group_id;
       }
     include_once ('func.update_ledger.php');
@@ -558,12 +558,12 @@ function get_replaced ($transaction_id)
         '.NEW_TABLE_LEDGER.'
       LEFT JOIN '.TABLE_MEMBER.' ON ('.TABLE_MEMBER.'.member_id = '.NEW_TABLE_LEDGER.'.posted_by)
       WHERE
-        replaced_by = "'.mysql_real_escape_string($transaction_id).'"';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 675302 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $num_rows = mysql_num_rows ($result);
+        replaced_by = "'.mysqli_real_escape_string ($connection, $transaction_id).'"';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 675302 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $num_rows = mysqli_num_rows ($result);
     if ($num_rows)
       {
-        $row = mysql_fetch_array ($result);
+        $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
         // Now get messages
         $query_message = '
           SELECT
@@ -573,14 +573,14 @@ function get_replaced ($transaction_id)
             '.NEW_TABLE_MESSAGES.'
           LEFT JOIN '.NEW_TABLE_MESSAGE_TYPES.' USING(message_type_id)
           WHERE
-              ('.NEW_TABLE_MESSAGES.'.referenced_key1 = "'.mysql_real_escape_string($row['transaction_id']).'"
+              ('.NEW_TABLE_MESSAGES.'.referenced_key1 = "'.mysqli_real_escape_string ($connection, $row['transaction_id']).'"
               AND '.NEW_TABLE_MESSAGE_TYPES.'.key1_target = "ledger.transaction_id")
             OR
-              ('.NEW_TABLE_MESSAGES.'.referenced_key1 = "'.mysql_real_escape_string($row['transaction_group_id']).'"
+              ('.NEW_TABLE_MESSAGES.'.referenced_key1 = "'.mysqli_real_escape_string ($connection, $row['transaction_group_id']).'"
               AND '.NEW_TABLE_MESSAGE_TYPES.'.key1_target = "ledger.transaction_group_id")';
-        $result_message = mysql_query($query_message, $connection) or die(debug_print ("ERROR: 572021 ", array ($query_message,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result_message = mysqli_query ($connection, $query_message) or die (debug_print ("ERROR: 672021 ", array ($query_message, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $message_array = array ();
-        while ($row_message = mysql_fetch_array ($result_message))
+        while ($row_message = mysqli_fetch_array ($result_message, MYSQLI_ASSOC))
           {
             array_push ($message_array, /* $row_message['description'].': '. */ $row_message['message']);
           }
@@ -602,9 +602,9 @@ function get_transaction ($transaction_id)
         '.NEW_TABLE_LEDGER.'
       LEFT JOIN '.TABLE_MEMBER.' ON ('.TABLE_MEMBER.'.member_id = '.NEW_TABLE_LEDGER.'.posted_by)
       WHERE
-        transaction_id = "'.mysql_real_escape_string($transaction_id).'"';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 293032 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row = mysql_fetch_array ($result))
+        transaction_id = "'.mysqli_real_escape_string ($connection, $transaction_id).'"';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 293032 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         // Now get messages
         $query_message = '
@@ -615,14 +615,14 @@ function get_transaction ($transaction_id)
             '.NEW_TABLE_MESSAGES.'
           LEFT JOIN '.NEW_TABLE_MESSAGE_TYPES.' USING(message_type_id)
           WHERE
-              ('.NEW_TABLE_MESSAGES.'.referenced_key1 = "'.mysql_real_escape_string($row['transaction_id']).'"
+              ('.NEW_TABLE_MESSAGES.'.referenced_key1 = "'.mysqli_real_escape_string ($connection, $row['transaction_id']).'"
               AND '.NEW_TABLE_MESSAGE_TYPES.'.key1_target = "ledger.transaction_id")
             OR
-              ('.NEW_TABLE_MESSAGES.'.referenced_key1 = "'.mysql_real_escape_string($row['transaction_group_id']).'"
+              ('.NEW_TABLE_MESSAGES.'.referenced_key1 = "'.mysqli_real_escape_string ($connection, $row['transaction_group_id']).'"
               AND '.NEW_TABLE_MESSAGE_TYPES.'.key1_target = "ledger.transaction_group_id")';
-        $result_message = mysql_query($query_message, $connection) or die(debug_print ("ERROR: 572021 ", array ($query_message,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result_message = mysqli_query ($connection, $query_message) or die (debug_print ("ERROR: 972021 ", array ($query_message, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $message_array = array ();
-        while ($row_message = mysql_fetch_array ($result_message))
+        while ($row_message = mysqli_fetch_array ($result_message, MYSQLI_ASSOC))
           {
             array_push ($message_array, /* $row_message['description'].': '. */ $row_message['message']);
           }
@@ -643,8 +643,8 @@ function get_text_key_list ()
       WHERE
         1
       ORDER BY text_key';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 675393 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ($row = mysql_fetch_array ($result))
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 675393 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         $text_key_list .= '
           <option value="'.$row['text_key'].'">'.$row['text_key'].'</option>';
@@ -665,8 +665,8 @@ function get_site_list ()
       WHERE
         site_type = "customer"
       ORDER BY site_short';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 759320 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ($row = mysql_fetch_array ($result))
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 759320 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         $site_list .= '
           <option value="'.$row['site_id'].'" label="'.str_pad ($row['site_id'], 3, '0', STR_PAD_LEFT).' '.$row['site_short'].'">'.str_pad ($row['site_id'], 3, '0', STR_PAD_LEFT).' '.$row['site_long'].'</option>';

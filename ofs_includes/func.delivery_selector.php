@@ -21,8 +21,8 @@ function delivery_selector ($current_delivery_id)
         date_open < NOW()
       ORDER BY
         delivery_date DESC';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 898034 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    WHILE ($row = mysql_fetch_array($result))
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 818034 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    WHILE ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         array_push ($delivery_id_array, $row['delivery_id']);
         $delivery_attrib[$row['delivery_id']]['date_open'] = $row['date_open'];
@@ -81,4 +81,3 @@ function delivery_selector ($current_delivery_id)
         </div>';
     return $display;
   }
-?>

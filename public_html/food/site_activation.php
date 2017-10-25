@@ -26,8 +26,8 @@ if ($action == "Update")
         '.NEW_TABLE_SITES.'
       WHERE
         site_type LIKE "%customer%"';
-    $result = mysql_query($query, $connection) or die('<br><br>Whoops! You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:webmaster@'.$domainname.'">webmaster@'.$domainname.'</a><br><br><b>Error:</b> Current Delivery Cycle ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
-    while ($row = mysql_fetch_object($result))
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 943290 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_object ($result))
       {
         if ($row->inactive != $_POST[$row->site_id.'_inactive'])
           {
@@ -35,10 +35,10 @@ if ($action == "Update")
               UPDATE
                 '.NEW_TABLE_SITES.'
               SET
-                inactive = '.mysql_real_escape_string ($_POST[$row->site_id.'_inactive']).'
+                inactive = '.mysqli_real_escape_string ($connection, $_POST[$row->site_id.'_inactive']).'
               WHERE
-                site_id = "'.mysql_real_escape_string ($row->site_id).'"';
-            $null = mysql_query($query2, $connection) or die('<br><br>Whoops! You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:webmaster@'.$domainname.'">webmaster@'.$domainname.'</a><br><br><b>Error:</b> Current Delivery Cycle ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
+                site_id = "'.mysqli_real_escape_string ($connection, $row->site_id).'"';
+            $null = mysqli_query ($connection, $query2) or die (debug_print ("ERROR: 389340 ", array ($query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
           }
       }
   }
@@ -60,7 +60,7 @@ $query = '
     site_type LIKE "%customer%"
   ORDER BY
     site_short;';
-$result = mysql_query($query, $connection) or die('<br><br>Whoops! You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:webmaster@'.$domainname.'">webmaster@'.$domainname.'</a><br><br><b>Error:</b> Current Delivery Cycle ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
+$result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 927489 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $content .= '
     <table id="customer_site_list">
       <tr>
@@ -70,7 +70,7 @@ $content .= '
         <th>Del Desc.</th>
         <th>Inactive</th>
       </tr>';
-while ($row = mysql_fetch_object($result))
+while ($row = mysqli_fetch_object ($result))
   {
     if ($row->inactive == 0) // Active site
       {

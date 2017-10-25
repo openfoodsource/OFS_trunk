@@ -4,7 +4,7 @@ session_start();
 valid_auth('cashier');
 
 // How was this script called?
-$account_id = isset($_GET['account_key']) ? mysql_real_escape_string($_GET['account_key']) : '';
+$account_id = isset($_GET['account_key']) ? mysqli_real_escape_string ($connection, $_GET['account_key']) : '';
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
 $need_query = true;
 $modal_action = '';
@@ -12,12 +12,12 @@ $display = '';
 
 if ($action == 'Update')
   {
-    $account_id         = isset($_POST['account_id'])         ? mysql_real_escape_string($_POST['account_id'])         : '';
-    $internal_key       = isset($_POST['internal_key'])       ? mysql_real_escape_string($_POST['internal_key'])       : '';
-    $internal_subkey    = isset($_POST['internal_subkey'])    ? mysql_real_escape_string($_POST['internal_subkey'])    : '';
-    $account_number     = isset($_POST['account_number'])     ? mysql_real_escape_string($_POST['account_number'])     : '';
-    $sub_account_number = isset($_POST['sub_account_number']) ? mysql_real_escape_string($_POST['sub_account_number']) : '';
-    $description        = isset($_POST['description'])        ? mysql_real_escape_string($_POST['description'])        : '';
+    $account_id         = isset($_POST['account_id'])         ? mysqli_real_escape_string ($connection, $_POST['account_id'])         : '';
+    $internal_key       = isset($_POST['internal_key'])       ? mysqli_real_escape_string ($connection, $_POST['internal_key'])       : '';
+    $internal_subkey    = isset($_POST['internal_subkey'])    ? mysqli_real_escape_string ($connection, $_POST['internal_subkey'])    : '';
+    $account_number     = isset($_POST['account_number'])     ? mysqli_real_escape_string ($connection, $_POST['account_number'])     : '';
+    $sub_account_number = isset($_POST['sub_account_number']) ? mysqli_real_escape_string ($connection, $_POST['sub_account_number']) : '';
+    $description        = isset($_POST['description'])        ? mysqli_real_escape_string ($connection, $_POST['description'])        : '';
     // Validate incoming data
     $error_array = array ();
 
@@ -103,7 +103,7 @@ if ($action == 'Update')
                 description = "'.$description.'"';
           }
 //        $display .= "Under normal conditions, we would now do this:<br><pre>$query</pre>";
-        $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 759321 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 759321 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 
         // Do something here to close the modal
         $modal_action = 'reload_parent()';
@@ -148,8 +148,8 @@ elseif ($action == 'edit' && $account_id > 0)
             '.NEW_TABLE_ACCOUNTS.'
           WHERE
             account_id = '.$account_id;
-        $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 675293 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        $row = mysql_fetch_array($result);
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 675293 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
       }
     $display .= $error_message.'
       <div id="edit_account">

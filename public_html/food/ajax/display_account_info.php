@@ -5,13 +5,14 @@ valid_auth('member_admin,site_admin,cashier');
 
 //$_POST = $_GET; // For debugging queries
 
-$account_key = isset($_POST['account_key']) ? mysql_real_escape_string ($_POST['account_key']) : '';
-$account_type = isset($_POST['account_type']) ? mysql_real_escape_string ($_POST['account_type']) : '';
-$data_page = isset($_POST['data_page']) ? mysql_real_escape_string ($_POST['data_page']) : 1;
-$per_page = isset($_POST['per_page']) ? mysql_real_escape_string ($_POST['per_page']) : PER_PAGE;
+$account_key = isset($_POST['account_key']) ? mysqli_real_escape_string ($connection, $_POST['account_key']) : '';
+$account_type = isset($_POST['account_type']) ? mysqli_real_escape_string ($connection, $_POST['account_type']) : '';
+$data_page = isset($_POST['data_page']) ? mysqli_real_escape_string ($connection, $_POST['data_page']) : 1;
+$per_page = isset($_POST['per_page']) ? mysqli_real_escape_string ($connection, $_POST['per_page']) : PER_PAGE;
+
 
 $limit_begin_row = ($data_page - 1) * $per_page;
-$limit_query = mysql_real_escape_string (floor ($limit_begin_row).", ".floor ($per_page));
+$limit_query = mysqli_real_escape_string ($connection, floor ($limit_begin_row).", ".floor ($per_page));
 
 // echo "<pre>".print_r($_POST, true)."</pre>";
 
@@ -237,41 +238,41 @@ else
 
 
 // Get the actual transactions
-$result_data = mysql_query($query_data, $connection) or die(debug_print ("ERROR: 567289 ", array ($query_data,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result_data = mysqli_query ($connection, $query_data) or die (debug_print ("ERROR: 567289 ", array ($query_data, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 
 // Get the total number of rows (for pagination) -- not counting the LIMIT condition
 $query_found_rows = '
   SELECT
     FOUND_ROWS() AS found_rows';
-$result_found_rows = @mysql_query($query_found_rows, $connection) or die(debug_print ("ERROR: 759323 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$row_found_rows = mysql_fetch_array($result_found_rows);
+$result_found_rows = @mysqli_query ($connection, $query_found_rows) or die (debug_print ("ERROR: 229323 ", array ($query_found_rows, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$row_found_rows = mysqli_fetch_array ($result_found_rows, MYSQLI_ASSOC);
 $found_rows = $row_found_rows['found_rows'];
 $found_pages = ceil ($found_rows / $per_page);
 
 // Apply the limit to get the running total
-$limit_running_total = 'LIMIT '.mysql_real_escape_string (floor ($limit_begin_row).', '.floor ($found_rows - $limit_begin_row));
+$limit_running_total = 'LIMIT '.mysqli_real_escape_string ($connection, floor ($limit_begin_row).', '.floor ($found_rows - $limit_begin_row));
 $query_balance_unlimited = str_replace('LIMIT', '', $query_balance);
 $query_balance_unlimited = str_replace('CONSTRAINT', $constrain_accounting_datetime, $query_balance_unlimited);
 $query_balance_limited = str_replace('LIMIT', $limit_running_total, $query_balance);
 $query_balance_limited = str_replace('CONSTRAINT', '', $query_balance_limited);
 
 // Get the running total for all transactions
-$result_balance_unlimited = mysql_query($query_balance_unlimited, $connection) or die(debug_print ("ERROR: 567392 ", array ($query_balance_unlimited,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-if ($row_balance_unlimited = mysql_fetch_array($result_balance_unlimited))
+$result_balance_unlimited = mysqli_query($connection, $query_balance_unlimited) or die (debug_print ("ERROR: 767392 ", array ($query_balance_unlimited, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+if ($row_balance_unlimited = mysqli_fetch_array($connection, $result_balance_unlimited))
   {
     $running_total_unlimited = $row_balance_unlimited['running_total'];
   }
 
 // Get the running total for this set of transactions
-$result_balance_limited = mysql_query($query_balance_limited, $connection) or die(debug_print ("ERROR: 567392 ", array ($query_balance_limited,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-if ($row_balance_limited = mysql_fetch_array($result_balance_limited))
+$result_balance_limited = mysqli_query($connection, $query_balance_limited) or die (debug_print ("ERROR: 567592 ", array ($query_balance_limited, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+if ($row_balance_limited = mysqli_fetch_array($result_balance_limited, MYSQLI_ASSOC))
   {
     $running_total_limited = $row_balance_limited['running_total'];
   }
 
 $running_total = $running_total_limited - $running_total_unlimited;
 
-while ($row = mysql_fetch_array($result_data))
+while ($row = mysqli_fetch_array($result_data, MYSQLI_ASSOC))
   {
     // Keep the desired account information on the "source" side...
     $row['delivery_id'] = $row['delivery_id_source'];
@@ -356,5 +357,3 @@ while ($row = mysql_fetch_array($result_data))
 $ledger_data['maximum_data_page'] = $found_pages;
 $ledger_data['data_page'] = $data_page;
 echo json_encode ($ledger_data);
-
-?>

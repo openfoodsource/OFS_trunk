@@ -48,15 +48,15 @@ $query = '
     '.TABLE_INVENTORY.'
   LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(inventory_id)
   WHERE
-    '.TABLE_INVENTORY.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"'.$and_where.'
+    '.TABLE_INVENTORY.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"'.$and_where.'
   ORDER BY
     description,
     product_id,
     product_version';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 286875 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 286875 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $inventory_array = array();
 $update_query = array();
-while ( $row = mysql_fetch_object($result) )
+while ( $row = mysqli_fetch_object ($result) )
   {
     $inventory_id = $row->inventory_id;
     // If we received new post data, then first do any updates
@@ -69,7 +69,7 @@ while ( $row = mysql_fetch_object($result) )
               UPDATE
                 '.TABLE_INVENTORY.'
               SET
-                description = "'.mysql_real_escape_string($_POST['description-'.$inventory_id]).'"
+                description = "'.mysqli_real_escape_string ($connection, $_POST['description-'.$inventory_id]).'"
               WHERE
                 inventory_id = '.$inventory_id);
             $row->description = $_POST['description-'.$inventory_id];
@@ -82,7 +82,7 @@ while ( $row = mysql_fetch_object($result) )
               UPDATE
                 '.TABLE_INVENTORY.'
               SET
-                quantity = "'.mysql_real_escape_string(floor ($_POST['quantity-'.$inventory_id])).'"
+                quantity = "'.mysqli_real_escape_string ($connection, floor ($_POST['quantity-'.$inventory_id])).'"
               WHERE
                 inventory_id = '.$inventory_id);
             $row->quantity = $_POST['quantity-'.$inventory_id];
@@ -151,11 +151,11 @@ foreach (array('A', 'B', 'C') as $new_row)
           INSERT INTO
             '.TABLE_INVENTORY.'
           SET
-            producer_id = "'.mysql_real_escape_string($producer_id).'",
-            description = "'.mysql_real_escape_string($_POST['description-'.$new_row]).'",
-            quantity = "'.mysql_real_escape_string($_POST['quantity-'.$new_row]).'"';
-        $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 586385 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        $inventory_id = mysql_insert_id ();
+            producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'",
+            description = "'.mysqli_real_escape_string ($connection, $_POST['description-'.$new_row]).'",
+            quantity = "'.mysqli_real_escape_string ($connection, $_POST['quantity-'.$new_row]).'"';
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 586385 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $inventory_id = mysqli_insert_id ($connection);
         // Now that we have any new values, set the arrays we will use later to populate the form
         $inventory_array[$inventory_id]['description'] = $_POST['description-'.$new_row];
         $inventory_array[$inventory_id]['quantity'] = $_POST['quantity-'.$new_row];
@@ -203,7 +203,7 @@ $inventory_array = multisort ($inventory_array, 'description', 'description', 'q
 // Post the update queries to the database
 foreach (array_values ($update_query) as $query)
   {
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 155863 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 155863 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 
 // Show the inventory-control form

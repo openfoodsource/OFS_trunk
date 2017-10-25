@@ -84,4 +84,3 @@ function get_ledger_row_markup ($transaction_data, $running_total, $row_type)
       </tr>';
     return ($response);
   }
-?>

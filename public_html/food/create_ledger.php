@@ -36,13 +36,13 @@ if (isset ($_REQUEST['ajax']) && $_REQUEST['ajax'] == 'yes')
           LEFT JOIN
             '.NEW_TABLE_BASKET_ITEMS.' ON '.NEW_TABLE_BASKETS.'.basket_id = '.NEW_TABLE_BASKET_ITEMS.'.basket_id
           WHERE
-            '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
+            '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
           GROUP BY
             '.NEW_TABLE_BASKET_ITEMS.'.basket_id
           ORDER BY
             '.NEW_TABLE_BASKETS.'.basket_id';
-        $result= mysql_query("$query") or die("Error: 678574" . mysql_error());
-        while($row = mysql_fetch_object($result))
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 678574 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        while($row = mysqli_fetch_object ($result))
           {
             $ajax_content .= '
           <li id="producer_id:'.$row->basket_id.'" class="basket_incomplete" onClick="window.open(\'validate_customer_basket_items.php?ajax=yes&process=view_invoice&basket_id='.$row->basket_id.'\',\'external\')"><div class="p_list_pid">'.$row->basket_id.'</div><div class="p_list_name">Member '.$row->member_id.' ['.$row->quantity.' Items]</div></li>';
@@ -108,8 +108,8 @@ $query = '
     '.TABLE_ORDER_CYCLES.'
   RIGHT JOIN '.NEW_TABLE_BASKETS.' ON '.TABLE_ORDER_CYCLES.'.delivery_id = '.NEW_TABLE_BASKETS.'.delivery_id
   GROUP BY '.NEW_TABLE_BASKETS.'.delivery_id';
-$result= mysql_query($query) or die("Error: 899032" . mysql_error());
-while($row = mysql_fetch_object($result))
+$result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 890032 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while($row = mysqli_fetch_object ($result))
   {
     $content .= '          <li id="delivery_id:'.$row->delivery_id.'" class="del_incomplete"><div class="c_list_cid">'.$row->delivery_id.'</div><div class="c_list_name">'.$row->delivery_date.' ['.$row->quantity.' Orders]</div></li>';
   }

@@ -16,9 +16,9 @@ $sql = '
     membership_date DESC,
     last_name ASC,
     first_name ASC';
-$rs = @mysql_query($sql, $connection) or die("Couldn't execute category query.");
-$num = mysql_numrows($rs);
-while ( $row = mysql_fetch_array($rs) )
+$rs = @mysqli_query ($connection, $sql) or die (debug_print ("ERROR: 193574 ", array ($sql, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$num = mysqli_num_rows ($rs);
+while ( $row = mysqli_fetch_array ($rs, MYSQLI_ASSOC) )
   { 
     $member_id = $row['member_id'];
     $first_name = $row['first_name'];
@@ -72,4 +72,3 @@ echo '
   '.$content_list.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-

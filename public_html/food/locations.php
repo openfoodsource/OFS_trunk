@@ -21,8 +21,8 @@ $sqlr = '
     '.TABLE_ROUTE.'
   ORDER BY
     route_name ASC';
-$rsr = @mysql_query($sqlr,$connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-while ( $row = mysql_fetch_array($rsr) )
+$rsr = @mysqli_query ($connection, $sqlr) or die (debug_print ("ERROR: 837892 ", array ($sqlr, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_array ($rsr, MYSQLI_ASSOC) )
   {
     $route_id = $row['route_id'];
     $route_name = $row['route_name'];
@@ -41,16 +41,16 @@ while ( $row = mysql_fetch_array($rsr) )
         '.NEW_TABLE_SITES.'
       LEFT JOIN '.TABLE_HUBS.' USING(hub_id)
       WHERE
-        route_id = '.mysql_real_escape_string ($route_id).'
+        route_id = '.mysqli_real_escape_string ($connection, $route_id).'
         AND inactive != 1
         AND (site_type = "customer"'.$select_institution_sites.')
       GROUP BY
         site_id
       ORDER BY
         site_long ASC';
-    $rsr2 = @mysql_query($sqlr2,$connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-    $num_del = mysql_numrows($rsr2);
-    while ( $row = mysql_fetch_array($rsr2) )
+    $rsr2 = @mysqli_query ($connection, $sqlr2) or die (debug_print ("ERROR: 397419 ", array ($sqlr2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $num_del = mysqli_num_rows ($rsr2);
+    while ( $row = mysqli_fetch_array ($rsr2, MYSQLI_ASSOC) )
       {
         $site_id = $row['site_id'];
         $site_long = $row['site_long'];

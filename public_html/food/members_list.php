@@ -20,9 +20,9 @@ $sql = '
     last_name ASC,
     first_name ASC';
 
-$rs = @mysql_query($sql, $connection) or die(debug_print ("ERROR: 785033 ", array ($sql,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$num = mysql_numrows($rs);
-while ( $row = mysql_fetch_array($rs) )
+$rs = @mysqli_query ($connection, $sql) or die (debug_print ("ERROR: 715733 ", array ($sql, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$num = mysqli_num_rows ($rs);
+while ( $row = mysqli_fetch_array ($rs, MYSQLI_ASSOC) )
   {
     $member_id = $row['member_id'];
     $first_name = $row['first_name'];
@@ -53,11 +53,11 @@ while ( $row = mysql_fetch_array($rs) )
       FROM
         '.NEW_TABLE_BASKETS.'
       WHERE
-        '.NEW_TABLE_BASKETS.'.member_id = "'.mysql_real_escape_string ($member_id).'"
-        AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"';
-    $rs2 = @mysql_query($sql2, $connection) or die(debug_print ("ERROR: 785033 ", array ($sql2,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $num2 = mysql_numrows($rs2);
-    while ( $row = mysql_fetch_array($rs2) )
+        '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"
+        AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"';
+    $rs2 = @mysqli_query ($connection, $sql2) or die (debug_print ("ERROR: 795273 ", array ($sql2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $num2 = mysqli_num_rows ($rs2);
+    while ( $row = mysqli_fetch_array ($rs2, MYSQLI_ASSOC) )
       {
         $basket_id = $row['basket_id'];
       }

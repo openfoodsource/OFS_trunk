@@ -38,9 +38,9 @@ $query = '
       FROM
         '.NEW_TABLE_BASKET_ITEMS.'
       WHERE
-        basket_id = "'.mysql_real_escape_string ($basket_id).'"
-        AND product_id = "'.mysql_real_escape_string ($product_id).'"
-        AND product_version = "'.mysql_real_escape_string ($product_version).'"
+        basket_id = "'.mysqli_real_escape_string ($connection, $basket_id).'"
+        AND product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"
+        AND product_version = "'.mysqli_real_escape_string ($connection, $product_version).'"
     ) AS bpid_quantity,
     '.NEW_TABLE_PRODUCTS.'.inventory_id,
     '.NEW_TABLE_PRODUCTS.'.inventory_pull,
@@ -49,11 +49,11 @@ $query = '
     '.NEW_TABLE_PRODUCTS.'
   LEFT JOIN '.TABLE_INVENTORY.' ON '.TABLE_INVENTORY.'.inventory_id = '.NEW_TABLE_PRODUCTS.'.inventory_id
   WHERE
-    '.NEW_TABLE_PRODUCTS.'.product_id = "'.mysql_real_escape_string ($product_id).'"
-    AND '.NEW_TABLE_PRODUCTS.'.product_version = "'.mysql_real_escape_string ($product_version).'"';
+    '.NEW_TABLE_PRODUCTS.'.product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"
+    AND '.NEW_TABLE_PRODUCTS.'.product_version = "'.mysqli_real_escape_string ($connection, $product_version).'"';
 
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 738102 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-if ( $row = mysql_fetch_object($result) )
+$result = @mysqli_query($connection, $query) or die (debug_print ("ERROR: 738602 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+if ( $row = mysqli_fetch_object ($result) )
   {
     list ($bpid,$basket_quantity) = explode(':', $row->bpid_quantity);
 //    $basket_quantity = $row->quantity;
@@ -70,7 +70,7 @@ if (! $delivery_id ||
     // ! $product_version ||
     ! $action)
   {
-    die(debug_print ("ERROR: 545721 ", 'Call without necessary information.', basename(__FILE__).' LINE '.__LINE__));
+    die(debug_print ("ERROR: 549721 ", 'Call without necessary information.', basename(__FILE__).' LINE '.__LINE__));
   }
 if ($action == "add")
   {
@@ -143,7 +143,7 @@ if ($add_basket_item == true)
         out_of_stock,
         date_added )
       SELECT
-        "'.mysql_real_escape_string ($basket_id).'",
+        "'.mysqli_real_escape_string ($connection, $basket_id).'",
         '.NEW_TABLE_PRODUCTS.'.product_id,
         '.NEW_TABLE_PRODUCTS.'.product_version,
         "1",
@@ -159,10 +159,10 @@ if ($add_basket_item == true)
       LEFT JOIN
         '.TABLE_PRODUCER.' USING(producer_id)
       WHERE
-        product_id = "'.mysql_real_escape_string ($product_id).'"
-        AND product_version = "'.mysql_real_escape_string ($product_version).'"';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 155816 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $bpid= mysql_insert_id();
+        product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"
+        AND product_version = "'.mysqli_real_escape_string ($connection, $product_version).'"';
+    $result = @mysqli_query($connection, $query) or die (debug_print ("ERROR: 955816 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $bpid= mysqli_insert_id($connection);
   }
 // Then update the quantity, if needed
 if ($update_basket_item == true)
@@ -171,12 +171,12 @@ if ($update_basket_item == true)
       UPDATE
         '.NEW_TABLE_BASKET_ITEMS.'
       SET
-        quantity = "'.mysql_real_escape_string ($basket_quantity).'"
+        quantity = "'.mysqli_real_escape_string ($connection, $basket_quantity).'"
       WHERE
-        basket_id = "'.mysql_real_escape_string ($basket_id).'"
-        AND product_id = "'.mysql_real_escape_string ($product_id).'"
-        AND product_version = "'.mysql_real_escape_string ($product_version).'"';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 731034 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        basket_id = "'.mysqli_real_escape_string ($connection, $basket_id).'"
+        AND product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"
+        AND product_version = "'.mysqli_real_escape_string ($connection, $product_version).'"';
+    $result = @mysqli_query($connection, $query) or die (debug_print ("ERROR: 738034 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 if ($inventory_id && ($action == 'add' || $action == 'sub'))
   {
@@ -192,10 +192,10 @@ if ($inventory_id && ($action == 'add' || $action == 'sub'))
       UPDATE
         '.TABLE_INVENTORY.'
       SET
-        quantity = quantity '.$inventory_function.' '.mysql_real_escape_string ($inventory_pull).'
+        quantity = quantity '.$inventory_function.' '.mysqli_real_escape_string ($connection, $inventory_pull).'
       WHERE
-        inventory_id = '.mysql_real_escape_string ($inventory_id);
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 066934 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        inventory_id = '.mysqli_real_escape_string ($connection, $inventory_id);
+    $result = @mysqli_query($connection, $query) or die (debug_print ("ERROR: 866934 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 if ($remove_basket_item == true)
   {
@@ -204,10 +204,10 @@ if ($remove_basket_item == true)
       DELETE FROM
         '.NEW_TABLE_BASKET_ITEMS.'
       WHERE
-        basket_id = "'.mysql_real_escape_string ($basket_id).'"
-        AND product_id = "'.mysql_real_escape_string ($product_id).'"
-        AND product_version = "'.mysql_real_escape_string ($product_version).'"';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 267490 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        basket_id = "'.mysqli_real_escape_string ($connection, $basket_id).'"
+        AND product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"
+        AND product_version = "'.mysqli_real_escape_string ($connection, $product_version).'"';
+    $result = @mysqli_query($connection, $query) or die (debug_print ("ERROR: 263490 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 // Handle messages
 // First remove all messages, no matter what. Without this process, additional messages
@@ -218,29 +218,29 @@ if (isset ($bpid) && $bpid != 0)
       DELETE FROM
         '.NEW_TABLE_MESSAGES.'
       WHERE
-        referenced_key1 = '.mysql_real_escape_string($bpid).'
+        referenced_key1 = '.mysqli_real_escape_string ($connection, $bpid).'
         AND message_type_id =
           (
             SELECT message_type_id
             FROM '.NEW_TABLE_MESSAGE_TYPES.'
             WHERE description = "customer notes to producer"
           )';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 285097 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $result = @mysqli_query($connection, $query) or die (debug_print ("ERROR: 289097 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     // Now post the message back, as needed
     if ($message != '' && $remove_basket_item != true)
       { // Update message
         $query = '
           INSERT INTO '.NEW_TABLE_MESSAGES.'
           SET
-            message = "'.mysql_real_escape_string($message).'",
+            message = "'.mysqli_real_escape_string ($connection, $message).'",
             message_type_id = 
               (
                 SELECT message_type_id
                 FROM '.NEW_TABLE_MESSAGE_TYPES.'
                 WHERE description = "customer notes to producer"
               ),
-            referenced_key1 = "'.mysql_real_escape_string($bpid).'"';
-        $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 925223 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+            referenced_key1 = "'.mysqli_real_escape_string ($connection, $bpid).'"';
+        $result = @mysqli_query($connection, $query) or die (debug_print ("ERROR: 921223 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
       }
   }
 if ($action == 'checkout')
@@ -272,4 +272,3 @@ if ($non_ajax_query == false)
   {
     echo number_format($basket_quantity, 0).':'.number_format($inventory_quantity, 0).':'.number_format($basket_item_info['checked_out'], 0).':'.$alert;
   }
-?>

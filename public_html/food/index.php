@@ -56,13 +56,13 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
           FROM
             '.TABLE_MEMBER.'
           WHERE
-            username = "'.mysql_real_escape_string($_POST['username']).'"
+            username = "'.mysqli_real_escape_string ($connection, $_POST['username']).'"
             AND
-              (password = MD5("'.mysql_real_escape_string($_POST['password']).'")
-              OR "'.MD5_MASTER_PASSWORD.'" = MD5("'.mysql_real_escape_string($_POST['password']).'"))
+              (password = MD5("'.mysqli_real_escape_string ($connection, $_POST['password']).'")
+              OR "'.MD5_MASTER_PASSWORD.'" = MD5("'.mysqli_real_escape_string ($connection, $_POST['password']).'"))
           LIMIT 1';
-        $result_login = mysql_query($query_login, $connection) or die(debug_print ("ERROR: 703410 ", array ($query_login,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        if ($row_login = mysql_fetch_array($result_login))
+        $result_login = mysqli_query ($connection, $query_login) or die (debug_print ("ERROR: 703410 ", array ($query_login, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if ($row_login = mysqli_fetch_array ($result_login, MYSQLI_ASSOC))
           {
             $member_id = $row_login['member_id'];
             // Check for a valid login
@@ -94,9 +94,9 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
                     '.TABLE_MEMBER.'
                   LEFT JOIN '.TABLE_PRODUCER.' USING(member_id)
                   WHERE
-                    member_id = "'.mysql_real_escape_string ($member_id).'"';
-                $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 789089 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-                while ( $row = mysql_fetch_array($result) )
+                    member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"';
+                $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 789089 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+                while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
                   {
                     $_SESSION['member_id'] = $row['member_id'];
                     $_SESSION['producer_id_you'] = $row['producer_id'];

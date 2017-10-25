@@ -118,10 +118,10 @@ if ($_POST['action'] == 'Submit')
         *
       FROM
         '.TABLE_MEMBER.'
-      WHERE username = "'.mysql_real_escape_string ($username).'"';
-    $sql =  @mysql_query($query, $connection) or die("You found a bug. <b>Error:</b> Check for existing member query " . mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+      WHERE username = "'.mysqli_real_escape_string ($connection, $username).'"';
+    $sql =  @mysqli_query($connection, $query) or die (debug_print ("ERROR: 863430 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 
-    if ($row = mysql_fetch_object($sql)) array_push ($error_array, 'The username "'.$username.'" is already in use');
+    if ($row = mysqli_fetch_object($sql)) array_push ($error_array, 'The username "'.$username.'" is already in use');
 
     if (!$username) array_push ($error_array, 'Choose a unique username');
 
@@ -161,9 +161,9 @@ if (!$_POST['action'] && $_SESSION['member_id'])
       FROM
         '.TABLE_MEMBER.'
       WHERE
-        member_id = "'.mysql_real_escape_string ($_SESSION['member_id']).'"';
-    $sql =  @mysql_query($query, $connection) or die(debug_print ("ERROR: 863430 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ($row = mysql_fetch_object($sql))
+        member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"';
+    $sql =  @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 742813 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_object ($sql))
       {
         $last_name = $row->last_name;
         $first_name = $row->first_name;
@@ -216,8 +216,8 @@ $query = '
   WHERE
     enabled_type = 1
     OR enabled_type = 3';
-$sql =  @mysql_query($query, $connection) or die(debug_print ("ERROR: 683642 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ($row = mysql_fetch_object($sql))
+$sql =  @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 683642 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ($row = mysqli_fetch_object ($sql))
   {
     $selected = '';
     if ($membership_type_id == $row->membership_type_id)
@@ -241,8 +241,8 @@ $query = '
   FROM
     '.TABLE_HOW_HEARD.'
   WHERE 1';
-$sql =  @mysql_query($query, $connection) or die(debug_print ("ERROR: 650242 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ($row = mysql_fetch_object($sql))
+$sql =  @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 650242 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ($row = mysqli_fetch_object ($sql))
   {
     $selected = '';
     if ($how_heard_id == $row->how_heard_id)
@@ -598,8 +598,8 @@ if (count ($error_array) == 0 && $_POST['action'] == 'Submit') // For new member
           FROM '.TABLE_MEMBER.' AS l
           LEFT OUTER JOIN '.TABLE_MEMBER.' AS r ON l.member_id + 1 = r.member_id
           WHERE r.member_id IS NULL';
-        $sql = @mysql_query($query, $connection) or die(debug_print ("ERROR: 543954 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        if ($row = mysql_fetch_object($sql))
+        $sql = @mysqli_query($connection, $query) or die (debug_print ("ERROR: 543954 ", array ($query, mysqli_error($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if ($row = mysqli_fetch_object($sql))
           {
             $set_member_id = '
               member_id = "'.$row->empty_member_id.'",';
@@ -616,9 +616,9 @@ if (count ($error_array) == 0 && $_POST['action'] == 'Submit') // For new member
           customer_fee_percent
         FROM
           '.TABLE_MEMBERSHIP_TYPES.'
-        WHERE membership_type_id = "'.mysql_real_escape_string ($membership_type_id).'"';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 804923 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row = mysql_fetch_object($result))
+        WHERE membership_type_id = "'.mysqli_real_escape_string ($connection, $membership_type_id).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 804923 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row = mysqli_fetch_object ($result))
       {
         $pending = $row->pending;
         $initial_cost = $row->initial_cost;
@@ -651,43 +651,43 @@ if (count ($error_array) == 0 && $_POST['action'] == 'Submit') // For new member
         '.TABLE_MEMBER.'
       SET'.
         $set_member_id.'
-        pending = "'.mysql_real_escape_string ($pending).'",
-        auth_type = "'.mysql_real_escape_string ($auth_type).'",
-        membership_type_id = "'.mysql_real_escape_string ($membership_type_id).'",
-        customer_fee_percent = "'.mysql_real_escape_string ($customer_fee_percent).'",
+        pending = "'.mysqli_real_escape_string ($connection, $pending).'",
+        auth_type = "'.mysqli_real_escape_string ($connection, $auth_type).'",
+        membership_type_id = "'.mysqli_real_escape_string ($connection, $membership_type_id).'",
+        customer_fee_percent = "'.mysqli_real_escape_string ($connection, $customer_fee_percent).'",
         membership_date = NOW(),
         last_renewal_date = NOW(),
-        username = "'.mysql_real_escape_string ($username).'",
-        password = md5("'.mysql_real_escape_string ($password1).'"),
-        last_name = "'.mysql_real_escape_string ($last_name).'",
-        first_name = "'.mysql_real_escape_string ($first_name).'",
-        last_name_2 = "'.mysql_real_escape_string ($last_name_2).'",
-        first_name_2 = "'.mysql_real_escape_string ($first_name_2).'",
-        preferred_name = "'.mysql_real_escape_string ($preferred_name).'",
-        business_name = "'.mysql_real_escape_string ($business_name).'",
-        address_line1 = "'.mysql_real_escape_string ($address_line1).'",
-        address_line2 = "'.mysql_real_escape_string ($address_line2).'",
-        city = "'.mysql_real_escape_string ($city).'",
-        state = "'.mysql_real_escape_string ($state).'",
-        zip = "'.mysql_real_escape_string ($zip).'",
-        county = "'.mysql_real_escape_string ($county).'",
-        work_address_line1 = "'.mysql_real_escape_string ($work_address_line1).'",
-        work_address_line2 = "'.mysql_real_escape_string ($work_address_line2).'",
-        work_city = "'.mysql_real_escape_string ($work_city).'",
-        work_state = "'.mysql_real_escape_string ($work_state).'",
-        work_zip = "'.mysql_real_escape_string ($work_zip).'",
-        home_phone = "'.mysql_real_escape_string ($home_phone).'",
-        work_phone = "'.mysql_real_escape_string ($work_phone).'",
-        mobile_phone = "'.mysql_real_escape_string ($mobile_phone).'",
-        fax = "'.mysql_real_escape_string ($fax).'",
-        toll_free = "'.mysql_real_escape_string ($toll_free).'",
-        email_address = "'.mysql_real_escape_string ($email_address).'",
-        email_address_2 = "'.mysql_real_escape_string ($email_address_2).'",
-        home_page = "'.mysql_real_escape_string ($home_page).'",
-        how_heard_id = "'.mysql_real_escape_string ($how_heard_id).'",
-        no_postal_mail = "'.mysql_real_escape_string ($no_postal_mail).'"';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 793032 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $member_id = mysql_insert_id();
+        username = "'.mysqli_real_escape_string ($connection, $username).'",
+        password = md5("'.mysqli_real_escape_string ($connection, $password1).'"),
+        last_name = "'.mysqli_real_escape_string ($connection, $last_name).'",
+        first_name = "'.mysqli_real_escape_string ($connection, $first_name).'",
+        last_name_2 = "'.mysqli_real_escape_string ($connection, $last_name_2).'",
+        first_name_2 = "'.mysqli_real_escape_string ($connection, $first_name_2).'",
+        preferred_name = "'.mysqli_real_escape_string ($connection, $preferred_name).'",
+        business_name = "'.mysqli_real_escape_string ($connection, $business_name).'",
+        address_line1 = "'.mysqli_real_escape_string ($connection, $address_line1).'",
+        address_line2 = "'.mysqli_real_escape_string ($connection, $address_line2).'",
+        city = "'.mysqli_real_escape_string ($connection, $city).'",
+        state = "'.mysqli_real_escape_string ($connection, $state).'",
+        zip = "'.mysqli_real_escape_string ($connection, $zip).'",
+        county = "'.mysqli_real_escape_string ($connection, $county).'",
+        work_address_line1 = "'.mysqli_real_escape_string ($connection, $work_address_line1).'",
+        work_address_line2 = "'.mysqli_real_escape_string ($connection, $work_address_line2).'",
+        work_city = "'.mysqli_real_escape_string ($connection, $work_city).'",
+        work_state = "'.mysqli_real_escape_string ($connection, $work_state).'",
+        work_zip = "'.mysqli_real_escape_string ($connection, $work_zip).'",
+        home_phone = "'.mysqli_real_escape_string ($connection, $home_phone).'",
+        work_phone = "'.mysqli_real_escape_string ($connection, $work_phone).'",
+        mobile_phone = "'.mysqli_real_escape_string ($connection, $mobile_phone).'",
+        fax = "'.mysqli_real_escape_string ($connection, $fax).'",
+        toll_free = "'.mysqli_real_escape_string ($connection, $toll_free).'",
+        email_address = "'.mysqli_real_escape_string ($connection, $email_address).'",
+        email_address_2 = "'.mysqli_real_escape_string ($connection, $email_address_2).'",
+        home_page = "'.mysqli_real_escape_string ($connection, $home_page).'",
+        how_heard_id = "'.mysqli_real_escape_string ($connection, $how_heard_id).'",
+        no_postal_mail = "'.mysqli_real_escape_string ($connection, $no_postal_mail).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 793032 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $member_id = mysqli_insert_id($connection);
     include_once ('func.update_ledger.php');
     // Post the membership receivable
     $transaction_row = add_to_ledger (array (
@@ -780,42 +780,42 @@ elseif (count ($error_array) == 0 && $_POST['action'] == 'Update') // For existi
       UPDATE
         '.TABLE_MEMBER.'
       SET
-        last_name = "'.mysql_real_escape_string ($last_name).'",
-        first_name = "'.mysql_real_escape_string ($first_name).'",
-        last_name_2 = "'.mysql_real_escape_string ($last_name_2).'",
-        first_name_2 = "'.mysql_real_escape_string ($first_name_2).'",
-        preferred_name = "'.mysql_real_escape_string ($preferred_name).'",
-        business_name = "'.mysql_real_escape_string ($business_name).'",
-        address_line1 = "'.mysql_real_escape_string ($address_line1).'",
-        address_line2 = "'.mysql_real_escape_string ($address_line2).'",
-        city = "'.mysql_real_escape_string ($city).'",
-        state = "'.mysql_real_escape_string ($state).'",
-        zip = "'.mysql_real_escape_string ($zip).'",
-        county = "'.mysql_real_escape_string ($county).'",
-        work_address_line1 = "'.mysql_real_escape_string ($work_address_line1).'",
-        work_address_line2 = "'.mysql_real_escape_string ($work_address_line2).'",
-        work_city = "'.mysql_real_escape_string ($work_city).'",
-        work_state = "'.mysql_real_escape_string ($work_state).'",
-        work_zip = "'.mysql_real_escape_string ($work_zip).'",
-        home_phone = "'.mysql_real_escape_string ($home_phone).'",
-        work_phone = "'.mysql_real_escape_string ($work_phone).'",
-        mobile_phone = "'.mysql_real_escape_string ($mobile_phone).'",
-        fax = "'.mysql_real_escape_string ($fax).'",
-        toll_free = "'.mysql_real_escape_string ($toll_free).'",
-        email_address = "'.mysql_real_escape_string ($email_address).'",
-        email_address_2 = "'.mysql_real_escape_string ($email_address_2).'",
-        home_page = "'.mysql_real_escape_string ($home_page).'",
-        no_postal_mail = "'.mysql_real_escape_string ($no_postal_mail).'"
+        last_name = "'.mysqli_real_escape_string ($connection, $last_name).'",
+        first_name = "'.mysqli_real_escape_string ($connection, $first_name).'",
+        last_name_2 = "'.mysqli_real_escape_string ($connection, $last_name_2).'",
+        first_name_2 = "'.mysqli_real_escape_string ($connection, $first_name_2).'",
+        preferred_name = "'.mysqli_real_escape_string ($connection, $preferred_name).'",
+        business_name = "'.mysqli_real_escape_string ($connection, $business_name).'",
+        address_line1 = "'.mysqli_real_escape_string ($connection, $address_line1).'",
+        address_line2 = "'.mysqli_real_escape_string ($connection, $address_line2).'",
+        city = "'.mysqli_real_escape_string ($connection, $city).'",
+        state = "'.mysqli_real_escape_string ($connection, $state).'",
+        zip = "'.mysqli_real_escape_string ($connection, $zip).'",
+        county = "'.mysqli_real_escape_string ($connection, $county).'",
+        work_address_line1 = "'.mysqli_real_escape_string ($connection, $work_address_line1).'",
+        work_address_line2 = "'.mysqli_real_escape_string ($connection, $work_address_line2).'",
+        work_city = "'.mysqli_real_escape_string ($connection, $work_city).'",
+        work_state = "'.mysqli_real_escape_string ($connection, $work_state).'",
+        work_zip = "'.mysqli_real_escape_string ($connection, $work_zip).'",
+        home_phone = "'.mysqli_real_escape_string ($connection, $home_phone).'",
+        work_phone = "'.mysqli_real_escape_string ($connection, $work_phone).'",
+        mobile_phone = "'.mysqli_real_escape_string ($connection, $mobile_phone).'",
+        fax = "'.mysqli_real_escape_string ($connection, $fax).'",
+        toll_free = "'.mysqli_real_escape_string ($connection, $toll_free).'",
+        email_address = "'.mysqli_real_escape_string ($connection, $email_address).'",
+        email_address_2 = "'.mysqli_real_escape_string ($connection, $email_address_2).'",
+        home_page = "'.mysqli_real_escape_string ($connection, $home_page).'",
+        no_postal_mail = "'.mysqli_real_escape_string ($connection, $no_postal_mail).'"
       WHERE
-        member_id = "'.mysql_real_escape_string ($_SESSION['member_id']).'"';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 673022 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 673022 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $display_form_message = '
       <p>Your membership information has been successfully updated.<br><br></p>';
   }
 
 if ($producer == 'yes' && count ($error_array) == 0)
   {
-    // We already have the member_id from the mysql_insert_id
+    // We already have the member_id from the mysqli_insert_id
     $_SESSION['new_member_id'] = $member_id;
     $_SESSION['new_business_name'] = $business_name;
     $_SESSION['new_website'] = $home_page;

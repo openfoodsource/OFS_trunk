@@ -386,5 +386,4 @@ function show_listing_row($data, $row_type)
           break;
       }
     return $row_content;
-  };
-?>
+  }

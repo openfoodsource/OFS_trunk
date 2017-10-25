@@ -133,10 +133,10 @@ if ($_POST['action'] == 'Submit' || $_POST['action'] == 'Update' || ($producer_i
               FROM
                 '.TABLE_PRODUCER.'
               WHERE
-                producer_link = "'.mysql_real_escape_string ($producer_link).'"
-                AND producer_id != "'.mysql_real_escape_string ($producer_id).'"';
-            $sql =  @mysql_query($query, $connection) or die(debug_print ("ERROR: 857403 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-            if ($row = mysql_fetch_object($sql))
+                producer_link = "'.mysqli_real_escape_string ($connection, $producer_link).'"
+                AND producer_id != "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+            $sql =  @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 857403 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            if ($row = mysqli_fetch_object ($sql))
               {
                 if ($row->count > 0)
                   {
@@ -207,9 +207,9 @@ if ($_POST['action'] == 'Submit' || $_POST['action'] == 'Update' || ($producer_i
             '.TABLE_PRODUCER.'
           JOIN '.TABLE_PRODUCER_REG.' ON '.TABLE_PRODUCER_REG.'.producer_id = '.TABLE_PRODUCER.'.producer_id
           WHERE
-            '.TABLE_PRODUCER.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"';
-        $sql =  @mysql_query($query, $connection) or die(debug_print ("ERROR: 762905 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        if ($row = mysql_fetch_object($sql))
+            '.TABLE_PRODUCER.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+        $sql =  @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 762905 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if ($row = mysqli_fetch_object ($sql))
           {
 /* Section I - Credentials and Privacy */
             $member_id = $row->member_id;
@@ -913,8 +913,8 @@ if (count ($error_array) == 0 && ($_POST['action'] == 'Submit' || $_POST['action
       SET
         auth_type = CONCAT_WS(",", auth_type, "producer")
       WHERE
-        member_id = "'.mysql_real_escape_string ($member_id).'"';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 760232 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 760232 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     // Do the database insert with the relevant data (producers table)
     if ($_POST['action'] == 'Submit')
       {
@@ -928,62 +928,62 @@ if (count ($error_array) == 0 && ($_POST['action'] == 'Submit' || $_POST['action
             producer_fee_percent = (
               SELECT producer_fee_percent
               FROM '.TABLE_MEMBERSHIP_TYPES.'
-              WHERE membership_type_id ="'.mysql_real_escape_string ($membership_type_id).'"),'.
+              WHERE membership_type_id ="'.mysqli_real_escape_string ($connection, $membership_type_id).'"),'.
          /* Section I */'
-            member_id = '.mysql_real_escape_string ($member_id).',
-            business_name = "'.mysql_real_escape_string ($business_name).'",
-            producer_link = "'.mysql_real_escape_string ($producer_link).'",
-            pub_address = "'.mysql_real_escape_string ($pub_address).'",
-            pub_email = "'.mysql_real_escape_string ($pub_email).'",
-            pub_email2 = "'.mysql_real_escape_string ($pub_email2).'",
-            pub_phoneh = "'.mysql_real_escape_string ($pub_phoneh).'",
-            pub_phonew = "'.mysql_real_escape_string ($pub_phonew).'",
-            pub_phonec = "'.mysql_real_escape_string ($pub_phonec).'",
-            pub_phonet = "'.mysql_real_escape_string ($pub_phonet).'",
-            pub_fax = "'.mysql_real_escape_string ($pub_fax).'",
-            pub_web = "'.mysql_real_escape_string ($pub_web).'",'.
+            member_id = '.mysqli_real_escape_string ($connection, $member_id).',
+            business_name = "'.mysqli_real_escape_string ($connection, $business_name).'",
+            producer_link = "'.mysqli_real_escape_string ($connection, $producer_link).'",
+            pub_address = "'.mysqli_real_escape_string ($connection, $pub_address).'",
+            pub_email = "'.mysqli_real_escape_string ($connection, $pub_email).'",
+            pub_email2 = "'.mysqli_real_escape_string ($connection, $pub_email2).'",
+            pub_phoneh = "'.mysqli_real_escape_string ($connection, $pub_phoneh).'",
+            pub_phonew = "'.mysqli_real_escape_string ($connection, $pub_phonew).'",
+            pub_phonec = "'.mysqli_real_escape_string ($connection, $pub_phonec).'",
+            pub_phonet = "'.mysqli_real_escape_string ($connection, $pub_phonet).'",
+            pub_fax = "'.mysqli_real_escape_string ($connection, $pub_fax).'",
+            pub_web = "'.mysqli_real_escape_string ($connection, $pub_web).'",'.
          /* Section II */'
-            producttypes = "'.mysql_real_escape_string ($producttypes).'",
-            about = "'.mysql_real_escape_string ($about).'",
-            ingredients = "'.mysql_real_escape_string ($ingredients).'",
-            general_practices = "'.mysql_real_escape_string ($general_practices).'",
-            additional = "'.mysql_real_escape_string ($additional).'",
-            highlights = "'.mysql_real_escape_string ($highlights).'",'.
+            producttypes = "'.mysqli_real_escape_string ($connection, $producttypes).'",
+            about = "'.mysqli_real_escape_string ($connection, $about).'",
+            ingredients = "'.mysqli_real_escape_string ($connection, $ingredients).'",
+            general_practices = "'.mysqli_real_escape_string ($connection, $general_practices).'",
+            additional = "'.mysqli_real_escape_string ($connection, $additional).'",
+            highlights = "'.mysqli_real_escape_string ($connection, $highlights).'",'.
          /* Section V */'
-            liability_statement = "'.mysql_real_escape_string ($liability_statement).'"';
+            liability_statement = "'.mysqli_real_escape_string ($connection, $liability_statement).'"';
         // Run the producers table insert query and get back the producer_id
-        $result = @mysql_query($query1, $connection) or die(debug_print ("ERROR: 574303 ", array ($query1,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        $producer_id = mysql_insert_id();
+        $result = @mysqli_query ($connection, $query1) or die (debug_print ("ERROR: 574303 ", array ($query1, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $producer_id = mysqli_insert_id ($connection);
         // Set the producers_registration table query
         $query2 = '
           INSERT INTO
             '.TABLE_PRODUCER_REG.'
           SET'.
         /* Section I */'
-            member_id = '.mysql_real_escape_string ($member_id).',
-            producer_id = "'.mysql_real_escape_string ($producer_id).'",
-            business_name = "'.mysql_real_escape_string ($business_name).'",
-            website = "'.mysql_real_escape_string ($website).'",
+            member_id = '.mysqli_real_escape_string ($connection, $member_id).',
+            producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'",
+            business_name = "'.mysqli_real_escape_string ($connection, $business_name).'",
+            website = "'.mysqli_real_escape_string ($connection, $website).'",
             date_added = now(),'.
         /* Section III */'
-            products = "'.mysql_real_escape_string ($products).'",
-            practices = "'.mysql_real_escape_string ($practices).'",
-            pest_management = "'.mysql_real_escape_string ($pest_management).'",
-            productivity_management = "'.mysql_real_escape_string ($productivity_management).'",
-            feeding_practices = "'.mysql_real_escape_string ($feeding_practices).'",
-            soil_management = "'.mysql_real_escape_string ($soil_management).'",
-            water_management = "'.mysql_real_escape_string ($water_management).'",
-            land_practices = "'.mysql_real_escape_string ($land_practices).'",
-            additional_information = "'.mysql_real_escape_string ($additional_information).'",'.
+            products = "'.mysqli_real_escape_string ($connection, $products).'",
+            practices = "'.mysqli_real_escape_string ($connection, $practices).'",
+            pest_management = "'.mysqli_real_escape_string ($connection, $pest_management).'",
+            productivity_management = "'.mysqli_real_escape_string ($connection, $productivity_management).'",
+            feeding_practices = "'.mysqli_real_escape_string ($connection, $feeding_practices).'",
+            soil_management = "'.mysqli_real_escape_string ($connection, $soil_management).'",
+            water_management = "'.mysqli_real_escape_string ($connection, $water_management).'",
+            land_practices = "'.mysqli_real_escape_string ($connection, $land_practices).'",
+            additional_information = "'.mysqli_real_escape_string ($connection, $additional_information).'",'.
         /* Section IV */'
-            licenses_insurance = "'.mysql_real_escape_string ($licenses_insurance).'",
-            organic_products = "'.mysql_real_escape_string ($organic_products).'",
-            certifying_agency = "'.mysql_real_escape_string ($certifying_agency).'",
-            agency_phone = "'.mysql_real_escape_string ($agency_phone).'",
-            agency_fax = "'.mysql_real_escape_string ($agency_fax).'",
-            organic_cert = "'.mysql_real_escape_string ($organic_cert).'"';
+            licenses_insurance = "'.mysqli_real_escape_string ($connection, $licenses_insurance).'",
+            organic_products = "'.mysqli_real_escape_string ($connection, $organic_products).'",
+            certifying_agency = "'.mysqli_real_escape_string ($connection, $certifying_agency).'",
+            agency_phone = "'.mysqli_real_escape_string ($connection, $agency_phone).'",
+            agency_fax = "'.mysqli_real_escape_string ($connection, $agency_fax).'",
+            organic_cert = "'.mysqli_real_escape_string ($connection, $organic_cert).'"';
         // Run the producers_registration table insert query
-        $result = @mysql_query($query2,$connection) or die(debug_print ("ERROR: 752243 ", array ($query2,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result = @mysqli_query ($connection, $query2) or die (debug_print ("ERROR: 752243 ", array ($query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
       }
     elseif ($_POST['action'] == 'Update')
       {
@@ -993,62 +993,62 @@ if (count ($error_array) == 0 && ($_POST['action'] == 'Submit' || $_POST['action
             '.TABLE_PRODUCER.'
           SET'.
          /* Section I */'
-            business_name = "'.mysql_real_escape_string ($business_name).'",
-            producer_link = "'.mysql_real_escape_string ($producer_link).'",
+            business_name = "'.mysqli_real_escape_string ($connection, $business_name).'",
+            producer_link = "'.mysqli_real_escape_string ($connection, $producer_link).'",
             '.($changed_by_self ? 'pending = "'.NEW_PRODUCER_PENDING.'",' : '').'
             '.($changed_by_self ? 'unlisted_producer = "'.NEW_PRODUCER_STATUS.'",' : '').'
-            pub_address = "'.mysql_real_escape_string ($pub_address).'",
-            pub_email = "'.mysql_real_escape_string ($pub_email).'",
-            pub_email2 = "'.mysql_real_escape_string ($pub_email2).'",
-            pub_phoneh = "'.mysql_real_escape_string ($pub_phoneh).'",
-            pub_phonew = "'.mysql_real_escape_string ($pub_phonew).'",
-            pub_phonec = "'.mysql_real_escape_string ($pub_phonec).'",
-            pub_phonet = "'.mysql_real_escape_string ($pub_phonet).'",
-            pub_fax = "'.mysql_real_escape_string ($pub_fax).'",
-            pub_web = "'.mysql_real_escape_string ($pub_web).'",'.
+            pub_address = "'.mysqli_real_escape_string ($connection, $pub_address).'",
+            pub_email = "'.mysqli_real_escape_string ($connection, $pub_email).'",
+            pub_email2 = "'.mysqli_real_escape_string ($connection, $pub_email2).'",
+            pub_phoneh = "'.mysqli_real_escape_string ($connection, $pub_phoneh).'",
+            pub_phonew = "'.mysqli_real_escape_string ($connection, $pub_phonew).'",
+            pub_phonec = "'.mysqli_real_escape_string ($connection, $pub_phonec).'",
+            pub_phonet = "'.mysqli_real_escape_string ($connection, $pub_phonet).'",
+            pub_fax = "'.mysqli_real_escape_string ($connection, $pub_fax).'",
+            pub_web = "'.mysqli_real_escape_string ($connection, $pub_web).'",'.
          /* Section II */'
-            producttypes = "'.mysql_real_escape_string ($producttypes).'",
-            about = "'.mysql_real_escape_string ($about).'",
-            ingredients = "'.mysql_real_escape_string ($ingredients).'",
-            general_practices = "'.mysql_real_escape_string ($general_practices).'",
-            additional = "'.mysql_real_escape_string ($additional).'",
-            highlights = "'.mysql_real_escape_string ($highlights).'",'.
+            producttypes = "'.mysqli_real_escape_string ($connection, $producttypes).'",
+            about = "'.mysqli_real_escape_string ($connection, $about).'",
+            ingredients = "'.mysqli_real_escape_string ($connection, $ingredients).'",
+            general_practices = "'.mysqli_real_escape_string ($connection, $general_practices).'",
+            additional = "'.mysqli_real_escape_string ($connection, $additional).'",
+            highlights = "'.mysqli_real_escape_string ($connection, $highlights).'",'.
          /* Section V */'
-            liability_statement = "'.mysql_real_escape_string ($liability_statement).'"
+            liability_statement = "'.mysqli_real_escape_string ($connection, $liability_statement).'"
           WHERE
-            producer_id = "'.mysql_real_escape_string ($producer_id).'"';
+            producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
         // Run the producers table insert query
-        $result = @mysql_query($query1, $connection) or die(debug_print ("ERROR: 762930 ", array ($query1,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result = @mysqli_query ($connection, $query1) or die (debug_print ("ERROR: 762430 ", array ($query1, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         // Set the producers_registration table query
         $query2 = '
           UPDATE
             '.TABLE_PRODUCER_REG.'
           SET'.
         /* Section I */'
-            business_name = "'.mysql_real_escape_string ($business_name).'",
-            website = "'.mysql_real_escape_string ($website).'",
+            business_name = "'.mysqli_real_escape_string ($connection, $business_name).'",
+            website = "'.mysqli_real_escape_string ($connection, $website).'",
             date_added = now(),'.
         /* Section III */'
-            products = "'.mysql_real_escape_string ($products).'",
-            practices = "'.mysql_real_escape_string ($practices).'",
-            pest_management = "'.mysql_real_escape_string ($pest_management).'",
-            productivity_management = "'.mysql_real_escape_string ($productivity_management).'",
-            feeding_practices = "'.mysql_real_escape_string ($feeding_practices).'",
-            soil_management = "'.mysql_real_escape_string ($soil_management).'",
-            water_management = "'.mysql_real_escape_string ($water_management).'",
-            land_practices = "'.mysql_real_escape_string ($land_practices).'",
-            additional_information = "'.mysql_real_escape_string ($additional_information).'",'.
+            products = "'.mysqli_real_escape_string ($connection, $products).'",
+            practices = "'.mysqli_real_escape_string ($connection, $practices).'",
+            pest_management = "'.mysqli_real_escape_string ($connection, $pest_management).'",
+            productivity_management = "'.mysqli_real_escape_string ($connection, $productivity_management).'",
+            feeding_practices = "'.mysqli_real_escape_string ($connection, $feeding_practices).'",
+            soil_management = "'.mysqli_real_escape_string ($connection, $soil_management).'",
+            water_management = "'.mysqli_real_escape_string ($connection, $water_management).'",
+            land_practices = "'.mysqli_real_escape_string ($connection, $land_practices).'",
+            additional_information = "'.mysqli_real_escape_string ($connection, $additional_information).'",'.
         /* Section IV */'
-            licenses_insurance = "'.mysql_real_escape_string ($licenses_insurance).'",
-            organic_products = "'.mysql_real_escape_string ($organic_products).'",
-            certifying_agency = "'.mysql_real_escape_string ($certifying_agency).'",
-            agency_phone = "'.mysql_real_escape_string ($agency_phone).'",
-            agency_fax = "'.mysql_real_escape_string ($agency_fax).'",
-            organic_cert = "'.mysql_real_escape_string ($organic_cert).'"
+            licenses_insurance = "'.mysqli_real_escape_string ($connection, $licenses_insurance).'",
+            organic_products = "'.mysqli_real_escape_string ($connection, $organic_products).'",
+            certifying_agency = "'.mysqli_real_escape_string ($connection, $certifying_agency).'",
+            agency_phone = "'.mysqli_real_escape_string ($connection, $agency_phone).'",
+            agency_fax = "'.mysqli_real_escape_string ($connection, $agency_fax).'",
+            organic_cert = "'.mysqli_real_escape_string ($connection, $organic_cert).'"
           WHERE
-            producer_id = "'.mysql_real_escape_string ($producer_id).'"';
+            producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
         // Run the producers_registration table insert query
-        $result = @mysql_query($query2,$connection) or die(debug_print ("ERROR: 760534 ", array ($query2,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result = @mysqli_query ($connection, $query2) or die (debug_print ("ERROR: 760534 ", array ($query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
       }
     // Make sure we let the member know the information was accepted
     $display_form_message .= '<p>Information has been accepted.</p>';
@@ -1060,9 +1060,9 @@ if (count ($error_array) == 0 && ($_POST['action'] == 'Submit' || $_POST['action
         email_address
       FROM
         '.TABLE_MEMBER.'
-      WHERE member_id = "'.mysql_real_escape_string ($member_id).'"';
-    $sql =  @mysql_query($query, $connection) or die(debug_print ("ERROR: 785403 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row = mysql_fetch_object($sql))
+      WHERE member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"';
+    $sql =  @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 785403 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row = mysqli_fetch_object ($sql))
       {
         $email_address = $row->email_address;
       }

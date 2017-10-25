@@ -12,9 +12,9 @@ function unfi_get_status ($key)
       FROM
         '.TABLE_UNFI_STATUS.'
       WHERE
-        status_key = "'.mysql_real_escape_string($key).'"';
-    $result = @mysql_query($query, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-    while ( $row = mysql_fetch_object($result) )
+        status_key = "'.mysqli_real_escape_string ($connection, $key).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 932170 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ( $row = mysqli_fetch_object ($result) )
       {
         return $row->status_value;
       }
@@ -26,11 +26,11 @@ function unfi_put_status ($key, $value)
       INSERT INTO
         '.TABLE_UNFI_STATUS.'
       SET
-        status_key = "'.mysql_real_escape_string($key).'",
-        status_value = "'.mysql_real_escape_string($value).'"
+        status_key = "'.mysqli_real_escape_string ($connection, $key).'",
+        status_value = "'.mysqli_real_escape_string ($connection, $value).'"
       ON DUPLICATE KEY UPDATE
-        status_value = "'.mysql_real_escape_string($value).'"';
-    $result = @mysql_query($query, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+        status_value = "'.mysqli_real_escape_string ($connection, $value).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 489325 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 function unfi_delete_key ($key)
   {
@@ -39,8 +39,6 @@ function unfi_delete_key ($key)
       DELETE FROM
         '.TABLE_UNFI_STATUS.'
       WHERE
-        status_key = "'.mysql_real_escape_string($key).'"';
-    $result = @mysql_query($query, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+        status_key = "'.mysqli_real_escape_string ($connection, $key).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 784230 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
-
-?>

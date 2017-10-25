@@ -61,13 +61,13 @@ function get_product ($product_id, $product_version, $pvid)
       LEFT JOIN
         '.TABLE_PRODUCER.' ON '.NEW_TABLE_PRODUCTS.'.producer_id = '.TABLE_PRODUCER.'.producer_id
       WHERE
-          ('.NEW_TABLE_PRODUCTS.'.product_id = "'.mysql_real_escape_string ($product_id).'"
-          AND '.NEW_TABLE_PRODUCTS.'.product_version = "'.mysql_real_escape_string ($product_version).'")
+          ('.NEW_TABLE_PRODUCTS.'.product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"
+          AND '.NEW_TABLE_PRODUCTS.'.product_version = "'.mysqli_real_escape_string ($connection, $product_version).'")
         OR 
-          ('.NEW_TABLE_PRODUCTS.'.pvid = "'.mysql_real_escape_string ($pvid).'"
+          ('.NEW_TABLE_PRODUCTS.'.pvid = "'.mysqli_real_escape_string ($connection, $pvid).'"
           AND '.NEW_TABLE_PRODUCTS.'.pvid != "0")';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 754004 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row = mysql_fetch_array($result))
+          $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 754004 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         return ($row);
       }
@@ -91,8 +91,8 @@ function get_next_product_id ($producer_id)
         MAX(product_id) + 1 AS product_id
       FROM
         '.NEW_TABLE_PRODUCTS;
-    $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 856249 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row = mysql_fetch_array($result))
+    $result = mysqli_query($connection, $query) or die (debug_print ("ERROR: 856249 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
       {
         $product_id = $row['product_id'];
       }
@@ -102,11 +102,11 @@ function get_next_product_id ($producer_id)
       INSERT INTO
         '.NEW_TABLE_PRODUCTS.'
       SET
-        product_id = "'.mysql_real_escape_string($product_id).'",
+        product_id = "'.mysqli_real_escape_string($connection, $product_id).'",
         product_version = "1",
-        producer_id = "'.mysql_real_escape_string($producer_id).'"';
-    $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 460569 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $pvid = mysql_insert_id();
+        producer_id = "'.mysqli_real_escape_string($connection, $producer_id).'"';
+    $result = mysqli_query($connection, $query) or die (debug_print ("ERROR: 460569 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $pvid = mysqli_insert_id($connection);
     // Now increment the product_id until it is unique in the database
     $need_to_test = true;
     while ($need_to_test == true)
@@ -117,9 +117,9 @@ function get_next_product_id ($producer_id)
           FROM
             '.NEW_TABLE_PRODUCTS.'
           WHERE
-            product_id = "'.mysql_real_escape_string($product_id).'"';
-        $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 311047 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        if ($row = mysql_fetch_array($result))
+            product_id = "'.mysqli_real_escape_string($connection, $product_id).'"';
+        $result = mysqli_query($connection, $query) or die (debug_print ("ERROR: 311047 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if ($row = mysqli_fetch_array($result, MYSQLI_ASSOC))
           {
             // Check if we are done
             if ($row['count'] == 1)
@@ -135,8 +135,8 @@ function get_next_product_id ($producer_id)
                   SET
                     product_id = product_id + 1
                   WHERE
-                    pvid = "'.mysql_real_escape_string($pvid).'"';
-                $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 939523 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+                    pvid = "'.mysqli_real_escape_string($connection, $pvid).'"';
+                $result = mysqli_query($connection, $query) or die (debug_print ("ERROR: 939523 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
                 // And sync our external product_id variable
                 $product_id ++;
               }
@@ -150,10 +150,3 @@ function get_next_product_id ($producer_id)
       }
     return array ('pvid' => $pvid, 'product_id' => $product_id);
   }
-
-
-
-
-
-
-?>

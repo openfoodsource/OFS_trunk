@@ -6,9 +6,9 @@ valid_auth('producer,producer_admin');
 // Use only the producer_id_you
 if ($_SESSION['producer_id_you']) $producer_id = $_SESSION['producer_id_you'];
 // Capture the image_id if it is set
-if (isset ($_GET['image_id'])) $image_id = mysql_real_escape_string($_GET['image_id']);
+if (isset ($_GET['image_id'])) $image_id = mysqli_real_escape_string ($connection, $_GET['image_id']);
 // Figure out where we came from and save it so we can go back
-if (isset ($_REQUEST['referrer'])) $referrer = mysql_real_escape_string($_REQUEST['referrer']);
+if (isset ($_REQUEST['referrer'])) $referrer = mysqli_real_escape_string ($connection, $_REQUEST['referrer']);
 else $referrer = $_SERVER['HTTP_REFERER'];
 
 // 
@@ -19,8 +19,8 @@ if($_GET['display_as'] == 'popup')
 // Section for setting an image for a particular product
 if ($_GET['action'] == 'select_image')
   {
-    if (isset ($_GET['product_id'])) $product_id_target = mysql_real_escape_string($_GET['product_id']);
-    if (isset ($_GET['product_version'])) $product_version_target = mysql_real_escape_string($_GET['product_version']);
+    if (isset ($_GET['product_id'])) $product_id_target = mysqli_real_escape_string ($connection, $_GET['product_id']);
+    if (isset ($_GET['product_version'])) $product_version_target = mysqli_real_escape_string ($connection, $_GET['product_version']);
     // Find the image being used by this product
     if (isset ($product_id_target) && isset ($product_version_target))
       {
@@ -34,8 +34,8 @@ if ($_GET['action'] == 'select_image')
           WHERE
             '.NEW_TABLE_PRODUCTS.'.product_id = "'.$product_id_target.'"
             AND '.NEW_TABLE_PRODUCTS.'.product_version = "'.$product_version_target.'"';
-        $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 784390 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        $row = mysql_fetch_array($result);
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 784390 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
         $image_id_target = $row['image_id'];
         $product_id_target = $row['product_id'];
         $product_name_target = $row['product_name'];
@@ -82,10 +82,10 @@ if ($_GET['action'] == 'select_image')
       FROM
         '.TABLE_PRODUCT_IMAGES.'
       WHERE
-        '.TABLE_PRODUCT_IMAGES.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"
+        '.TABLE_PRODUCT_IMAGES.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
       ORDER BY image_id';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 022967 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ( $row = mysql_fetch_array($result) )
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 522967 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
       {
         $image_id = $row['image_id'];
         $product_id = $row['product_id'];
@@ -112,8 +112,8 @@ if ($_GET['action'] == 'select_image')
 elseif ($_POST['action'] == 'remove_image')
   {
     // Variables used in remove_image
-    if (isset ($_POST['product_id'])) $product_id_target = mysql_real_escape_string($_POST['product_id']);
-    if (isset ($_POST['product_version'])) $product_version_target = mysql_real_escape_string($_POST['product_version']);
+    if (isset ($_POST['product_id'])) $product_id_target = mysqli_real_escape_string ($connection, $_POST['product_id']);
+    if (isset ($_POST['product_version'])) $product_version_target = mysqli_real_escape_string ($connection, $_POST['product_version']);
     if ($_POST['select_all_versions'] != "true")
       $query_where = 'AND '.NEW_TABLE_PRODUCTS.'.product_version = "'.$product_version_target.'"';
     // Connect a new image to this product/version
@@ -128,7 +128,7 @@ elseif ($_POST['action'] == 'remove_image')
           WHERE
             '.NEW_TABLE_PRODUCTS.'.product_id = "'.$product_id_target.'"
             '.$query_where;
-        $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 231831 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result = @mysqli_query ($connection, $query) or die(debug_print ("ERROR: 231831 ", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $json['result'] = "success";
       }
     else
@@ -141,9 +141,9 @@ elseif ($_POST['action'] == 'remove_image')
 elseif ($_POST['action'] == 'set_image')
   {
     // Variables used in set_image
-    if (isset ($_POST['product_id'])) $product_id_target = mysql_real_escape_string($_POST['product_id']);
-    if (isset ($_POST['product_version'])) $product_version_target = mysql_real_escape_string($_POST['product_version']);
-    if (isset ($_POST['new_image_id'])) $image_id_target = mysql_real_escape_string($_POST['new_image_id']);
+    if (isset ($_POST['product_id'])) $product_id_target = mysqli_real_escape_string ($connection, $_POST['product_id']);
+    if (isset ($_POST['product_version'])) $product_version_target = mysqli_real_escape_string ($connection, $_POST['product_version']);
+    if (isset ($_POST['new_image_id'])) $image_id_target = mysqli_real_escape_string ($connection, $_POST['new_image_id']);
     if ($_POST['select_all_versions'] != "true")
       $query_where = 'AND '.NEW_TABLE_PRODUCTS.'.product_version = "'.$product_version_target.'"';
     // Connect a new image to this product/version
@@ -159,7 +159,7 @@ elseif ($_POST['action'] == 'set_image')
           WHERE
             '.NEW_TABLE_PRODUCTS.'.product_id = "'.$product_id_target.'"
             '.$query_where;
-        $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 231831 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 931831 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $json['result'] = "success";
         $json['new_image_id'] = $image_id_target;
       }
@@ -174,8 +174,8 @@ elseif ($_POST['action'] == 'set_image')
 elseif ($_REQUEST['action'] == 'edit_image')
   {
     // Variables used in edit_image
-    if (isset ($_REQUEST['image_id'])) $image_id = mysql_real_escape_string($_REQUEST['image_id']);
-    if (isset ($_SESSION['producer_id'])) $producer_id = mysql_real_escape_string($_SESSION['producer_id']);
+    if (isset ($_REQUEST['image_id'])) $image_id = mysqli_real_escape_string ($connection, $_REQUEST['image_id']);
+    if (isset ($_SESSION['producer_id'])) $producer_id = mysqli_real_escape_string ($connection, $_SESSION['producer_id']);
     // Select all products for this image
     if ($image_id != 0 && $producer_id != 0)
       {
@@ -186,13 +186,13 @@ elseif ($_REQUEST['action'] == 'edit_image')
               UPDATE
                 '.TABLE_PRODUCT_IMAGES.'
               SET
-                title = "'.mysql_real_escape_string($_POST['title']).'",
-                '.(isset($_POST['width']) ? 'width = "'.mysql_real_escape_string($_POST['width']).'",' : '').'
-                '.(isset($_POST['height']) ? 'height = "'.mysql_real_escape_string($_POST['height']).'",' : '').'
-                caption = "'.mysql_real_escape_string($_POST['caption']).'"
+                title = "'.mysqli_real_escape_string ($connection, $_POST['title']).'",
+                '.(isset($_POST['width']) ? 'width = "'.mysqli_real_escape_string ($connection, $_POST['width']).'",' : '').'
+                '.(isset($_POST['height']) ? 'height = "'.mysqli_real_escape_string ($connection, $_POST['height']).'",' : '').'
+                caption = "'.mysqli_real_escape_string ($connection, $_POST['caption']).'"
               WHERE
-                image_id = "'.mysql_real_escape_string($_POST['image_id']).'"';
-            $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 289541 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+                image_id = "'.mysqli_real_escape_string ($connection, $_POST['image_id']).'"';
+            $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 289541 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
           }
         $query = '
           SELECT
@@ -215,15 +215,15 @@ elseif ($_REQUEST['action'] == 'edit_image')
           LEFT JOIN
             '.NEW_TABLE_PRODUCTS.' USING(image_id)
           WHERE
-            '.TABLE_PRODUCT_IMAGES.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"
-            AND '.TABLE_PRODUCT_IMAGES.'.image_id = "'.mysql_real_escape_string ($image_id).'"
+            '.TABLE_PRODUCT_IMAGES.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
+            AND '.TABLE_PRODUCT_IMAGES.'.image_id = "'.mysqli_real_escape_string ($connection, $image_id).'"
           ORDER BY
             product_id,
             product_version';
-        $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 022967 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 022967 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
             // Display the upload link
         $add_this_first = 0;
-        while ( $row = mysql_fetch_array($result) )
+        while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
           {
             $image_id = $row['image_id'];
             $pvid = $row['pvid'];

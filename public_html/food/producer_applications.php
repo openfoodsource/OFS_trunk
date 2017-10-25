@@ -15,9 +15,9 @@ $sql = '
     '.TABLE_PRODUCER_REG.'
   ORDER BY
     member_id DESC';
-$rs = @mysql_query($sql, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+$rs = @mysqli_query ($connection, $sql) or die (debug_print ("ERROR: 754830 ", array ($sql, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $first = 1;
-while ($row = mysql_fetch_array($rs))
+while ($row = mysqli_fetch_array ($rs, MYSQLI_ASSOC))
   {
     if ($first)
       {
@@ -62,4 +62,3 @@ echo '
   '.$content_applications.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
- 

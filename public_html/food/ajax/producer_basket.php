@@ -89,4 +89,3 @@ else
     if ($non_ajax_query == false) echo $alert_message;
     debug_print ("INFO: Returned from updating weights (BPID=$bpid): ", array('alert_message'=>$alert_message, 'result_item_info'=>$result_item_info), basename(__FILE__).' LINE '.__LINE__);
   }
-?>

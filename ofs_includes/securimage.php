@@ -453,7 +453,7 @@ class Securimage {
    * <code>
    *   $code = $_POST['code'];
    *   if ($securimage->check($code) == false) {
-   *     die("Sorry, the code entered did not match.");
+   *     die ("Sorry, the code entered did not match.");
    *   } else {
    *     $valid = true;
    *   }
@@ -930,5 +930,3 @@ class Securimage {
     return $out_data;
   }
 } /* class Securimage */
-
-?>

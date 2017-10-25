@@ -25,17 +25,17 @@ $sql = '
     '.NEW_TABLE_BASKET_ITEMS.' ON '.NEW_TABLE_BASKET_ITEMS.'.basket_id = '.NEW_TABLE_BASKETS.'.basket_id
   WHERE
     '.NEW_TABLE_BASKETS.'.member_id = '.TABLE_MEMBER.'.member_id
-    AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
+    AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
   GROUP BY
     '.NEW_TABLE_BASKETS.'.member_id
   ORDER BY
     last_name ASC,
     first_name ASC';
 
-$rs = @mysql_query($sql, $connection) or die("Couldn't execute query.");
-$num = mysql_numrows($rs);
+$rs = @mysqli_query ($connection, $sql) or die (debug_print ("ERROR: 428342 ", array ($sql, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$num = mysqli_num_rows ($rs);
 $mail_count = 0;
-while ($row = mysql_fetch_array($rs))
+while ($row = mysqli_fetch_array ($rs, MYSQLI_ASSOC))
   {
     $member_id = $row['member_id'];
     $first_name = $row['first_name'];
@@ -99,4 +99,3 @@ echo '
   '.$content_list.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-

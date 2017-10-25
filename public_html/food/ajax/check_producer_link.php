@@ -19,10 +19,10 @@ if(isset($_POST['producer_link']) && isset($_POST['producer_id']))
       FROM
         '.TABLE_PRODUCER.'
       WHERE
-        producer_link = "'.mysql_real_escape_string ($_POST['producer_link']).'"
-        AND producer_id != "'.mysql_real_escape_string ($_POST['producer_id']).'"';
-    $sql = @mysql_query($query, $connection) or die(debug_print ("ERROR: 678530 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($sql && $row = mysql_fetch_array($sql))
+        producer_link = "'.mysqli_real_escape_string ($connection, $_POST['producer_link']).'"
+        AND producer_id != "'.mysqli_real_escape_string ($connection, $_POST['producer_id']).'"';
+    $sql = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 278530 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($sql && $row = mysqli_fetch_array ($sql, MYSQLI_ASSOC))
       {
         $count = $row['count'];
       }

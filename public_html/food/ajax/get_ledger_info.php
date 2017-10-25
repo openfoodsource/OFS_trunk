@@ -17,7 +17,7 @@ include_once ('func.get_ledger_row_markup.php');
 // OPTIONAL arguments:      group_customer_fee_with=[product|order]               //
 //                          group_producer_fee_with=[product|order]               //
 //                           group_weight_cost_with=[product|order]               //
-//                             group_quantity_cost_with=[product|order]               //
+//                             group_quantity_cost_with=[product|order]           //
 //                          group_extra_charge_with=[product|order]               //
 //                                 group_taxes_with=[product|order]               //
 //                                   include_header=[true|false]                  //
@@ -34,10 +34,10 @@ $query = '
     DISTINCT(text_key) AS text_key
   FROM
     '.NEW_TABLE_LEDGER;
-$result = mysql_query($query, $connection) or die(debug_print ("ERROR: 820432 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 820432 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // Ensure $count is a two-digit (number or more)
 $count = 10;
-while ($row = mysql_fetch_array($result))
+while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     array_push ($text_key_array, $row['text_key']);
     // While we can, set all the summarize_by settings to default with basket_id
@@ -126,24 +126,24 @@ if ($_REQUEST['action'] == 'get_ledger_body')
     if ($_REQUEST['delivery_id'])
       {
         $query_where = '
-        AND ('.NEW_TABLE_LEDGER.'.delivery_id = "'.mysql_real_escape_string($_REQUEST['delivery_id']).'"
+        AND ('.NEW_TABLE_LEDGER.'.delivery_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['delivery_id']).'"
           OR '.NEW_TABLE_LEDGER.'.delivery_id IS NULL)';
         // And get the balance from before the delivery_id...
         $query = '
           SELECT
-            SUM(amount * IF(source_type = "'.mysql_real_escape_string($account_type).'"
-              AND source_key = "'.mysql_real_escape_string($account_id).'", -1, 1)) AS total_before
+            SUM(amount * IF(source_type = "'.mysqli_real_escape_string ($connection, $account_type).'"
+              AND source_key = "'.mysqli_real_escape_string ($connection, $account_id).'", -1, 1)) AS total_before
           FROM
             '.NEW_TABLE_LEDGER.'
           WHERE
-            ((source_type = "'.mysql_real_escape_string($account_type).'"
-                AND source_key = "'.mysql_real_escape_string($account_id).'")
-              OR (target_type = "'.mysql_real_escape_string($account_type).'"
-                AND target_key = "'.mysql_real_escape_string($account_id).'"))
+            ((source_type = "'.mysqli_real_escape_string ($connection, $account_type).'"
+                AND source_key = "'.mysqli_real_escape_string ($connection, $account_id).'")
+              OR (target_type = "'.mysqli_real_escape_string ($connection, $account_type).'"
+                AND target_key = "'.mysqli_real_escape_string ($connection, $account_id).'"))
             AND replaced_by IS NULL
-            AND delivery_id < "'.mysql_real_escape_string($_REQUEST['delivery_id']).'"';
-        $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 788322 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        if ($row = mysql_fetch_array($result))
+            AND delivery_id < "'.mysqli_real_escape_string ($connection, $_REQUEST['delivery_id']).'"';
+        $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 718322 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
           {
             $total_before = $row['total_before'];
           }
@@ -154,19 +154,19 @@ if ($_REQUEST['action'] == 'get_ledger_body')
         // ...and the balance from after the delivery_id
         $query = '
           SELECT
-            SUM(amount * IF(source_type = "'.mysql_real_escape_string($account_type).'"
-              AND source_key = "'.mysql_real_escape_string($account_id).'", -1, 1)) AS total_after
+            SUM(amount * IF(source_type = "'.mysqli_real_escape_string ($connection, $account_type).'"
+              AND source_key = "'.mysqli_real_escape_string ($connection, $account_id).'", -1, 1)) AS total_after
           FROM
             '.NEW_TABLE_LEDGER.'
           WHERE
-            ((source_type = "'.mysql_real_escape_string($account_type).'"
-                AND source_key = "'.mysql_real_escape_string($account_id).'")
-              OR (target_type = "'.mysql_real_escape_string($account_type).'"
-                AND target_key = "'.mysql_real_escape_string($account_id).'"))
+            ((source_type = "'.mysqli_real_escape_string ($connection, $account_type).'"
+                AND source_key = "'.mysqli_real_escape_string ($connection, $account_id).'")
+              OR (target_type = "'.mysqli_real_escape_string ($connection, $account_type).'"
+                AND target_key = "'.mysqli_real_escape_string ($connection, $account_id).'"))
             AND replaced_by IS NULL
-            AND delivery_id > "'.mysql_real_escape_string($_REQUEST['delivery_id']).'"';
-        $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 788322 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        if ($row = mysql_fetch_array($result))
+            AND delivery_id > "'.mysqli_real_escape_string ($connection, $_REQUEST['delivery_id']).'"';
+        $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 783322 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
           {
             $total_after = $row['total_after'];
           }
@@ -246,10 +246,10 @@ if ($_REQUEST['action'] == 'get_ledger_body')
         '.NEW_TABLE_TAX_RATES.' target_tax_rates ON
           (target_type = "tax" AND target_key = target_tax_rates.tax_id)
       WHERE
-        ((source_type = "'.mysql_real_escape_string($account_type).'"
-            AND source_key = "'.mysql_real_escape_string($account_id).'")
-          OR (target_type = "'.mysql_real_escape_string($account_type).'"
-            AND target_key = "'.mysql_real_escape_string($account_id).'"))
+        ((source_type = "'.mysqli_real_escape_string ($connection, $account_type).'"
+            AND source_key = "'.mysqli_real_escape_string ($connection, $account_id).'")
+          OR (target_type = "'.mysqli_real_escape_string ($connection, $account_type).'"
+            AND target_key = "'.mysqli_real_escape_string ($connection, $account_id).'"))
         AND replaced_by IS NULL'.
         $query_where.'
       /* Not sure why we need this GROUP BY condition, but we do! */
@@ -262,13 +262,13 @@ if ($_REQUEST['action'] == 'get_ledger_body')
         '.NEW_TABLE_LEDGER.'.bpid,
         '.NEW_TABLE_LEDGER.'.text_key';
 //$display_output .= '<tr><td colspan="9"><pre>'.$query.'</pre></td></tr>';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 869373 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 861373 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     // Need to know how many rows were returned because we need to iterate ONE MORE THAN that
     // many times in order to capture summary functions (not pretty). This really should be
     // done with some kind of data object... -ROYG
-    $number_of_rows = mysql_num_rows ($result);
+    $number_of_rows = mysqli_num_rows ($result);
     $amount = 0;
-    while ($row = mysql_fetch_array($result))
+    while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         // Clear the assigned variables
         $other_account_type = '';
@@ -307,7 +307,7 @@ if ($_REQUEST['action'] == 'get_ledger_body')
         else
           {
             // TO and FROM the same account... should not happen
-            die(debug_print ("error 203: ", "could not determine disposition of transaction".print_r($row,true), basename(__FILE__).' LINE '.__LINE__));
+            die(debug_print ("ERROR: 782101 ", "Could not determine disposition of transaction".print_r($row,true), basename(__FILE__).' LINE '.__LINE__));
           }
         $balance += $amount;
         if ($other_account_type == 'producer') $display_to_from = 'Producer #'.$other_account_key.': '.$row[$other_account.'_business_name'];
@@ -592,4 +592,3 @@ function get_display_row($transaction_data, $summary_type, $running_total, $disp
       </tr>';
     return ($response);
   }
-?>

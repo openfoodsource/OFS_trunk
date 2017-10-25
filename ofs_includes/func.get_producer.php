@@ -38,11 +38,10 @@ function get_producer ($producer_id)
          FROM '.TABLE_AVAILABILITY.'
          WHERE producer_id = '.TABLE_PRODUCER.'.producer_id) AS available_site_ids
       FROM '.TABLE_PRODUCER.'
-      WHERE producer_id = "'.mysql_real_escape_string ($producer_id).'"';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 895053 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row = mysql_fetch_array($result))
+      WHERE producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 895053 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         return ($row);
       }
   }
-?>

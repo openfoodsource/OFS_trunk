@@ -55,14 +55,14 @@ $query = '
   LEFT JOIN '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   LEFT JOIN '.TABLE_PRODUCER.' USING(producer_id)
   WHERE
-    '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
+    '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
   GROUP BY
     '.NEW_TABLE_PRODUCTS.'.producer_id
   ORDER BY
   '.$order_by;
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 579329 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$num_orders = mysql_numrows($result);
-while ( $row = mysql_fetch_array($result) )
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 579329 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$num_orders = mysqli_num_rows ($result);
+while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
   {
     $business_name = $row['business_name'];
     $producer_member_id = $row['producer_member_id'];
@@ -102,4 +102,3 @@ echo '
   '.$page_data.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-

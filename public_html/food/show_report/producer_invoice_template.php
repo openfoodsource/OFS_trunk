@@ -563,6 +563,4 @@ function show_adjustment_row(&$adjustment, &$unique)
         $adjustment['total_listed_adjustments'] += $adjustment[$this_row]['amount'];
       }
     return $display_line;
-  };
-
-?>
+  }

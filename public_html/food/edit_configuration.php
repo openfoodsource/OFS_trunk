@@ -22,12 +22,12 @@ valid_auth('site_admin');
 // Set the query for updating the database
 function set_update_query($update_queries, $name, $value)
   {
-    global $database_config;
+    global $database_config, $connection;
     // Create an array of update queries, to be run later
     $query = '
       UPDATE '.$database_config['db_prefix'].$database_config['openfood_config'].'
-      SET value = "'.mysql_real_escape_string ($value).'"
-      WHERE name = "'.mysql_real_escape_string ($name).'"';
+      SET value = "'.mysqli_real_escape_string ($connection, $value).'"
+      WHERE name = "'.mysqli_real_escape_string ($connection, $name).'"';
     array_push ($update_queries, $query);
     return $update_queries;
   }
@@ -52,9 +52,9 @@ $query = '
   ORDER BY
     section,
     name';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 864302 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 868302 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $section_prior = '';
-while ($row = mysql_fetch_object($result))
+while ($row = mysqli_fetch_object ($result))
   {
     // Sanitize values to remove quotes and other html-troublesome characters
     $section_header = false;
@@ -288,7 +288,7 @@ if (count ($update_queries) > 0)
   {    
     while ($query = array_shift ($update_queries))
       {
-        $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 758932 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 758932 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
       }
   }
 $page_specific_css = '
@@ -417,4 +417,3 @@ echo '
   '.$content.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-?>

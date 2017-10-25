@@ -27,15 +27,15 @@ if ( $_REQUEST['producer_submit'] )
       UPDATE
         '.TABLE_PRODUCER.'
       SET
-        producttypes = "'.mysql_real_escape_string ($_REQUEST['producttypes']).'",
-        about = "'.mysql_real_escape_string (nl2br2 ($_REQUEST['about'])).'",
-        general_practices = "'.mysql_real_escape_string (nl2br2 ($_REQUEST['practices'])).'",
-        ingredients = "'.mysql_real_escape_string (nl2br2 ($_REQUEST['ingredients'])).'",
-        additional = "'.mysql_real_escape_string (nl2br2 ($_REQUEST['additional'])).'",
-        highlights = "'.mysql_real_escape_string (nl2br2 ($_REQUEST['highlights'])).'"
+        producttypes = "'.mysqli_real_escape_string ($connection, $_REQUEST['producttypes']).'",
+        about = "'.mysqli_real_escape_string ($connection, nl2br2 ($_REQUEST['about'])).'",
+        general_practices = "'.mysqli_real_escape_string ($connection, nl2br2 ($_REQUEST['practices'])).'",
+        ingredients = "'.mysqli_real_escape_string ($connection, nl2br2 ($_REQUEST['ingredients'])).'",
+        additional = "'.mysqli_real_escape_string ($connection, nl2br2 ($_REQUEST['additional'])).'",
+        highlights = "'.mysqli_real_escape_string ($connection, nl2br2 ($_REQUEST['highlights'])).'"
       WHERE
-        producer_id = "'.mysql_real_escape_string ($producer_id).'"';
-    $result = mysql_query($sql, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+        producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+    $result = mysqli_query ($connection, $sql) or die (debug_print ("ERROR: 798402 ", array ($sql, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $message = "<font color=#3333FF><b>Your information has been updated</b></font><br>";
   }
 
@@ -49,11 +49,11 @@ $sqlr = '
     '.TABLE_MEMBER.'
   WHERE
     '.TABLE_PRODUCER.'.member_id = '.TABLE_MEMBER.'.member_id
-    AND '.TABLE_PRODUCER.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"
+    AND '.TABLE_PRODUCER.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
   ORDER BY
     '.TABLE_PRODUCER.'.business_name ASC';
-$rsr = @mysql_query($sqlr, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-while ( $row = mysql_fetch_array($rsr) )
+$rsr = @mysqli_query ($connection, $sqlr) or die (debug_print ("ERROR: 542321 ", array ($sqlr, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_array ($rsr, MYSQLI_ASSOC) )
   {
     $business_name = $row['prod_business_name'];
     $producer_link = $row['producer_link'];
@@ -100,9 +100,9 @@ while ( $row = mysql_fetch_array($rsr) )
       FROM
         '.TABLE_PRODUCER_LOGOS.'
       WHERE
-        '.TABLE_PRODUCER_LOGOS.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"';
-    $rsrl = @mysql_query($sqll, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-    while ($row = mysql_fetch_array($rsrl))
+        '.TABLE_PRODUCER_LOGOS.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+    $rsrl = @mysqli_query ($connection, $sqll) or die (debug_print ("ERROR: 239881 ", array ($sqll, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_array ($rsrl, MYSQLI_ASSOC))
       {
         $logo_id = $row['logo_id'];
         $logo_desc = $row['logo_desc'];

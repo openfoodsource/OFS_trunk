@@ -269,5 +269,3 @@ the details of listing the item.  Contact us at <a href="mailto:<?php echo HELP_
 </div>
 </body>
 </html>
-
-

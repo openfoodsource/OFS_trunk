@@ -5,7 +5,7 @@ valid_auth('site_admin,cashier');
 
 $num_cycles = 20; # should be 1 higher than the actual number of cycles you want
 $start = 1;
-$stop = mysql_real_escape_string (ActiveCycle::delivery_id());
+$stop = mysqli_real_escape_string ($connection, ActiveCycle::delivery_id());
 if (isset($_GET['start']) && isset($_GET['stop']))
   {
     $start = $_GET['start'];
@@ -34,8 +34,8 @@ $query = '
   LEFT JOIN '.TABLE_CATEGORY.' USING(category_id)
   LEFT JOIN '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   WHERE
-    '.NEW_TABLE_LEDGER.'.delivery_id <= "'.mysql_real_escape_string($stop).'"
-    AND '.NEW_TABLE_LEDGER.'.delivery_id >= "'.mysql_real_escape_string($start).'"
+    '.NEW_TABLE_LEDGER.'.delivery_id <= "'.mysqli_real_escape_string($connection, $stop).'"
+    AND '.NEW_TABLE_LEDGER.'.delivery_id >= "'.mysqli_real_escape_string($connection, $start).'"
     AND replaced_by IS NULL
     AND (
       text_key = "quantity cost"
@@ -45,10 +45,10 @@ $query = '
     '.TABLE_ORDER_CYCLES.'.delivery_date,
     '.TABLE_CATEGORY.'.category_name,
     '.TABLE_SUBCATEGORY.'.subcategory_name';
-$main_sql = mysql_query($query);
+$main_sql = mysqli_query($connection, $query);
 $categories = array ();
 $cat_total = array ();
-while ($row = mysql_fetch_array($main_sql))
+while ($row = mysqli_fetch_array ($main_sql, MYSQLI_ASSOC))
   {
     if ($row['category_name'] && $row['subcategory_name'] && $row['delivery_date'])
       {
@@ -66,16 +66,16 @@ $query = '
   FROM
     '.TABLE_ORDER_CYCLES.'
   WHERE
-    delivery_id <= "'.mysql_real_escape_string($stop).'"
-    AND delivery_id >= "'.mysql_real_escape_string($start).'"
+    delivery_id <= "'.mysqli_real_escape_string($connection, $stop).'"
+    AND delivery_id >= "'.mysqli_real_escape_string($connection, $start).'"
   ORDER BY
     delivery_date DESC';
-$dates_sql = mysql_query($query);
+$dates_sql = mysqli_query ($connection, $query);
 
 $delivery_id = array ();
 $spreadsheet = "Subcategory / Date";
 $date_headers = "";
-while ($row = mysql_fetch_array($dates_sql))
+while ($row = mysqli_fetch_array ($dates_sql, MYSQLI_ASSOC))
   {
     array_push($delivery_id, $row["delivery_date"]);
     $date_headers .= '
@@ -233,4 +233,3 @@ echo '
   '.$content.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-

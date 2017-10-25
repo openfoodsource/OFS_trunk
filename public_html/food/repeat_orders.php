@@ -65,9 +65,9 @@ if ($_POST['action'] == 'Post orders')
       FROM
         '.TABLE_PRODUCT.'
       WHERE
-        product_id = "'.mysql_real_escape_string ($_POST['product_id']).'"';
-    $result = @mysql_query($query, $connection) or die('<br><br>You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:'.WEBMASTER_EMAIL.'">'.WEBMASTER_EMAIL.'</a><br><br><b>Error:</b> Selecting message ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
-    while ( $row = mysql_fetch_object($result) )
+        product_id = "'.mysqli_real_escape_string ($connection, $_POST['product_id']).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 283742 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ( $row = mysqli_fetch_object ($result) )
       {
         $producer_id = $row->producer_id;
         $product_id = $row->product_id;
@@ -107,7 +107,7 @@ if ($_POST['action'] == 'Post orders')
           )
       SELECT
         '.TABLE_BASKET_ALL.'.member_id,
-        '.mysql_real_escape_string ($_POST['new_order_last_added']).',
+        '.mysqli_real_escape_string ($connection, $_POST['new_order_last_added']).',
         '.TABLE_ORDER_CYCLES.'.coopfee,
         '.TABLE_BASKET_ALL.'.site_id,
         '.TABLE_BASKET_ALL.'.deltype,
@@ -122,15 +122,15 @@ if ($_POST['action'] == 'Post orders')
         '.TABLE_BASKET.' ON '.TABLE_REPEAT_ORDERS.'.product_id = '.TABLE_BASKET.'.product_id
       LEFT JOIN
         '.TABLE_BASKET_ALL.' ON '.TABLE_BASKET.'.basket_id = '.TABLE_BASKET_ALL.'.basket_id
-      LEFT JOIN '.TABLE_ORDER_CYCLES.' ON '.TABLE_ORDER_CYCLES.'.delivery_id = '.mysql_real_escape_string ($_POST['new_order_last_added']).'
+      LEFT JOIN '.TABLE_ORDER_CYCLES.' ON '.TABLE_ORDER_CYCLES.'.delivery_id = '.mysqli_real_escape_string ($connection, $_POST['new_order_last_added']).'
       LEFT JOIN '.NEW_TABLE_SITES.' ON '.TABLE_BASKET_ALL.'.site_id = '.NEW_TABLE_SITES.'.site_id
       WHERE
-        '.TABLE_BASKET_ALL.'.delivery_id >= '.mysql_real_escape_string ($_POST['new_order_last_added']).' - repeat_cycles
+        '.TABLE_BASKET_ALL.'.delivery_id >= '.mysqli_real_escape_string ($connection, $_POST['new_order_last_added']).' - repeat_cycles
         AND '.TABLE_BASKET.'.item_price != 0
-        AND '.TABLE_BASKET.'.product_id = '.mysql_real_escape_string ($_POST['product_id']).'
+        AND '.TABLE_BASKET.'.product_id = '.mysqli_real_escape_string ($connection, $_POST['product_id']).'
       ON DUPLICATE KEY UPDATE
         '.TABLE_BASKET_ALL.'.finalized = 0';
-    $result = @mysql_query($query, $connection) or die('<br><br>You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:'.WEBMASTER_EMAIL.'">'.WEBMASTER_EMAIL.'</a><br><br><b>Error:</b> Selecting message ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 467294 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 
     // This query will return all members who need the product in their (now open) baskets
     $query_mem = '
@@ -143,7 +143,7 @@ if ($_POST['action'] == 'Post orders')
         '.TABLE_BASKET.'.quantity,
         '.TABLE_BASKET_ALL.'.member_id,
         MAX('.TABLE_BASKET_ALL.'.delivery_id),
-        (MAX('.TABLE_BASKET_ALL.'.delivery_id) + repeat_cycles - '.mysql_real_escape_string ($_POST['new_order_last_added']).') AS qty_remaining
+        (MAX('.TABLE_BASKET_ALL.'.delivery_id) + repeat_cycles - '.mysqli_real_escape_string ($connection, $_POST['new_order_last_added']).') AS qty_remaining
       FROM
         '.TABLE_REPEAT_ORDERS.'
       LEFT JOIN
@@ -153,16 +153,16 @@ if ($_POST['action'] == 'Post orders')
       LEFT JOIN
         '.TABLE_BASKET_ALL.' ON '.TABLE_BASKET.'.basket_id = '.TABLE_BASKET_ALL.'.basket_id
       WHERE
-        ('.TABLE_BASKET_ALL.'.delivery_id + repeat_cycles) >= '.mysql_real_escape_string ($_POST['new_order_last_added']).'
+        ('.TABLE_BASKET_ALL.'.delivery_id + repeat_cycles) >= '.mysqli_real_escape_string ($connection, $_POST['new_order_last_added']).'
         AND '.TABLE_BASKET.'.item_price != 0
-        AND '.TABLE_BASKET.'.product_id = '.mysql_real_escape_string ($_POST['product_id']).'
-        AND '.TABLE_BASKET_ALL.'.delivery_id < '.mysql_real_escape_string ($_POST['new_order_last_added']).'
+        AND '.TABLE_BASKET.'.product_id = '.mysqli_real_escape_string ($connection, $_POST['product_id']).'
+        AND '.TABLE_BASKET_ALL.'.delivery_id < '.mysqli_real_escape_string ($connection, $_POST['new_order_last_added']).'
       GROUP BY member_id';
-    $result_mem = @mysql_query($query_mem, $connection) or die('<br><br>You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:'.WEBMASTER_EMAIL.'">'.WEBMASTER_EMAIL.'</a><br><br><b>Error:</b> Selecting message ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
+    $result_mem = @mysqli_query ($connection, $query_mem) or die (debug_print ("ERROR: 228377 ", array ($query_mem, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 
     // Initialize the completion_array that will be used to show what members were acted upon.
     $completion_array = array ();
-    while ( $row = mysql_fetch_object($result_mem) )
+    while ( $row = mysqli_fetch_object ($result_mem) )
       {
         // We need this value later, after the while-statement
         $repeat_id = $row->repeat_id;
@@ -172,7 +172,7 @@ if ($_POST['action'] == 'Post orders')
           DELETE FROM
             '.TABLE_BASKET.'
           WHERE
-            '.TABLE_BASKET.'.product_id = '.mysql_real_escape_string ($_POST['product_id']).'
+            '.TABLE_BASKET.'.product_id = '.mysqli_real_escape_string ($connection, $_POST['product_id']).'
             AND '.TABLE_BASKET.'.basket_id = 
               (
                 SELECT
@@ -180,10 +180,10 @@ if ($_POST['action'] == 'Post orders')
                 FROM
                   '.TABLE_BASKET_ALL.'
                 WHERE
-                  '.TABLE_BASKET_ALL.'.delivery_id = '.mysql_real_escape_string ($_POST['new_order_last_added']).'
-                  AND '.TABLE_BASKET_ALL.'.member_id = '.mysql_real_escape_string ($row->member_id).'
+                  '.TABLE_BASKET_ALL.'.delivery_id = '.mysqli_real_escape_string ($connection, $_POST['new_order_last_added']).'
+                  AND '.TABLE_BASKET_ALL.'.member_id = '.mysqli_real_escape_string ($connection, $row->member_id).'
               )';
-        $result = @mysql_query($query, $connection) or die('<br><br>You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:'.WEBMASTER_EMAIL.'">'.WEBMASTER_EMAIL.'</a><br><br><b>Error:</b> Selecting message ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 278392 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 
         // Then, insert the item into the basket (again, if necessary)
         $query = '
@@ -224,35 +224,35 @@ if ($_POST['action'] == 'Post orders')
                 FROM
                   '.TABLE_BASKET_ALL.'
                 WHERE
-                  '.TABLE_BASKET_ALL.'.delivery_id = '.mysql_real_escape_string ($_POST['new_order_last_added']).'
-                  AND '.TABLE_BASKET_ALL.'.member_id = '.mysql_real_escape_string ($row->member_id).'
+                  '.TABLE_BASKET_ALL.'.delivery_id = '.mysqli_real_escape_string ($connection, $_POST['new_order_last_added']).'
+                  AND '.TABLE_BASKET_ALL.'.member_id = '.mysqli_real_escape_string ($connection, $row->member_id).'
               ),
-              "'.mysql_real_escape_string ($_POST['product_id']).'",
-              "'.mysql_real_escape_string ($producer_id).'",
-              "'.mysql_real_escape_string ($product_name).'",
-              "'.mysql_real_escape_string ($detailed_notes).'",
-              "'.mysql_real_escape_string ($subcategory_id).'",
+              "'.mysqli_real_escape_string ($connection, $_POST['product_id']).'",
+              "'.mysqli_real_escape_string ($connection, $producer_id).'",
+              "'.mysqli_real_escape_string ($connection, $product_name).'",
+              "'.mysqli_real_escape_string ($connection, $detailed_notes).'",
+              "'.mysqli_real_escape_string ($connection, $subcategory_id).'",
               "0",
-              "'.mysql_real_escape_string ($pricing_unit).'",
-              "'.mysql_real_escape_string ($ordering_unit).'",
-              "'.mysql_real_escape_string ($row->quantity).'",
-              "'.mysql_real_escape_string ($random_weight).'",
+              "'.mysqli_real_escape_string ($connection, $pricing_unit).'",
+              "'.mysqli_real_escape_string ($connection, $ordering_unit).'",
+              "'.mysqli_real_escape_string ($connection, $row->quantity).'",
+              "'.mysqli_real_escape_string ($connection, $random_weight).'",
               "0",
-              "'.mysql_real_escape_string ($meat_weight_type).'",
-              "'.mysql_real_escape_string ($minimum_weight).'",
-              "'.mysql_real_escape_string ($maximum_weight).'",
-              "'.mysql_real_escape_string ($future_delivery).'",
-              "'.mysql_real_escape_string ($row->qty_remaining).' remaining '.Inflect::pluralize_if ($row->qty_remaining, 'order').'.'.($row->qty_remaining <= $row->warn_cycles ? ' Time to reorder!' : '').'",
-              "'.mysql_real_escape_string ($prodtype_id).'",
-              "'.mysql_real_escape_string ($retail_staple).'",
-              "'.mysql_real_escape_string ($staple_type).'",
-              "'.mysql_real_escape_string ($hidefrominvoice).'",
-              "'.mysql_real_escape_string ($storage_id).'",
-              "'.mysql_real_escape_string ($future_delivery_id).'",
-              "'.mysql_real_escape_string ($tangible).'",
+              "'.mysqli_real_escape_string ($connection, $meat_weight_type).'",
+              "'.mysqli_real_escape_string ($connection, $minimum_weight).'",
+              "'.mysqli_real_escape_string ($connection, $maximum_weight).'",
+              "'.mysqli_real_escape_string ($connection, $future_delivery).'",
+              "'.mysqli_real_escape_string ($connection, $row->qty_remaining).' remaining '.Inflect::pluralize_if ($row->qty_remaining, 'order').'.'.($row->qty_remaining <= $row->warn_cycles ? ' Time to reorder!' : '').'",
+              "'.mysqli_real_escape_string ($connection, $prodtype_id).'",
+              "'.mysqli_real_escape_string ($connection, $retail_staple).'",
+              "'.mysqli_real_escape_string ($connection, $staple_type).'",
+              "'.mysqli_real_escape_string ($connection, $hidefrominvoice).'",
+              "'.mysqli_real_escape_string ($connection, $storage_id).'",
+              "'.mysqli_real_escape_string ($connection, $future_delivery_id).'",
+              "'.mysqli_real_escape_string ($connection, $tangible).'",
               now()
             )';
-        $result = @mysql_query($query, $connection) or die('<br><br>You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:'.WEBMASTER_EMAIL.'">'.WEBMASTER_EMAIL.'</a><br><br><b>Error:</b> Selecting message ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 427021 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         array_push ($completion_array, 'Product added for member #'.$row->member_id.' ('.$row->qty_remaining.' future orders remain).');
       }
     // Finally, update the repeat_orders table with the order that we just posted.
@@ -260,11 +260,11 @@ if ($_POST['action'] == 'Post orders')
       UPDATE
         '.TABLE_REPEAT_ORDERS.'
       SET
-        order_last_added = "'.mysql_real_escape_string ($_POST['new_order_last_added']).'"
+        order_last_added = "'.mysqli_real_escape_string ($connection, $_POST['new_order_last_added']).'"
       WHERE
-        repeat_id = "'.mysql_real_escape_string ($repeat_id).'"
+        repeat_id = "'.mysqli_real_escape_string ($connection, $repeat_id).'"
       ';
-    $result = @mysql_query($query, $connection) or die('<br><br>You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:'.WEBMASTER_EMAIL.'">'.WEBMASTER_EMAIL.'</a><br><br><b>Error:</b> Selecting message ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 781033 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 
 elseif ($_POST['action'] == 'Update settings')
@@ -278,7 +278,7 @@ elseif ($_POST['action'] == 'Update settings')
         warn_cycles = "'.$_POST['warn_cycles'].'"
       WHERE
         repeat_id = "'.$_POST['repeat_id'].'"';
-    $result = @mysql_query($query, $connection) or die('<br><br>You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:'.WEBMASTER_EMAIL.'">'.WEBMASTER_EMAIL.'</a><br><br><b>Error:</b> Selecting message ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 172302 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 elseif ($_POST['action'] == 'Add new item')
   {
@@ -289,7 +289,7 @@ elseif ($_POST['action'] == 'Add new item')
         product_id = "'.$_POST['product_id'].'",
         repeat_cycles = "'.$_POST['repeat_cycles'].'",
         warn_cycles = "'.$_POST['warn_cycles'].'"';
-    $result = @mysql_query($query, $connection) or die('<br><br>You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:'.WEBMASTER_EMAIL.'">'.WEBMASTER_EMAIL.'</a><br><br><b>Error:</b> Selecting message ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 503423 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 
 // Override the mysql error:
@@ -299,7 +299,7 @@ elseif ($_POST['action'] == 'Add new item')
 // This query should probably be reviewed and revised -ROYG
 $query = '
   SET SQL_BIG_SELECTS=1';
-$result = @mysql_query($query, $connection) or die('<br><br>You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:'.WEBMASTER_EMAIL.'">'.WEBMASTER_EMAIL.'</a><br><br><b>Error:</b> Selecting message ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 032732 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 
 // Display current repeat-scheduled products
 $query = '
@@ -320,18 +320,18 @@ $query = '
   LEFT JOIN
     '.TABLE_ORDER_CYCLES.' ON '.TABLE_ORDER_CYCLES.'.delivery_id = '.TABLE_REPEAT_ORDERS.'.order_last_added
   WHERE
-    '.TABLE_BASKET_ALL.'.delivery_id >= '.mysql_real_escape_string (ActiveCycle::delivery_id_next()).' - repeat_cycles
+    '.TABLE_BASKET_ALL.'.delivery_id >= '.mysqli_real_escape_string ($connection, ActiveCycle::delivery_id_next()).' - repeat_cycles
     AND '.TABLE_BASKET.'.item_price != 0
   GROUP BY
     '.TABLE_REPEAT_ORDERS.'.product_id';
-$result = @mysql_query($query, $connection) or die('<br><br>You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:'.WEBMASTER_EMAIL.'">'.WEBMASTER_EMAIL.'</a><br><br><b>Error:</b> Selecting message ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 289329 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $display .= '
   <table class="control" border="0" cellspacing="0" cellpadding="3" width="95%" align="center">
     <tr>
       <th style="border-bottom:1px solid #000;">Product</th>
       <th colspan="2" style="border-bottom:1px solid #000;">Parameters</th>
     </tr>';
-while ( $row = mysql_fetch_object($result) )
+while ( $row = mysqli_fetch_object ($result) )
   {
     $display .= '
     <form action="'.$_SERVER['SCRIPT_NAME'].'" method="post">

@@ -23,9 +23,9 @@ list ($member_id, $field_name, $new_value) = explode (':', $_POST['query_data'])
 $query = '
   SHOW COLUMNS FROM
     '.TABLE_MEMBER;
-$result= mysql_query($query) or die("Error: " . mysql_error());
+$result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 784281 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $member_columns_array = array ();
-while ($row = mysql_fetch_object($result))
+while ($row = mysqli_fetch_object ($result))
   {
     array_push ($member_columns_array, $row->Field);
     // Get an array of all available auth_types
@@ -53,14 +53,14 @@ if (! in_array ($field_name, $member_columns_array))
 // Get the current value for that field
 $query = '
   SELECT
-    '.mysql_real_escape_string ($field_name).'
+    '.mysqli_real_escape_string ($connection, $field_name).'
   FROM
     '.TABLE_MEMBER.'
   WHERE
-    member_id = "'.mysql_real_escape_string ($member_id).'"';
+    member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"';
 
-$result= mysql_query($query) or die("Error: " . mysql_error());
-while ($row = mysql_fetch_array($result))
+$result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 378994 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     $old_value = $row[$field_name];
   }
@@ -73,11 +73,11 @@ if ($old_value != $new_value)
       UPDATE
         '.TABLE_MEMBER.'
       SET
-        '.mysql_real_escape_string ($field_name).' = "'.mysql_real_escape_string ($new_value).'"
+        '.mysqli_real_escape_string ($connection, $field_name).' = "'.mysqli_real_escape_string ($connection, $new_value).'"
       WHERE
-        member_id = "'.mysql_real_escape_string ($member_id).'"';
+        member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"';
 
-    $result= mysql_query($query) or die("Error: " . mysql_error());
+    $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 312836 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     echo 'Changed value: '.$old_value;
   }
 else
@@ -86,5 +86,3 @@ else
   }
 
 // Return an informative message
-
-?>

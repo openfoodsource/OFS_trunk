@@ -6,8 +6,8 @@ valid_auth('producer,producer_admin');
 $show_search = false;
 
 $where_misc = '
-    AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string($delivery_id).'"
-    AND '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysql_real_escape_string($producer_id_you).'"';
+    AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
+    AND '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id_you).'"';
 
 $order_by = '
     '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_code,
@@ -87,7 +87,6 @@ $query = '
     (SELECT GROUP_CONCAT(site_id) FROM '.TABLE_AVAILABILITY.' WHERE '.TABLE_AVAILABILITY.'.producer_id='.NEW_TABLE_PRODUCTS.'.producer_id) AS availability_list,
     '.NEW_TABLE_MESSAGES.'.message,
     '.TABLE_ORDER_CYCLES.'.delivery_date
-
   FROM
     '.NEW_TABLE_BASKETS.'
   LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' USING(basket_id)
@@ -110,4 +109,3 @@ $query = '
     $where_auth_type.'
   ORDER BY'.
     $order_by;
-?>

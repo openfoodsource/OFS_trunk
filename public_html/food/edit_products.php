@@ -50,7 +50,7 @@ elseif (isset ($_GET['product_id']) &&
     // Abort if the producer does not match the selected producer
     if ($product_info['producer_id'] != $producer_id && ! CurrentMember::auth_type('producer_admin'))
       {
-        die(debug_print ("ERROR: 367634 ", 'Product requested is not associated with this producer.', basename(__FILE__).' LINE '.__LINE__));
+        die (debug_print ("ERROR: 367634 ", 'Product requested is not associated with this producer.', basename(__FILE__).' LINE '.__LINE__));
       }
   }
 // And if no product_id or product_version then assume we are adding a product
@@ -65,7 +65,7 @@ elseif (isset ($_GET['producer_id']))
   }
 else
   {
-    die(debug_print ("ERROR: 543612 ", 'Attempt to edit a product without providing required arguments.', basename(__FILE__).' LINE '.__LINE__));
+    die (debug_print ("ERROR: 543612 ", 'Attempt to edit a product without providing required arguments.', basename(__FILE__).' LINE '.__LINE__));
   }
 // Process any information posted previously
 include('func/edit_product_screen_updatequery.php');

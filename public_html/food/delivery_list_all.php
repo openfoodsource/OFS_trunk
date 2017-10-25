@@ -20,14 +20,14 @@ $sqlr = '
     '.TABLE_ORDER_CYCLES.')
   LEFT JOIN '.TABLE_HUBS.' USING(hub_id)
   WHERE
-    '.TABLE_ORDER_CYCLES.'.delivery_id = "'.mysql_real_escape_string($delivery_id).'"
+    '.TABLE_ORDER_CYCLES.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
   GROUP BY
     '.TABLE_ROUTE.'.route_id
   ORDER BY
     '.TABLE_HUBS.'.hub_short ASC,
     '.TABLE_ROUTE.'.route_name ASC';
-$rsr = @mysql_query($sqlr, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-while ( $row = mysql_fetch_array($rsr) )
+$rsr = @mysqli_query ($connection, $sqlr) or die (debug_print ("ERROR: 264782 ", array ($sqlr, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_array ($rsr, MYSQLI_ASSOC) )
   {
     $route_id = $row['route_id'];
     $route_name = $row['route_name'];
@@ -48,13 +48,13 @@ while ( $row = mysql_fetch_array($rsr) )
       LEFT JOIN '.NEW_TABLE_BASKETS.' USING(basket_id)
       LEFT JOIN '.NEW_TABLE_SITES.' USING(site_id)
       WHERE
-        '.NEW_TABLE_BASKETS.'.delivery_id ="'.mysql_real_escape_string ($delivery_id).'"
-        AND '.NEW_TABLE_SITES.'.route_id = "'.mysql_real_escape_string ($route_id).'"
+        '.NEW_TABLE_BASKETS.'.delivery_id ="'.mysqli_real_escape_string ($connection, $delivery_id).'"
+        AND '.NEW_TABLE_SITES.'.route_id = "'.mysqli_real_escape_string ($connection, $route_id).'"
         AND '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock != "1"
       GROUP BY
         '.NEW_TABLE_BASKETS.'.delivery_id';
-    $result_sum6 = @mysql_query($sql_sum6, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-    $num_mem = mysql_numrows($result_sum6);
+    $result_sum6 = @mysqli_query ($connection, $sql_sum6) or die (debug_print ("ERROR: 156734 ", array ($sql_sum6, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $num_mem = mysqli_num_rows ($result_sum6);
     if ( $num_mem )
       {
         $display .= '
@@ -79,15 +79,15 @@ while ( $row = mysql_fetch_array($rsr) )
             '.NEW_TABLE_SITES.'
           LEFT JOIN '.TABLE_HUBS.' USING(hub_id)
           WHERE
-            route_id = "'.mysql_real_escape_string ($route_id).'"
+            route_id = "'.mysqli_real_escape_string ($connection, $route_id).'"
             AND '.NEW_TABLE_SITES.'.site_type = "customer"
           GROUP BY
             site_id
           ORDER BY
             site_long ASC';
-        $rsr2 = @mysql_query($sqlr2, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-        $num_del = mysql_numrows($rsr2);
-        while ( $row = mysql_fetch_array($rsr2) )
+        $rsr2 = @mysqli_query ($connection, $sqlr2) or die (debug_print ("ERROR: 897854 ", array ($sqlr2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $num_del = mysqli_num_rows ($rsr2);
+        while ( $row = mysqli_fetch_array ($rsr2, MYSQLI_ASSOC) )
           {
             $site_id = $row['site_id'];
             $site_long = $row['site_long'];
@@ -115,19 +115,19 @@ while ( $row = mysql_fetch_array($rsr) )
               LEFT JOIN
                 '.NEW_TABLE_SITES.' ON '.NEW_TABLE_SITES.'.site_id = '.NEW_TABLE_BASKETS.'.site_id
               WHERE
-                '.NEW_TABLE_BASKETS.'.site_id = "'.mysql_real_escape_string ($site_id).'"
-                AND '.NEW_TABLE_SITES.'.site_id = "'.mysql_real_escape_string ($site_id).'"
-                AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
+                '.NEW_TABLE_BASKETS.'.site_id = "'.mysqli_real_escape_string ($connection, $site_id).'"
+                AND '.NEW_TABLE_SITES.'.site_id = "'.mysqli_real_escape_string ($connection, $site_id).'"
+                AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
                 AND '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock != "1"
               GROUP BY
                 basket_id
               ORDER BY
                 last_name ASC';
-            $rs = @mysql_query($sql, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-            $num_orders = mysql_numrows($rs);
+            $rs = @mysqli_query ($connection, $sql) or die (debug_print ("ERROR: 783563 ", array ($sql, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            $num_orders = mysqli_num_rows ($rs);
             unset ($all_route_emails);
             $all_route_emails = array();
-            while ( $row = mysql_fetch_array($rs) )
+            while ( $row = mysqli_fetch_array ($rs, MYSQLI_ASSOC) )
               {
                 $row['hub_short'] = $hub_short; // Set this so it will be included in the convert_route_code function.
                 $basket_id = $row['basket_id'];

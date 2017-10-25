@@ -397,6 +397,4 @@ function show_listing_row($data, $row_type)
       }
     return $row_content;
     return $row_content;
-  };
-
-?>
+  }

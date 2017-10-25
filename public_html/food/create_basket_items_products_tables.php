@@ -40,10 +40,10 @@ if ($_REQUEST['ajax'] == 'yes')
             '.NEW_TABLE_BASKET_ITEMS.'.*
           FROM '.NEW_TABLE_BASKETS.'
           INNER JOIN '.NEW_TABLE_BASKET_ITEMS.' USING(basket_id)
-          WHERE delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
+          WHERE delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
           ORDER BY product_id';
-        $result= mysql_query($query) or die("Error: 702042 " . mysql_error());
-        while($row = mysql_fetch_object($result))
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 702042 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        while($row = mysqli_fetch_object ($result))
           {
             $ajax_content .= '
           <li id="bpid:'.$row->bpid.'" class="bpid_incomplete" onClick="window.open(\'create_basket_items_products_tables.php?ajax=yes&process=view_invoice&basket_id='.$row->basket_id.'\',\'external\')"><div class="p_list_pid">'.$row->product_id.'</div><div class="p_list_pid">'.$row->bpid.'</div><div class="p_list_name">'.$row->product_name.'</div></li>';
@@ -67,9 +67,9 @@ if ($_REQUEST['ajax'] == 'yes')
           SELECT *
           FROM '.NEW_TABLE_BASKET_ITEMS.'
           LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(product_id, product_version)
-          WHERE bpid = "'.mysql_real_escape_string($_REQUEST['bpid']).'"';
-        $result_basket_items = mysql_query($query_basket_items) or die("Error: 193752 " . mysql_error());
-        if ($row_basket_items = mysql_fetch_array($result_basket_items) && $row_basket_items['product_name'])
+          WHERE bpid = "'.mysqli_real_escape_string ($connection, $_REQUEST['bpid']).'"';
+        $result_basket_items = mysqli_query ($connection, $query_basket_items) or die (debug_print ("ERROR: 193752 ", array ($query_basket_items, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if ($row_basket_items = mysqli_fetch_array ($result_basket_items, MYSQLI_ASSOC) && $row_basket_items['product_name'])
           {
             // Everything fine so far (assuming if we have a bpid that points to a valid product_name
             // then it is already handled in the database
@@ -96,9 +96,9 @@ if ($_REQUEST['ajax'] == 'yes')
             '.TABLE_PRODUCT_PREP_ORIG.'.confirmed
           FROM '.NEW_TABLE_BASKET_ITEMS.'
           LEFT JOIN '.TABLE_PRODUCT_PREP_ORIG.' USING(product_id)
-          WHERE bpid = "'.mysql_real_escape_string($_REQUEST['bpid']).'"';
-        $result_customer_basket_items = mysql_query($query_customer_basket_items) or die("Error: 790962 " . mysql_error());
-        if (! $row_customer_basket_items = mysql_fetch_array($result_customer_basket_items))
+          WHERE bpid = "'.mysqli_real_escape_string ($connection, $_REQUEST['bpid']).'"';
+        $result_customer_basket_items = mysqli_query ($connection, $query_customer_basket_items) or die (debug_print ("ERROR: 790962 ", array ($query_customer_basket_items, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if (! $row_customer_basket_items = mysqli_fetch_array ($result_customer_basket_items, MYSQLI_ASSOC))
           {
             // Failure
             echo "PAUSE                         No result found for BPID=".$_REQUEST['bpid'];
@@ -145,10 +145,10 @@ if ($_REQUEST['ajax'] == 'yes')
           SELECT *
           FROM '.NEW_TABLE_PRODUCTS.'
           WHERE product_id = "'.$row_customer_basket_items['product_id'].'"';
-        $result_products = mysql_query($query_products) or die("Error: 709269 " . mysql_error());
+        $result_products = mysqli_query ($connection, $query_products) or die (debug_print ("ERROR: 709269 ", array ($query_products, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $version_match = 0;
         $version_max = 0;
-        while ($row_products = mysql_fetch_array($result_products))
+        while ($row_products = mysqli_fetch_array ($result_products, MYSQLI_ASSOC))
           {
             // Set the default value, to be clobbered if false
             $this_row_matches = true;
@@ -278,41 +278,41 @@ if ($_REQUEST['ajax'] == 'yes')
                 )
               VALUES
                 (
-                  "'.mysql_real_escape_string($row_customer_basket_items['product_id']).'",
-                  "'.mysql_real_escape_string($version_match).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['producer_id']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['product_name']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['account_number']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['inventory_pull']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['inventory_id']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['detailed_notes']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['subcategory_id']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['future_delivery']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['future_delivery_type']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['prodtype_id']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['item_price']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['pricing_unit']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['ordering_unit']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['random_weight']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['meat_weight_type']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['minimum_weight']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['maximum_weight']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['extra_charge']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['product_adjust_fee']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['image_id']).'",
-                  "'.mysql_real_escape_string($listing_auth_type).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['taxable']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['confirmed']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['retail_staple']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['staple_type']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['created']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['modified']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['tangible']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['sticky']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['hide_from_invoice']).'",
-                  "'.mysql_real_escape_string($row_customer_basket_items['storage_id']).'"
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['product_id']).'",
+                  "'.mysqli_real_escape_string ($connection, $version_match).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['producer_id']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['product_name']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['account_number']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['inventory_pull']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['inventory_id']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['detailed_notes']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['subcategory_id']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['future_delivery']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['future_delivery_type']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['prodtype_id']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['item_price']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['pricing_unit']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['ordering_unit']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['random_weight']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['meat_weight_type']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['minimum_weight']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['maximum_weight']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['extra_charge']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['product_adjust_fee']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['image_id']).'",
+                  "'.mysqli_real_escape_string ($connection, $listing_auth_type).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['taxable']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['confirmed']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['retail_staple']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['staple_type']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['created']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['modified']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['tangible']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['sticky']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['hide_from_invoice']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['storage_id']).'"
                 )';
-            $result_update_products = mysql_query($query_update_products) or die("Error: 620523 " . mysql_error());
+            $result_update_products = mysqli_query ($connection, $query_update_products) or die (debug_print ("ERROR: 620523 ", array ($query_update_products, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
           }
         // Up until now, out_of_stock has been ALL or NOTHING. Now the out_of_stock is either zero (for
         // items that are not out) or some number up to the full quantity that has been outed.
@@ -331,20 +331,20 @@ if ($_REQUEST['ajax'] == 'yes')
         $query_update_basket_items = '
           UPDATE '.NEW_TABLE_BASKET_ITEMS.'
           SET
-            basket_id = "'.mysql_real_escape_string($row_customer_basket_items['basket_id']).'",
-            product_id = "'.mysql_real_escape_string($row_customer_basket_items['product_id']).'",
-            product_version = "'.mysql_real_escape_string($version_match).'",
-            quantity = "'.mysql_real_escape_string($row_customer_basket_items['quantity']).'",
-            total_weight = "'.mysql_real_escape_string($row_customer_basket_items['total_weight']).'",
-            product_fee_percent = "'.mysql_real_escape_string($row_customer_basket_items['product_adjust_fee']).'",
-            subcategory_fee_percent = "'.mysql_real_escape_string($row_customer_basket_items['subcat_adjust_fee']).'",
-            producer_fee_percent = "'.mysql_real_escape_string($row_customer_basket_items['producer_adjust_fee']).'",
-            out_of_stock = "'.mysql_real_escape_string($out_of_stock).'",
-            future_delivery = "'.mysql_real_escape_string($row_customer_basket_items['future_delivery']).'",
-            future_delivery_type = "'.mysql_real_escape_string($row_customer_basket_items['future_delivery_type']).'",
-            date_added = "'.mysql_real_escape_string($row_customer_basket_items['date_added']).'"
-          WHERE bpid = "'.mysql_real_escape_string($row_customer_basket_items['bpid']).'"';
-        $result_update_basket_items = mysql_query($query_update_basket_items) or die("Error: 208548 " . mysql_error());
+            basket_id = "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['basket_id']).'",
+            product_id = "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['product_id']).'",
+            product_version = "'.mysqli_real_escape_string ($connection, $version_match).'",
+            quantity = "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['quantity']).'",
+            total_weight = "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['total_weight']).'",
+            product_fee_percent = "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['product_adjust_fee']).'",
+            subcategory_fee_percent = "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['subcat_adjust_fee']).'",
+            producer_fee_percent = "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['producer_adjust_fee']).'",
+            out_of_stock = "'.mysqli_real_escape_string ($connection, $out_of_stock).'",
+            future_delivery = "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['future_delivery']).'",
+            future_delivery_type = "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['future_delivery_type']).'",
+            date_added = "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['date_added']).'"
+          WHERE bpid = "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['bpid']).'"';
+        $result_update_basket_items = mysqli_query ($connection, $query_update_basket_items) or die (debug_print ("ERROR: 208548 ", array ($query_update_basket_items, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         // One last thing to do:
         // If there was a customer_notes_to_producer, we need to add them to the messages table
         if (strlen ($row_customer_basket_items['customer_notes_to_producer']) > 0)
@@ -366,12 +366,12 @@ if ($_REQUEST['ajax'] == 'yes')
               VALUES
                 (
                   (SELECT message_type_id FROM '.NEW_TABLE_MESSAGE_TYPES.' WHERE description = "customer message to producer"),
-                  "'.mysql_real_escape_string($row_customer_basket_items['bpid']).'",
+                  "'.mysqli_real_escape_string ($connection, $row_customer_basket_items['bpid']).'",
                   "",
                   "",
-                  "'.mysql_real_escape_string(str_replace ('\\', '', $row_customer_basket_items['customer_notes_to_producer'])).'"
+                  "'.mysqli_real_escape_string ($connection, str_replace ('\\', '', $row_customer_basket_items['customer_notes_to_producer'])).'"
                 )';
-            $result_update_messages = mysql_query($query_update_messages) or die("Error: 072343 " . mysql_error());
+            $result_update_messages = mysqli_query ($connection, $query_update_messages) or die (debug_print ("ERROR: 072343 ", array ($query_update_messages, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
           }
         // If we don't have a product_id, then pause operations
         if (! $row_customer_basket_items['product_id'])
@@ -412,8 +412,8 @@ $query = '
     '.TABLE_ORDER_CYCLES.'
   RIGHT JOIN '.NEW_TABLE_BASKETS.' ON '.TABLE_ORDER_CYCLES.'.delivery_id = '.NEW_TABLE_BASKETS.'.delivery_id
   GROUP BY '.NEW_TABLE_BASKETS.'.delivery_id';
-$result= mysql_query($query) or die("Error: 899032" . mysql_error());
-while($row = mysql_fetch_object($result))
+$result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 838032 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while($row = mysqli_fetch_object ($result))
   {
     $content .= '          <li id="delivery_id:'.$row->delivery_id.'" class="del_complete"><div class="c_list_cid">'.$row->delivery_id.'</div><div class="c_list_name">'.$row->delivery_date.' ['.$row->quantity.' Orders]</div></li>';
   }

@@ -27,9 +27,9 @@ if ($_REQUEST['ajax'] == 'yes')
             $query = '
               SELECT delivery_date
               FROM '.TABLE_ORDER_CYCLES.'
-              WHERE delivery_id = "'.mysql_real_escape_string($_REQUEST['delivery_id']).'"';
-            $result= mysql_query($query) or die("Error: 754937" . mysql_error());
-            if ($row = mysql_fetch_array($result))
+              WHERE delivery_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['delivery_id']).'"';
+            $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 754937 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
               {
                 $ledger_data['timestamp'] = $row['delivery_date'].' 00:00:00';
               }
@@ -76,8 +76,8 @@ if ($_REQUEST['ajax'] == 'yes')
                     // Update the transactions table to show this one has been moved
                     $query = '
                       UPDATE '.TABLE_TRANSACTIONS.'
-                      SET xfer_to_ledger = "'.mysql_real_escape_string(substr($content, 22)).'"
-                      WHERE transaction_id = "'.mysql_real_escape_string($_REQUEST['transaction_id']).'"';
+                      SET xfer_to_ledger = "'.mysqli_real_escape_string ($connection, substr($content, 22)).'"
+                      WHERE transaction_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['transaction_id']).'"';
                   }
               }
           }
@@ -108,10 +108,10 @@ if ($_REQUEST['ajax'] == 'yes')
           WHERE
             transaction_type = "'.$_REQUEST['ttype_id'].'"
             AND xfer_to_ledger = "0"';
-        $result= mysql_query($query) or die("Error: 863024" . mysql_error());
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 823024 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $content .= '
           <ul>';
-        while($row = mysql_fetch_array($result))
+        while($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
           {
             $content .= '
               <li id="trans_id:'.$row['transaction_id'].'" class="trans_detail trans_incomplete" onclick="get_transaction_info('.$row['transaction_id'].')">
@@ -155,8 +155,8 @@ if ($_REQUEST['ajax'] == 'yes')
             '.TABLE_TRANS_TYPES.' ON '.TABLE_TRANS_TYPES.'.ttype_id = '.TABLE_TRANSACTIONS.'.transaction_type
           WHERE
             transaction_id = "'.$_REQUEST['transaction_id'].'"';
-        $result= mysql_query($query) or die("Error: 742752" . mysql_error());
-        if($row = mysql_fetch_array($result))
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 747752 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
           {
             $content .= json_encode($row);
             echo $content;
@@ -187,12 +187,12 @@ if ($_REQUEST['ajax'] == 'yes')
             '.TABLE_TRANSACTIONS.'
           RIGHT JOIN '.TABLE_TRANS_TYPES.' ON '.TABLE_TRANSACTIONS.'.transaction_type = '.TABLE_TRANS_TYPES.'.ttype_id
           WHERE
-            ttype_parent = "'.mysql_real_escape_string($_REQUEST['ttype_parent']).'"
+            ttype_parent = "'.mysqli_real_escape_string ($connection, $_REQUEST['ttype_parent']).'"
             AND '.TABLE_TRANSACTIONS.'.transaction_id IS NOT NULL
             AND xfer_to_ledger = "0"
           GROUP BY '.TABLE_TRANS_TYPES.'.ttype_id';
-        $result= mysql_query($query) or die("Error: 899032" . mysql_error());
-        while($row = mysql_fetch_object($result))
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 891036 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        while($row = mysqli_fetch_object ($result))
           {
 
 // Probably need to add other table linkage elements here
@@ -321,8 +321,8 @@ $query = '
     ttypes2.ttype_id IS NOT NULL 
   GROUP BY
     ttype_id';
-$result= mysql_query($query) or die("Error: 603823" . mysql_error());
-while($row = mysql_fetch_array($result))
+$result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 603833 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     // Create a button for each
     $button_content .= '
@@ -444,5 +444,3 @@ echo '
   '.$content.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-
-?>

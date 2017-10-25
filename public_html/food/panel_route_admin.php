@@ -39,10 +39,10 @@ $display_route = '
     FROM
       '.TABLE_ROUTE.'
     WHERE
-      rtemgr_member_id = "'.mysql_real_escape_string ($_SESSION['member_id']).'"
+      rtemgr_member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"
       AND admin != "1"';
-$resulta = @mysql_query($sqla, $connection) or die("Couldn't execute query -a.");
-$rt_num = mysql_numrows($resulta);
+$resulta = @mysqli_query ($connection, $sqla) or die (debug_print ("ERROR: 105478 ", array ($sqla, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$rt_num = mysqli_num_rows ($resulta);
 
 $page_title_html = '<span class="title">'.$_SESSION['show_name'].'</span>';
 $page_subtitle_html = '<span class="subtitle">Route Manager Panel</span>';

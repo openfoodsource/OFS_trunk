@@ -7,12 +7,12 @@ $show_search = true;
 
 // The where_catsubcat constraints are only used in the type='new' option (called from category_list.php)
 if ($_GET['subcat_id']) $where_catsubcat = '
-    AND '.NEW_TABLE_PRODUCTS.'.subcategory_id = '.mysql_real_escape_string ($_REQUEST['subcat_id']);
+    AND '.NEW_TABLE_PRODUCTS.'.subcategory_id = '.mysqli_real_escape_string ($connection, $_REQUEST['subcat_id']);
 if ($_GET['category_id']) $where_catsubcat = '
     AND (
-      '.TABLE_CATEGORY.'.category_id = '.mysql_real_escape_string ($_GET['category_id']).'
+      '.TABLE_CATEGORY.'.category_id = '.mysqli_real_escape_string ($connection, $_GET['category_id']).'
       OR
-      '.TABLE_CATEGORY.'.parent_id = '.mysql_real_escape_string ($_GET['category_id']).'
+      '.TABLE_CATEGORY.'.parent_id = '.mysqli_real_escape_string ($connection, $_GET['category_id']).'
       )';
 
 $order_by = '
@@ -110,7 +110,7 @@ $query = '
   LEFT JOIN '.TABLE_PRODUCT_STORAGE_TYPES.' ON '.NEW_TABLE_PRODUCTS.'.storage_id = '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_id
   LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' ON
     ('.NEW_TABLE_BASKET_ITEMS.'.product_id = '.NEW_TABLE_PRODUCTS.'.product_id
-    AND '.NEW_TABLE_BASKET_ITEMS.'.basket_id = "'.mysql_real_escape_string (CurrentBasket::basket_id()).'"
+    AND '.NEW_TABLE_BASKET_ITEMS.'.basket_id = "'.mysqli_real_escape_string ($connection, CurrentBasket::basket_id()).'"
     AND '.NEW_TABLE_BASKET_ITEMS.'.basket_id > 0)
   LEFT JOIN '.NEW_TABLE_MESSAGES.' ON (referenced_key1 = bpid AND message_type_id =
     (SELECT message_type_id FROM '.NEW_TABLE_MESSAGE_TYPES.' WHERE description = "customer notes to producer"))
@@ -125,4 +125,3 @@ $query = '
   GROUP BY CONCAT('.NEW_TABLE_PRODUCTS.'.product_id, "-", '.NEW_TABLE_PRODUCTS.'.product_version)
   ORDER BY'.
     $order_by;
-?>

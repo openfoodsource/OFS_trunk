@@ -8,7 +8,7 @@ $pager = array();
 // Set up some variables that might be needed
 if (isset ($_SESSION['member_id'])) $member_id = $_SESSION['member_id'];
 if (isset ($_SESSION['producer_id_you'])) $producer_id_you = $_SESSION['producer_id_you'];
-$delivery_id = mysql_real_escape_string (ActiveCycle::delivery_id());
+$delivery_id = mysqli_real_escape_string ($connection, ActiveCycle::delivery_id());
 
 // Allow cashier to override member_id
 if (isset ($_GET['member_id']) && CurrentMember::auth_type('cashier'))
@@ -18,7 +18,7 @@ if (isset ($_GET['producer_id']) && CurrentMember::auth_type('cashier,producer_a
   $producer_id_you = $_GET['producer_id'];
 // Allow anyone to override the delivery_id
 if ($_GET['delivery_id'])
-  $delivery_id = mysql_real_escape_string ($_GET['delivery_id']);
+  $delivery_id = mysqli_real_escape_string ($connection, $_GET['delivery_id']);
 
 // Initialize display of wholesale and retail to false
 $wholesale_member = false;
@@ -50,14 +50,14 @@ include_once ('show_report/'.$report_type.'_template.php');
 // $query .= '
 //   LIMIT '.$query_limit;
 
-// $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 785033 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+// $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 782533 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // // Get the total number of rows (for pagination) -- not counting the LIMIT condition
 // $query_found_rows = '
 //   SELECT
 //     FOUND_ROWS() AS found_rows';
-// $result_found_rows = @mysql_query($query_found_rows, $connection) or die(debug_print ("ERROR: 860342 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+// $result_found_rows = @mysqli_query ($connection, $query_found_rows) or die (debug_print ("ERROR: 820342 ", array ($query_found_rows, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // // Handle pagination for multi-page results
-// $row_found_rows = mysql_fetch_array($result_found_rows);
+// $row_found_rows = mysqli_fetch_array ($result_found_rows, MYSQLI_ASSOC);
 // $pager['found_rows'] = $row_found_rows['found_rows'];
 // if ($_GET['page']) $pager['this_page'] = $_GET['page'];
 // else $pager['this_page'] = 1;
@@ -84,11 +84,11 @@ $unique_data['show_major_product'] = $show_major_product;
 $unique_data['show_minor_product'] = $show_minor_product;
 
 // Begin with the product results
-$result_product = mysql_query($query_product, $connection) or die(debug_print ("ERROR: 752932 ", array ($query_product,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$number_of_rows = mysql_num_rows ($result_product);
+$result_product = mysqli_query ($connection, $query_product) or die (debug_print ("ERROR: 752932 ", array ($query_product, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$number_of_rows = mysqli_num_rows ($result_product);
 $this_row = 0;
 // Load the data structure with all the values
-while ($row_product = mysql_fetch_array ($result_product))
+while ($row_product = mysqli_fetch_array ($result_product, MYSQLI_ASSOC))
   {
     $product_data[++ $this_row] = (array) $row_product;
   }
@@ -167,10 +167,10 @@ if ($show_major_product) $display .= major_product_close($product_data, $unique_
 
 
 // Load the data structure with all the values
-$result_adjustment = mysql_query($query_adjustment, $connection) or die(debug_print ("ERROR: 567292 ", array ($query_adjustment,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$number_of_rows = mysql_num_rows ($result_adjustment);
+$result_adjustment = mysqli_query ($connection, $query_adjustment) or die (debug_print ("ERROR: 567292 ", array ($query_adjustment, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$number_of_rows = mysqli_num_rows ($result_adjustment);
 $this_row = 0;
-while ($row_adjustment = mysql_fetch_array ($result_adjustment))
+while ($row_adjustment = mysqli_fetch_array ($result_adjustment, MYSQLI_ASSOC))
   {
     $adjustment_data[++ $this_row] = (array) $row_adjustment;
   }

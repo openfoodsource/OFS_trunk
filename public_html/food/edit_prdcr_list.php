@@ -20,7 +20,7 @@ if( $_REQUEST['prep'] == 'live' )
       SELECT '.TABLE_PRODUCT_PREP.'.*
       FROM '.TABLE_PRODUCT_PREP.'
       '.$where_confirmed;
-    $resultprep = @mysql_query($sqlprep, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+    $resultprep = @mysqli_query($connection, $sqlprep) or die (debug_print ("ERROR: 155216 ", array ($sqlprep, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     if($resultprep)
       {
         $message .= "New product list has been copied.<br>";
@@ -31,7 +31,7 @@ if( $_REQUEST['prep'] == 'live' )
       }
     $sqldrop = '
       DROP TABLE '.TABLE_PRODUCT;
-    $resultdrop = @mysql_query($sqldrop, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+    $resultdrop = @mysqli_query($connection, $sqldrop) or die (debug_print ("ERROR: 572367 ", array ($sqldrop, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     if($resultdrop)
       {
         $message .= "Old product list has been dropped.<br>";
@@ -43,7 +43,7 @@ if( $_REQUEST['prep'] == 'live' )
     $sqlrename = '
       ALTER TABLE '.TABLE_PRODUCT_TEMP.'
       RENAME TO '.TABLE_PRODUCT;
-    $resultrename = @mysql_query($sqlrename, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+    $resultrename = @mysqli_query($connection, $sqlrename) or die (debug_print ("ERROR: 672338 ", array ($sqlrename, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     if($resultrename)
       {
         $message .= "New Product list has been renamed and the CHANGES ARE LIVE.<br>";
@@ -56,7 +56,7 @@ if( $_REQUEST['prep'] == 'live' )
       ALTER TABLE 
         '.TABLE_PRODUCT.'
       ADD PRIMARY KEY ( product_id )';
-    $resultindex = @mysql_query($sqlindex, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+    $resultindex = @mysqli_query($connection, $sqlindex) or die (debug_print ("ERROR: 743821 ", array ($sqlindex, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     if($resultindex)
       {
         $message .= "New Product list has been indexed.<br>";
@@ -73,8 +73,8 @@ if( $_REQUEST['confirm'] == 'yes' )
         '.TABLE_PRODUCT_PREP.'
       SET
         confirmed = "1"
-      WHERE producer_id = "'.mysql_real_escape_string ($_REQUEST['producer_id']).'"';
-    $result = @mysql_query($sqlu,$connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+      WHERE producer_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['producer_id']).'"';
+    $result = @mysqli_query($connection, $sqlu) or die (debug_print ("ERROR: 428931 ", array ($sqlu, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $message = 'The Product List for '.$_REQUEST['producer_id'].' has been confirmed.<br>';
   }
 if (isset ($_REQUEST['list_producer']))
@@ -95,9 +95,9 @@ if (isset ($_REQUEST['list_producer']))
       UPDATE
         '.TABLE_PRODUCER.'
       SET
-        donotlist_producer = "'.mysql_real_escape_string ($donotlist_prdcr).'"
-      WHERE producer_id = "'.mysql_real_escape_string ($_REQUEST['producer_id']).'"';
-    $resultr = @mysql_query($sqlr,$connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+        donotlist_producer = "'.mysqli_real_escape_string ($connection, $donotlist_prdcr).'"
+      WHERE producer_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['producer_id']).'"';
+    $resultr = @mysqli_query($connection, $sqlr) or die (debug_print ("ERROR: 278193 ", array ($sqlr, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $message = "$producer_id has been updated.<br>";
   }
 $display .= '
@@ -124,9 +124,9 @@ $sqlp = '
   ORDER BY
     donotlist_producer,
     business_name ASC';
-$resultp = @mysql_query($sqlp, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-$prdcr_count = mysql_numrows($resultp);
-while ( $row = mysql_fetch_array($resultp) )
+$resultp = @mysqli_query($connection, $sqlp) or die (debug_print ("ERROR: 385823 ", array ($sqlp, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$prdcr_count = mysqli_num_rows ($resultp);
+while ( $row = mysqli_fetch_array ($resultp) )
   {
     $producer_id = $row['producer_id'];
     $business_name = $row['business_name'];
@@ -140,11 +140,11 @@ while ( $row = mysql_fetch_array($resultp) )
       FROM
         '.TABLE_PRODUCT_PREP.'
       WHERE
-        producer_id = "'.mysql_real_escape_string ($producer_id).'"
+        producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
       GROUP BY
         producer_id';
-    $result_count = @mysql_query($sql_count, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-    while ( $row = mysql_fetch_array($result_count) )
+    $result_count = @mysqli_query($connection, $sql_count) or die (debug_print ("ERROR: 127873 ", array ($sql_count, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ( $row = mysqli_fetch_array ($result_count) )
       {
         $count_prod = $row['count_prod'];
         $count_confirmed = $row['count_confirmed'];

@@ -98,21 +98,21 @@ if ($action == 'post_edit' && $errors_found == false)
       UPDATE
         '.TABLE_ORDER_CYCLES.'
       SET
-        date_open = "'.date ('Y-m-d H:i:s', strtotime (mysql_real_escape_string($_POST['date_open']))).'",
-        date_closed = "'.date ('Y-m-d H:i:s', strtotime (mysql_real_escape_string($_POST['date_closed']))).'",
-        order_fill_deadline = "'.date ('Y-m-d H:i:s', strtotime (mysql_real_escape_string($_POST['order_fill_deadline']))).'",
-        delivery_date = "'.date ('Y-m-d', strtotime (mysql_real_escape_string($_POST['delivery_date']))).'",
+        date_open = "'.date ('Y-m-d H:i:s', strtotime (mysqli_real_escape_string ($connection, $_POST['date_open']))).'",
+        date_closed = "'.date ('Y-m-d H:i:s', strtotime (mysqli_real_escape_string ($connection, $_POST['date_closed']))).'",
+        order_fill_deadline = "'.date ('Y-m-d H:i:s', strtotime (mysqli_real_escape_string ($connection, $_POST['order_fill_deadline']))).'",
+        delivery_date = "'.date ('Y-m-d', strtotime (mysqli_real_escape_string ($connection, $_POST['delivery_date']))).'",
         customer_type = "'.$customer_type.'",
-        msg_all = "'.nl2br (mysql_real_escape_string($_POST['msg_all'])).'",
-        msg_bottom = "'.nl2br (mysql_real_escape_string($_POST['msg_bottom'])).'",
-        coopfee = "'.mysql_real_escape_string($_POST['coopfee']).'",
-        invoice_price = "'.mysql_real_escape_string($_POST['invoice_price']).'",
-        producer_markdown = "'.mysql_real_escape_string($_POST['producer_markdown']).'",
-        retail_markup = "'.mysql_real_escape_string($_POST['retail_markup']).'",
-        wholesale_markup = "'.mysql_real_escape_string($_POST['wholesale_markup']).'"
+        msg_all = "'.nl2br (mysqli_real_escape_string ($connection, $_POST['msg_all'])).'",
+        msg_bottom = "'.nl2br (mysqli_real_escape_string ($connection, $_POST['msg_bottom'])).'",
+        coopfee = "'.mysqli_real_escape_string ($connection, $_POST['coopfee']).'",
+        invoice_price = "'.mysqli_real_escape_string ($connection, $_POST['invoice_price']).'",
+        producer_markdown = "'.mysqli_real_escape_string ($connection, $_POST['producer_markdown']).'",
+        retail_markup = "'.mysqli_real_escape_string ($connection, $_POST['retail_markup']).'",
+        wholesale_markup = "'.mysqli_real_escape_string ($connection, $_POST['wholesale_markup']).'"
       WHERE
-        delivery_id = "'.mysql_real_escape_string($_POST['delivery_id']).'"';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 759821 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        delivery_id = "'.mysqli_real_escape_string ($connection, $_POST['delivery_id']).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 459821 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $message = '<p class="message">Order cycle has been updated.</p>';
     // Close the modal and reload the cycle list
     $modal_action = 'reload_parent()';
@@ -123,24 +123,24 @@ elseif ($action == 'post_new' && $errors_found == false)
       INSERT INTO
         '.TABLE_ORDER_CYCLES.'
       SET
-        date_open = "'.date ('Y-m-d H:i:s', strtotime (mysql_real_escape_string($_POST['date_open']))).'",
-        date_closed = "'.date ('Y-m-d H:i:s', strtotime (mysql_real_escape_string($_POST['date_closed']))).'",
-        order_fill_deadline = "'.date ('Y-m-d H:i:s', strtotime (mysql_real_escape_string($_POST['order_fill_deadline']))).'",
-        delivery_date = "'.date ('Y-m-d', strtotime (mysql_real_escape_string($_POST['delivery_date']))).'",
+        date_open = "'.date ('Y-m-d H:i:s', strtotime (mysqli_real_escape_string ($connection, $_POST['date_open']))).'",
+        date_closed = "'.date ('Y-m-d H:i:s', strtotime (mysqli_real_escape_string ($connection, $_POST['date_closed']))).'",
+        order_fill_deadline = "'.date ('Y-m-d H:i:s', strtotime (mysqli_real_escape_string ($connection, $_POST['order_fill_deadline']))).'",
+        delivery_date = "'.date ('Y-m-d', strtotime (mysqli_real_escape_string ($connection, $_POST['delivery_date']))).'",
         customer_type = "'.$customer_type.'",
-        msg_all = "'.nl2br (mysql_real_escape_string($_POST['msg_all'])).'",
-        msg_bottom = "'.nl2br (mysql_real_escape_string($_POST['msg_bottom'])).'",
-        coopfee = "'.mysql_real_escape_string($_POST['coopfee']).'",
-        invoice_price = "'.mysql_real_escape_string($_POST['invoice_price']).'",
-        producer_markdown = "'.mysql_real_escape_string($_POST['producer_markdown']).'",
-        retail_markup = "'.mysql_real_escape_string($_POST['retail_markup']).'",
-        wholesale_markup = "'.mysql_real_escape_string($_POST['wholesale_markup']).'"';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 759821 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        msg_all = "'.nl2br (mysqli_real_escape_string ($connection, $_POST['msg_all'])).'",
+        msg_bottom = "'.nl2br (mysqli_real_escape_string ($connection, $_POST['msg_bottom'])).'",
+        coopfee = "'.mysqli_real_escape_string ($connection, $_POST['coopfee']).'",
+        invoice_price = "'.mysqli_real_escape_string ($connection, $_POST['invoice_price']).'",
+        producer_markdown = "'.mysqli_real_escape_string ($connection, $_POST['producer_markdown']).'",
+        retail_markup = "'.mysqli_real_escape_string ($connection, $_POST['retail_markup']).'",
+        wholesale_markup = "'.mysqli_real_escape_string ($connection, $_POST['wholesale_markup']).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 752821 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     // Get the insert_id to use for the "delivery_id" field
     $query = '
       SELECT LAST_INSERT_ID() AS delivery_id';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 883782 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $delivery_id = mysql_insert_id();
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 883782 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $delivery_id = mysqli_insert_id ($connection);
     $_POST['delivery_id'] = $delivery_id;
     $message = 'New order cycle has been added.';
     // Close the modal and reload the cycle list
@@ -152,8 +152,8 @@ elseif ($action == 'delete')
       DELETE FROM
         '.TABLE_ORDER_CYCLES.'
       WHERE
-        delivery_id = "'.mysql_real_escape_string($_POST['delivery_id']).'"';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 759821 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        delivery_id = "'.mysqli_real_escape_string ($connection, $_POST['delivery_id']).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 759121 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $message = 'Order cycle has been deleted.';
     // Close the modal and reload the cycle list
     $modal_action = 'reload_parent()';
@@ -171,9 +171,9 @@ else
       FROM
         '.TABLE_ORDER_CYCLES.'
       WHERE
-        delivery_id="'.mysql_real_escape_string ($delivery_id).'"';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 759821 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $order_cycle_info = mysql_fetch_array($result);
+        delivery_id="'.mysqli_real_escape_string ($connection, $delivery_id).'"';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 759828 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $order_cycle_info = mysqli_fetch_array ($result, MYSQLI_ASSOC);
   }
 // Assign variables for display in the form
 $delivery_id = $order_cycle_info['delivery_id'];

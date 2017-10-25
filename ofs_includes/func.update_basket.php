@@ -69,7 +69,7 @@ $admin_override = true;
           $update_site = true;
           break;
         default:
-          die(debug_print('ERROR: 679217 ', 'unexpected request', basename(__FILE__).' LINE '.__LINE__));
+          die (debug_print('ERROR: 679217 ', 'unexpected request', basename(__FILE__).' LINE '.__LINE__));
           break;
       }
     $member_info = get_member ($data['member_id']);
@@ -87,19 +87,19 @@ $admin_override = true;
     // Otherwise we don't know enough to get the basket
     else
       {
-        die(debug_print('ERROR: 970893 ', 'incomplete information to locate basket', basename(__FILE__).' LINE '.__LINE__));
+        die (debug_print('ERROR: 970893 ', 'incomplete information to locate basket', basename(__FILE__).' LINE '.__LINE__));
       }
     // Check that we actually got some basket information
     if (! is_array ($basket_info))
       {
-        die(debug_print('ERROR: 701854 ', 'basket does not exist', basename(__FILE__).' LINE '.__LINE__));
+        die (debug_print('ERROR: 701854 ', 'basket does not exist', basename(__FILE__).' LINE '.__LINE__));
       }
     // Check that the member is not pending or discontinued
     if ($test_for_membership_privilege && ! $admin_override)
       {
         if ($member_info['pending'] == 1 || $member_info['membership_discontinued'] == 1)
           {
-            die(debug_print('ERROR: 974383 ', 'incorrect privilege to order', basename(__FILE__).' LINE '.__LINE__));
+            die (debug_print('ERROR: 974383 ', 'incorrect privilege to order', basename(__FILE__).' LINE '.__LINE__));
           }
       }
     // Check if shopping is closed for this order
@@ -107,7 +107,7 @@ $admin_override = true;
       {
         if (ActiveCycle::ordering_window() == 'closed')
           {
-            die(debug_print('ERROR: 823186 ', 'customer ordering period is not in effect', basename(__FILE__).' LINE '.__LINE__));
+            die (debug_print('ERROR: 823186 ', 'customer ordering period is not in effect', basename(__FILE__).' LINE '.__LINE__));
           }
       }
     // Update the basket with a new site and information related to the new site
@@ -123,24 +123,24 @@ $admin_override = true;
             delivery_postal_code
           FROM '.NEW_TABLE_SITES.'
           WHERE
-            site_id = "'.mysql_real_escape_string($data['site_id']).'"
+            site_id = "'.mysqli_real_escape_string ($connection, $data['site_id']).'"
             AND delivery_type = "'.$query_delivery_type.'"
             AND inactive = "0"
             AND site_type = "customer"';
-        $result_site = mysql_query($query_site, $connection) or die(debug_print ("ERROR: 892573 ", array ($query_site,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result_site = mysqli_query ($connection, $query_site) or die (debug_print ("ERROR: 832573 ", array ($query_site, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         // Got we some information, then post the new information
-        if ($row_site = mysql_fetch_array($result_site))
+        if ($row_site = mysqli_fetch_array ($result_site, MYSQLI_ASSOC))
           {
 
             $query_update_basket = '
               UPDATE '.NEW_TABLE_BASKETS.'
               SET
-                delivery_cost = "'.mysql_real_escape_string($row_site['delivery_charge']).'",
-                delivery_postal_code = "'.mysql_real_escape_string($row['delivery_postal_code']).'",
-                site_id = "'.mysql_real_escape_string($data['site_id']).'",
-                delivery_type = "'.mysql_real_escape_string($data['delivery_type']).'"
-              WHERE basket_id = "'.mysql_real_escape_string($basket_info['basket_id']).'"';
-            $result_update_basket = mysql_query($query_update_basket, $connection) or die(debug_print ("ERROR: 892764 ", array ($query_update_basket,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+                delivery_cost = "'.mysqli_real_escape_string ($connection, $row_site['delivery_charge']).'",
+                delivery_postal_code = "'.mysqli_real_escape_string ($connection, $row['delivery_postal_code']).'",
+                site_id = "'.mysqli_real_escape_string ($connection, $data['site_id']).'",
+                delivery_type = "'.mysqli_real_escape_string ($connection, $data['delivery_type']).'"
+              WHERE basket_id = "'.mysqli_real_escape_string ($connection, $basket_info['basket_id']).'"';
+            $result_update_basket = mysqli_query ($connection, $query_update_basket) or die (debug_print ("ERROR: 392764 ", array ($query_update_basket, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
             // Update the $basket_info with changes
             $basket_info['delivery_cost'] = $row_site['delivery_charge'];
             $initiate_delivery_charge = true;
@@ -148,7 +148,7 @@ $admin_override = true;
         // Otherwise error
         else
           {
-            die(debug_print('ERROR: 898952 ', 'requested site does not exist or is not available', basename(__FILE__).' LINE '.__LINE__));
+            die (debug_print('ERROR: 898952 ', 'requested site does not exist or is not available', basename(__FILE__).' LINE '.__LINE__));
           }
       }
     // Change the checked_out setting on the basket
@@ -165,11 +165,11 @@ $admin_override = true;
           LEFT JOIN
             '.NEW_TABLE_PRODUCTS.' USING(product_id,product_version)
           WHERE
-            '.NEW_TABLE_BASKET_ITEMS.'.basket_id = "'.mysql_real_escape_string($basket_info['basket_id']).'"
+            '.NEW_TABLE_BASKET_ITEMS.'.basket_id = "'.mysqli_real_escape_string ($connection, $basket_info['basket_id']).'"
           GROUP BY
             '.NEW_TABLE_PRODUCTS.'.tangible';
-        $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 758023 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        while ($row = mysql_fetch_array($result))
+        $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 758023 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
           {
             if ($row['tangible'] == '0') $intangible_count = $row['count'];
             if ($row['tangible'] == '1') $tangible_count = $row['count'];
@@ -182,9 +182,9 @@ $admin_override = true;
         else $checked_out = 0;
         $query = '
           UPDATE '.NEW_TABLE_BASKETS.'
-          SET checked_out = "'.mysql_real_escape_string($checked_out).'"
-          WHERE basket_id = "'.mysql_real_escape_string($basket_info['basket_id']).'"';
-        $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 892764 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+          SET checked_out = "'.mysqli_real_escape_string ($connection, $checked_out).'"
+          WHERE basket_id = "'.mysqli_real_escape_string ($connection, $basket_info['basket_id']).'"';
+        $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 792764 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         // Sync the variable we just changed
         $basket_info['checked_out'] = $checked_out ;
         // If there is an order cost (fixed), then post it (or clear it if wrongly set).
@@ -220,11 +220,11 @@ $admin_override = true;
               FROM
                 '.NEW_TABLE_LEDGER.'
               WHERE
-                basket_id = "'.mysql_real_escape_string($basket_info['basket_id']).'"
+                basket_id = "'.mysqli_real_escape_string ($connection, $basket_info['basket_id']).'"
                 AND (text_key = "quantity cost"
                   OR text_key = "weight cost")';
-            $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 678304 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-            if ($row = mysql_fetch_array($result))
+            $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 678304 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
               {
                 $order_total = $row['order_total'];
                 $order_cost_total = round ($row['order_total'] * $basket_info['order_cost'] / 100, 2);
@@ -264,11 +264,11 @@ $admin_override = true;
             product_id,
             product_version
           FROM '.NEW_TABLE_BASKET_ITEMS.'
-          WHERE basket_id = "'.mysql_real_escape_string($basket_info['basket_id']).'"'.
+          WHERE basket_id = "'.mysqli_real_escape_string ($connection, $basket_info['basket_id']).'"'.
           $query_where;
-        $result_basket_items = mysql_query($query_basket_items, $connection) or die(debug_print ("ERROR: 892785 ", array ($query_basket_items,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result_basket_items = mysqli_query ($connection, $query_basket_items) or die (debug_print ("ERROR: 892785 ", array ($query_basket_items, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         // Go through all the basket items (or all the checked_out items)
-        while ($row_basket_items = mysql_fetch_array($result_basket_items))
+        while ($row_basket_items = mysqli_fetch_array ($result_basket_items, MYSQLI_ASSOC))
           {
             $basket_item_info = update_basket_item (array(
               'action' => 'synch_ledger',
@@ -279,7 +279,7 @@ $admin_override = true;
               ));
             if (! is_array($basket_item_info))
               {
-                die(debug_print ("ERROR: 902784 ", 'update_basket_item() did not return array.', basename(__FILE__).' LINE '.__LINE__));
+                die (debug_print ("ERROR: 905784 ", 'update_basket_item() did not return array.', basename(__FILE__).' LINE '.__LINE__));
               }
           }
       }
@@ -318,10 +318,10 @@ $admin_override = true;
 //             product_id,
 //             product_version
 //           FROM '.NEW_TABLE_BASKET_ITEMS.'
-//           WHERE basket_id = "'.mysql_real_escape_string($basket_info['basket_id']).'"';
-//         $result_basket_items = mysql_query($query_basket_items, $connection) or die(debug_print ("ERROR: 892785 ", array ($query_basket_items,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+//           WHERE basket_id = "'.mysqli_real_escape_string ($connection, $basket_info['basket_id']).'"';
+//         $result_basket_items = mysqli_query ($connection, $query_basket_items) or die (debug_print ("ERROR: 496712 ", array ($query_basket_items, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 //         // Go through all the basket items
-//         while ($row_basket_items = mysql_fetch_array($result_basket_items))
+//         while ($row_basket_items = mysqli_fetch_array ($result_basket_items, MYSQLI_ASSOC))
 //           {
 //             // Problem: clear_item removes all quantity from the basket. We would like to leave the basket unchanged.
 //             // ... but if we define that as the desired behavior, then we have something, at least...
@@ -361,8 +361,8 @@ $admin_override = true;
 //         $query = '
 //           UPDATE '.NEW_TABLE_BASKETS.'
 //           SET checked_out = "0"
-//           WHERE basket_id = "'.mysql_real_escape_string($basket_info['basket_id']).'"';
-//         $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 892764 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+//           WHERE basket_id = "'.mysqli_real_escape_string ($connection, $basket_info['basket_id']).'"';
+//         $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 092764 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 //         $basket_info['checked_out'] = 0;
 //       }
 
@@ -376,4 +376,3 @@ $admin_override = true;
     // Return the new (possibly changed) basket_info array
     return ($basket_info);
   }
-?>

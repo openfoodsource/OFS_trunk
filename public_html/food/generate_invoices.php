@@ -20,9 +20,9 @@ $query = '
   FROM
     '.TABLE_ORDER_CYCLES.'
   WHERE
-    delivery_id = "'.mysql_real_escape_string ($delivery_id).'"';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 893032 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-if ( $row = mysql_fetch_array($result) )
+    delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"';
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 893032 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+if ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
   {
     $delivery_date = date ("F j, Y", strtotime ($row['delivery_date']));
   }
@@ -578,7 +578,7 @@ $query = '
     '.TABLE_HUBS.' USING(hub_id)
   WHERE
     '.NEW_TABLE_BASKETS.'.member_id IS NOT NULL
-    AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
+    AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
     AND '.NEW_TABLE_BASKETS.'.site_id = '.NEW_TABLE_SITES.'.site_id
   GROUP BY
     '.NEW_TABLE_BASKETS.'.member_id
@@ -588,8 +588,8 @@ $query = '
     '.TABLE_MEMBER.'.last_name ASC,
     '.TABLE_MEMBER.'.first_name ASC';
 
-$result= mysql_query("$query") or die(debug_print ("ERROR: 684039 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while($row = mysql_fetch_array($result))
+$result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 684039 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     $hub_short = $row['hub_short'];
     $basket_id = $row['basket_id'];
@@ -604,13 +604,13 @@ while($row = mysql_fetch_array($result))
       LEFT JOIN '.NEW_TABLE_BASKETS.' USING(basket_id)
       LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(product_id, product_version)
       WHERE
-        '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
-        AND '.NEW_TABLE_BASKETS.'.member_id = "'.mysql_real_escape_string ($member_id).'"
+        '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
+        AND '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"
         AND '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock != quantity
         AND '.NEW_TABLE_PRODUCTS.'.random_weight = "1"
         AND '.NEW_TABLE_BASKET_ITEMS.'.total_weight <= "0"';
-    $rs = @mysql_query($sql,$connection) or die(debug_print ("ERROR: 780303 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $qty_need_weight = mysql_num_rows ($rs);
+    $rs = @mysqli_query ($connection, $sql) or die (debug_print ("ERROR: 780303 ", array ($sql, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $qty_need_weight = mysqli_num_rows ($rs);
     if ($qty_need_weight == 0)
       {
         $ready_begin = '';
@@ -676,14 +676,14 @@ $content .= '
     LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(product_id, product_version)
     LEFT JOIN '.TABLE_PRODUCER.' USING(producer_id)
     WHERE
-      '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
+      '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
     GROUP BY
       '.TABLE_PRODUCER.'.producer_id
     ORDER BY
       business_name ASC';
 
-$resultp= mysql_query("$sqlp2") or die(debug_print ("ERROR: 897967 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while($row = mysql_fetch_array($resultp))
+$resultp= mysqli_query ($connection, $sqlp2) or die (debug_print ("ERROR: 897967 ", array ($sqlp2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while($row = mysqli_fetch_array ($resultp, MYSQLI_ASSOC))
   {
     $producer_id = $row['producer_id'];
     $business_name = $row['business_name'];
@@ -694,13 +694,13 @@ while($row = mysql_fetch_array($resultp))
       LEFT JOIN '.NEW_TABLE_BASKETS.' ON '.NEW_TABLE_BASKET_ITEMS.'.basket_id = '.NEW_TABLE_BASKETS.'.basket_id
       LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(product_id, product_version)
       WHERE
-        '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
-        AND '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"
+        '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
+        AND '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
         AND '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock != quantity
         AND '.NEW_TABLE_PRODUCTS.'.random_weight = "1"
         AND '.NEW_TABLE_BASKET_ITEMS.'.total_weight <= "0"';
-    $rs = @mysql_query($sql,$connection) or die(debug_print ("ERROR: 765303 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $qty_need_weight = mysql_num_rows ($rs);
+    $rs = @mysqli_query ($connection, $sql) or die (debug_print ("ERROR: 765303 ", array ($sql, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $qty_need_weight = mysqli_num_rows ($rs);
     if ($qty_need_weight == 0)
       {
         $ready_begin = '';

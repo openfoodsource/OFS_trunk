@@ -9,7 +9,7 @@ if (isset($_GET['account_type'])) $account_type = $_GET['account_type'];
 // Get hints for delivery_id boxen
 if ($_GET['action'] == 'get_hint' && isset ($_GET['query']))
   {
-    $escaped_search = mysql_real_escape_string($_GET['query']);
+    $escaped_search = mysqli_real_escape_string ($connection, $_GET['query']);
     switch ($_GET['account_type'])
       {
         case "member":
@@ -108,9 +108,9 @@ if ($_GET['action'] == 'get_hint' && isset ($_GET['query']))
             LIMIT 20';
         break;
       }
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 754932 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 154932 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $response = array ();
-    while ($row = mysql_fetch_array($result))
+    while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         // $description = $row['description'];
         $value = $row['value'];
@@ -126,5 +126,3 @@ else
   {
     echo $jsonp_callback.'([])';
   }
-
-?>

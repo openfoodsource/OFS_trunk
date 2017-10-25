@@ -27,10 +27,10 @@ $sqll = '
   LEFT JOIN
     '.TABLE_PRODUCER_LOGOS.' USING(producer_id)
   WHERE
-    '.TABLE_PRODUCER.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"';
-$rsrl = @mysql_query($sqll, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-$num = mysql_numrows($rsrl);
-while ($row = mysql_fetch_array($rsrl))
+    '.TABLE_PRODUCER.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+$rsrl = @mysqli_query ($connection, $sqll) or die (debug_print ("ERROR: 252354 ", array ($sqll, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$num = mysqli_num_rows ($rsrl);
+while ($row = mysqli_fetch_array ($rsrl, MYSQLI_ASSOC))
   {
     $logo_id = $row['logo_id'];
     $business_name = $row['business_name'];
@@ -57,14 +57,14 @@ if ( $_POST['submit'] )
           UPDATE
             '.TABLE_PRODUCER_LOGOS.'
           SET
-            logo_desc = "'.mysql_real_escape_string ($_POST['form_description']).'",
+            logo_desc = "'.mysqli_real_escape_string ($connection, $_POST['form_description']).'",
             bin_data = "'.$data.'",
-            filename = "'.mysql_real_escape_string ($_FILES['form_data']['name']).'",
-            filesize = "'.mysql_real_escape_string ($_FILES['form_data']['size']).'",
-            filetype = "'.mysql_real_escape_string ($_FILES['form_data']['type']).'"
+            filename = "'.mysqli_real_escape_string ($connection, $_FILES['form_data']['name']).'",
+            filesize = "'.mysqli_real_escape_string ($connection, $_FILES['form_data']['size']).'",
+            filetype = "'.mysqli_real_escape_string ($connection, $_FILES['form_data']['type']).'"
          WHERE
           producer_id = "'.$producer_id.'"';
-        $result = mysql_query($sql, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+        $result = mysqli_query ($connection, $sql) or die (debug_print ("ERROR: 542113 ", array ($sql, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $display_results .= '
           <div align="center">
             <font color=#3333FF><b>Your logo has been updated</b></font><br><br>
@@ -87,15 +87,15 @@ if ( $_POST['submit'] )
             )
           VALUES
             (
-              "'.mysql_real_escape_string ($_POST['form_description']).'",
-              "'.mysql_real_escape_string ($_POST['producer_id']).'",
+              "'.mysqli_real_escape_string ($connection, $_POST['form_description']).'",
+              "'.mysqli_real_escape_string ($connection, $_POST['producer_id']).'",
               "'.$data.'",
-              "'.mysql_real_escape_string ($_FILES['form_data']['name']).'",
-              "'.mysql_real_escape_string ($_FILES['form_data']['size']).'",
-              "'.mysql_real_escape_string ($_FILES['form_data']['type']).'"
+              "'.mysqli_real_escape_string ($connection, $_FILES['form_data']['name']).'",
+              "'.mysqli_real_escape_string ($connection, $_FILES['form_data']['size']).'",
+              "'.mysqli_real_escape_string ($connection, $_FILES['form_data']['type']).'"
             )';
-        $result=mysql_query($query, $connection);
-        $logo_id= mysql_insert_id();
+        $result=mysqli_query ($connection, $query);
+        $logo_id= mysqli_insert_id ($connection);
         $display_results .= '
           <div align="center">
             <font color=#3333FF><b>Your logo has been uploaded.</b></font><br><br>

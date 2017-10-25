@@ -7,8 +7,7 @@ include_once ('classes_base.php');
 function connect_to_database ($database_config)
   {
     global $connection;
-    $connection = @mysql_connect($database_config['db_host'], $database_config['db_user'], $database_config['db_pass']) or die("Couldn't connect: \n".mysql_error());
-    $db = @mysql_select_db($database_config['db_name'], $connection) or die(debug_print ("ERROR: 720349 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $connection = @mysqli_connect ($database_config['db_host'], $database_config['db_user'], $database_config['db_pass'], $database_config['db_name']) or die (debug_print ("ERROR: 720349 ", array ('error'=>'Error while connecting to the database', mysqli_connect_error()), basename(__FILE__).' LINE '.__LINE__));
   }
 
 // Get the OFS configuration data from the database and set constants
@@ -26,8 +25,8 @@ function get_configuration ($database_config, $override_config)
       ORDER BY
         section,
         name';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 864302 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ($row = mysql_fetch_object($result))
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 264302 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_object ($result))
       {
         // For the special case of boolean checkboxes, cast $row->value to boolean
         // NOTE: This extra step should be deprecated once all boolean true/false values are removed from the software
@@ -134,18 +133,18 @@ function ofs_get_status ($scope, $key = '')
       FROM
         '.NEW_TABLE_STATUS.'
       WHERE
-        status_scope = "'.mysql_real_escape_string($scope).'"
-        AND status_key = "'.mysql_real_escape_string($key).'"';
-    $result = @mysql_query($query, $connection) or die (
+        status_scope = "'.mysqli_real_escape_string ($connection, $scope).'"
+        AND status_key = "'.mysqli_real_escape_string ($connection, $key).'"';
+    $result = @mysqli_query ($connection, $query) or die (
       debug_print ("ERROR: 760765 ", array(
         'Level' => 'FATAL',
         'Scope' => 'Database',
         'File ' => __FILE__.' at line '.__LINE__,
         'Details' => array (
-          'MySQL Error' => mysql_errno(),
-          'Message' => mysql_error(),
+          'MySQL Error' => mysqli_errno ($connection),
+          'Message' => mysqli_connect_error (),
           'Query' => $query))));
-    if ($row = mysql_fetch_object($result))
+    if ($row = mysqli_fetch_object ($result))
       {
         return $row->status_value;
       }
@@ -158,20 +157,20 @@ function ofs_put_status ($scope, $key = '', $value, $ttl_minutes = STATUS_TTL_MI
       INSERT INTO
         '.NEW_TABLE_STATUS.'
       SET
-        status_scope = "'.mysql_real_escape_string($scope).'",
-        status_key = "'.mysql_real_escape_string($key).'",
-        status_value = "'.mysql_real_escape_string($value).'",
-        ttl_minutes = "'.mysql_real_escape_string($ttl_minutes).'"
+        status_scope = "'.mysqli_real_escape_string ($connection, $scope).'",
+        status_key = "'.mysqli_real_escape_string ($connection, $key).'",
+        status_value = "'.mysqli_real_escape_string ($connection, $value).'",
+        ttl_minutes = "'.mysqli_real_escape_string ($connection, $ttl_minutes).'"
       ON DUPLICATE KEY UPDATE
-        status_value = "'.mysql_real_escape_string($value).'"';
-    $result = @mysql_query($query, $connection) or die (
-      debug_print ("ERROR: 822345 ", array(
+        status_value = "'.mysqli_real_escape_string ($connection, $value).'"';
+    $result = @mysqli_query ($connection, $query) or die (
+      debug_print ("ERROR: 222345 ", array(
         'Level' => 'FATAL',
         'Scope' => 'Database',
         'File ' => __FILE__.' at line '.__LINE__,
         'Details' => array (
-          'MySQL Error' => mysql_errno(),
-          'Message' => mysql_error(),
+          'MySQL Error' => mysqli_errno ($connection),
+          'Message' => mysqli_connect_error (),
           'Query' => $query))));
   }
 // delete status and collect garbage
@@ -182,17 +181,17 @@ function ofs_delete_status ($scope = '', $key = '')
       DELETE FROM
         '.NEW_TABLE_STATUS.'
       WHERE
-        ( status_scope = "'.mysql_real_escape_string($scope).'"
-          AND status_key = "'.mysql_real_escape_string($key).'")
+        ( status_scope = "'.mysqli_real_escape_string ($connection, $scope).'"
+          AND status_key = "'.mysqli_real_escape_string ($connection, $key).'")
         OR TIMESTAMPADD(MINUTE, ttl_minutes, timestamp) < NOW()';
-    $result = @mysql_query($query, $connection) or die (
+    $result = @mysqli_query ($connection, $query) or die (
       debug_print ("ERROR: 876924 ", array(
         'Level' => 'FATAL',
         'Scope' => 'Database',
         'File ' => __FILE__.' at line '.__LINE__,
         'Details' => array (
-          'MySQL Error' => mysql_errno(),
-          'Message' => mysql_error(),
+          'MySQL Error' => mysqli_errno ($connection),
+          'Message' => mysqli_connect_error (),
           'Query' => $query))));
   }
 
@@ -205,16 +204,16 @@ function get_new_transaction_group_id ()
       INSERT INTO
         '.NEW_TABLE_ADJUSTMENT_GROUP_ENUM.'
       VALUES (NULL)';
-    $result = mysql_query($query, $connection) or die(
-      debug_print ("ERROR: 752930 ", array(
+    $result = mysqli_query ($connection, $query) or die(
+      debug_print ("ERROR: 252930 ", array(
         'Level' => 'FATAL',
         'Scope' => 'Database',
         'File ' => __FILE__.' at line '.__LINE__,
         'Details' => array (
-          'MySQL Error' => mysql_errno(),
-          'Message' => mysql_error(),
+          'MySQL Error' => mysqli_errno ($connection),
+          'Message' => mysqli_connect_error (),
           'Query' => $query))));
-    return mysql_insert_id();
+    return mysqli_insert_id ($connection);
   }
 
 // Convert the ROUTE_CODE_TEMPLATE into something usable for this instance

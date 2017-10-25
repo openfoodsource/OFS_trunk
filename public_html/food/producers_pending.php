@@ -19,9 +19,9 @@ if ( $_POST['pending'] )
             '.TABLE_PRODUCER.'
           LEFT JOIN '.TABLE_MEMBER.' ON '.TABLE_PRODUCER.'.member_id = '.TABLE_MEMBER.'.member_id
           WHERE
-            producer_id = "'.mysql_real_escape_string($producer_id).'"';
-        $sql = mysql_query($query, $connection) or die("Couldn't execute query 4.");
-        $producer_info = mysql_fetch_object($sql);
+            producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+        $sql = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 621834 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $producer_info = mysqli_fetch_object ($sql);
         if ( $value == 'approve' )
           {
             $query = '
@@ -30,8 +30,8 @@ if ( $_POST['pending'] )
               SET
                 pending="0"
               WHERE
-                producer_id="'.mysql_real_escape_string($producer_id).'"';
-            $sql = mysql_query($query);
+                producer_id="'.mysqli_real_escape_string ($connection, $producer_id).'"';
+            $sql = mysqli_query ($connection, $query);
             // Need to break DOMAIN_NAME into an array of separate names so we can use the first element
             $domain_names = preg_split("/[\n\r]+/", DOMAIN_NAME);
             // Now send the confirmation email...
@@ -74,15 +74,15 @@ if ( $_POST['pending'] )
               DELETE FROM
                 '.TABLE_PRODUCER.'
               WHERE
-                producer_id="'.mysql_real_escape_string($producer_id).'"';
-            mysql_query($query);
+                producer_id="'.mysqli_real_escape_string ($connection, $producer_id).'"';
+            mysqli_query ($connection, $query);
             
             $query = '
               DELETE FROM
                 '.TABLE_PRODUCER_REG.'
               WHERE
-                producer_id="'.mysql_real_escape_string($producer_id).'"';
-            mysql_query($query);
+                producer_id="'.mysqli_real_escape_string ($connection, $producer_id).'"';
+            mysqli_query ($connection, $query);
             
             if ( $producer_info )
               {
@@ -94,10 +94,10 @@ if ( $_POST['pending'] )
                   UPDATE
                     '.TABLE_MEMBER.'
                   SET
-                    auth_type="'.mysql_real_escape_string($auth_type).'"
+                    auth_type="'.mysqli_real_escape_string ($connection, $auth_type).'"
                   WHERE
-                    member_id="'.mysql_real_escape_string($producer_info->member_id).'"';
-                  mysql_query($query);
+                    member_id="'.mysqli_real_escape_string ($connection, $producer_info->member_id).'"';
+                  mysqli_query ($connection, $query);
               }
             $content_pending .= '&nbsp;<b>'.$producer_info->business_name.'</b> (#'.$producer_id.') was removed.<br>';
           }
@@ -119,8 +119,8 @@ $query = '
   WHERE
     '.TABLE_PRODUCER.'.pending != "0"
     AND '.TABLE_PRODUCER.'.member_id = '.TABLE_MEMBER.'.member_id';
-$sql = mysql_query($query);
-while ( $row = mysql_fetch_array($sql) )
+$sql = mysqli_query ($connection, $query);
+while ( $row = mysqli_fetch_array ($sql, MYSQLI_ASSOC) )
   {
     $display .= '
       <tr>

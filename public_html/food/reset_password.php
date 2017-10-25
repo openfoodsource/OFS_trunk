@@ -27,24 +27,24 @@ if ( ! $_SESSION['member_id'] )
         if (strlen ($first_name) > 0 && strlen ($last_name) > 0)
           {
             $and_first_name = '
-              AND (first_name="'.mysql_real_escape_string ($first_name).'"
-                OR first_name_2="'.mysql_real_escape_string ($first_name).'")';
+              AND (first_name="'.mysqli_real_escape_string ($connection, $first_name).'"
+                OR first_name_2="'.mysqli_real_escape_string ($connection, $first_name).'")';
             $and_last_name = '
-              AND (last_name="'.mysql_real_escape_string ($last_name).'"
-                OR last_name_2="'.mysql_real_escape_string ($last_name).'")';
+              AND (last_name="'.mysqli_real_escape_string ($connection, $last_name).'"
+                OR last_name_2="'.mysqli_real_escape_string ($connection, $last_name).'")';
             $matches ++;
           }
         if (strlen ($email_address) > 2)
           {
             $and_email_address = '
-              AND (email_address="'.mysql_real_escape_string ($email_address).'"
-                OR email_address_2="'.mysql_real_escape_string ($email_address).'")';
+              AND (email_address="'.mysqli_real_escape_string ($connection, $email_address).'"
+                OR email_address_2="'.mysqli_real_escape_string ($connection, $email_address).'")';
             $matches ++;
           }
         if (strlen ($username) > 2)
           {
             $and_username = '
-              AND username="'.mysql_real_escape_string ($username).'"';
+              AND username="'.mysqli_real_escape_string ($connection, $username).'"';
             $matches ++;
           }
         // Check consistency between username and email_address
@@ -61,12 +61,12 @@ if ( ! $_SESSION['member_id'] )
             '.$and_last_name.'
             '.$and_email_address.'
             '.$and_username;
-        $result = @mysql_query($query_check, $connection) or die(mysql_error());
-        $num_rows = mysql_num_rows($result);
+        $result = @mysqli_query ($connection, $query_check) or die (debug_print ("ERROR: 421432 ", array ($query_check, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $num_rows = mysqli_num_rows ($result);
         if ($num_rows == 1 && $matches >= 2)
           {
             $email_array = array ();
-            $row = mysql_fetch_array($result);
+            $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
             $valid_username = $row['username'];
             if ($row['email_address']) array_push ($email_array, $row['email_address']);
             if ($row['email_address_2']) array_push ($email_array, $row['email_address_2']);
@@ -86,10 +86,10 @@ if ( ! $_SESSION['member_id'] )
               UPDATE
                 '.TABLE_MEMBER.'
                 SET
-                  password = MD5("'.mysql_real_escape_string ($password).'")
+                  password = MD5("'.mysqli_real_escape_string ($connection, $password).'")
                 WHERE
-                  username = "'.mysql_real_escape_string ($valid_username).'"';
-            $result = mysql_query ($query_update, $connection) or die(mysql_errno());
+                  username = "'.mysqli_real_escape_string ($connection, $valid_username).'"';
+            $result = mysqli_query ($connection, $query_update) or die (debug_print ("ERROR: 262562 ", array ($query_update, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
             // Need to break DOMAIN_NAME into an array of separate names so we can use the first element
             $domain_names = preg_split("/[\n\r]+/", DOMAIN_NAME);
             $message =
@@ -199,10 +199,10 @@ else
               FROM
                 '.TABLE_MEMBER.'
               WHERE
-                member_id = "'.mysql_real_escape_string ($_SESSION['member_id']).'"
-                AND password = MD5("'.mysql_real_escape_string ($old_password).'")';
-            $result = @mysql_query($query_pw, $connection) or die(mysql_error());
-            $row = mysql_fetch_array($result);
+                member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"
+                AND password = MD5("'.mysqli_real_escape_string ($connection, $old_password).'")';
+            $result = @mysqli_query ($connection, $query_pw) or die (debug_print ("ERROR: 562354 ", array ($query_pw, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
             if ( $row['valid_password'] != 'true' && md5($old_password) != MD5_MASTER_PASSWORD)
               {
                 $message .= '<p style="font-size:1.2em;color:#700;">Incorrect old password was provided.</p>';
@@ -214,11 +214,10 @@ else
                   UPDATE
                     '.TABLE_MEMBER.'
                   SET
-                    password = MD5("'.mysql_real_escape_string ($new_password1).'")
+                    password = MD5("'.mysqli_real_escape_string ($connection, $new_password1).'")
                   WHERE
-                    member_id = "'.mysql_real_escape_string ($_SESSION['member_id']).'"';
-                $result = mysql_query ($query_update, $connection) or die(mysql_errno());
-
+                    member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"';
+                $result = mysqli_query ($connection, $query_update) or die (debug_print ("ERROR: 137864 ", array ($query_update, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
                 header( 'refresh: 7; url=panel_member.php' );
                 $display_password .= '
                 <table width="50%" align="center" cellspacing="5">
@@ -300,4 +299,3 @@ else
         include("template_footer.php");
       }
   }
-?>

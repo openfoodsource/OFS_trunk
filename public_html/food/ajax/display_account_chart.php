@@ -5,12 +5,13 @@ valid_auth('member_admin,site_admin,cashier');
 
 // $_POST = $_GET; // FOR DEBUGGING
 
-// $account_key = isset($_POST['account_key']) ? mysql_real_escape_string ($_POST['account_key']) : '';
-$account_type = isset($_POST['account_type']) ? mysql_real_escape_string ($_POST['account_type']) : '';
-$data_page = isset($_POST['data_page']) ? mysql_real_escape_string ($_POST['data_page']) : 1;
-$per_page = isset($_POST['per_page']) ? mysql_real_escape_string ($_POST['per_page']) : PER_PAGE;
+// $account_key = isset($_POST['account_key']) ? mysqli_real_escape_string ($connection, $_POST['account_key']) : '';
+$account_type = isset($_POST['account_type']) ? mysqli_real_escape_string ($connection, $_POST['account_type']) : '';
+$data_page = isset($_POST['data_page']) ? mysqli_real_escape_string ($connection, $_POST['data_page']) : 1;
+$per_page = isset($_POST['per_page']) ? mysqli_real_escape_string ($connection, $_POST['per_page']) : PER_PAGE;
+$per_page = 25;
 $top_special_markup = '';
-$limit_clause = mysql_real_escape_string (floor (($data_page - 1) * $per_page).", ".floor ($per_page));
+$limit_clause = mysqli_real_escape_string ($connection, floor (($data_page - 1) * $per_page).", ".floor ($per_page));
 
 // echo "<pre>".print_r($_POST,true)."</pre>";
 
@@ -194,18 +195,18 @@ switch ($account_type)
   }
 
 // $ledger_data .= "<pre>$query</pre>";
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 756930 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 757930 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // Get the total number of rows (for pagination) -- not counting the LIMIT condition
 $query_found_accounts = '
   SELECT
     FOUND_ROWS() AS found_accounts';
-$result_found_accounts = @mysql_query($query_found_accounts, $connection) or die(debug_print ("ERROR: 759323 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$row_found_accounts = mysql_fetch_array($result_found_accounts);
+$result_found_accounts = @mysqli_query ($connection, $query_found_accounts) or die (debug_print ("ERROR: 759123 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$row_found_accounts = mysqli_fetch_array ($result_found_accounts, MYSQLI_ASSOC);
 $found_accounts = $row_found_accounts['found_accounts'];
 
 $found_pages = ceil ($found_accounts / $per_page);
 
-while ($row = mysql_fetch_array($result))
+while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     // Set up the edit links (easiest just to set up all possibilities)
       $edit_link['member'] = '
@@ -231,5 +232,3 @@ $ledger_data['query'] = $query;
 $ledger_data['maximum_data_page'] = $found_pages;
 $ledger_data['data_page'] = $data_page;
 echo json_encode ($ledger_data);
-
-?>

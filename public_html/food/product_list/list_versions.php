@@ -25,11 +25,11 @@ $where_auth_type = '';
 // Producer admin is allowed to see the versions for anyone...
 if (CurrentMember::auth_type('producer_admin'))
   $where_misc = '
-    AND '.NEW_TABLE_PRODUCTS.'.product_id = "'.mysql_real_escape_string ($_GET['product_id']).'"';
+    AND '.NEW_TABLE_PRODUCTS.'.product_id = "'.mysqli_real_escape_string ($connection, $_GET['product_id']).'"';
 else
   $where_misc = '
-    AND '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysql_real_escape_string ($producer_id_you).'"
-    AND '.NEW_TABLE_PRODUCTS.'.product_id = "'.mysql_real_escape_string ($_GET['product_id']).'"';
+    AND '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id_you).'"
+    AND '.NEW_TABLE_PRODUCTS.'.product_id = "'.mysqli_real_escape_string ($connection, $_GET['product_id']).'"';
 
 $order_by = '
     '.TABLE_CATEGORY.'.sort_order ASC,
@@ -79,7 +79,7 @@ $query = '
   LEFT JOIN '.TABLE_AVAILABILITY.' ON '.TABLE_AVAILABILITY.'.producer_id = '.TABLE_PRODUCER.'.producer_id
   LEFT JOIN '.TABLE_INVENTORY.' ON '.NEW_TABLE_PRODUCTS.'.inventory_id = '.TABLE_INVENTORY.'.inventory_id
   LEFT JOIN '.TABLE_PRODUCT_STORAGE_TYPES.' ON '.NEW_TABLE_PRODUCTS.'.storage_id = '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_id
-  LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' ON '.NEW_TABLE_BASKET_ITEMS.'.product_id = '.NEW_TABLE_PRODUCTS.'.product_id AND '.NEW_TABLE_BASKET_ITEMS.'.basket_id = "'.mysql_real_escape_string (CurrentBasket::basket_id()).'"
+  LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' ON '.NEW_TABLE_BASKET_ITEMS.'.product_id = '.NEW_TABLE_PRODUCTS.'.product_id AND '.NEW_TABLE_BASKET_ITEMS.'.basket_id = "'.mysqli_real_escape_string ($connection, CurrentBasket::basket_id()).'"
   WHERE'.
     $where_producer_pending.
 //     $where_unlisted_producer.    Okay to show unlisted/suspended producers their own products
@@ -90,4 +90,3 @@ $query = '
   GROUP BY CONCAT('.NEW_TABLE_PRODUCTS.'.product_id, "-", '.NEW_TABLE_PRODUCTS.'.product_version)
   ORDER BY'.
     $order_by;
-?>

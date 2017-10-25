@@ -542,4 +542,3 @@ echo '
   '.$display.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-?>

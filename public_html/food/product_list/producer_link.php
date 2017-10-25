@@ -10,7 +10,7 @@ include('func/display_producer_page.php');
 $producer_display .= prdcr_info($producer_id, $producer_link);
 
 $where_misc = '
-    AND '.TABLE_PRODUCER.'.producer_link = "'.mysql_real_escape_string ($producer_link).'"';
+    AND '.TABLE_PRODUCER.'.producer_link = "'.mysqli_real_escape_string ($connection, $producer_link).'"';
 
 $order_by = '
     '.TABLE_CATEGORY.'.category_name ASC,
@@ -108,7 +108,7 @@ $query = '
   LEFT JOIN '.TABLE_PRODUCT_STORAGE_TYPES.' ON '.NEW_TABLE_PRODUCTS.'.storage_id = '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_id
   LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' ON
     ('.NEW_TABLE_BASKET_ITEMS.'.product_id = '.NEW_TABLE_PRODUCTS.'.product_id
-    AND '.NEW_TABLE_BASKET_ITEMS.'.basket_id = "'.mysql_real_escape_string (CurrentBasket::basket_id()).'"
+    AND '.NEW_TABLE_BASKET_ITEMS.'.basket_id = "'.mysqli_real_escape_string ($connection, CurrentBasket::basket_id()).'"
     AND '.NEW_TABLE_BASKET_ITEMS.'.basket_id > 0)
   LEFT JOIN '.NEW_TABLE_MESSAGES.' ON (referenced_key1 = bpid AND message_type_id =
     (SELECT message_type_id FROM '.NEW_TABLE_MESSAGE_TYPES.' WHERE description = "customer notes to producer"))
@@ -123,4 +123,3 @@ $query = '
   GROUP BY CONCAT('.NEW_TABLE_PRODUCTS.'.product_id, "-", '.NEW_TABLE_PRODUCTS.'.product_version)
   ORDER BY'.
     $order_by;
-?>

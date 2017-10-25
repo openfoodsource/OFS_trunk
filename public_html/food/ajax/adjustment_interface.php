@@ -63,8 +63,8 @@ if ($_REQUEST['action'] == 'update_ledger_info')
       SELECT *
       FROM '.NEW_TABLE_LEDGER.'
       WHERE transaction_id = "'.$_REQUEST['transaction_id'].'"';
-    $result_old_ledger_info = mysql_query($query_old_ledger_info, $connection) or die(debug_print ("ERROR: 754892 ", array ($query_old_ledger_info,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if (! $row_old_ledger_info = mysql_fetch_array($result_old_ledger_info))
+    $result_old_ledger_info = mysqli_query ($connection, $query_old_ledger_info) or die (debug_print ("ERROR: 754892 ", array ($query_old_ledger_info, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if (! $row_old_ledger_info = mysqli_fetch_array ($result_old_ledger_info, MYSQLI_ASSOC))
       {
         die(debug_print ("ERROR: 730893 ", 'No ledger entry was found.', basename(__FILE__).' LINE '.__LINE__));
       }
@@ -153,13 +153,13 @@ if ($_REQUEST['action'] == 'get_adjustment_dialog')
         LEFT JOIN '.NEW_TABLE_MESSAGES.' ON (referenced_key1 = transaction_id)
         LEFT JOIN '.NEW_TABLE_MESSAGE_TYPES.' USING(message_type_id)
       WHERE
-        transaction_id = "'.mysql_real_escape_string($_REQUEST['transaction_id']).'"
+        transaction_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['transaction_id']).'"
         AND (
           key1_target = "ledger.transaction_id"
           OR key1_target IS NULL)
       LIMIT 1';
-    $result_ledger = mysql_query($query_ledger, $connection) or die(debug_print ("ERROR: 893021 ", array ($query_ledger,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if (! $row_ledger = mysql_fetch_array($result_ledger))
+    $result_ledger = mysqli_query ($connection, $query_ledger) or die (debug_print ("ERROR: 893021 ", array ($query_ledger, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if (! $row_ledger = mysqli_fetch_array ($result_ledger, MYSQLI_ASSOC))
       {
         return ("error 102: unexpected result");
       }
@@ -184,13 +184,13 @@ if ($_REQUEST['action'] == 'get_adjustment_dialog')
           LEFT JOIN '.NEW_TABLE_MESSAGES.' ON (referenced_key1 = bpid)
           LEFT JOIN '.NEW_TABLE_MESSAGE_TYPES.' USING(message_type_id)
           WHERE
-            bpid = "'.mysql_real_escape_string($_REQUEST['bpid']).'"
+            bpid = "'.mysqli_real_escape_string ($connection, $_REQUEST['bpid']).'"
             AND (
               key1_target = "basket_items.bpid"
               OR key1_target IS NULL)
           LIMIT 1';
-        $result_basket_items = mysql_query($query_basket_items, $connection) or die(debug_print ("ERROR: 763074 ", array ($query_basket_items,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        if (! $row_basket_items = mysql_fetch_array($result_basket_items))
+        $result_basket_items = mysqli_query ($connection, $query_basket_items) or die (debug_print ("ERROR: 763074 ", array ($query_basket_items, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if (! $row_basket_items = mysqli_fetch_array ($result_basket_items, MYSQLI_ASSOC))
           {
             return ("error 102: unexpected result");
           }
@@ -299,4 +299,3 @@ if ($_REQUEST['action'] == 'get_adjustment_dialog')
     echo $response;
     exit (0);
   }
-?>

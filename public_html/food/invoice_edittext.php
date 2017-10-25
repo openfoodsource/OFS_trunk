@@ -10,11 +10,11 @@ if ( $_REQUEST['update'] == 'yes' )
       UPDATE
         '.TABLE_ORDER_CYCLES.'
       SET
-        msg_all = "'.mysql_real_escape_string ($_REQUEST['msg_all']).'",
-        msg_bottom = "'.mysql_real_escape_string ($_REQUEST['msg_bottom']).'"
+        msg_all = "'.mysqli_real_escape_string ($connection, $_REQUEST['msg_all']).'",
+        msg_bottom = "'.mysqli_real_escape_string ($connection, $_REQUEST['msg_bottom']).'"
       WHERE
       delivery_id >= '.ActiveCycle::delivery_id();
-    $resultu = @mysql_query($sqlu, $connection) or die('<br><br>You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:'.WEBMASTER_EMAIL.'">'.WEBMASTER_EMAIL.'</a><br><br><b>Error:</b> Updating ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
+    $resultu = @mysqli_query ($connection, $sqlu) or die (debug_print ("ERROR: 621919 ", array ($sqlu, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $message = ': <font color="#FFFFFF">Messages have been updated</font>';
   }
 $sqlmsg = '
@@ -25,8 +25,8 @@ $sqlmsg = '
     '.TABLE_ORDER_CYCLES.'
   WHERE
     delivery_id = '.ActiveCycle::delivery_id();
-$resultmsg = @mysql_query($sqlmsg, $connection) or die('<br><br>You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:'.WEBMASTER_EMAIL.'">'.WEBMASTER_EMAIL.'</a><br><br><b>Error:</b> Selecting message ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
-while ( $row = mysql_fetch_array($resultmsg) )
+$resultmsg = @mysqli_query ($connection, $sqlmsg) or die (debug_print ("ERROR: 429229 ", array ($sqlmsg, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_array ($resultmsg, MYSQLI_ASSOC) )
   {
     $msg_all = $row['msg_all'];
     $msg_bottom = $row['msg_bottom'];

@@ -41,17 +41,17 @@ function get_membership_info ($member_id)
       LEFT JOIN '.TABLE_MEMBERSHIP_TYPES.'
         USING(membership_type_id)
       WHERE
-        '.TABLE_MEMBER.'.member_id = "'.mysql_real_escape_string($member_id).'"';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 892915 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $num_rows = mysql_num_rows($result);
+        '.TABLE_MEMBER.'.member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 892915 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $num_rows = mysqli_num_rows ($result);
     if ($num_rows == 1)
       {
-        $row = mysql_fetch_array($result);
+        $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
         return ($row);
       }
     else
       {
-        die(debug_print ("ERROR: 856302 ", array ($query, 'Multiple matches for member_id (#'.$member_id.').', basename(__FILE__).' LINE '.__LINE__)));
+        die (debug_print ("ERROR: 356302 ", array ($query, 'Multiple matches for member_id (#'.$member_id.').', basename(__FILE__).' LINE '.__LINE__)));
       }
   }
 
@@ -102,16 +102,16 @@ function check_membership_renewal ($membership_info)
           FROM
             '.TABLE_ORDER_CYCLES.'
           WHERE
-            delivery_date >= "'.mysql_real_escape_string ($membership_info['last_renewal_date']).'"
+            delivery_date >= "'.mysqli_real_escape_string ($connection, $membership_info['last_renewal_date']).'"
             AND delivery_date < CURDATE()';
-        $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 780322 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 720322 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $grace_count = 0;
         $renewal_info['used_expiration_range'] = 0;
         $renewal_info['standard_renewal_date'] = 'Not established';
         $renewal_info['suggested_renewal_date'] = '';
         // Presume not expired, but clobber this value later if expiration is discovered
         $renewal_info['membership_expired'] = false;
-        while ($row = mysql_fetch_array($result))
+        while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
           {
             // Count how many deliveries transpired
             $renewal_info['used_expiration_range'] ++;
@@ -168,18 +168,18 @@ function check_membership_renewal ($membership_info)
           LEFT JOIN
             '.TABLE_ORDER_CYCLES.' USING(delivery_id)
           WHERE
-            '.NEW_TABLE_BASKETS.'.member_id = '.mysql_real_escape_string ($membership_info['member_id']).'
-            AND '.TABLE_ORDER_CYCLES.'.delivery_date >= "'.mysql_real_escape_string ($membership_info['last_renewal_date']).'"
+            '.NEW_TABLE_BASKETS.'.member_id = '.mysqli_real_escape_string ($connection, $membership_info['member_id']).'
+            AND '.TABLE_ORDER_CYCLES.'.delivery_date >= "'.mysqli_real_escape_string ($connection, $membership_info['last_renewal_date']).'"
             AND '.TABLE_ORDER_CYCLES.'.delivery_date < CURDATE()
             AND checked_out != 0'; // Does not include NULL (i.e not checked_out items)
-        $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 780322 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 780122 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $grace_count = 0;
         $renewal_info['used_expiration_range'] = 0;
         $renewal_info['standard_renewal_date'] = 'Not established';
         $renewal_info['suggested_renewal_date'] = '';
         // Presume not expired, but clobber this value later if expiration is discovered
         $renewal_info['membership_expired'] = false;
-        while ($row = mysql_fetch_array($result))
+        while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
           {
             // Count how many deliveries transpired
             $renewal_info['used_expiration_range'] ++;
@@ -510,8 +510,8 @@ function renew_membership ($member_id, $membership_type_id)
         '.TABLE_MEMBERSHIP_TYPES.'
       WHERE
         membership_type_id = "'.$membership_type_id.'"';
-    $result_membership_type = mysql_query($query_membership_type, $connection) or die(debug_print ("ERROR: 683080 ", array ($query_membership_type,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if (! $row_membership_type = mysql_fetch_array($result_membership_type))
+    $result_membership_type = mysqli_query($connection, $query_membership_type) or die (debug_print ("ERROR: 613080 ", array ($query_membership_type, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if (! $row_membership_type = mysqli_fetch_array ($result_membership_type, MYSQLI_ASSOC))
       {
         // Requested membership_type is not allowed
         return ('Requested membership_type is not allowed.');
@@ -560,12 +560,12 @@ function renew_membership ($member_id, $membership_type_id)
       UPDATE
         '.TABLE_MEMBER.'
       SET
-        last_renewal_date = "'.mysql_real_escape_string($renewal_date).'",
-        membership_type_id = "'.mysql_real_escape_string($membership_type_id).'"
+        last_renewal_date = "'.mysqli_real_escape_string ($connection, $renewal_date).'",
+        membership_type_id = "'.mysqli_real_escape_string ($connection, $membership_type_id).'"
       WHERE
-        member_id = "'.mysql_real_escape_string($member_id).'"';
-    $result_members = mysql_query($query_members, $connection) or die(debug_print ("ERROR: 683080 ", array ($query_members,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if (mysql_affected_rows())
+        member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"';
+    $result_members = mysqli_query ($connection, $query_members) or die (debug_print ("ERROR: 688080 ", array ($query_members, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if (mysqli_affected_rows ($connection))
       {
         return ('Successfully updated membership.');
       }
@@ -583,8 +583,8 @@ function membership_renewal_form ($membership_info) {
         (enabled_type = 2
           OR enabled_type = 3)
         AND FIND_IN_SET(membership_type_id,"'.$membership_info['may_convert_to'].'")';
-    $sql = mysql_query ($query);
-    while ( $row = mysql_fetch_object($sql) )
+    $sql = mysqli_query ($connection, $query);
+    while ($row = mysqli_fetch_object ($sql))
       {
         //  ------- AVAILABLE FIELDS -------
         //  $row->membership_type_id
@@ -631,5 +631,3 @@ function membership_renewal_form ($membership_info) {
       'same_renewal' => $same_renewal,
       'changed_renewal' => $changed_renewal);
   }
-
-?>

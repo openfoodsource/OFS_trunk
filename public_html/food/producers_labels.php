@@ -30,9 +30,9 @@ function prdcr_contact_info($start, $half)
         AND '.TABLE_MEMBER.'.membership_discontinued != "1"
       ORDER BY
         '.TABLE_PRODUCER.'.business_name ASC
-      LIMIT '.mysql_real_escape_string ($start).', '.mysql_real_escape_string ($half);
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 869302 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ( $row = mysql_fetch_array($result) )
+      LIMIT '.mysqli_real_escape_string ($connection, $start).', '.mysqli_real_escape_string ($connection, $half);
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 869302 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
       {
         $producer_id = $row['producer_id'];
         $business_name = $row['business_name'];
@@ -63,8 +63,8 @@ $sql = '
     '.TABLE_PRODUCER.'
   WHERE
     unlisted_producer = "0"';
-$result = mysql_query($sql) or die("Couldn't execute query.");
-$row = mysql_fetch_array($result);
+$result = mysqli_query ($connection, $sql) or die (debug_print ("ERROR: 230342 ", array ($sql, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
 $pid_count = $row['count'];
 $pid_half = ceil($pid_count/2);
 

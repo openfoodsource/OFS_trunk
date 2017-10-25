@@ -66,24 +66,24 @@ function get_basket_item ($argument1, $product_id = NULL, $delivery_id = NULL)
       {
         $query_where = 'RIGHT JOIN '.NEW_TABLE_BASKETS.' USING (basket_id)
         WHERE
-          member_id = "'.mysql_real_escape_string ($argument1).'"
-          AND product_id = "'.mysql_real_escape_string ($product_id).'"
-          AND delivery_id = "'.mysql_real_escape_string ($delivery_id).'"';
+          member_id = "'.mysqli_real_escape_string ($connection, $argument1).'"
+          AND product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"
+          AND delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"';
       }
     elseif (is_numeric ($argument1) && is_numeric ($product_id))
       {
         $query_where = 'WHERE
-          basket_id = "'.mysql_real_escape_string ($argument1).'"
-          AND product_id = "'.mysql_real_escape_string ($product_id).'"';
+          basket_id = "'.mysqli_real_escape_string ($connection, $argument1).'"
+          AND product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"';
       }
     elseif (is_numeric ($argument1))
       {
         $query_where = 'WHERE
-          bpid = "'.mysql_real_escape_string ($argument1).'"';
+          bpid = "'.mysqli_real_escape_string ($connection, $argument1).'"';
       }
     else
       {
-        die(debug_print('ERROR: 101 ', 'unexpected request', basename(__FILE__).' LINE '.__LINE__));
+        die (debug_print('ERROR: 164201 ', 'unexpected request', basename(__FILE__).' LINE '.__LINE__));
       }
     $query = '
       SELECT
@@ -94,10 +94,9 @@ function get_basket_item ($argument1, $product_id = NULL, $delivery_id = NULL)
         ('.NEW_TABLE_MESSAGES.'.message_type_id = 1
         AND '.NEW_TABLE_BASKET_ITEMS.'.bpid = '.NEW_TABLE_MESSAGES.'.referenced_key1)
       '.$query_where;
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 799031 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row = mysql_fetch_array($result))
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 799031 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         return ($row);
       }
   }
-?>

@@ -241,10 +241,10 @@ if ( $okay_to_post == true)
               FROM
                 '.NEW_TABLE_PRODUCTS.'
               WHERE
-                product_id = "'.mysql_real_escape_string($_POST['product_id']).'"
-                AND producer_id = "'.mysql_real_escape_string($producer_id).'"';
-            $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 829605 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-            if ($row = mysql_fetch_array($result))
+                product_id = "'.mysqli_real_escape_string ($connection, $_POST['product_id']).'"
+                AND producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+            $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 829605 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
               {
                 $new_product_version = $row['new_product_version'];
               }
@@ -253,14 +253,14 @@ if ( $okay_to_post == true)
               INSERT INTO
                 '.NEW_TABLE_PRODUCTS.'
               SET
-                product_id = "'.mysql_real_escape_string($_POST['product_id']).'",
-                product_version = "'.mysql_real_escape_string($new_product_version).'",
-                producer_id = "'.mysql_real_escape_string($producer_id).'"';
-            $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 634443 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-            $pvid = mysql_insert_id();
+                product_id = "'.mysqli_real_escape_string ($connection, $_POST['product_id']).'",
+                product_version = "'.mysqli_real_escape_string ($connection, $new_product_version).'",
+                producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+            $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 634443 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            $pvid = mysqli_insert_id ($connection);
             $old_product_version = $db_product_info['product_version'];
             $_POST['product_version'] = $new_product_version;
-            $set_created = 'created = "'.mysql_real_escape_string($_POST['created']).'",'; // Apply the original creation date
+            $set_created = 'created = "'.mysqli_real_escape_string ($connection, $_POST['created']).'",'; // Apply the original creation date
           }
       }
     // At this point any new product versions have been added to the database, ready to update
@@ -423,9 +423,9 @@ if ( $okay_to_post == true)
 //           SET
 //             confirmed = "0"
 //           WHERE
-//             product_id = "'.mysql_real_escape_string($_POST['product_id']).'"
-//             AND producer_id = "'.mysql_real_escape_string($producer_id).'"';
-//         $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 673408 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+//             product_id = "'.mysqli_real_escape_string ($connection, $_POST['product_id']).'"
+//             AND producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+//         $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 273408 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 //       }
 //     // If UN-confirming a previously confirmed product, then need to set a new preferred alternative
 //     if ($_POST['confirmed'] == 0 && $db_product_info['confirmed'] == "1") $_POST['confirmed'] = -1;
@@ -441,10 +441,10 @@ if ( $okay_to_post == true)
 //           SET
 //             confirmed = "0"
 //           WHERE
-//             product_id = "'.mysql_real_escape_string($_POST['product_id']).'"
-//             AND producer_id = "'.mysql_real_escape_string($producer_id).'"
+//             product_id = "'.mysqli_real_escape_string ($connection, $_POST['product_id']).'"
+//             AND producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
 //             AND confirmed = "-1"';
-//         $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 673408 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+//         $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 643408 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 //       }
 
 
@@ -456,11 +456,11 @@ if ( $okay_to_post == true)
           INSERT INTO
             '.TABLE_INVENTORY.'
           SET
-            producer_id = "'.mysql_real_escape_string($producer_id).'",
-            description = "'.mysql_real_escape_string($_POST['product_name']).'",
-            quantity = "'.mysql_real_escape_string(0).'"';
-        $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 749026 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        if ($result) $_POST['inventory_id'] = mysql_insert_id();
+            producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'",
+            description = "'.mysqli_real_escape_string ($connection, $_POST['product_name']).'",
+            quantity = "0"';
+        $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 749026 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if ($result) $_POST['inventory_id'] = mysqli_insert_id ($connection);
       }
 
 
@@ -469,43 +469,43 @@ if ( $okay_to_post == true)
       UPDATE
         '.NEW_TABLE_PRODUCTS.'
       SET
-        product_name = "'.mysql_real_escape_string ($_POST['product_name']).'",
-        product_description = "'.mysql_real_escape_string ($_POST['product_description']).'",
-        subcategory_id = "'.mysql_real_escape_string ($_POST['subcategory_id']).'",
-        account_number = "'.mysql_real_escape_string ($_POST['account_number']).'",
-        inventory_id = "'.mysql_real_escape_string ($_POST['inventory_id']).'",
-        inventory_pull = "'.mysql_real_escape_string ($_POST['inventory_pull']).'",
-        unit_price = "'.mysql_real_escape_string ($_POST['unit_price']).'",
-        pricing_unit = "'.mysql_real_escape_string ($_POST['pricing_unit']).'",
-        ordering_unit = "'.mysql_real_escape_string ($_POST['ordering_unit']).'",
-        production_type_id = "'.mysql_real_escape_string ($_POST['production_type_id']).'",
-        extra_charge = "'.mysql_real_escape_string ($_POST['extra_charge']).'",
-        product_fee_percent = "'.mysql_real_escape_string ($_POST['product_fee_percent']).'",
-        random_weight = "'.mysql_real_escape_string ($_POST['random_weight']).'",
-        minimum_weight = "'.mysql_real_escape_string ($_POST['minimum_weight']).'",
-        maximum_weight = "'.mysql_real_escape_string ($_POST['maximum_weight']).'",
-        meat_weight_type = "'.mysql_real_escape_string ($_POST['meat_weight_type']).'",
-        listing_auth_type = "'.mysql_real_escape_string ($_POST['listing_auth_type']).'",
-        taxable = (SELECT taxable FROM '.TABLE_SUBCATEGORY.' WHERE subcategory_id = "'.mysql_real_escape_string ($_POST['subcategory_id']).'"),
-        sticky = "'.mysql_real_escape_string ($_POST['sticky']).'",
-        tangible = "'.mysql_real_escape_string ($_POST['tangible']).'",
-        storage_id = "'.mysql_real_escape_string ($_POST['storage_id']).'",
-        retail_staple = "'.mysql_real_escape_string ($_POST['retail_staple']).'",
+        product_name = "'.mysqli_real_escape_string ($connection, $_POST['product_name']).'",
+        product_description = "'.mysqli_real_escape_string ($connection, $_POST['product_description']).'",
+        subcategory_id = "'.mysqli_real_escape_string ($connection, $_POST['subcategory_id']).'",
+        account_number = "'.mysqli_real_escape_string ($connection, $_POST['account_number']).'",
+        inventory_id = "'.mysqli_real_escape_string ($connection, $_POST['inventory_id']).'",
+        inventory_pull = "'.mysqli_real_escape_string ($connection, $_POST['inventory_pull']).'",
+        unit_price = "'.mysqli_real_escape_string ($connection, $_POST['unit_price']).'",
+        pricing_unit = "'.mysqli_real_escape_string ($connection, $_POST['pricing_unit']).'",
+        ordering_unit = "'.mysqli_real_escape_string ($connection, $_POST['ordering_unit']).'",
+        production_type_id = "'.mysqli_real_escape_string ($connection, $_POST['production_type_id']).'",
+        extra_charge = "'.mysqli_real_escape_string ($connection, $_POST['extra_charge']).'",
+        product_fee_percent = "'.mysqli_real_escape_string ($connection, $_POST['product_fee_percent']).'",
+        random_weight = "'.mysqli_real_escape_string ($connection, $_POST['random_weight']).'",
+        minimum_weight = "'.mysqli_real_escape_string ($connection, $_POST['minimum_weight']).'",
+        maximum_weight = "'.mysqli_real_escape_string ($connection, $_POST['maximum_weight']).'",
+        meat_weight_type = "'.mysqli_real_escape_string ($connection, $_POST['meat_weight_type']).'",
+        listing_auth_type = "'.mysqli_real_escape_string ($connection, $_POST['listing_auth_type']).'",
+        taxable = (SELECT taxable FROM '.TABLE_SUBCATEGORY.' WHERE subcategory_id = "'.mysqli_real_escape_string ($connection, $_POST['subcategory_id']).'"),
+        sticky = "'.mysqli_real_escape_string ($connection, $_POST['sticky']).'",
+        tangible = "'.mysqli_real_escape_string ($connection, $_POST['tangible']).'",
+        storage_id = "'.mysqli_real_escape_string ($connection, $_POST['storage_id']).'",
+        retail_staple = "'.mysqli_real_escape_string ($connection, $_POST['retail_staple']).'",
         /* future_delivery = "", */
         /* future_delivery_type = "", */
-        image_id = "'.mysql_real_escape_string ($_POST['image_id']).'",
-        confirmed = "'.mysql_real_escape_string ($_POST['confirmed']).'",
+        image_id = "'.mysqli_real_escape_string ($connection, $_POST['image_id']).'",
+        confirmed = "'.mysqli_real_escape_string ($connection, $_POST['confirmed']).'",
         /* staple_type, */
         '.$set_created.'
         modified = NOW(),
-        hide_from_invoice = "'.mysql_real_escape_string ($_POST['hide_from_invoice']).'"
+        hide_from_invoice = "'.mysqli_real_escape_string ($connection, $_POST['hide_from_invoice']).'"
       WHERE
-        producer_id = "'.mysql_real_escape_string ($producer_id).'"
-        AND product_id = "'.mysql_real_escape_string ($_POST['product_id']).'"
-        AND product_version = "'.mysql_real_escape_string ($_POST['product_version']).'"';
-    $result = @mysql_query($sqlu, $connection) or die(debug_print ("ERROR: 267154 ", array ($sqlu,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
+        AND product_id = "'.mysqli_real_escape_string ($connection, $_POST['product_id']).'"
+        AND product_version = "'.mysqli_real_escape_string ($connection, $_POST['product_version']).'"';
+    $result = @mysqli_query ($connection, $sqlu) or die (debug_print ("ERROR: 267154 ", array ($sqlu, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 
-//    $new_product_id = mysql_insert_id ();
+//    $new_product_id = mysqli_insert_id ($connection);
 
 
 //     // Now check again for product confirmations. It is important that at least one product_version
@@ -518,12 +518,12 @@ if ( $okay_to_post == true)
 //       FROM
 //         '.NEW_TABLE_PRODUCTS.'
 //       WHERE
-//         product_id = "'.mysql_real_escape_string($_POST['product_id']).'"
-//         AND producer_id = "'.mysql_real_escape_string($producer_id).'"
+//         product_id = "'.mysqli_real_escape_string ($connection, $_POST['product_id']).'"
+//         AND producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
 //       GROUP BY
 //         product_id';
-//       $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 901347 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-//       if ($row = mysql_fetch_array($result))
+//       $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 901347 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+//       if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
 //         {
 //           // If nothing confirmed nor preferred, then set highest version to preferred
 //           if ($row['max_confirmed'] != 1 && $row['min_confirmed'] != -1)
@@ -534,10 +534,10 @@ if ( $okay_to_post == true)
 //                 SET
 //                   confirmed = "-1"
 //                 WHERE
-//                   product_id = "'.mysql_real_escape_string($_POST['product_id']).'"
-//                   AND producer_id = "'.mysql_real_escape_string($producer_id).'"
-//                   AND product_version = "'.mysql_real_escape_string($row['max_product_version']).'"';
-//                 $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 059372 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+//                   product_id = "'.mysqli_real_escape_string ($connection, $_POST['product_id']).'"
+//                   AND producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
+//                   AND product_version = "'.mysqli_real_escape_string ($connection, $row['max_product_version']).'"';
+//                 $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 059372 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 //             }
 //         }
 
@@ -551,15 +551,15 @@ if ( $okay_to_post == true)
       LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' USING(product_id,product_version)
       WHERE
         confirmed = "0"
-        AND product_id = "'.mysql_real_escape_string($_POST['product_id']).'"
-        AND product_version != "'.mysql_real_escape_string ($_POST['product_version']).'"
+        AND product_id = "'.mysqli_real_escape_string ($connection, $_POST['product_id']).'"
+        AND product_version != "'.mysqli_real_escape_string ($connection, $_POST['product_version']).'"
         AND bpid IS NULL';
-//    $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 926790 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+//    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 926790 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     // Return to the prior page with a new product notice
     if ($_POST['submit_action'] == 'Add Product' ||
         $_POST['save_as_new'] == 'Save as a New Product')
       {
-        $result3 = @mysql_query($sqlu,$connection) or die(debug_print ("ERROR: 287568 ", array ($sqlu,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result3 = @mysqli_query ($connection, $sqlu) or die (debug_print ("ERROR: 287568 ", array ($sqlu, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $return_target = $referrer.'#X'.$_POST['product_id'];
         header('refresh: 2; url="'.$return_target.'"');
         echo '<div style="width:40%;margin-left:auto;margin-right:auto;font-size:3em;padding:2em;text-align:center;color:fff;background-color:#080;">New product #'.$_POST['product_id'].' has been created.</div>';
@@ -621,11 +621,11 @@ function set_product_confirm ($product_id, $product_version, $state)
       UPDATE
         '.NEW_TABLE_PRODUCTS.'
       SET
-        confirmed = "'.mysql_real_escape_string($confirmed).'"
+        confirmed = "'.mysqli_real_escape_string ($connection, $confirmed).'"
       WHERE
-        product_id = "'.mysql_real_escape_string($product_id).'"
-        AND product_version = "'.mysql_real_escape_string($product_version).'"';
-    $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 354218 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"
+        AND product_version = "'.mysqli_real_escape_string ($connection, $product_version).'"';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 354218 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 
 function clear_product_confirm ($product_id)
@@ -637,9 +637,9 @@ function clear_product_confirm ($product_id)
       SET
         confirmed = "0"
       WHERE
-        product_id = "'.mysql_real_escape_string($product_id).'"
+        product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"
         AND confirmed != "0"';
-    $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 542671 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 542671 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 
 function set_product_auto_prefer ($product_id)
@@ -652,12 +652,12 @@ function set_product_auto_prefer ($product_id)
       FROM
         '.NEW_TABLE_PRODUCTS.'
       WHERE
-        product_id = "'.mysql_real_escape_string($product_id).'"
+        product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"
       ORDER BY
         modified DESC
       LIMIT 1';
-    $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 547348 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row = mysql_fetch_array($result))
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 547348 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         $product_version = $row['product_version'];
       }
@@ -667,8 +667,7 @@ function set_product_auto_prefer ($product_id)
       SET
         confirmed = "-1"
       WHERE
-        product_id = "'.mysql_real_escape_string($product_id).'"
-        AND product_version = "'.mysql_real_escape_string($product_version).'"';
-    $result = mysql_query($query, $connection) or die (debug_print ("ERROR: 543804 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"
+        AND product_version = "'.mysqli_real_escape_string ($connection, $product_version).'"';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 543804 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
-?>

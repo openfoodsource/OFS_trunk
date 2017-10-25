@@ -26,22 +26,22 @@ if ($_GET['action'] == 'Search' &&
         '.TABLE_MEMBER.'
       LEFT JOIN '.TABLE_PRODUCER.' USING(member_id)
       WHERE
-        first_name LIKE "%'.mysql_real_escape_string ($_GET['member_query']).'%"
-        OR last_name LIKE "%'.mysql_real_escape_string ($_GET['member_query']).'%"
-        OR first_name_2 LIKE "%'.mysql_real_escape_string ($_GET['member_query']).'%"
-        OR last_name_2 LIKE "%'.mysql_real_escape_string ($_GET['member_query']).'%"
-        OR preferred_name LIKE "%'.mysql_real_escape_string ($_GET['member_query']).'%"
-        OR username LIKE "%'.mysql_real_escape_string ($_GET['member_query']).'%"
-        OR '.TABLE_MEMBER.'.business_name LIKE "%'.mysql_real_escape_string ($_GET['member_query']).'%"
-        OR email_address LIKE "%'.mysql_real_escape_string ($_GET['member_query']).'%"
-        OR email_address_2 LIKE "%'.mysql_real_escape_string ($_GET['member_query']).'%"
-        OR '.TABLE_MEMBER.'.member_id = "'.mysql_real_escape_string ($_GET['member_query']).'"
-        OR '.TABLE_PRODUCER.'.business_name LIKE "%'.mysql_real_escape_string ($_GET['member_query']).'%"
+        first_name LIKE "%'.mysqli_real_escape_string ($connection, $_GET['member_query']).'%"
+        OR last_name LIKE "%'.mysqli_real_escape_string ($connection, $_GET['member_query']).'%"
+        OR first_name_2 LIKE "%'.mysqli_real_escape_string ($connection, $_GET['member_query']).'%"
+        OR last_name_2 LIKE "%'.mysqli_real_escape_string ($connection, $_GET['member_query']).'%"
+        OR preferred_name LIKE "%'.mysqli_real_escape_string ($connection, $_GET['member_query']).'%"
+        OR username LIKE "%'.mysqli_real_escape_string ($connection, $_GET['member_query']).'%"
+        OR '.TABLE_MEMBER.'.business_name LIKE "%'.mysqli_real_escape_string ($connection, $_GET['member_query']).'%"
+        OR email_address LIKE "%'.mysqli_real_escape_string ($connection, $_GET['member_query']).'%"
+        OR email_address_2 LIKE "%'.mysqli_real_escape_string ($connection, $_GET['member_query']).'%"
+        OR '.TABLE_MEMBER.'.member_id = "'.mysqli_real_escape_string ($connection, $_GET['member_query']).'"
+        OR '.TABLE_PRODUCER.'.business_name LIKE "%'.mysqli_real_escape_string ($connection, $_GET['member_query']).'%"
       ORDER BY
         member_id,
         producer_id';
-    $result = mysql_query($query)  or die (debug_print ("ERROR: 754930 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $rows = @mysql_num_rows($result);
+    $result = mysqli_query ($connection, $query)  or die (debug_print ("ERROR: 754930 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $rows = @mysqli_num_rows ($result);
     if ($rows > 0)
       {
         $content_member_list .= '
@@ -55,7 +55,7 @@ if ($_GET['action'] == 'Search' &&
                 <div class="header result username">Username</div>
                 <div class="header result links">Action</div>
               </div>';
-        while ($row = mysql_fetch_array($result))
+        while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
           {
             if ($row['membership_discontinued'] > 0)
               $discontinued_class = ' discontinued';
@@ -263,5 +263,3 @@ echo '
   '.$content_member_list.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-
-

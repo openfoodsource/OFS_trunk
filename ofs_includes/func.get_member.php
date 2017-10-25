@@ -66,11 +66,10 @@ function get_member ($member_id)
       FROM '.TABLE_MEMBER.'
       LEFT JOIN '.TABLE_MEMBERSHIP_TYPES.' USING(membership_type_id)
       WHERE
-        member_id = "'.mysql_real_escape_string ($member_id).'"';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 740293 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row = mysql_fetch_array($result))
+        member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 740293 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         return ($row);
       }
   }
-?>

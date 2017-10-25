@@ -25,7 +25,7 @@ $query = '
   LEFT JOIN
     '.TABLE_PRODUCER.' ON '.TABLE_PRODUCER.'.producer_id = '.TABLE_PRODUCER_REG.'.producer_id
   WHERE
-    '.TABLE_PRODUCER.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"
+    '.TABLE_PRODUCER.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
     AND
       ((
         '.TABLE_PRODUCER.'.pending = 0
@@ -34,8 +34,8 @@ $query = '
       OR '.$is_producer_admin.'
       )';
 
-$result = @mysql_query($query,$connection) or die('<br><br>Whoops! You found a bug. If there is an error listed below, please copy and paste the error into an email to <a href="mailto:web@$domainname">web@$domainname</a><br><br><b>Error:</b> Route Query ' . mysql_error() . '<br><b>Error No: </b>' . mysql_errno());
-while ($row = mysql_fetch_array($result))
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 567219 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     $pid = $row['pid'];
     $producer_id = $row['producer_id'];

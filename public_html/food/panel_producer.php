@@ -23,11 +23,11 @@ if (isset ($_REQUEST['list_producer']) && $_SESSION['producer_id_you'] != '' && 
       UPDATE
         '.TABLE_PRODUCER.'
       SET
-        unlisted_producer = "'.mysql_real_escape_string ($unlisted_producer).'"
+        unlisted_producer = "'.mysqli_real_escape_string ($connection, $unlisted_producer).'"
       WHERE
-        producer_id = "'.mysql_real_escape_string ($_SESSION['producer_id_you']).'"
+        producer_id = "'.mysqli_real_escape_string ($connection, $_SESSION['producer_id_you']).'"
         AND unlisted_producer != "2"';
-    $resultr = @mysql_query($sqlr,$connection) or die(debug_print ("ERROR: 906897 ", array ($sqlr,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $resultr = @mysqli_query ($connection, $sqlr) or die (debug_print ("ERROR: 906897 ", array ($sqlr, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $message = "Producer # $producer_id has been updated.<br>";
   }
 
@@ -42,14 +42,14 @@ if ($_GET['producer_id_you'])
       FROM
         '.TABLE_PRODUCER.'
       WHERE
-        producer_id = "'.mysql_real_escape_string ($_GET['producer_id_you']).'"
+        producer_id = "'.mysqli_real_escape_string ($connection, $_GET['producer_id_you']).'"
         AND
           (
-            member_id = '.mysql_real_escape_string ($_SESSION['member_id']).'
+            member_id = '.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'
             OR '.$producer_admin_true.'
           )';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 860943 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ($row = mysql_fetch_object($result))
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 160943 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_object($result))
       {
         if ($row->authorized == 1)
           {
@@ -71,13 +71,13 @@ if (! $_SESSION['producer_id_you'])
       FROM
         '.TABLE_PRODUCER.'
       WHERE
-        member_id = '.mysql_real_escape_string ($_SESSION['member_id']).'
-        OR producer_id = "'.mysql_real_escape_string ($_SESSION['producer_id_you']).'"
+        member_id = '.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'
+        OR producer_id = "'.mysqli_real_escape_string ($connection, $_SESSION['producer_id_you']).'"
       ORDER BY
         business_name
       LIMIT 0,1';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 537557 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ($row = mysql_fetch_object($result))
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 567557 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_object($result))
       {
         if ($row->producer_id)
           {
@@ -98,12 +98,12 @@ $query = '
   FROM
     '.TABLE_PRODUCER.'
   WHERE
-    member_id = "'.mysql_real_escape_string ($_SESSION['member_id']).'"
+    member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"
     OR '.$producer_admin_true.'
   ORDER BY
     business_name';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 897618 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ( $row = mysql_fetch_object($result) )
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 752326 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_object ($result) )
   {
     $pending_producer = $row->pending_producer;
     // Preset/clear variables

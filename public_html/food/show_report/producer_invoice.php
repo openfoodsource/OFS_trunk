@@ -56,10 +56,10 @@ $query_unique = '
     '.TABLE_ORDER_CYCLES.')
   LEFT JOIN '.TABLE_MEMBER.' USING(member_id)
   WHERE
-    '.TABLE_PRODUCER.'.producer_id = "'.mysql_real_escape_string($producer_id_you).'"
-    AND '.TABLE_ORDER_CYCLES.'.delivery_id = "'.mysql_real_escape_string($delivery_id).'"';
-$result_unique = mysql_query($query_unique, $connection) or die(debug_print ("ERROR: 863023 ", array ($query_unique,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-if ($row_unique = mysql_fetch_array ($result_unique))
+    '.TABLE_PRODUCER.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id_you).'"
+    AND '.TABLE_ORDER_CYCLES.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"';
+$result_unique = mysqli_query ($connection, $query_unique) or die (debug_print ("ERROR: 368023 ", array ($query_unique, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+if ($row_unique = mysqli_fetch_array ($result_unique, MYSQLI_ASSOC))
   {
     $unique_data = (array) $row_unique;
   }
@@ -157,11 +157,11 @@ $query_product = '
     )
   WHERE
     (('.NEW_TABLE_LEDGER.'.source_type = "producer"
-        AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysql_real_escape_string($producer_id_you).'")
+        AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysqli_real_escape_string ($connection, $producer_id_you).'")
       OR ('.NEW_TABLE_LEDGER.'.target_type = "producer"
-        AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysql_real_escape_string($producer_id_you).'"))
+        AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysqli_real_escape_string ($connection, $producer_id_you).'"))
     AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL
-    AND '.NEW_TABLE_LEDGER.'.delivery_id = "'.mysql_real_escape_string($delivery_id).'"
+    AND '.NEW_TABLE_LEDGER.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
     AND '.NEW_TABLE_PRODUCTS.'.product_id IS NOT NULL
   ORDER BY
     '.NEW_TABLE_PRODUCTS.'.product_id,
@@ -187,18 +187,18 @@ $query_prior_closing = '
   LEFT JOIN
     '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   WHERE
-    '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysql_real_escape_string($producer_id_you).'"
-    AND '.TABLE_ORDER_CYCLES.'.date_closed < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysql_real_escape_string($delivery_id).'")
+    '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id_you).'"
+    AND '.TABLE_ORDER_CYCLES.'.date_closed < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'")
   ORDER BY
     '.TABLE_ORDER_CYCLES.'.date_closed DESC
   LIMIT
     0,1';
 // echo "<!-- <pre>$query_prior_closing </pre> -->";
-$result_prior_closing = mysql_query($query_prior_closing, $connection) or die(debug_print ("ERROR: 754932 ", array ($query_prior_closing,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result_prior_closing = mysqli_query ($connection, $query_prior_closing) or die (debug_print ("ERROR: 754232 ", array ($query_prior_closing, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $and_since_prior_closing_date = '';
 $and_since_prior_delivery_date = '';
 $and_before_prior_delivery_date = '';
-if ($row_prior_closing = mysql_fetch_array ($result_prior_closing))
+if ($row_prior_closing = mysqli_fetch_array ($result_prior_closing, MYSQLI_ASSOC))
   {
     $unique['prior_closing'] = $row_prior_closing['date_closed'];
     $unique['prior_delivery'] = $row_prior_closing['delivery_date'];
@@ -249,11 +249,11 @@ $query_adjustment = '
     )
   WHERE
     (('.NEW_TABLE_LEDGER.'.source_type = "member"
-      AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysql_real_escape_string($member_id).'")
+      AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysqli_real_escape_string ($connection, $member_id).'")
     OR ('.NEW_TABLE_LEDGER.'.target_type = "member"
-      AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysql_real_escape_string($member_id).'"))
+      AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysqli_real_escape_string ($connection, $member_id).'"))
     AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL
-    AND '.NEW_TABLE_LEDGER.'.delivery_id = "'.mysql_real_escape_string($delivery_id).'"
+    AND '.NEW_TABLE_LEDGER.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
     AND '.NEW_TABLE_LEDGER.'.pvid IS NULL
   ORDER BY
     '.NEW_TABLE_LEDGER.'.effective_datetime';
@@ -268,18 +268,16 @@ $query_balance = '
     '.NEW_TABLE_LEDGER.'
   WHERE
     (('.NEW_TABLE_LEDGER.'.source_type = "producer"
-      AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysql_real_escape_string($producer_id_you).'")
+      AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysqli_real_escape_string ($connection, $producer_id_you).'")
     OR ('.NEW_TABLE_LEDGER.'.target_type = "producer"
-      AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysql_real_escape_string($producer_id_you).'"))
+      AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysqli_real_escape_string ($connection, $producer_id_you).'"))
     AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL
     /* Only consider charges prior to the order closing time */
-    /* AND '.NEW_TABLE_LEDGER.'.effective_datetime < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysql_real_escape_string($delivery_id).'") */
+    /* AND '.NEW_TABLE_LEDGER.'.effective_datetime < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'") */
     '.$and_before_prior_delivery_date;
 // echo "<pre>$query_balance</pre>";
-$result_balance = mysql_query($query_balance, $connection) or die(debug_print ("ERROR: 675930 ", array ($query_balance,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-if ($row_balance = mysql_fetch_array ($result_balance))
+$result_balance = mysqli_query ($connection, $query_balance) or die (debug_print ("ERROR: 673930 ", array ($query_balance, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+if ($row_balance = mysqli_fetch_array ($result_balance, MYSQLI_ASSOC))
   {
     $unique_data['balance_forward'] = $row_balance['total'];
   }
-
-?>

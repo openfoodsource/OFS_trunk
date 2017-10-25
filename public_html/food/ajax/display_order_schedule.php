@@ -5,10 +5,10 @@ valid_auth('member_admin,site_admin,cashier');
 
 // $_POST = $_GET; // FOR DEBUGGING
 
-$data_page = isset($_POST['data_page']) ? mysql_real_escape_string ($_POST['data_page']) : 1;
-$per_page = isset($_POST['per_page']) ? mysql_real_escape_string ($_POST['per_page']) : PER_PAGE;
+$data_page = isset($_POST['data_page']) ? mysqli_real_escape_string ($connection, $_POST['data_page']) : 1;
+$per_page = isset($_POST['per_page']) ? mysqli_real_escape_string ($connection, $_POST['per_page']) : PER_PAGE;
 $per_page = 10;
-$limit_clause = mysql_real_escape_string (floor (($data_page - 1) * $per_page).", ".floor ($per_page));
+$limit_clause = mysqli_real_escape_string ($connection, floor (($data_page - 1) * $per_page).", ".floor ($per_page));
 
 // // Set colors that will be used for consecutive calendar months
 // $month_color_array = array ('ace', 'aec', 'cae', 'cea', 'eac', 'eca');
@@ -43,18 +43,18 @@ $query = '
   ORDER BY delivery_date
   LIMIT '.$limit_clause;
 
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 756930 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 256930 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // Get the total number of rows (for pagination) -- not counting the LIMIT condition
 $query_found_cycles = '
   SELECT
     FOUND_ROWS() AS found_cycles';
-$result_found_cycles = @mysql_query($query_found_cycles, $connection) or die(debug_print ("ERROR: 759323 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$row_found_cycles = mysql_fetch_array($result_found_cycles);
+$result_found_cycles = @mysqli_query ($connection, $query_found_cycles) or die (debug_print ("ERROR: 752323 ", array ($query_found_cycles, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$row_found_cycles = mysqli_fetch_array ($result_found_cycles, MYSQLI_ASSOC);
 $found_cycles = $row_found_cycles['found_cycles'];
 $found_pages = ceil ($found_cycles / $per_page);
 
 $order_cycle_array = array ();
-while ($row = mysql_fetch_array($result))
+while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     array_push ($order_cycle_array, $row);
   }
@@ -249,5 +249,3 @@ $ledger_data['maximum_data_page'] = $found_pages;
 $ledger_data['data_page'] = $data_page;
 // Send back the json data only when not called as an include file.
 if (! isset($call_display_as_include))  echo json_encode ($ledger_data);
-
-?>

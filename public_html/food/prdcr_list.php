@@ -42,8 +42,8 @@ $query = '
     '.TABLE_PRODUCER.'.producer_id
   ORDER BY
     '.TABLE_PRODUCER.'.business_name';
-$result = @mysql_query($query,$connection) or die(debug_print ("ERROR: 897650 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ( $row = mysql_fetch_array($result) )
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 897650 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
   {
     $producer_id = $row['producer_id'];
     $business_name = $row['business_name'];

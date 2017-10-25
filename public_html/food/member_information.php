@@ -25,12 +25,12 @@ $query_member_info = '
   FROM '.TABLE_MEMBER.'
   LEFT JOIN '.TABLE_MEMBERSHIP_TYPES.' USING (membership_type_id)
   WHERE
-    member_id = "'.mysql_real_escape_string ($member_id).'"';
+    member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"';
 
-$result_member_info = @mysql_query($query_member_info, $connection) or die(debug_print ("ERROR: 785033 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result_member_info = @mysqli_query ($connection, $query_member_info) or die (debug_print ("ERROR: 265033 ", array ($query_member_info, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 
 $member_data_found = false;
-if ( $row_member_info = mysql_fetch_array($result_member_info) )
+if ( $row_member_info = mysqli_fetch_array ($result_member_info, MYSQLI_ASSOC) )
   {
     $member_data_found = true;
   }
@@ -70,8 +70,8 @@ $query_account = '
   FROM '.NEW_TABLE_ACCOUNTS.'
   WHERE
     1';
-$result_account = @mysql_query($query_account, $connection) or die(debug_print ("ERROR: 759335 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ($row_account = mysql_fetch_array($result_account) )
+$result_account = @mysqli_query ($connection, $query_account) or die (debug_print ("ERROR: 759335 ", array ($query_account, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ($row_account = mysqli_fetch_array ($result_account) )
   {
     $account[$row_account['account_id']]['internal_subkey'] = $row_account['internal_subkey'];
     $account[$row_account['account_id']]['account_number'] = $row_account['account_number'];
@@ -109,10 +109,10 @@ $query_ledger = '
   WHERE
     (
       (source_type = "member"
-      AND source_key = "'.mysql_real_escape_string ($member_id).'")
+      AND source_key = "'.mysqli_real_escape_string ($connection, $member_id).'")
     OR
       (target_type = "member"
-      AND target_key = "'.mysql_real_escape_string ($member_id).'")
+      AND target_key = "'.mysqli_real_escape_string ($connection, $member_id).'")
     )
     AND replaced_by IS NULL
     '.$new_accounting_restriction.'
@@ -123,9 +123,9 @@ $query_ledger = '
   ORDER BY
     date';
 // echo "<pre>$query_ledger</pre>";
-$result_ledger = @mysql_query($query_ledger, $connection) or die(debug_print ("ERROR: 784032 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result_ledger = @mysqli_query ($connection, $query_ledger) or die (debug_print ("ERROR: 734032 ", array ($query_ledger, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // Cycle through all the rows... then one last (bogus) row for processing)
-while (($row_ledger = mysql_fetch_array($result_ledger)) || $last_row++ < 1)
+while (($row_ledger = mysqli_fetch_array ($result_ledger, MYSQLI_ASSOC)) || $last_row++ < 1)
   {
     $basket_id = $row_ledger['basket_id'];
     $delivery_id = $row_ledger['delivery_id'];
@@ -244,7 +244,7 @@ $member_content .= '
 // work_address_line2               // notes
 
 
-// // $num_members = mysql_numrows($result_member_info);
+// // $num_members = mysqli_num_rows($result_member_info);
 
 // Prepare page for display
 $page_specific_css = '
@@ -391,4 +391,3 @@ echo '
   '.$member_content.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-

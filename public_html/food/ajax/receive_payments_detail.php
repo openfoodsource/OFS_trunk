@@ -30,14 +30,14 @@ function receive_payments_detail($argument)
               COUNT(amount) AS count
             FROM '.NEW_TABLE_LEDGER.'
             WHERE
-              basket_id = "'.mysql_real_escape_string($argument['basket_id']).'"
+              basket_id = "'.mysqli_real_escape_string ($connection, $argument['basket_id']).'"
               AND (source_type = "member"
                 OR target_type = "member")
               AND replaced_by IS NULL
             GROUP BY
               text_key';
-          $result = @mysql_query($query,$connection) or die(debug_print ("ERROR: 768933 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-          while ( $row = mysql_fetch_array($result) )
+          $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 168933 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+          while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
             {
               // Is this a payment -- something we want to show explicitly?
               if ($row['text_key'] == 'payment received')
@@ -94,6 +94,3 @@ function receive_payments_detail($argument)
           break;
       }
   }
-
-
-

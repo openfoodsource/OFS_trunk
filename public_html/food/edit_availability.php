@@ -35,27 +35,21 @@ $query_producer = '
     list_order
   LIMIT
     '.$query_limit;
-$result_producer = mysql_query($query_producer, $connection) or die(debug_print ("ERROR: 576219 ", array ($sql,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result_producer = mysqli_query ($connection, $query_producer) or die (debug_print ("ERROR: 276219 ", array ($query_producer, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // How many total producers in this query (not counting LIMIT)?
 $query_found_rows = '
   SELECT
     FOUND_ROWS() AS found_rows';
-$result_found_rows = @mysql_query($query_found_rows, $connection) or die(debug_print ("ERROR: 756890 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$number_of_pages = floor (mysql_fetch_array($result_found_rows) - 1 / PER_PAGE);
+$result_found_rows = @mysqli_query ($connection, $query_found_rows) or die (debug_print ("ERROR: 156890 ", array ($query_found_rows, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$number_of_pages = floor (mysqli_fetch_array ($result_found_rows, MYSQLI_ASSOC) - 1 / PER_PAGE);
 // Now process the list of producers
-while ($row_producer = mysql_fetch_object($result_producer))
+while ($row_producer = mysqli_fetch_object ($result_producer))
   {
     $producer_array[$row_producer->list_order]['producer_id'] = $row_producer->producer_id;
     $producer_array[$row_producer->list_order]['pending'] = $row_producer->pending;
     $producer_array[$row_producer->list_order]['business_name'] = $row_producer->business_name;
     $producer_array[$row_producer->list_order]['unlisted_producer'] = $row_producer->unlisted_producer;
   }
-
-
-
-
-
-
 
 // Get the delivery_code list
 $query_producer = '
@@ -74,54 +68,21 @@ $query_producer = '
     list_order
   LIMIT
     '.$query_limit;
-$result_producer = mysql_query($query_producer, $connection) or die(debug_print ("ERROR: 576219 ", array ($sql,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result_producer = mysqli_query ($connection, $query_producer) or die (debug_print ("ERROR: 577219 ", array ($query_producer, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // How many total producers in this query (not counting LIMIT)?
 $query_found_rows = '
   SELECT
     FOUND_ROWS() AS found_rows';
-$result_found_rows = @mysql_query($query_found_rows, $connection) or die(debug_print ("ERROR: 756890 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$number_of_pages = floor (mysql_fetch_array($result_found_rows) - 1 / PER_PAGE);
+$result_found_rows = @mysqli_query ($connection, $query_found_rows) or die (debug_print ("ERROR: 752890 ", array ($query_found_rows, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$number_of_pages = floor (mysqli_fetch_array ($result_found_rows, MYSQLI_ASSOC) - 1 / PER_PAGE);
 // Now process the list of producers
-while ($row_producer = mysql_fetch_object($result_producer))
+while ($row_producer = mysqli_fetch_object ($result_producer))
   {
     $producer_array[$row_producer->list_order]['producer_id'] = $row_producer->producer_id;
     $producer_array[$row_producer->list_order]['pending'] = $row_producer->pending;
     $producer_array[$row_producer->list_order]['business_name'] = $row_producer->business_name;
     $producer_array[$row_producer->list_order]['unlisted_producer'] = $row_producer->unlisted_producer;
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 $content_applications .= '
 <small>NOTE: This page is scrolled horizontally.  The horizontal scroll-bar is at the bottom of the page &darr;</small>
 <table style="text-align: left;" border="1">';
@@ -133,9 +94,9 @@ $sql = '
     '.TABLE_PRODUCER_REG.'
   ORDER BY
     member_id DESC';
-$rs = @mysql_query($sql, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+$rs = @mysqli_query ($connection, $sql) or die (debug_print ("ERROR: 283467 ", array ($sql, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $first = 1;
-while ($row = mysql_fetch_array($rs))
+while ($row = mysqli_fetch_array ($rs, MYSQLI_ASSOC))
   {
     if ($first)
       {
@@ -180,4 +141,3 @@ echo '
   '.$content_applications.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
- 

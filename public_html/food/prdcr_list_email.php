@@ -18,8 +18,8 @@ $sqlp = '
   WHERE
     '.TABLE_PRODUCER.'.unlisted_producer = "0"
     AND '.TABLE_MEMBER.'.membership_discontinued != "1"';
-$resultp = @mysql_query($sqlp, $connection) or die(debug_print ("ERROR: 214321 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ( $row = mysql_fetch_array($resultp) )
+$resultp = @mysqli_query ($connection, $sqlp) or die (debug_print ("ERROR: 214321 ", array ($sqlp, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_array ($resultp, MYSQLI_ASSOC) )
   {
     $producer_id = $row['producer_id'];
     $business_name = $row['business_name'];

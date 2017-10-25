@@ -59,13 +59,13 @@ $query = '
   WHERE
     '.NEW_TABLE_BASKETS.'.member_id IS NOT NULL
     AND '.NEW_TABLE_BASKETS.'.checked_out != 0
-    AND '.NEW_TABLE_BASKETS.'.basket_id = "'.mysql_real_escape_string ($basket_id).'"';
+    AND '.NEW_TABLE_BASKETS.'.basket_id = "'.mysqli_real_escape_string ($connection, $basket_id).'"';
 
-$result= mysql_query($query) or die("Error: " . mysql_error());
+$result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 742821 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $customer_output_html = INVOICE_FILE_PATH.'invoices_customers-'.$delivery_id.'.html';
 $fp = fopen($customer_output_html,a);
 
-if ($row = mysql_fetch_array($result))
+if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     $_GET = array (
       'delivery_id' => $delivery_id,
@@ -82,5 +82,3 @@ if ($row = mysql_fetch_array($result))
   }
 
 echo 'GENERATED_INVOICE';
-
-?>

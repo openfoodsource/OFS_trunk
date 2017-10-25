@@ -29,8 +29,8 @@ if ($_REQUEST['ajax'] == 'yes')
             $update_field == 'ordering_unit')
           {
             $where_condition = '
-          WHERE delivery_id = "'.mysql_real_escape_string($delivery_id).'"
-            AND product_id = "'.mysql_real_escape_string($product_id).'"';
+          WHERE delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
+            AND product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"';
           }
         // For order data (specific to this customer's order/invoice)
         elseif ($update_field == 'quantity' ||
@@ -38,20 +38,20 @@ if ($_REQUEST['ajax'] == 'yes')
                 $update_field == 'out_of_stock')
           {
             $where_condition = '
-          WHERE basket_id = "'.mysql_real_escape_string($basket_id).'"
-            AND product_id = "'.mysql_real_escape_string($product_id).'"';
+          WHERE basket_id = "'.mysqli_real_escape_string ($connection, $basket_id).'"
+            AND product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"';
           }
         $query = '
           UPDATE
             '.NEW_TABLE_BASKET_ITEMS.'
           RIGHT JOIN '.NEW_TABLE_BASKETS.' USING (basket_id)
           SET
-            '.mysql_real_escape_string($update_field).' = "'.mysql_real_escape_string($update_content).'"'.
+            '.mysqli_real_escape_string ($connection, $update_field).' = "'.mysqli_real_escape_string ($connection, $update_content).'"'.
           $where_condition;
-        $result= mysql_query("$query") or die("Error: 853040" . mysql_error());
-        if (($affected_rows = mysql_affected_rows()) > 0)
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 853040 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if (($affected_rows = mysqli_affected_rows ($connection)) > 0)
           {
-            // $affected_rows = mysql_affected_rows($result);
+            // $affected_rows = mysqli_affected_rows ($connection);
             $ajax_content .= "SUCCESS   Updated $affected_rows ".Inflect::pluralize_if ($affected_rows, 'row').'.<pre>'.$query.'</pre>';
           }
         else
@@ -78,9 +78,9 @@ if ($_REQUEST['ajax'] == 'yes')
           FROM
             customer_invoices
           WHERE
-            basket_id = "'.mysql_real_escape_string ($basket_id).'"';
-        $result= mysql_query("$query") or die("Error: 753021" . mysql_error());
-        if ($row = mysql_fetch_object($result))
+            basket_id = "'.mysqli_real_escape_string ($connection, $basket_id).'"';
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 753021 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if ($row = mysqli_fetch_object ($result))
           {
             $ajax_content .= '<html><head><title>Invoice:'.$basket_id.'</title></head><body>'.$row->invoice_content.'</body>';
           }
@@ -113,13 +113,13 @@ if ($_REQUEST['ajax'] == 'yes')
           LEFT JOIN
             '.NEW_TABLE_BASKET_ITEMS.' ON '.NEW_TABLE_BASKETS.'.basket_id = '.NEW_TABLE_BASKET_ITEMS.'.basket_id
           WHERE
-            '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($delivery_id).'"
+            '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
           GROUP BY
             '.NEW_TABLE_BASKET_ITEMS.'.basket_id
           ORDER BY
             '.NEW_TABLE_BASKETS.'.basket_id';
-        $result= mysql_query("$query") or die("Error: 678574" . mysql_error());
-        while($row = mysql_fetch_object($result))
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 673574 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        while($row = mysqli_fetch_object ($result))
           {
             $ajax_content .= '
           <li id="producer_id:'.$row->basket_id.'" class="basket_incomplete" onClick="window.open(\'validate_customer_basket_items.php?ajax=yes&process=view_invoice&basket_id='.$row->basket_id.'\',\'external\')"><div class="p_list_pid">'.$row->basket_id.'</div><div class="p_list_name">Member '.$row->member_id.' ['.$row->quantity.' Items]</div></li>';
@@ -144,9 +144,9 @@ if ($_REQUEST['ajax'] == 'yes')
           FROM
             customer_invoices
           WHERE
-            basket_id = "'.mysql_real_escape_string ($_REQUEST['basket_id']).'"';
-        $result= mysql_query("$query") or die("Error: 789204" . mysql_error());
-        if($row = mysql_fetch_object($result))
+            basket_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['basket_id']).'"';
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 789204 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        if($row = mysqli_fetch_object ($result))
           {
             $invoice_content0 = $row->invoice_content;
           }
@@ -267,15 +267,15 @@ if ($_REQUEST['ajax'] == 'yes')
           FROM
             '.NEW_TABLE_BASKET_ITEMS.'
           WHERE
-            basket_id = "'.mysql_real_escape_string ($basket_id).'"
+            basket_id = "'.mysqli_real_escape_string ($connection, $basket_id).'"
           ORDER BY
             product_id';
-        $result= mysql_query("$query") or die("Error: 432673" . mysql_error());
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 432673 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $errors = 0;
         $error_flag = '*';
         // Configure the string used for clicking to transfer
         $transfer_this = '&rarr;';
-        while($row = mysql_fetch_object($result))
+        while($row = mysqli_fetch_object ($result))
           {
             // Skip until we get past the product_id that [might have been] just handled
             // No requested product_id means to process everything...
@@ -384,14 +384,14 @@ if ($_REQUEST['ajax'] == 'yes')
                       FROM
                         '.NEW_TABLE_BASKET_ITEMS.'
                       WHERE
-                        basket_id = "'.mysql_real_escape_string ($basket_id).'"
+                        basket_id = "'.mysqli_real_escape_string ($connection, $basket_id).'"
                       ORDER BY
                         product_id';
-                    $result_progress= mysql_query("$query_progress") or die("Error: 758394" . mysql_error());
+                    $result_progress= mysqli_query ($connection, $query_progress) or die (debug_print ("ERROR: 758394 ", array ($query_progress, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
                     $product_complete_class = ' complete';
                     $basket_progress_bar .= '
                       <ul id="product_progress">';
-                    while ($row_progress = mysql_fetch_object($result_progress))
+                    while ($row_progress = mysqli_fetch_object ($result_progress))
                       {
                         $basket_progress_bar .= '
                           <li class="progress_hash'.$product_complete_class.($row_progress->product_id == $product_id ? ' current' : '').'">'.$row_progress->product_id.'</li>';
@@ -479,9 +479,9 @@ $query = '
     '.TABLE_ORDER_CYCLES.'
   RIGHT JOIN '.NEW_TABLE_BASKETS.' ON '.TABLE_ORDER_CYCLES.'.delivery_id = '.NEW_TABLE_BASKETS.'.delivery_id
   GROUP BY '.NEW_TABLE_BASKETS.'.delivery_id';
-$result= mysql_query("$query") or die("Error: 899032" . mysql_error());
+$result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 399032 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $js_array_index = 0;
-while($row = mysql_fetch_object($result))
+while($row = mysqli_fetch_object ($result))
   {
     $content .= '          <li id="delivery_id:'.$row->delivery_id.'" class="del_complete del_row" onClick="reset_delivery_list('.$js_array_index.'); delivery_generate_start('.$js_array_index.'); generate_basket_list();"><div class="c_list_cid">'.$row->delivery_id.'</div><div class="c_list_name">'.$row->delivery_date.' ['.$row->quantity.' Orders]</div></li>';
     $js_array_index ++; // Increment the counter -- used as the javascript index

@@ -7,11 +7,11 @@ function prdcr_info ($producer_id, $producer_link)
     // Figure out what identity to query against
     if ($producer_id > 0)
       {
-        $where_producer = TABLE_PRODUCER.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"';
+        $where_producer = TABLE_PRODUCER.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
       }
     elseif (strlen ($producer_link) > 0)
       {
-        $where_producer = TABLE_PRODUCER.'.producer_link = "'.mysql_real_escape_string ($producer_link).'"';
+        $where_producer = TABLE_PRODUCER.'.producer_link = "'.mysqli_real_escape_string ($connection, $producer_link).'"';
       }
     else
       {
@@ -30,8 +30,8 @@ function prdcr_info ($producer_id, $producer_link)
         AND '.TABLE_PRODUCER.'.unlisted_producer != 2
       ORDER BY
         '.TABLE_MEMBER.'.business_name ASC';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 828135 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ( $row = mysql_fetch_array($result) )
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 828135 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
       {
         $producer_id = $row['producer_id'];
         $business_name =  $row['business_name'];
@@ -76,9 +76,9 @@ function prdcr_info ($producer_id, $producer_link)
           FROM
             '.TABLE_PRODUCER_LOGOS.'
           WHERE
-            '.TABLE_PRODUCER_LOGOS.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"';
-        $result2 = @mysql_query($query2, $connection) or die(debug_print ("ERROR: 759323 ", array ($query2,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        while ( $row = mysql_fetch_array($result2) )
+            '.TABLE_PRODUCER_LOGOS.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+        $result2 = @mysqli_query ($connection, $query2) or die (debug_print ("ERROR: 259323 ", array ($query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        while ( $row = mysqli_fetch_array ($result2, MYSQLI_ASSOC) )
           {
             $logo_id = $row['logo_id'];
             $logo_desc = $row['logo_desc'];
@@ -238,4 +238,3 @@ function prdcr_info ($producer_id, $producer_link)
       }
     return $display;
   }
-?>

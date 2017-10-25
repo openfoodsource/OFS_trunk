@@ -13,16 +13,16 @@ function get_internal_account_id ($requested_key, $text_key)
       SELECT
         (SELECT account_id
         FROM '.NEW_TABLE_ACCOUNTS.'
-        WHERE internal_key = "'.mysql_real_escape_string ($requested_key).'") AS first_choice,
+        WHERE internal_key = "'.mysqli_real_escape_string ($connection, $requested_key).'") AS first_choice,
         (SELECT account_id
         FROM '.NEW_TABLE_ACCOUNTS.'
-        WHERE internal_key = "'.mysql_real_escape_string ($text_key).'") AS second_choice';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 752907 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $num_rows = mysql_num_rows($result);
+        WHERE internal_key = "'.mysqli_real_escape_string ($connection, $text_key).'") AS second_choice';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 752907 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $num_rows = mysqli_num_rows ($result);
     // Ideally, we get one result and return it
     if ($num_rows == 1)
       {
-        $row = mysql_fetch_array($result);
+        $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
         if (is_numeric ($row['first_choice']))
           return ($row['first_choice']);
         elseif (is_numeric ($row['second_choice']))
@@ -34,15 +34,15 @@ function get_internal_account_id ($requested_key, $text_key)
         $query_insert = '
           INSERT INTO '.NEW_TABLE_ACCOUNTS.'
           SET
-            internal_key = "'.mysql_real_escape_string ($text_key).'",
-            description = "auto-generated account for: '.mysql_real_escape_string ($text_key).'"';
-        $result_insert = mysql_query($query_insert, $connection) or die(debug_print ("ERROR: 702912 ", array ($query_insert,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        return (mysql_insert_id());
+            internal_key = "'.mysqli_real_escape_string ($connection, $text_key).'",
+            description = "auto-generated account for: '.mysqli_real_escape_string ($connection, $text_key).'"';
+        $result_insert = mysqli_query ($connection, $query_insert) or die (debug_print ("ERROR: 702912 ", array ($query_insert, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        return (mysqli_insert_id ($connection));
       }
     // And if there are multiple rows, then that is a problem
     else
       {
-        die(debug_print ("ERROR: 803283 ", "Multiple instances for $text_key in '.NEW_TABLE_ACCOUNTS.' table", basename(__FILE__).' LINE '.__LINE__));
+        die (debug_print ("ERROR: 803283 ", "Multiple instances for $text_key in '.NEW_TABLE_ACCOUNTS.' table", basename(__FILE__).' LINE '.__LINE__));
       }
   }
 
@@ -63,35 +63,34 @@ function get_account_name ($account_type, $account_key)
         $query = '
           SELECT preferred_name AS name
           FROM '.TABLE_MEMBER.'
-          WHERE member_id = "'.mysql_real_escape_string($account_key).'"';
+          WHERE member_id = "'.mysqli_real_escape_string ($connection, $account_key).'"';
           break;
         case 'producer':
         $query = '
           SELECT business_name AS name
           FROM '.TABLE_PRODUCER.'
-          WHERE producer_id = "'.mysql_real_escape_string($account_key).'"';
+          WHERE producer_id = "'.mysqli_real_escape_string ($connection, $account_key).'"';
           break;
         case 'tax':
         $query = '
           SELECT CONCAT_WS(" ", postal_code, region_name, region_type) AS name
           FROM '.NEW_TABLE_TAX_RATES.'
-          WHERE tax_id = "'.mysql_real_escape_string($account_key).'"';
+          WHERE tax_id = "'.mysqli_real_escape_string ($connection, $account_key).'"';
           break;
         case 'internal':
         $query = '
           SELECT description AS name
           FROM '.NEW_TABLE_ACCOUNTS.'
-          WHERE account_id = "'.mysql_real_escape_string($account_key).'"';
+          WHERE account_id = "'.mysqli_real_escape_string ($connection, $account_key).'"';
           break;
       }
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 753093 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row = mysql_fetch_array($result))
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 753093 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         return ($row['name']);
       }
     else
       {
-        die(debug_print ("ERROR: 786304 ", "Account $account_type::$account_key was not found", basename(__FILE__).' LINE '.__LINE__));
+        die (debug_print ("ERROR: 786304 ", "Account $account_type::$account_key was not found", basename(__FILE__).' LINE '.__LINE__));
       }
   }
-?>

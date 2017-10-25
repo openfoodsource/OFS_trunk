@@ -113,18 +113,18 @@ if (strlen ($received_post_data) && $not_from_paypal == false)
             ofs_put_status ('paypal_txn_id', $_POST['txn_id'], $_POST['payment_gross'], PAYPAL_TTL);
             // Get basket information
             $query = '
-              SELECT * FROM '.NEW_TABLE_BASKETS.' WHERE basket_id = "'.mysql_real_escape_string ($number).'"';
-            $result = @mysql_query($query, $connection) or die (
+              SELECT * FROM '.NEW_TABLE_BASKETS.' WHERE basket_id = "'.mysqli_real_escape_string ($connection, $number).'"';
+            $result = @mysqli_query ($connection, $query) or die (
               debug_print ("ERROR: 780602 ", array(
                 'Level' => 'FATAL',
                 'Scope' => 'Database',
                 'File ' => __FILE__.' at line '.__LINE__,
                 'Details' => array (
-                  'MySQL Error' => mysql_errno(),
-                  'Message' => mysql_error(),
+                  'MySQL Error' => mysqli_errno ($connection),
+                  'Message' => mysqli_error ($connection),
                   'Query' => $query))));
             // See if we got a resulting basket to post into
-            if ($row = mysql_fetch_object($result))
+            if ($row = mysqli_fetch_object ($result))
               {
                 // Prepare to post the accounting
                 $payment_message_array = array();
@@ -192,7 +192,7 @@ if (strlen ($received_post_data) && $not_from_paypal == false)
             else
               {
                 // ERROR: Could not find basket
-                die (debug_print ("ERROR: 822345 ", array(
+                die (debug_print ("ERROR: 828345 ", array(
                   'Level' => 'FATAL',
                   'Scope' => 'PayPal API',
                   'File ' => __FILE__.' at line '.__LINE__,

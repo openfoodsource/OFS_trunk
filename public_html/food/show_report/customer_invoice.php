@@ -73,12 +73,12 @@ $query_unique = '
     '.NEW_TABLE_BASKETS.'.basket_id,
 
     (SELECT SUM(amount) FROM '.NEW_TABLE_LEDGER.' WHERE
-      ((target_key = "'.mysql_real_escape_string($member_id).'"
+      ((target_key = "'.mysqli_real_escape_string ($connection, $member_id).'"
       AND target_type = "member")
-      OR (source_key = "'.mysql_real_escape_string($member_id).'"
+      OR (source_key = "'.mysqli_real_escape_string ($connection, $member_id).'"
       AND source_type = "member"))
       AND text_key = "order cost"
-      AND delivery_id = "'.mysql_real_escape_string($delivery_id).'"
+      AND delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
       AND replaced_by IS NULL) AS order_cost,
 
     /* '.NEW_TABLE_BASKETS.'.order_cost, */
@@ -99,10 +99,10 @@ $query_unique = '
   LEFT JOIN '.NEW_TABLE_SITES.' USING (site_id)
   LEFT JOIN '.TABLE_ORDER_CYCLES.' USING (delivery_id)
   WHERE
-    '.TABLE_MEMBER.'.member_id = "'.mysql_real_escape_string($member_id).'"
-    AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string($delivery_id).'"';
-$result_unique = mysql_query($query_unique, $connection) or die(debug_print ("ERROR: 863023 ", array ($query_unique,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-if ($row_unique = mysql_fetch_array ($result_unique))
+    '.TABLE_MEMBER.'.member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"
+    AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"';
+$result_unique = mysqli_query ($connection, $query_unique) or die (debug_print ("ERROR: 063023 ", array ($query_unique, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+if ($row_unique = mysqli_fetch_array ($result_unique, MYSQLI_ASSOC))
   {
     $unique_data = (array) $row_unique;
   }
@@ -115,8 +115,8 @@ $query_product = '
     SQL_CALC_FOUND_ROWS
     DISTINCT('.NEW_TABLE_LEDGER.'.transaction_id),
     (CASE
-      WHEN ('.NEW_TABLE_LEDGER.'.source_type = "member" AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysql_real_escape_string($member_id).'") THEN 1
-      WHEN ('.NEW_TABLE_LEDGER.'.target_type = "member" AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysql_real_escape_string($member_id).'") THEN -1
+      WHEN ('.NEW_TABLE_LEDGER.'.source_type = "member" AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysqli_real_escape_string ($connection, $member_id).'") THEN 1
+      WHEN ('.NEW_TABLE_LEDGER.'.target_type = "member" AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysqli_real_escape_string ($connection, $member_id).'") THEN -1
       ELSE 0
     END) * amount AS amount,
     '.NEW_TABLE_LEDGER.'.text_key,
@@ -192,7 +192,7 @@ $query_product = '
       (SELECT message_type_id FROM '.NEW_TABLE_MESSAGE_TYPES.' WHERE description = "adjustment group memo")
     )
   WHERE
-    '.NEW_TABLE_LEDGER.'.basket_id = (SELECT basket_id FROM '.NEW_TABLE_BASKETS.' WHERE member_id="'.mysql_real_escape_string($member_id).'" AND delivery_id="'.mysql_real_escape_string($delivery_id).'")
+    '.NEW_TABLE_LEDGER.'.basket_id = (SELECT basket_id FROM '.NEW_TABLE_BASKETS.' WHERE member_id="'.mysqli_real_escape_string ($connection, $member_id).'" AND delivery_id="'.mysqli_real_escape_string ($connection, $delivery_id).'")
     AND ( '.NEW_TABLE_LEDGER.'.replaced_by IS NULL'.
     $view_original.'
     )
@@ -223,19 +223,19 @@ $query_prior_closing = '
   LEFT JOIN
     '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   WHERE
-    '.NEW_TABLE_BASKETS.'.member_id = "'.mysql_real_escape_string($member_id).'"
-    AND '.TABLE_ORDER_CYCLES.'.date_closed < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysql_real_escape_string($delivery_id).'")'.
+    '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"
+    AND '.TABLE_ORDER_CYCLES.'.date_closed < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'")'.
     $constrain_accounting_datetime.'
   ORDER BY
     '.TABLE_ORDER_CYCLES.'.date_closed DESC
   LIMIT
     0,1';
 // echo "<pre>$query_prior_closing </pre>";
-$result_prior_closing = mysql_query($query_prior_closing, $connection) or die(debug_print ("ERROR: 754932 ", array ($query_prior_closing,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result_prior_closing = mysqli_query ($connection, $query_prior_closing) or die (debug_print ("ERROR: 759932 ", array ($query_prior_closing, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $and_since_prior_closing_date = ''; // NOT USED???
 $and_since_prior_delivery_date = '';
 $and_before_prior_delivery_date = '';
-if ($row_prior_closing = mysql_fetch_array ($result_prior_closing))
+if ($row_prior_closing = mysqli_fetch_array ($result_prior_closing, MYSQLI_ASSOC))
   {
     $unique['prior_closing'] = $row_prior_closing['date_closed'];
     $unique['prior_delivery'] = $row_prior_closing['delivery_date'];
@@ -287,16 +287,16 @@ $query_adjustment = '
     )
   WHERE
     (('.NEW_TABLE_LEDGER.'.source_type = "member"
-        AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysql_real_escape_string($member_id).'")
+        AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysqli_real_escape_string ($connection, $member_id).'")
       OR ('.NEW_TABLE_LEDGER.'.target_type = "member"
-        AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysql_real_escape_string($member_id).'"))
+        AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysqli_real_escape_string ($connection, $member_id).'"))
     AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL
     AND '.NEW_TABLE_LEDGER.'.amount != 0 /* no need to show null adjustments */
     AND '.NEW_TABLE_LEDGER.'.bpid IS NULL /* do not consider basket items */
     AND (('.NEW_TABLE_LEDGER.'.effective_datetime < "'.$unique_data['delivery_date'].'"'.
         $and_since_prior_delivery_date.')
     /* INCLUDE RELATED INFORMATION THAT DOES NOT ADJUST THIS INVOICE TOTAL */
-      OR ('.NEW_TABLE_LEDGER.'.delivery_id = "'.mysql_real_escape_string($delivery_id).'"
+      OR ('.NEW_TABLE_LEDGER.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
         AND ('.NEW_TABLE_LEDGER.'.text_key = "payment received"
           OR '.NEW_TABLE_LEDGER.'.text_key = "payment made")))
   ORDER BY
@@ -314,21 +314,17 @@ $query_balance = '
     '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   WHERE
     (('.NEW_TABLE_LEDGER.'.source_type = "member"
-      AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysql_real_escape_string($member_id).'")
+      AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysqli_real_escape_string ($connection, $member_id).'")
     OR ('.NEW_TABLE_LEDGER.'.target_type = "member"
-      AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysql_real_escape_string($member_id).'"))
+      AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysqli_real_escape_string ($connection, $member_id).'"))
     AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL
     AND IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL, '.NEW_TABLE_LEDGER.'.effective_datetime, '.TABLE_ORDER_CYCLES.'.delivery_date) > "'.ACCOUNTING_ZERO_DATETIME.'"
     /* ALL CHARGES PRIOR TO PREVIOUS INVOICE DATE -- USING DELIVERY DATE FOR BASKET ITEMS */
     AND IF('.NEW_TABLE_LEDGER.'.bpid IS NULL, '.NEW_TABLE_LEDGER.'.effective_datetime, '.TABLE_ORDER_CYCLES.'.delivery_date) <= "'.$row_prior_closing['delivery_date'].'"';
 
 // echo "<pre>$query_balance</pre>";
-
-$result_balance = mysql_query($query_balance, $connection) or die(debug_print ("ERROR: 675930 ", array ($query_balance,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-if ($row_balance = mysql_fetch_array ($result_balance))
+$result_balance = mysqli_query ($connection, $query_balance) or die (debug_print ("ERROR: 275930 ", array ($query_balance, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+if ($row_balance = mysqli_fetch_array ($result_balance, MYSQLI_ASSOC))
   {
     $unique_data['balance_forward'] = $row_balance['total'];
   }
-
-
-?>

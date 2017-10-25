@@ -20,14 +20,14 @@ $show_search = false;
 
 // $where_misc = '
 //     AND (
-//       '.NEW_TABLE_BASKET_ITEMS.'.basket_id = "'.mysql_real_escape_string($basket_id).'"
+//       '.NEW_TABLE_BASKET_ITEMS.'.basket_id = "'.mysqli_real_escape_string ($connection, $basket_id).'"
 //       OR (
-//         '.NEW_TABLE_BASKETS.'.member_id = "'.mysql_real_escape_string($member_id).'"
-//         AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string($delivery_id).'"))';
+//         '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"
+//         AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"))';
 $where_misc = '
     (
-      '.NEW_TABLE_BASKETS.'.member_id = "'.mysql_real_escape_string($member_id).'"
-      AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string($delivery_id).'")';
+      '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"
+      AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'")';
 
 $order_by = '
     '.TABLE_CATEGORY.'.sort_order ASC,
@@ -127,4 +127,3 @@ $query = '
   GROUP BY CONCAT('.NEW_TABLE_PRODUCTS.'.product_id, "-", '.NEW_TABLE_PRODUCTS.'.product_version)
   ORDER BY'.
     $order_by;
-?>

@@ -21,10 +21,10 @@ $query = '
   FROM
     '.TABLE_ORDER_CYCLES.'
   WHERE
-    delivery_date > "'.mysql_real_escape_string($_SESSION['renewal_info']['membership_date']).'"
+    delivery_date > "'.mysqli_real_escape_string ($connection, $_SESSION['renewal_info']['membership_date']).'"
     AND date_open < NOW()';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 898034 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ($row = mysql_fetch_array($result))
+$result = @mysqli_query($connection, $query) or die (debug_print ("ERROR: 898334 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ($row = mysqli_fetch_array ($result))
   {
     $min_delivery_id = $row['min_delivery_id'];
     $max_delivery_id = $row['max_delivery_id'];
@@ -40,13 +40,13 @@ $query = '
   FROM
     '.TABLE_ORDER_CYCLES.'
   WHERE
-    delivery_date > "'.mysql_real_escape_string($_SESSION['renewal_info']['membership_date']).'"
+    delivery_date > "'.mysqli_real_escape_string ($connection, $_SESSION['renewal_info']['membership_date']).'"
     AND TIME_TO_SEC(TIMEDIFF(date_open, "'.date('Y-m-d H:i:s', time()).'")) < 0
   ORDER BY
     delivery_date DESC
   LIMIT '.$page_start.', '.PER_PAGE;
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 898034 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ($row = mysql_fetch_array($result))
+$result = @mysqli_query($connection, $query) or die (debug_print ("ERROR: 398034 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ($row = mysqli_fetch_array ($result))
   {
     // Use arbitrary counter so this is only evaluated on the first pass
     if ($counter++ == 0 && $max_delivery_id > $row['delivery_id']) $show_prior_page_button = true;
@@ -74,11 +74,11 @@ $query = '
   FROM
     '.NEW_TABLE_BASKETS.'
   WHERE
-    member_id = "'.mysql_real_escape_string($_SESSION['member_id']).'"
+    member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"
   ORDER BY
     delivery_id DESC';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 898034 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ($row = mysql_fetch_array($result))
+$result = @mysqli_query($connection, $query) or die (debug_print ("ERROR: 868034 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ($row = mysqli_fetch_array ($result))
   {
     $delivery_attrib[$row['delivery_id']]['basket_id'] = $row['basket_id'];
     $delivery_attrib[$row['delivery_id']]['site_id'] = $row['site_id'];

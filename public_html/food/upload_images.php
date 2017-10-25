@@ -204,4 +204,3 @@ jQuery.cachedScript( "'.PATH.'js/bootstrap.min.js" ).done(function() {
 </script>
 </html>';
 echo $page_content;
-

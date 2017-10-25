@@ -33,10 +33,10 @@ $sqlsc = '
   ORDER BY
     category_name ASC,
     subcategory_name ASC';
-$rs = @mysql_query($sqlsc, $connection) or die(debug_print ("ERROR: 906537 ", array ($sqlsc,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$rs = @mysqli_query ($connection, $sqlsc) or die (debug_print ("ERROR: 906537 ", array ($sqlsc, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $display_subcat = '
   <option value="">Select Subcategory</option>';
-while ( $row = mysql_fetch_array($rs) )
+while ( $row = mysqli_fetch_array ($rs, MYSQLI_ASSOC) )
   {
     $option_select = '';
     // Set the option that currently-set option
@@ -69,10 +69,10 @@ $query = '
   FROM
     '.TABLE_INVENTORY.'
   WHERE
-    producer_id = "'.mysql_real_escape_string ($producer_id).'"
+    producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
   ORDER BY
     description';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 649509 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 649509 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $inventory_array = array();
 $inventory_array[0]['description'] = 'No inventory selected';
 $inventory_array[0]['quantity'] = 0;
@@ -85,7 +85,7 @@ $inventory_select = '
       </optgroup>
       <optgroup label="OR USE EXISTING INVENTORY UNIT:">';
 
-while ( $row = mysql_fetch_object($result) )
+while ( $row = mysqli_fetch_object ($result) )
   {
     $selected = ($product_info['inventory_id'] == $row->inventory_id ? ' selected' : '');
     $inventory_select .= '
@@ -108,11 +108,11 @@ if (CurrentMember::auth_type('producer_admin,site_admin,cashier'))
         1
       ORDER BY
         description';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 099564 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 099564 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $account_number_select = '
       <select name="account_number">
         <option value=""'.($product_info['account_number'] == "" ? ' selected' : '').'>NONE &ndash; treat as a regular sale</option>';
-    while ( $row = mysql_fetch_object($result) )
+    while ( $row = mysqli_fetch_object ($result) )
       {
         $account_number_select .= '
         <option value="'.$row->account_id.'"'.($product_info['account_number'] == $row->account_id ? ' selected' : '').'>('.$row->account_number.') '.$row->description.'</option>';
@@ -131,8 +131,8 @@ $query = '
   ORDER BY
     prodtype';
 
-$sql =  @mysql_query($query, $connection) or die(debug_print ("ERROR: 947534 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ($row = mysql_fetch_object($sql))
+$sql =  @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 947534 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ($row = mysqli_fetch_object ($sql))
   {
     $selected = '';
     if ($product_info['production_type_id'] == $row->production_type_id)
@@ -156,8 +156,8 @@ $query = '
     '.TABLE_PRODUCT_STORAGE_TYPES.'
     ORDER BY
         storage_type';
-$sql =  @mysql_query($query, $connection) or die(debug_print ("ERROR: 616609 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-                            while ($row = mysql_fetch_object($sql))
+$sql =  @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 616609 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+                            while ($row = mysqli_fetch_object ($sql))
   {
       $selected = '';
     if ($product_info['storage_id'] == $row->storage_id)
@@ -544,4 +544,3 @@ $help = '
       </td>
     </tr>
   </table>';
-?>

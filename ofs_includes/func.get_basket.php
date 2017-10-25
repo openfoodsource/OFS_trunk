@@ -10,15 +10,15 @@ function get_basket ($argument1, $argument2 = NULL)
     if (is_numeric ($argument1) && is_numeric ($argument2))
       {
         $query_where = 'WHERE
-          member_id = "'.mysql_real_escape_string ($argument1).'"
-          AND delivery_id = "'.mysql_real_escape_string ($argument2).'"';
+          member_id = "'.mysqli_real_escape_string ($connection, $argument1).'"
+          AND delivery_id = "'.mysqli_real_escape_string ($connection, $argument2).'"';
       }
     // and if only one argument, then it is $basket_id
     elseif
       (is_numeric ($argument1))
       {
         $query_where = 'WHERE
-          basket_id = "'.mysql_real_escape_string ($argument1).'"';
+          basket_id = "'.mysqli_real_escape_string ($connection, $argument1).'"';
       }
     $basket_fields = array (
       'basket_id',
@@ -44,15 +44,14 @@ function get_basket ($argument1, $argument2 = NULL)
       FROM '.NEW_TABLE_BASKETS.'
       LEFT JOIN '.NEW_TABLE_SITES.' USING(site_id)
       '.$query_where;
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 892305 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row = mysql_fetch_array($result))
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 892305 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         return ($row);
       }
     else
       {
         // Error... no basket found
-        // die(debug_print('ERROR: 502 ', 'basket does not exist', basename(__FILE__).' LINE '.__LINE__));
+        // die (debug_print('ERROR: 502322 ', 'basket does not exist', basename(__FILE__).' LINE '.__LINE__));
       }
   }
-?>

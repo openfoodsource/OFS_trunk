@@ -89,9 +89,9 @@ switch ($_POST['process'])
             FROM
               '.NEW_TABLE_BASKETS.'
             WHERE
-              basket_id = "'.mysql_real_escape_string($_POST['basket_id']).'"';
-          $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 672930 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-          if (! $row = mysql_fetch_array($result))
+              basket_id = "'.mysqli_real_escape_string ($connection, $_POST['basket_id']).'"';
+          $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 272930 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+          if (! $row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
             array_push ($error_array, 'DATABASE ERROR: No information found for this basket.');
         }
       // Otherwise set basket information to NULL

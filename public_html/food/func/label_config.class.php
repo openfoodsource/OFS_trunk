@@ -229,7 +229,4 @@ class output_Label
         $new_label = new output_Label ($number_of_columns, $label_width, $horiz_spacing, $number_of_rows, $label_height, $vert_spacing, $page_top_margin, $page_left_margin, $label_margin, $font_scaling);
         return $new_label;
       }
-
   }
-
-?>

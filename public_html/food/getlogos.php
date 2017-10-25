@@ -12,9 +12,7 @@ include_once 'config_openfood.php';
 
 if ( $_GET['logo_id'] )
   {
-
     // you may have to modify login information for your database server:
-
     $query = '
       SELECT
         bin_data,
@@ -23,14 +21,10 @@ if ( $_GET['logo_id'] )
         '.TABLE_PRODUCER_LOGOS.'
       WHERE
         logo_id = '.$_GET['logo_id'];
-    $result = @mysql_query($query, $connection);
-
-    $data = @mysql_result($result, 0, "bin_data");
-    $type = @mysql_result($result, 0, "filetype");
-
-    Header( "Content-type: $type");
-    echo $data;
+    $result = @mysqli_query ($connection, $query) or die(debug_print ("ERROR: 782071 ", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
+    header ('Content-type: '.$row['filetype']);
+    echo $row['bin_data'];
 
     echo 'Click here to return to <a href="coopproducers.php">coop producers</a>';
-  };
-?>
+  }

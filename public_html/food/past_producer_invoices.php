@@ -15,16 +15,16 @@ if (isset ($_GET['producer_id']) && is_numeric ($_GET['producer_id']))
         $producer_id = $_GET['producer_id'];
       }
     $query_where = '
-      WHERE '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysql_real_escape_string($producer_id).'"';
+      WHERE '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
     $query_business_name = '
       SELECT
         business_name
       FROM
         '.TABLE_PRODUCER.'
       WHERE
-        producer_id = "'.mysql_real_escape_string($producer_id).'"';
-    $result_business_name = @mysql_query($query_business_name, $connection) or die("Couldn't execute query.");
-    if ( $row = mysql_fetch_array($result_business_name) )
+        producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+    $result_business_name = @mysqli_query ($connection, $query_business_name) or die (debug_print ("ERROR: 348752 ", array ($query_business_name, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ( $row = mysqli_fetch_array ($result_business_name, MYSQLI_ASSOC) )
       {
         $business_name = $row['business_name'];
       }
@@ -52,8 +52,8 @@ $query_delieries = '
   $query_where.'
   ORDER BY
     delivery_id DESC';
-$result_deliveries = @mysql_query($query_delieries, $connection) or die("Couldn't execute query.");
-while ( $row = mysql_fetch_array($result_deliveries) )
+$result_deliveries = @mysqli_query ($connection, $query_delieries) or die (debug_print ("ERROR: 789490 ", array ($query_delieries, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_array ($result_deliveries, MYSQLI_ASSOC) )
   {
     if ($producer_id > 0)
       {

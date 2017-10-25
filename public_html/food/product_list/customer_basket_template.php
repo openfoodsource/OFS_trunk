@@ -494,6 +494,4 @@ function show_listing_row($data, $row_type)
         '.$data['total_display'].'
       </td>
     </tr>';
-  };
-
-?>
+  }

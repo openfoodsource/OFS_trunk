@@ -31,13 +31,13 @@ $query = '
   LEFT JOIN
     '.TABLE_MEMBER.' ON '.TABLE_PRODUCER.'.member_id = '.TABLE_MEMBER.'.member_id
   WHERE
-    '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($_REQUEST['delivery_id']).'"
+    '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['delivery_id']).'"
   GROUP BY '.TABLE_PRODUCER.'.producer_id
   ORDER BY
     business_name ASC,
     last_name ASC';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 803532 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ( $row = mysql_fetch_array($result) )
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 803532 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
   {
     $business_name = '';
     $phone_number = '';
@@ -90,14 +90,14 @@ while ( $row = mysql_fetch_array($result) )
       LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(product_id,product_version)
       LEFT JOIN '.NEW_TABLE_BASKETS.' USING(basket_id)
       WHERE
-        '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string ($_REQUEST['delivery_id']).'"
-        AND producer_id = "'.mysql_real_escape_string ($row["producer_id"]).'"
+        '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['delivery_id']).'"
+        AND producer_id = "'.mysqli_real_escape_string ($connection, $row["producer_id"]).'"
         AND out_of_stock != quantity
         AND random_weight = 1
         AND total_weight = 0';
-    $result_weight = @mysql_query($query_weight, $connection) or die(debug_print ("ERROR: 860323 ", array ($query_weight,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $result_weight = @mysqli_query ($connection, $query_weight) or die (debug_print ("ERROR: 860323 ", array ($query_weight, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $unfilled_random_weights = 0;
-    if ($row_weight = mysql_fetch_array($result_weight))
+    if ($row_weight = mysqli_fetch_array ($result_weight, MYSQLI_ASSOC))
       {
         $unfilled_random_weights = $row_weight['count'];
       }
@@ -115,9 +115,9 @@ $query = '
   FROM
     '.TABLE_ORDER_CYCLES.'
   WHERE
-    delivery_id = "'.mysql_real_escape_string ($_REQUEST['delivery_id']).'"';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 906324 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-while ( $row = mysql_fetch_array($result) )
+    delivery_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['delivery_id']).'"';
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 906324 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     $delivery_id = $row['delivery_id'];
     $delivery_date = $row['delivery_date'];
@@ -147,4 +147,3 @@ echo '
   '.$content_list.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-

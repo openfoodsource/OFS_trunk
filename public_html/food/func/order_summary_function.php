@@ -19,9 +19,9 @@ function generate_producer_summary ($producer_id, $delivery_id, $detail_type, $u
       FROM
         '.TABLE_ORDER_CYCLES.'
       WHERE
-        delivery_id = '.mysql_real_escape_string ($delivery_id);
-    $result= mysql_query("$query") or die("Error: " . mysql_error());
-    while ($row = mysql_fetch_array($result))
+        delivery_id = '.mysqli_real_escape_string ($connection, $delivery_id);
+    $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 283483 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {
         $delivery_date = date ("M j, Y", strtotime ($row['delivery_date']));
       }
@@ -45,15 +45,15 @@ function generate_producer_summary ($producer_id, $delivery_id, $detail_type, $u
         '.TABLE_PRODUCER.',
         '.TABLE_MEMBER.'
       WHERE
-        '.TABLE_PRODUCER.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"
+        '.TABLE_PRODUCER.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
         AND '.TABLE_PRODUCER.'.member_id = '.TABLE_MEMBER.'.member_id
       GROUP BY
         '.TABLE_PRODUCER.'.producer_id
       ORDER BY
         business_name ASC,
         last_name ASC';
-    $resultp = @mysql_query($sqlp,$connection) or die(debug_print ("ERROR: 762930 ", array ($sqlp,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ($row = mysql_fetch_array($resultp))
+    $resultp = @mysqli_query ($connection, $sqlp) or die (debug_print ("ERROR: 732930 ", array ($sqlp, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_array ($resultp, MYSQLI_ASSOC))
       {
         $a_business_name = $row['business_name'];
         $a_first_name = $row['first_name'];
@@ -92,7 +92,7 @@ function generate_producer_summary ($producer_id, $delivery_id, $detail_type, $u
       LEFT JOIN '.TABLE_MEMBER.' USING(member_id)
       LEFT JOIN '.NEW_TABLE_SITES.' USING(site_id)
       WHERE 
-        '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysql_real_escape_string ($producer_id).'"
+        '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
         AND hide_from_invoice = 0
         AND '.NEW_TABLE_BASKETS.'.delivery_id = '.$delivery_id.'
       ORDER BY
@@ -101,8 +101,8 @@ function generate_producer_summary ($producer_id, $delivery_id, $detail_type, $u
         '.TABLE_MEMBER.'.last_name,
         '.TABLE_MEMBER.'.business_name,
         '.TABLE_MEMBER.'.first_name';
-    $resultpr = @mysql_query($sqlpr) or die(debug_print ("ERROR: 758493 ", array ($sqlp,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ($row = mysql_fetch_array($resultpr))
+    $resultpr = @mysqli_query ($connection, $sqlpr) or die (debug_print ("ERROR: 758493 ", array ($sqlpr, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_array ($resultpr, MYSQLI_ASSOC))
       {
         $product_adjust_fee = $row['product_fee_percent'];
         $subcat_adjust_fee = $row['subcategory_fee_percent'];

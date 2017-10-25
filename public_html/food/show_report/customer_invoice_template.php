@@ -669,8 +669,4 @@ function show_adjustment_row(&$adjustment, &$unique)
               </tr>';
           }
       }
-
-
-  };
-
-?>
+  }

@@ -54,7 +54,7 @@ function basket_item_to_ledger ($new_data)
     else
       {
         // Multiple ledger entries -- should not happen
-        die(debug_print ("ERROR: 750820 ", 'Multiple ['.$old_data.'] existing basket_item entries already in ledger', basename(__FILE__).' LINE '.__LINE__));
+        die (debug_print ("ERROR: 750820 ", 'Multiple ['.$old_data.'] existing basket_item entries already in ledger', basename(__FILE__).' LINE '.__LINE__));
       }
   }
 
@@ -110,7 +110,7 @@ function add_to_ledger($data)
         // which is auto-increment and may not be specified on an INSERT.
         if ($data[$field])
           {
-            $query_set = $field.' = "'.mysql_real_escape_string($data[$field]).'"';
+            $query_set = $field.' = "'.mysqli_real_escape_string ($connection, $data[$field]).'"';
             array_push ($query_set_array, $query_set);
           }
       }
@@ -120,12 +120,12 @@ function add_to_ledger($data)
       INSERT INTO '.NEW_TABLE_LEDGER.'
       SET
         '.$query_set;
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 850302 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $new_transaction_id = mysql_insert_id();
-    $affected_rows = mysql_affected_rows();
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 850302 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $new_transaction_id = mysqli_insert_id ($connection);
+    $affected_rows = mysqli_affected_rows ($connection);
     if ($affected_rows != 1)
       {
-        die(debug_print ("ERROR: 860324 ", "Data error. Updates ($affected_rows) not equal to one", basename(__FILE__).' LINE '.__LINE__));
+        die (debug_print ("ERROR: 860324 ", "Data error. Updates ($affected_rows) not equal to one", basename(__FILE__).' LINE '.__LINE__));
       }
     // Now go post any transaction messages
     add_transaction_messages ($new_transaction_id, $data['messages']);
@@ -141,12 +141,12 @@ function replace_ledger_transaction ($old_transaction_id, $new_transaction_id)
     global $connection;
     $query = '
       UPDATE '.NEW_TABLE_LEDGER.'
-      SET replaced_by = "'.mysql_real_escape_string($new_transaction_id).'"
-      WHERE transaction_id = "'.mysql_real_escape_string($old_transaction_id).'"';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 834043 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if (mysql_affected_rows() != 1)
+      SET replaced_by = "'.mysqli_real_escape_string ($connection, $new_transaction_id).'"
+      WHERE transaction_id = "'.mysqli_real_escape_string ($connection, $old_transaction_id).'"';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 834043 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if (mysqli_affected_rows ($connection) != 1)
       {
-        die(debug_print ("ERROR: 270433 ", "Data error. No prior transaction to update", basename(__FILE__).' LINE '.__LINE__));
+        die (debug_print ("ERROR: 270433 ", "Data error. No prior transaction to update", basename(__FILE__).' LINE '.__LINE__));
       }
   }
 
@@ -201,7 +201,7 @@ function search_ledger(array $data)
             if (in_array ($field, $data['match_keys']) && $field != 'replaced_by')
               {
                 // Build an array of the "WHERE" clauses
-                $query_where = $field.' = "'.mysql_real_escape_string($data[$field]).'"'."\n        ";
+                $query_where = $field.' = "'.mysqli_real_escape_string ($connection, $data[$field]).'"'."\n        ";
                 array_push ($query_where_array, $query_where);
               }
           }
@@ -211,7 +211,7 @@ function search_ledger(array $data)
     // Better be constraining the query somehow...
     else
       {
-        die(debug_print ("ERROR: 753032 ", "Query error. No constraint fields selected", basename(__FILE__).' LINE '.__LINE__));
+        die (debug_print ("ERROR: 753032 ", "Query error. No constraint fields selected", basename(__FILE__).' LINE '.__LINE__));
       }
     $query = '
       SELECT *
@@ -219,14 +219,14 @@ function search_ledger(array $data)
       WHERE
         '.$query_where.'
         AND replaced_by IS NULL';
-    $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 752002 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $num_rows = mysql_num_rows($result);
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 752002 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $num_rows = mysqli_num_rows ($result);
     // no matches: return 0
     if ($num_rows == 0) return (0);
     // exactly one result: return the data
     elseif ($num_rows == 1)
       {
-        $new_data = mysql_fetch_array ($result);
+        $new_data = mysqli_fetch_array ($result, MYSQLI_ASSOC);
         // Since we return data, better get the messages also
         // Maybe this should be simplified to just use the transaction_id
         $query_messages = '
@@ -239,10 +239,10 @@ function search_ledger(array $data)
             '.NEW_TABLE_MESSAGES.' USING(message_type_id)
           WHERE
             key1_target = "ledger.transaction_id"
-            AND referenced_key1 = "'.mysql_real_escape_string($new_data['transaction_id']).'"';
-        $result_messages = mysql_query($query_messages, $connection) or die(debug_print ("ERROR: 678302 ", array ($query_messages,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+            AND referenced_key1 = "'.mysqli_real_escape_string ($connection, $new_data['transaction_id']).'"';
+        $result_messages = mysqli_query ($connection, $query_messages) or die (debug_print ("ERROR: 678302 ", array ($query_messages, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $messages = array ();
-        while ($row_messages = mysql_fetch_array ($result_messages))
+        while ($row_messages = mysqli_fetch_array ($result_messages, MYSQLI_ASSOC))
           {
             $messages[$row_messages['description']] = $row_messages['message'];
           }
@@ -339,15 +339,15 @@ function add_transaction_messages ($transaction_id, $messages)
                 $query = '
                   REPLACE INTO '.NEW_TABLE_MESSAGES.'
                   SET
-                    message = "'.mysql_real_escape_string($message).'",
+                    message = "'.mysqli_real_escape_string ($connection, $message).'",
                     message_type_id = 
                       COALESCE((
                         SELECT message_type_id
                         FROM '.NEW_TABLE_MESSAGE_TYPES.'
-                        WHERE description = "'.mysql_real_escape_string($message_type).'"
+                        WHERE description = "'.mysqli_real_escape_string ($connection, $message_type).'"
                         LIMIT 1
                         ),0),
-                    referenced_key1 = "'.mysql_real_escape_string($transaction_id).'"';
+                    referenced_key1 = "'.mysqli_real_escape_string ($connection, $transaction_id).'"';
               }
             // Otherwise, delete any existing message of this variety
             else
@@ -359,17 +359,16 @@ function add_transaction_messages ($transaction_id, $messages)
                       COALESCE((
                         SELECT message_type_id
                         FROM '.NEW_TABLE_MESSAGE_TYPES.'
-                        WHERE description = "'.mysql_real_escape_string($message_type).'"
+                        WHERE description = "'.mysqli_real_escape_string ($connection, $message_type).'"
                         LIMIT 1
                         )
                       ,0)
-                    AND referenced_key1 = "'.mysql_real_escape_string($transaction_id).'"';
+                    AND referenced_key1 = "'.mysqli_real_escape_string ($connection, $transaction_id).'"';
               }
-            $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 850234 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+            $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 850234 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
             $count ++;
           }
       }
     // Return the number of messages changed
     return ($count);
   }
-?>

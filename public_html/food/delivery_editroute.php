@@ -16,17 +16,17 @@ if ( $_POST['action'] == "Save changes to this location" )
       {
         $query_values = '
               SET
-                site_type = "'.mysql_real_escape_string (implode (',', $_POST['site_type'])).'",
-                site_short = "'.mysql_real_escape_string ($_POST['site_short']).'",
-                site_long = "'.mysql_real_escape_string ($_POST['site_long']).'",
-                delivery_type = "'.mysql_real_escape_string ($_POST['delivery_type']).'",
-                site_description = "'.mysql_real_escape_string ($_POST['site_description']).'",
-                delivery_charge = "'.mysql_real_escape_string ($_POST['delivery_charge']).'",
-                route_id = "'.mysql_real_escape_string ($_POST['route_id']).'",
-                hub_id = "'.mysql_real_escape_string ($_POST['hub_id']).'",
-                truck_code = "'.mysql_real_escape_string ($_POST['truck_code']).'",
-                delivery_postal_code = "'.mysql_real_escape_string ($_POST['delivery_postal_code']).'",
-                inactive = "'.mysql_real_escape_string ($_POST['inactive']).'"';
+                site_type = "'.mysqli_real_escape_string ($connection, implode (',', $_POST['site_type'])).'",
+                site_short = "'.mysqli_real_escape_string ($connection, $_POST['site_short']).'",
+                site_long = "'.mysqli_real_escape_string ($connection, $_POST['site_long']).'",
+                delivery_type = "'.mysqli_real_escape_string ($connection, $_POST['delivery_type']).'",
+                site_description = "'.mysqli_real_escape_string ($connection, $_POST['site_description']).'",
+                delivery_charge = "'.mysqli_real_escape_string ($connection, $_POST['delivery_charge']).'",
+                route_id = "'.mysqli_real_escape_string ($connection, $_POST['route_id']).'",
+                hub_id = "'.mysqli_real_escape_string ($connection, $_POST['hub_id']).'",
+                truck_code = "'.mysqli_real_escape_string ($connection, $_POST['truck_code']).'",
+                delivery_postal_code = "'.mysqli_real_escape_string ($connection, $_POST['delivery_postal_code']).'",
+                inactive = "'.mysqli_real_escape_string ($connection, $_POST['inactive']).'"';
         if ($_POST['site_id'] == 'new')
           {
             $query = '
@@ -41,9 +41,9 @@ if ( $_POST['action'] == "Save changes to this location" )
                 '.NEW_TABLE_SITES.'
                 '.$query_values.'
               WHERE
-                site_id = "'.mysql_real_escape_string ($_POST['site_id']).'"';
+                site_id = "'.mysqli_real_escape_string ($connection, $_POST['site_id']).'"';
           }
-        $result = @mysql_query($query, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 753020 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $message = ': <font color="#FFFFFF">Delivery Information Updated</font>';
       }
     else
@@ -57,11 +57,11 @@ elseif ( $_POST['action'] == "Save changes to this route" )
       {
         $query_values = '
               SET
-                route_name = "'.mysql_real_escape_string ($_POST['route_name']).'",
-                rtemgr_member_id = "'.mysql_real_escape_string ($_POST['rtemgr_member_id']).'",
-                rtemgr_namecd = "'.mysql_real_escape_string ($_POST['rtemgr_namecd']).'",
-                route_desc = "'.mysql_real_escape_string ($_POST['route_desc']).'",
-                hub_id = "'.mysql_real_escape_string ($_POST['hub_id']).'"';
+                route_name = "'.mysqli_real_escape_string ($connection, $_POST['route_name']).'",
+                rtemgr_member_id = "'.mysqli_real_escape_string ($connection, $_POST['rtemgr_member_id']).'",
+                rtemgr_namecd = "'.mysqli_real_escape_string ($connection, $_POST['rtemgr_namecd']).'",
+                route_desc = "'.mysqli_real_escape_string ($connection, $_POST['route_desc']).'",
+                hub_id = "'.mysqli_real_escape_string ($connection, $_POST['hub_id']).'"';
         if ($_POST['route_id'] == 'new')
           {
             $query = '
@@ -76,9 +76,9 @@ elseif ( $_POST['action'] == "Save changes to this route" )
                 '.TABLE_ROUTE.
                 $query_values.'
               WHERE
-                route_id = "'.mysql_real_escape_string ($_POST['route_id']).'"';;
+                route_id = "'.mysqli_real_escape_string ($connection, $_POST['route_id']).'"';;
           }    
-        $result = @mysql_query($query, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 126733 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $message = ': <font color="#FFFFFF">Route Information Updated</font>';
       }
     else
@@ -94,9 +94,9 @@ $query = '
     route_name
   FROM
     '.TABLE_ROUTE;
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 768023 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 768023 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $routes_array = array ();
-while (($row = mysql_fetch_array($result)))
+while (($row = mysqli_fetch_array ($result, MYSQLI_ASSOC)))
   {
     $routes_array[$row['route_id']] = $row['route_name'];
   }
@@ -108,9 +108,9 @@ $query = '
     hub_long
   FROM
     '.TABLE_HUBS;
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 683021 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 683021 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $hubs_array = array ();
-while (($row = mysql_fetch_array($result)))
+while (($row = mysqli_fetch_array ($result, MYSQLI_ASSOC)))
   {
     $hubs_array[$row['hub_id']] = $row['hub_short'].': '.$row['hub_long'];
   }
@@ -141,9 +141,9 @@ $sqlr = '
     '.TABLE_ROUTE.'.route_id
   ORDER BY
     '.TABLE_ROUTE.'.route_name ASC';
-$rsr = @mysql_query($sqlr, $connection) or die(debug_print ("ERROR: 678230 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$rsr = @mysqli_query ($connection, $sqlr) or die (debug_print ("ERROR: 678230 ", array ($sqlr, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // Force one extra iteration with null information for the purpose of displaying a blank form
-while (($row = mysql_fetch_array($rsr)) || $count++ < 1)
+while (($row = mysqli_fetch_array ($rsr, MYSQLI_ASSOC)) || $count++ < 1)
   {
     $route_id = $row['route_id'];
     $route_name = $row['route_name'];
@@ -286,17 +286,17 @@ while (($row = mysql_fetch_array($rsr)) || $count++ < 1)
         '.NEW_TABLE_SITES.'
       LEFT JOIN '.TABLE_HUBS.' USING(hub_id)
       WHERE
-        route_id = "'.mysql_real_escape_string ($route_id).'"
+        route_id = "'.mysqli_real_escape_string ($connection, $route_id).'"
       ORDER BY
         delivery_type ASC,
         site_long ASC';
-    $rsr2 = @mysql_query($sqlr2, $connection) or die(debug_print ("ERROR: 896792 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $num_del = mysql_numrows($rsr2);
+    $rsr2 = @mysqli_query ($connection, $sqlr2) or die (debug_print ("ERROR: 896792 ", array ($sqlr2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $num_del = mysqli_num_rows ($rsr2);
     $display .= '
       <tr>
         <td colspan="2">
           <table id="sites_on_route_'.$route_id.'" class="hidden site_info'.($route_id == 'new' ? ' new' : '').'">';
-    while (($row = mysql_fetch_array($rsr2)) || $route_id == 'new')
+    while (($row = mysqli_fetch_array ($rsr2, MYSQLI_ASSOC)) || $route_id == 'new')
       {
         $site_id = $row['site_id'];
         if ($route_id == 'new') $site_id = 'new';

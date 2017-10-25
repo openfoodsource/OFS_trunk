@@ -10,28 +10,28 @@ $image_index = 0;
 
 // Compile data for receiving the image
 // action
-if (isset ($_GET['action'])) $action = mysql_real_escape_string ($_GET['action']);
+if (isset ($_GET['action'])) $action = mysqli_real_escape_string ($connection, $_GET['action']);
 // image_id
-if (isset ($_GET['image_id'])) $image_id = mysql_real_escape_string ($_GET['image_id']);
+if (isset ($_GET['image_id'])) $image_id = mysqli_real_escape_string ($connection, $_GET['image_id']);
 // producer_id
-if (isset ($_SESSION['producer_id_you'])) $producer_id_you = mysql_real_escape_string ($_SESSION['producer_id_you']);
+if (isset ($_SESSION['producer_id_you'])) $producer_id_you = mysqli_real_escape_string ($connection, $_SESSION['producer_id_you']);
 else die(debug_print ("ERROR: 729284 ", 'Value for producer_id_you not set!', basename(__FILE__).' LINE '.__LINE__));
 // file_name2 -- Not needed unless (possibly) when uploading multiple images at a time
-// if (isset ($_POST['file_name'][$image_index])) $file_name2 = mysql_real_escape_string ($_POST['file_name'][$image_index]);
+// if (isset ($_POST['file_name'][$image_index])) $file_name2 = mysqli_real_escape_string ($connection, $_POST['file_name'][$image_index]);
 // title
-if (isset ($_POST['title'][$image_index])) $title = mysql_real_escape_string ($_POST['title'][$image_index]);
+if (isset ($_POST['title'][$image_index])) $title = mysqli_real_escape_string ($connection, $_POST['title'][$image_index]);
 // caption
-if (isset ($_POST['caption'][$image_index])) $caption = mysql_real_escape_string ($_POST['caption'][$image_index]);
+if (isset ($_POST['caption'][$image_index])) $caption = mysqli_real_escape_string ($connection, $_POST['caption'][$image_index]);
 // file_name2
-if (isset ($_FILES['files']['name'][$image_index])) $file_name = mysql_real_escape_string ($_FILES['files']['name'][$image_index]);
+if (isset ($_FILES['files']['name'][$image_index])) $file_name = mysqli_real_escape_string ($connection, $_FILES['files']['name'][$image_index]);
 // mime_type
-if (isset ($_FILES['files']['type'][$image_index])) $mime_type = mysql_real_escape_string ($_FILES['files']['type'][$image_index]);
+if (isset ($_FILES['files']['type'][$image_index])) $mime_type = mysqli_real_escape_string ($connection, $_FILES['files']['type'][$image_index]);
 // tmp_name
-if (isset ($_FILES['files']['tmp_name'][$image_index])) $tmp_name = mysql_real_escape_string ($_FILES['files']['tmp_name'][$image_index]);
+if (isset ($_FILES['files']['tmp_name'][$image_index])) $tmp_name = mysqli_real_escape_string ($connection, $_FILES['files']['tmp_name'][$image_index]);
 // error
-if (isset ($_FILES['files']['error'][$image_index])) $error = mysql_real_escape_string ($_FILES['files']['error'][$image_index]);
+if (isset ($_FILES['files']['error'][$image_index])) $error = mysqli_real_escape_string ($connection, $_FILES['files']['error'][$image_index]);
 // size
-if (isset ($_FILES['files']['size'][$image_index])) $content_size = mysql_real_escape_string ($_FILES['files']['size'][$image_index]);
+if (isset ($_FILES['files']['size'][$image_index])) $content_size = mysqli_real_escape_string ($connection, $_FILES['files']['size'][$image_index]);
 
 
 if (isset ($_GET['action']) && $_GET['action'] == 'delete')
@@ -42,7 +42,7 @@ if (isset ($_GET['action']) && $_GET['action'] == 'delete')
       {
         // If deletion fails for some reason, then we won't send back the json to
         // remove the file and we won't remove it from the database
-        unlink ($filename) or die (debug_print ("ERROR: 678530 ", array ('Failed while deleting file:'. $filename, basename(__FILE__).' LINE '.__LINE__)));
+        unlink ($filename) or die (debug_print ("ERROR: 676530 ", array ('Failed while deleting file:'. $filename, basename(__FILE__).' LINE '.__LINE__)));
         // if (! unlink ($filename)) $deleted = false;
       }
     if ($deleted == true)
@@ -52,13 +52,13 @@ if (isset ($_GET['action']) && $_GET['action'] == 'delete')
           DELETE FROM
             '.TABLE_PRODUCT_IMAGES.'
           WHERE
-            producer_id = "'.mysql_real_escape_string($producer_id_you).'"
-            AND image_id = "'.mysql_real_escape_string($image_id).'"
+            producer_id = "'.mysqli_real_escape_string ($connection, $producer_id_you).'"
+            AND image_id = "'.mysqli_real_escape_string ($connection, $image_id).'"
             AND ( SELECT COUNT(product_id)
                   FROM '.NEW_TABLE_PRODUCTS.'
-                  WHERE image_id = "'.mysql_real_escape_string($image_id).'"
+                  WHERE image_id = "'.mysqli_real_escape_string ($connection, $image_id).'"
                 ) < 1';
-        $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 758921 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 758921 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         echo 'deleted';
       }
   }
@@ -80,15 +80,15 @@ elseif (!$error && $content_size)
         producer_id = "'.$producer_id_you.'",
         title = "'.$title.'",
         caption = "'.$caption.'",
-        image_content = "'.mysql_real_escape_string($image_data).'",
+        image_content = "'.mysqli_real_escape_string ($connection, $image_data).'",
         file_name = "'.$file_name.'",
         content_size = "'.$content_size.'",
         mime_type = "'.$mime_type.'",
         width = "'.$width.'",
         height = "'.$height.'"';
-    $result=mysql_query($query, $connection) or die(debug_print ("ERROR: 890583 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $result=mysqli_query ($connection, $query) or die (debug_print ("ERROR: 890583 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     // Grab the image_id while we can
-    $image_id = mysql_insert_id();
+    $image_id = mysqli_insert_id ($connection);
     // Build JSON return value(s)
     $return_info[$image_index]['name'] = $file_name;
     $return_info[$image_index]['size'] = $content_size;
@@ -111,4 +111,3 @@ elseif (!$error && $content_size)
     $json_return = array ('files' => $return_info);
     echo json_encode ($json_return);
   }
-

@@ -8,7 +8,7 @@ if ($_REQUEST['action'] == 'get_delivery_date')
   {
     if ($_REQUEST['query'])
       {
-        $escaped_search = mysql_real_escape_string($_REQUEST['query']);
+        $escaped_search = mysqli_real_escape_string ($connection, $_REQUEST['query']);
         $combined_accounts = array ();
         $query = '
           SELECT
@@ -41,8 +41,8 @@ if ($_REQUEST['action'] == 'get_delivery_date')
             OR CONCAT("delivery:", delivery_id) = "'.$escaped_search.'" /* Like delivery:87 */
           ORDER BY delivery_id DESC
           LIMIT 20';
-        $result = mysql_query($query, $connection) or die(debug_print ("ERROR: 574093 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        while ($row = mysql_fetch_array($result))
+        $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 574093 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
           {
             // Check a few of the combinations and save the first one that matches
             $delivery_description1a = '#'.$row['delivery_id'].' delivery: '.date ('n j Y', strtotime($row['delivery_date']));
@@ -104,7 +104,7 @@ if ($_REQUEST['action'] == 'get_account_hint')
   {
     if ($_REQUEST['query'])
       {
-        $escaped_search = mysql_real_escape_string($_REQUEST['query']);
+        $escaped_search = mysqli_real_escape_string ($connection, $_REQUEST['query']);
         $combined_accounts = array ();
         // Queue up all the queries and run them in parallel to intermix the results... then sort.
         $query_producer = '
@@ -175,20 +175,20 @@ if ($_REQUEST['action'] == 'get_account_hint')
             OR CONCAT("i", account_id) = "'.$escaped_search.'"
           ORDER BY account_number
           LIMIT 20';
-        $result_producer = mysql_query($query_producer, $connection) or die(debug_print ("ERROR: 869373 ", array ($query_producer,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-//        $how_many_producers = mysql_num_rows($result_producer);
-        $result_member = mysql_query($query_member, $connection) or die(debug_print ("ERROR: 027325 ", array ($query_member,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-//        $how_many_members = mysql_num_rows($result_member);
-        $result_tax = mysql_query($query_tax, $connection) or die(debug_print ("ERROR: 896274 ", array ($query_tax,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-//        $how_many_taxes = mysql_num_rows($result_tax);
-        $result_internal = mysql_query($query_internal, $connection) or die(debug_print ("ERROR: 893582 ", array ($query_internal,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-//        $how_many_internals = mysql_num_rows($result_internal);
+        $result_producer = mysqli_query ($connection, $query_producer) or die (debug_print ("ERROR: 265373 ", array ($query_producer, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+//        $how_many_producers = mysqli_num_rows ($result_producer);
+        $result_member = mysqli_query ($connection, $query_member) or die (debug_print ("ERROR: 027325 ", array ($query_member, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+//        $how_many_members = mysqli_num_rows ($result_member);
+        $result_tax = mysqli_query ($connection, $query_tax) or die (debug_print ("ERROR: 896274 ", array ($query_tax, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+//        $how_many_taxes = mysqli_num_rows ($result_tax);
+        $result_internal = mysqli_query ($connection, $query_internal) or die (debug_print ("ERROR: 893582 ", array ($query_internal, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+//        $how_many_internals = mysqli_num_rows ($result_internal);
         $wait_for_all_four = 0;
         // Query producers, members, taxes, internal accounts one-at-a-time until there are either a total
         // of 20 results or all four come up empty.
         while (count($combined_accounts) < 20 && $wait_for_all_four < 4)
           {
-            if ($row_producer = mysql_fetch_array($result_producer))
+            if ($row_producer = mysqli_fetch_array ($result_producer, MYSQLI_ASSOC))
               {
                 // Check a few of the combinations and save the first one that matches
                 // The ' ' [space] is prepended to return true without consideration of a '0' [zero] return position
@@ -204,7 +204,7 @@ if ($_REQUEST['action'] == 'get_account_hint')
               {
                 $wait_for_producer = 1;
               }
-            if ($row_member = mysql_fetch_array($result_member))
+            if ($row_member = mysqli_fetch_array ($result_member, MYSQLI_ASSOC))
               {
                 // Check a few of the combinations and save the first one that matches
                 // The ' ' [space] is prepended to return true without consideration of a '0' [zero] return position
@@ -220,7 +220,7 @@ if ($_REQUEST['action'] == 'get_account_hint')
               {
                 $wait_for_member = 1;
               }
-            if ($row_tax = mysql_fetch_array($result_tax))
+            if ($row_tax = mysqli_fetch_array ($result_tax, MYSQLI_ASSOC))
               {
                 // Check a few of the combinations and save the first one that matches
                 // The ' ' [space] is prepended to return true without consideration of a '0' [zero] return position
@@ -234,7 +234,7 @@ if ($_REQUEST['action'] == 'get_account_hint')
               {
                 $wait_for_tax = 1;
               }
-            if ($row_internal = mysql_fetch_array($result_internal))
+            if ($row_internal = mysqli_fetch_array ($result_internal, MYSQLI_ASSOC))
               {
                 // Check a few of the combinations and save the first one that matches
                 // The ' ' [space] is prepended to return true without consideration of a '0' [zero] return position
@@ -272,4 +272,3 @@ if ($_REQUEST['action'] == 'get_account_hint')
         exit (0);
       }
   }
-?>

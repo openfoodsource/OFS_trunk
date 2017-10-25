@@ -27,7 +27,7 @@ function open_basket (array $data)
     // At a minimum, we need to know the member_id and the delivery_id
     if (! $data['member_id'] || ! $data['delivery_id'])
       {
-        die(debug_print('ERROR: 504 ', 'call to create basket without all parameters', basename(__FILE__).' LINE '.__LINE__));
+        die (debug_print('ERROR: 754504 ', 'call to create basket without all parameters', basename(__FILE__).' LINE '.__LINE__));
       }
     // See if a basket already exists
     $query_basket_info = '
@@ -35,10 +35,10 @@ function open_basket (array $data)
         '.implode (",\n        ", $basket_fields).'
       FROM '.NEW_TABLE_BASKETS.'
       WHERE
-        member_id = "'.mysql_real_escape_string ($data['member_id']).'"
-        AND delivery_id = "'.mysql_real_escape_string ($data['delivery_id']).'"';
-    $result_basket_info = mysql_query($query_basket_info, $connection) or die(debug_print ("ERROR: 892122 ", array ($query_basket_info,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row_basket_info = mysql_fetch_array($result_basket_info))
+        member_id = "'.mysqli_real_escape_string ($connection, $data['member_id']).'"
+        AND delivery_id = "'.mysqli_real_escape_string ($connection, $data['delivery_id']).'"';
+    $result_basket_info = mysqli_query ($connection, $query_basket_info) or die (debug_print ("ERROR: 292152 ", array ($query_basket_info, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row_basket_info = mysqli_fetch_array ($result_basket_info, MYSQLI_ASSOC))
       {
         // Done with nothing to do. Return the information...
         return ($row_basket_info);
@@ -54,15 +54,15 @@ function open_basket (array $data)
           FROM '.NEW_TABLE_BASKETS.'
           LEFT JOIN '.NEW_TABLE_SITES.' USING(site_id)
           WHERE
-            '.NEW_TABLE_BASKETS.'.delivery_id < "'.mysql_real_escape_string($data['delivery_id']).'"
-            AND '.NEW_TABLE_BASKETS.'.member_id = "'.mysql_real_escape_string($data['member_id']).'"
+            '.NEW_TABLE_BASKETS.'.delivery_id < "'.mysqli_real_escape_string ($connection, $data['delivery_id']).'"
+            AND '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $data['member_id']).'"
             AND '.NEW_TABLE_SITES.'.inactive = 0
             AND '.NEW_TABLE_SITES.'.site_type = "customer"
           ORDER BY '.NEW_TABLE_BASKETS.'.delivery_id DESC
           LIMIT 1';
-        $result_site_guess = mysql_query($query_site_guess, $connection) or die(debug_print ("ERROR: 902524 ", array ($query_site_guess,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result_site_guess = mysqli_query ($connection, $query_site_guess) or die (debug_print ("ERROR: 402524 ", array ($query_site_guess, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         // If we get a result back, then we will use it
-        if ($row_site_guess = mysql_fetch_array($result_site_guess))
+        if ($row_site_guess = mysqli_fetch_array ($result_site_guess, MYSQLI_ASSOC))
           {
             $data['site_id'] = $row_site_guess['site_id'];
             // If we already have a delivery_type value, then do not clobber it
@@ -79,7 +79,7 @@ function open_basket (array $data)
             // this will be the end of the line
             $data['site_selection'] = 'unset';
             return ($data);
-            // die(debug_print('ERROR: 505 ', 'create basket with no remaining good guesses', basename(__FILE__).' LINE '.__LINE__));
+            // die (debug_print('ERROR: 506745 ', 'create basket with no remaining good guesses', basename(__FILE__).' LINE '.__LINE__));
           }
       }
     // Get additional basket data for opening this basket
@@ -97,10 +97,10 @@ function open_basket (array $data)
       INNER JOIN '.TABLE_MEMBER.'
       LEFT JOIN '.TABLE_MEMBERSHIP_TYPES.' USING(membership_type_id)
       WHERE
-        '.NEW_TABLE_SITES.'.site_id = "'.mysql_real_escape_string($data['site_id']).'"
-        AND '.TABLE_MEMBER.'.member_id = "'.mysql_real_escape_string($data['member_id']).'"';
-    $result_basket_data = mysql_query($query_basket_data, $connection) or die(debug_print ("ERROR: 983134 ", array ($query_basket_data,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row_basket_data = mysql_fetch_array($result_basket_data))
+        '.NEW_TABLE_SITES.'.site_id = "'.mysqli_real_escape_string ($connection, $data['site_id']).'"
+        AND '.TABLE_MEMBER.'.member_id = "'.mysqli_real_escape_string ($connection, $data['member_id']).'"';
+    $result_basket_data = mysqli_query ($connection, $query_basket_data) or die (debug_print ("ERROR: 483134 ", array ($query_basket_data, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row_basket_data = mysqli_fetch_array ($result_basket_data, MYSQLI_ASSOC))
       {
         $data['delivery_postal_code'] = $row_basket_data['delivery_postal_code'];
         $data['delivery_cost'] = $row_basket_data['delivery_cost'];
@@ -113,7 +113,7 @@ function open_basket (array $data)
       }
     else
       {
-        die(debug_print('ERROR: 506 ', 'create basket failure to gather information', basename(__FILE__).' LINE '.__LINE__));
+        die (debug_print('ERROR: 567406 ', 'create basket failure to gather information', basename(__FILE__).' LINE '.__LINE__));
       }
   // If the delivery is not 'P' (pickup) then set the clobber $delivery_postal_code with the correct value
   if ($data['delivery_type'] == 'H')
@@ -126,36 +126,35 @@ function open_basket (array $data)
     }
   elseif ($data['delivery_type'] != 'P')
     {
-      die(debug_print('ERROR: 507 ', 'create basket invalid delivery_type', basename(__FILE__).' LINE '.__LINE__));
+      die (debug_print('ERROR: 574207 ', 'create basket invalid delivery_type', basename(__FILE__).' LINE '.__LINE__));
     }
   // Check if there is a delivery_postal code provided This should possibly check against
   // the tax_rates table to see that the postal code is included there...?
   if (! $data['delivery_postal_code'])
     {
-      die(debug_print('ERROR: 508 ', 'create basket invalid delivery_postal_code', basename(__FILE__).' LINE '.__LINE__));
+      die (debug_print('ERROR: 742508 ', 'create basket invalid delivery_postal_code', basename(__FILE__).' LINE '.__LINE__));
     }
   // Now open a basket with the provided (or guessed) information
   $query_open_basket = '
     INSERT INTO '.NEW_TABLE_BASKETS.'
     SET
       /*basket_id (auto_increment )*/
-      member_id = "'.mysql_real_escape_string($data['member_id']).'",
-      delivery_id = "'.mysql_real_escape_string($data['delivery_id']).'",
-      site_id = "'.mysql_real_escape_string($data['site_id']).'",
-      delivery_type = "'.mysql_real_escape_string($data['delivery_type']).'",
-      delivery_postal_code = "'.mysql_real_escape_string($data['delivery_postal_code']).'",
-      delivery_cost = "'.mysql_real_escape_string($data['delivery_cost']).'",
-      order_cost = "'.mysql_real_escape_string($data['order_cost']).'",
-      order_cost_type = "'.mysql_real_escape_string($data['order_cost_type']).'",
-      customer_fee_percent = "'.mysql_real_escape_string($data['customer_fee_percent']).'",
+      member_id = "'.mysqli_real_escape_string ($connection, $data['member_id']).'",
+      delivery_id = "'.mysqli_real_escape_string ($connection, $data['delivery_id']).'",
+      site_id = "'.mysqli_real_escape_string ($connection, $data['site_id']).'",
+      delivery_type = "'.mysqli_real_escape_string ($connection, $data['delivery_type']).'",
+      delivery_postal_code = "'.mysqli_real_escape_string ($connection, $data['delivery_postal_code']).'",
+      delivery_cost = "'.mysqli_real_escape_string ($connection, $data['delivery_cost']).'",
+      order_cost = "'.mysqli_real_escape_string ($connection, $data['order_cost']).'",
+      order_cost_type = "'.mysqli_real_escape_string ($connection, $data['order_cost_type']).'",
+      customer_fee_percent = "'.mysqli_real_escape_string ($connection, $data['customer_fee_percent']).'",
       /*order_date (timestamp) */
       checked_out = "0",
       locked = "0"';
-    $result_open_basket = mysql_query($query_open_basket, $connection) or die(debug_print ("ERROR: 895237 ", array ($query_basket_data,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $data['basket_id'] = mysql_insert_id();
+    $result_open_basket = mysqli_query ($connection, $query_open_basket) or die (debug_print ("ERROR: 295237 ", array ($query_open_basket, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $data['basket_id'] = mysqli_insert_id ($connection);
     $data['checked_out'] = 0;                  // Manually set rather than queried
     $data['locked'] = 0;                       // Manually set rather than queried
     $data['order_date'] = date("Y-m-d H:i:s"); // Approximate, since it did not come from the database
     return ($data);
   }
-?>

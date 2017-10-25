@@ -2,7 +2,7 @@
 include_once 'config_openfood.php';
 include_once 'image_functions.php';
 
-$image_id = mysql_real_escape_string($_GET['image_id']);
+$image_id = mysqli_real_escape_string($connection, $_GET['image_id']);
 
 if (is_numeric ($image_id))
   {
@@ -18,8 +18,8 @@ if (is_numeric ($image_id))
             '.TABLE_PRODUCT_IMAGES.'
           WHERE
             image_id = "'.$image_id.'"';
-        $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 785922 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        $row = mysql_fetch_array($result);
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 785922 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
         // Use SimpleImage (from image_functions.php) to resize the image
         // and save it to the expected file
         $image = new SimpleImage();
@@ -39,8 +39,8 @@ if (is_numeric ($image_id))
                 width = "'.$original_width.'",
                 height = "'.$original_height.'"
               WHERE
-                image_id = "'.mysql_real_escape_string($_GET['image_id']).'"';
-            $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 902742 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));;
+                image_id = "'.mysqli_real_escape_string ($connection, $_GET['image_id']).'"';
+            $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 902742 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
           }
         $image->resizeDownToWidthHeight(PRODUCT_IMAGE_SIZE);
         $image->save(FILE_PATH.$file, IMAGETYPE_PNG);
@@ -49,5 +49,4 @@ if (is_numeric ($image_id))
       }
     // Now redirect the browser to the actual image
     header ('Location: '.$file, TRUE, 301);
-  };
-?>
+  }

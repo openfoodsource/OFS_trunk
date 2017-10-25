@@ -110,8 +110,8 @@ $query = '
   GROUP BY
     '.TABLE_SUBCATEGORY.'.category_id
   ) foo';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 905656 ", array ($query2,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$row = mysql_fetch_array($result);
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 205656 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
 $max_quantity = $row['max_quantity'];
 // Now set up the scaling factor...
 // Font sizes range from .root-0 to .root-24 so we will scale our max_quantity to be size .root-24
@@ -150,13 +150,13 @@ $query ='
     '.TABLE_CATEGORY.'.sort_order,
     '.TABLE_SUBCATEGORY.'.subcategory_name';
 // Cycle through the results and build HTML
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 905656 ", array ($query2,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 903656 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // Get the total number of rows returned
 $query_found_rows = '
   SELECT
     FOUND_ROWS() AS found_rows';
-$result_found_rows = @mysql_query($query_found_rows, $connection) or die(debug_print ("ERROR: 759323 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$row_found_rows = mysql_fetch_array($result_found_rows);
+$result_found_rows = @mysqli_query ($connection, $query_found_rows) or die (debug_print ("ERROR: 759373 ", array ($query_found_rows, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$row_found_rows = mysqli_fetch_array ($result_found_rows, MYSQLI_ASSOC);
 $found_rows = $row_found_rows['found_rows'];
 // Initialize variables
 $category_id_prior = 0;
@@ -169,7 +169,7 @@ $list_markup = '';
 // Cycle through [one more than] the number of rows because the extra cycle triggers the last changed category_id
 while ($count++ <= $found_rows)
   {
-    $row = mysql_fetch_array($result);
+    $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
     $category_id = $row['category_id'];
     $category_name = $row['category_name'];
     $subcategory_id = $row['subcategory_id'];

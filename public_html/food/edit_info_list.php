@@ -27,9 +27,9 @@ $sqlp = '
     producer_id
   ORDER BY
     business_name ASC';
-$resultp = @mysql_query($sqlp, $connection) or die(mysql_error() . "<br><b>Error No: </b>" . mysql_errno());
-$prdcr_count = mysql_numrows($resultp);
-while ( $row = mysql_fetch_array($resultp) )
+$resultp = @mysqli_query($connection, $sqlp) or die (debug_print ("ERROR: 893490 ", array ($sqlp, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$prdcr_count = mysqli_num_rows ($resultp);
+while ( $row = mysqli_fetch_array($resultp, MYSQLI_ASSOC) )
   {
     $producer_id = $row['producer_id'];
     $business_name = $row['business_name'];

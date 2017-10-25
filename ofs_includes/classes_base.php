@@ -53,7 +53,7 @@ class ActiveCycle
             else // Use a specific delivery_id
               {
                 $query_where = '
-                delivery_id = "'.mysql_real_escape_string ($target_delivery_id).'"';
+                delivery_id = "'.mysqli_real_escape_string ($connection, $target_delivery_id).'"';
               }
             // Get information about any shopping period that is currently open
             $query = '
@@ -75,10 +75,10 @@ class ActiveCycle
                 delivery_id DESC
               LIMIT
                 1';
-            $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 730099 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+            $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 730099 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
             // Set default values in case we returned nothing
             self::$delivery_id = 1;
-            if ($row = mysql_fetch_object ($result))
+            if ($row = mysqli_fetch_object ($result))
               {
                 self::$delivery_id = $row->delivery_id;
                 self::$delivery_date = $row->delivery_date;
@@ -163,8 +163,8 @@ class ActiveCycle
                 ORDER BY
                   date_open DESC
                 LIMIT 0,1)';
-            $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 863024 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-            if ($row = mysql_fetch_object ($result))
+            $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 263024 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            if ($row = mysqli_fetch_object ($result))
               {
                 self::$date_open_next = $row->date_open;
                 self::$date_closed_next = $row->date_closed;
@@ -309,10 +309,10 @@ class CurrentBasket
                 '.NEW_TABLE_BASKETS.'
               LEFT JOIN '.NEW_TABLE_SITES.' USING(site_id)
               WHERE
-                '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string (ActiveCycle::delivery_id ()).'"
-                AND '.NEW_TABLE_BASKETS.'.member_id = "'.mysql_real_escape_string ($_SESSION['member_id']).'"';
-            $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 783032 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-            if ($row = mysql_fetch_object ($result))
+                '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, ActiveCycle::delivery_id ()).'"
+                AND '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"';
+            $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 783032 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            if ($row = mysqli_fetch_object ($result))
               {
                 self::$basket_id = $row->basket_id;
                 self::$site_id = $row->site_id;
@@ -379,9 +379,9 @@ class CurrentMember
               FROM
                 '.TABLE_MEMBER.'
               WHERE
-                member_id = "'.mysql_real_escape_string ($_SESSION['member_id']).'"';
-            $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 683243 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-            if ($row = mysql_fetch_object ($result))
+                member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"';
+            $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 683243 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            if ($row = mysqli_fetch_object ($result))
               {
                 self::$pending = $row->pending;
                 self::$username = $row->username;

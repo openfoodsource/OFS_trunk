@@ -34,8 +34,8 @@ else
         '.TABLE_ORDER_CYCLES.'
       WHERE
         delivery_id = '.ActiveCycle::delivery_id();
-    $resultp = @mysql_query($sqlp, $connection) or die(debug_print ("ERROR: 675932 ", array ($sqlp,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ($row = mysql_fetch_array($resultp))
+    $resultp = @mysqli_query ($connection, $sqlp) or die (debug_print ("ERROR: 675932 ", array ($sqlp, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ($row = mysqli_fetch_array ($resultp, MYSQLI_ASSOC))
       {
         $delivery_id = $row['delivery_id'];
         $delivery_date = $row['delivery_date'];

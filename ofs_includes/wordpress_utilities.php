@@ -54,9 +54,8 @@ function wordpress_login ($member_id, $auth_types)
     @wp_set_auth_cookie($_SESSION['member_id'], '', '');
     @do_action('wp_login', $_SESSION['member_id'], $_SESSION['username']);
     // Now make sure the wordpress database is correctly configured for this member
-    // Open a database connection to the Wordpress database
-    $wp_connection = @mysql_connect(DB_HOST, DB_USER, DB_PASSWORD) or die("Couldn't connect: \n".mysql_error());
-    $wp_db = @mysql_select_db(DB_NAME, $wp_connection) or die(mysql_error());
+    // Open a database wp_connection to the Wordpress database
+    $wp_connection = @mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME) or die(debug_print ("ERROR: 293034 ", array ('error'=>'Error while connecting to the WordPress database', mysqli_connect_error()), basename(__FILE__).' LINE '.__LINE__));
     // SET ROLES FOR WORDPRESS
     // Members get to be "subscribers"
     $auth_array = explode (',', $auth_types);
@@ -83,10 +82,10 @@ function wordpress_login ($member_id, $auth_types)
       FROM
         wp_usermeta
       WHERE
-        user_id="'.mysql_real_escape_string($member_id).'"
+        user_id="'.mysqli_real_escape_string ($wp_connection, $member_id).'"
         AND meta_key="wp_capabilities"';
-    $result_get_capabilities = @mysql_query($query_get_capabilities, $wp_connection) or die(debug_print ("ERROR: 790223 ", array ($query_get_capabilities,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ( $row = mysql_fetch_array($result_get_capabilities) )
+    $result_get_capabilities = @mysqli_query ($wp_connection, $query_get_capabilities) or die (debug_print ("ERROR: 790223 ", array ($query_get_capabilities, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ( $row = mysqli_fetch_array ($result_get_capabilities, MYSQLI_ASSOC) )
       {
         // This is key to the current wp_capabilities for the member
         $umeta_id = $row['umeta_id'];
@@ -99,10 +98,10 @@ function wordpress_login ($member_id, $auth_types)
           INSERT INTO
             wp_usermeta
           SET
-            user_id="'.mysql_real_escape_string($member_id).'",
+            user_id="'.mysqli_real_escape_string ($wp_connection, $member_id).'",
             meta_key="wp_capabilities",
-            meta_value="'.mysql_real_escape_string($wp_capabilities).'"';
-        $result_set_capabilities = @mysql_query($query_set_capabilities, $wp_connection) or die(debug_print ("ERROR: 742943 ", array ($query_set_capabilities,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+            meta_value="'.mysqli_real_escape_string ($wp_connection, $wp_capabilities).'"';
+        $result_set_capabilities = @mysqli_query ($wp_connection, $query_set_capabilities) or die (debug_print ("ERROR: 742943 ", array ($query_set_capabilities, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
       }
 
     // Second: wp_user_level (ROLES)
@@ -115,10 +114,10 @@ function wordpress_login ($member_id, $auth_types)
       FROM
         wp_usermeta
       WHERE
-        user_id="'.mysql_real_escape_string($member_id).'"
+        user_id="'.mysqli_real_escape_string ($wp_connection, $member_id).'"
         AND meta_key="wp_user_level"';
-    $result_get_user_level = @mysql_query($query_get_user_level, $wp_connection) or die(debug_print ("ERROR: 939823 ", array ($query_get_user_level,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ( $row = mysql_fetch_array($result_get_user_level) )
+    $result_get_user_level = @mysqli_query ($wp_connection, $query_get_user_level) or die (debug_print ("ERROR: 939823 ", array ($query_get_user_level, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ( $row = mysqli_fetch_array ($result_get_user_level, MYSQLI_ASSOC) )
       {
         // This is key to the current wp_capabilities for the member
         $umeta_id = $row['umeta_id'];
@@ -131,10 +130,10 @@ function wordpress_login ($member_id, $auth_types)
           INSERT INTO
             wp_usermeta
           SET
-            user_id="'.mysql_real_escape_string($member_id).'",
+            user_id="'.mysqli_real_escape_string ($wp_connection, $member_id).'",
             meta_key="wp_user_level",
-            meta_value="'.mysql_real_escape_string($wp_user_level).'"';
-        $result_set_user_level = @mysql_query($query_set_user_level, $wp_connection) or die(debug_print ("ERROR: 437956 ", array ($query_set_user_level,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+            meta_value="'.mysqli_real_escape_string ($wp_connection, $wp_user_level).'"';
+        $result_set_user_level = @mysqli_query ($wp_connection, $query_set_user_level) or die (debug_print ("ERROR: 437956 ", array ($query_set_user_level, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
       }
     // SET GROUPS FOR WORDPRESS
     // First remove all groups for this member -- except "registered"
@@ -143,9 +142,9 @@ function wordpress_login ($member_id, $auth_types)
       DELETE FROM
         wp_groups_user_group
       WHERE
-        user_id="'.mysql_real_escape_string($member_id).'"
+        user_id="'.mysqli_real_escape_string ($wp_connection, $member_id).'"
         AND group_id != 1';
-    $result_remove_groups = @mysql_query($query_remove_groups, $wp_connection) or die(debug_print ("ERROR: 572923 ", array ($query_remove_groups,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $result_remove_groups = @mysqli_query ($wp_connection, $query_remove_groups) or die (debug_print ("ERROR: 572923 ", array ($query_remove_groups, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     // Then set groups based on the member's auth_types
     foreach (explode ("\n", WORDPRESS2OPENFOOD_GROUPS) as $line)
       {
@@ -169,9 +168,9 @@ function wordpress_login ($member_id, $auth_types)
               INSERT INTO
                 wp_groups_user_group
               SET
-                user_id="'.mysql_real_escape_string($member_id).'",
-                group_id="'.mysql_real_escape_string($key).'"';
-            $result_add_group = @mysql_query($query_add_group, $wp_connection) or die(debug_print ("ERROR: 673023 ", array ($query_add_group,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+                user_id="'.mysqli_real_escape_string ($wp_connection, $member_id).'",
+                group_id="'.mysqli_real_escape_string ($wp_connection, $key).'"';
+            $result_add_group = @mysqli_query ($wp_connection, $query_add_group) or die (debug_print ("ERROR: 673023 ", array ($query_add_group, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
           }
       }
   }
@@ -182,4 +181,3 @@ function wordpress_logout ()
     @include_once (FILE_PATH.WORDPRESS_CONFIG);
     @wp_logout();
   }
-?>

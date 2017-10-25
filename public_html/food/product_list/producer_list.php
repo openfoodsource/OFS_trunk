@@ -54,7 +54,7 @@ else
   }
 
 $where_misc = '
-    AND '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysql_real_escape_string ($producer_id_you).'"';
+    AND '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id_you).'"';
 
 $order_by = '
     '.TABLE_CATEGORY.'.sort_order ASC,
@@ -147,7 +147,7 @@ $query = '
   LEFT JOIN '.TABLE_AVAILABILITY.' ON '.TABLE_AVAILABILITY.'.producer_id = '.TABLE_PRODUCER.'.producer_id
   LEFT JOIN '.TABLE_INVENTORY.' ON '.NEW_TABLE_PRODUCTS.'.inventory_id = '.TABLE_INVENTORY.'.inventory_id
   LEFT JOIN '.TABLE_PRODUCT_STORAGE_TYPES.' ON '.NEW_TABLE_PRODUCTS.'.storage_id = '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_id
-  LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' ON '.NEW_TABLE_BASKET_ITEMS.'.product_id = '.NEW_TABLE_PRODUCTS.'.product_id AND '.NEW_TABLE_BASKET_ITEMS.'.basket_id = "'.mysql_real_escape_string (CurrentBasket::basket_id()).'"
+  LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' ON '.NEW_TABLE_BASKET_ITEMS.'.product_id = '.NEW_TABLE_PRODUCTS.'.product_id AND '.NEW_TABLE_BASKET_ITEMS.'.basket_id = "'.mysqli_real_escape_string ($connection, CurrentBasket::basket_id()).'"
   LEFT OUTER JOIN '.NEW_TABLE_PRODUCTS.' '.NEW_TABLE_PRODUCTS.'2
     ON ('.NEW_TABLE_PRODUCTS.'.product_id = '.NEW_TABLE_PRODUCTS.'2.product_id
       AND IF(FIELD('.NEW_TABLE_PRODUCTS.'.confirmed, -1, 1) = 0, '.NEW_TABLE_PRODUCTS.'.product_version, FIELD('.NEW_TABLE_PRODUCTS.'.confirmed, -1, 1) + 999999)
@@ -163,5 +163,3 @@ $query = '
   GROUP BY product_id
   ORDER BY'.
     $order_by;
-
-?>

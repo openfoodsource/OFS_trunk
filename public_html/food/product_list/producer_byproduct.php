@@ -11,8 +11,8 @@ $show_subcategory_true = 0;       // Override the default (1)
 $show_producer_heading_true = 0;  // Override the default (1)
 
 $where_misc = '
-    AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysql_real_escape_string($delivery_id).'"
-    AND '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysql_real_escape_string($producer_id_you).'"';
+    AND '.NEW_TABLE_BASKETS.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
+    AND '.NEW_TABLE_PRODUCTS.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id_you).'"';
 
 $order_by = '
     '.TABLE_CATEGORY.'.sort_order,
@@ -113,4 +113,3 @@ $query = '
     $where_auth_type.'
   ORDER BY'.
     $order_by;
-?>

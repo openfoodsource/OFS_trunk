@@ -39,9 +39,9 @@ function prdcr_contact_info($start, $half)
         AND '.TABLE_MEMBER.'.membership_discontinued != 1
       ORDER BY
         '.TABLE_PRODUCER.'.business_name ASC
-      LIMIT '.mysql_real_escape_string ($start).', '.mysql_real_escape_string ($half).'';
-    $resultp = @mysql_query($sqlp, $connection) or die(debug_print ("ERROR: 572929 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    while ( $row = mysql_fetch_array($resultp) )
+      LIMIT '.mysqli_real_escape_string ($connection, $start).', '.mysqli_real_escape_string ($connection, $half).'';
+    $resultp = @mysqli_query ($connection, $sqlp) or die (debug_print ("ERROR: 572929 ", array ($sqlp, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    while ( $row = mysqli_fetch_array ($resultp, MYSQLI_ASSOC) )
       {
         $producer_id = $row['producer_id'];
         $business_name = $row['business_name'];
@@ -122,10 +122,9 @@ $query = '
   WHERE
     unlisted_producer != 2
     AND membership_discontinued != 1';
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 427857 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$pid_count = mysql_result($result, 0, 'count');
+$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 427857 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
 $pid_half = ceil ($pid_count / 2);
-
 $content_list = '
 <table class="center">
   <tr>
@@ -146,7 +145,6 @@ $content_list = '
     </td>
   </tr>
 </table>';
-
 $page_specific_css .= '
 <style type="text/css">
   table.center {

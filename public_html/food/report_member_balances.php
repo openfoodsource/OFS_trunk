@@ -30,14 +30,14 @@ if (isset ($_GET['per_page']) && (filter_var($_GET['per_page'], FILTER_VALIDATE_
     else
       {
         $query_limit = '
-          LIMIT '.mysql_real_escape_string ($start_record).', '.mysql_real_escape_string ($per_page);
+          LIMIT '.mysqli_real_escape_string ($connection, $start_record).', '.mysqli_real_escape_string ($connection, $per_page);
       }
   }
 else
   {
     $per_page = PER_PAGE;
     $query_limit = '
-      LIMIT '.mysql_real_escape_string ($start_record).', '.mysql_real_escape_string ($per_page);
+      LIMIT '.mysqli_real_escape_string ($connection, $start_record).', '.mysqli_real_escape_string ($connection, $per_page);
   }
 // Set HAVING values for query to constrain which orders are shown
 // Special case balance=all --> Show all accounts regardless of balance
@@ -52,7 +52,7 @@ elseif (isset ($_GET['balance']) AND $_GET['balance'] != '' AND (filter_var($_GE
     $balance = filter_var($_GET['balance'], FILTER_VALIDATE_FLOAT);
     $query_having = '
   HAVING
-    account_balance = "'.mysql_real_escape_string (number_format ($balance * -1, 2)).'"';
+    account_balance = "'.mysqli_real_escape_string ($connection, number_format ($balance * -1, 2)).'"';
   }
 else // Show all non-zero accounts who have ever ordered anything
   {
@@ -70,7 +70,7 @@ if (filter_var($_GET['delivery_id'], FILTER_VALIDATE_INT) == true)
     (SELECT
       member_id
       FROM '.NEW_TABLE_BASKETS.'
-      WHERE delivery_id = '.mysql_real_escape_string ($delivery_id).'
+      WHERE delivery_id = '.mysqli_real_escape_string ($connection, $delivery_id).'
       AND member_id = foo.member_id) IS NOT NULL';
     $display_specific_cycle = true;
   }
@@ -206,13 +206,13 @@ $query = '
 
 // echo "<pre>$query</pre>";
 
-$result_report = mysql_query($query, $connection) or die(debug_print ("ERROR: 683903 ", array ($sql,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result_report = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 683903 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // How many total rows in this query (not counting LIMIT)?
 $query_found_rows = '
   SELECT
     FOUND_ROWS() AS found_rows';
-$result_found_rows = @mysql_query($query_found_rows, $connection) or die(debug_print ("ERROR: 856302 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-$array_found_rows = mysql_fetch_array($result_found_rows);
+$result_found_rows = @mysqli_query ($connection, $query_found_rows) or die (debug_print ("ERROR: 852302 ", array ($query_found_rows, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$array_found_rows = mysqli_fetch_array ($result_found_rows, MYSQLI_ASSOC);
 $found_rows = $array_found_rows['found_rows'];
 $number_of_pages = ($per_page > 0 ? ceil ($found_rows / $per_page) : 1);
 $this_page = ($per_page > 0 ? ceil ($start_record + 1 / $per_page) : 0);
@@ -235,7 +235,7 @@ else
     $content_pager = '';
   }
 $content = '';
-while ( $row = mysql_fetch_object($result_report) )
+while ( $row = mysqli_fetch_object ($result_report) )
   {
     $member_id = $row->member_id;
     $preferred_name = $row->preferred_name;

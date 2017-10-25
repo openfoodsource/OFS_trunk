@@ -27,10 +27,10 @@ if (isset ($_POST['action']))
       SELECT producer_link
       FROM '.TABLE_PRODUCER.'
       WHERE
-        producer_link = "'.mysql_real_escape_string ($_POST['producer_link']).'"
-        AND producer_id != "'.mysql_real_escape_string ($_POST['producer_id']).'"';
-    $result = mysql_query($query) or die (debug_print ("ERROR: 238014 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $number_of_conflicts = @mysql_num_rows($result);
+        producer_link = "'.mysqli_real_escape_string ($connection, $_POST['producer_link']).'"
+        AND producer_id != "'.mysqli_real_escape_string ($connection, $_POST['producer_id']).'"';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 238014 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $number_of_conflicts = @mysqli_num_rows ($result);
     if ($number_of_conflicts > 0)
       {
         array_push ($error_array, 'The producer link already exists. Please select a different value.');
@@ -70,9 +70,9 @@ if (isset ($_POST['action']))
       SELECT member_id
       FROM '.TABLE_MEMBER.'
       WHERE
-        member_id = "'.mysql_real_escape_string ($_POST['member_id']).'"';
-    $result = mysql_query($query) or die (debug_print ("ERROR: 784032 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $number_of_conflicts = @mysql_num_rows($result);
+        member_id = "'.mysqli_real_escape_string ($connection, $_POST['member_id']).'"';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 774032 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $number_of_conflicts = @mysqli_num_rows ($result);
     if ($number_of_conflicts != 1)
       {
         array_push ($error_array, 'The member manager must reference exactly one real member, by their Member ID.');
@@ -100,9 +100,9 @@ if (isset ($_POST['action']))
             home_page
           FROM '.TABLE_MEMBER.'
           WHERE
-            member_id="'.mysql_real_escape_string($_POST['member_id']).'"';
-        $result = mysql_query($query) or die (debug_print ("ERROR: 010293 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-        $row = mysql_fetch_array($result);
+            member_id="'.mysqli_real_escape_string ($connection, $_POST['member_id']).'"';
+        $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 010293 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
           {
             // Home address
             if (PRODUCER_PUB_ADDRESS == 'REQUIRED' &&
@@ -326,30 +326,30 @@ if (count ($error_array) == 0 &&
     // Prepare the database insert or update
     $query_values = '
           SET
-            producer_link = "'.mysql_real_escape_string($_POST['producer_link']).'",
-            business_name = "'.mysql_real_escape_string($_POST['business_name']).'",
-            payee = "'.mysql_real_escape_string($_POST['payee']).'",
-            list_order = "'.mysql_real_escape_string($_POST['list_order']).'",
-            member_id = "'.mysql_real_escape_string($_POST['member_id']).'",
-            producer_fee_percent = "'.mysql_real_escape_string($_POST['producer_fee_percent']).'",
-            pending = "'.mysql_real_escape_string($_POST['pending']).'",
-            unlisted_producer = "'.mysql_real_escape_string($_POST['unlisted_producer']).'",
-            pub_address = "'.mysql_real_escape_string($_POST['pub_address']).'",
-            pub_email = "'.mysql_real_escape_string($_POST['pub_email']).'",
-            pub_email2 = "'.mysql_real_escape_string($_POST['pub_email2']).'",
-            pub_phoneh = "'.mysql_real_escape_string($_POST['pub_phoneh']).'",
-            pub_phonew = "'.mysql_real_escape_string($_POST['pub_phonew']).'",
-            pub_phonec = "'.mysql_real_escape_string($_POST['pub_phonec']).'",
-            pub_phonet = "'.mysql_real_escape_string($_POST['pub_phonet']).'",
-            pub_fax = "'.mysql_real_escape_string($_POST['pub_fax']).'",
-            pub_web = "'.mysql_real_escape_string($_POST['pub_web']).'",
-            producttypes = "'.mysql_real_escape_string($_POST['producttypes']).'",
-            about = "'.mysql_real_escape_string($_POST['about']).'",
-            ingredients = "'.mysql_real_escape_string($_POST['ingredients']).'",
-            general_practices = "'.mysql_real_escape_string($_POST['general_practices']).'",
-            highlights = "'.mysql_real_escape_string($_POST['highlights']).'",
-            additional = "'.mysql_real_escape_string($_POST['additional']).'",
-            liability_statement = "'.mysql_real_escape_string($_POST['liability_statement']).'"';
+            producer_link = "'.mysqli_real_escape_string ($connection, $_POST['producer_link']).'",
+            business_name = "'.mysqli_real_escape_string ($connection, $_POST['business_name']).'",
+            payee = "'.mysqli_real_escape_string ($connection, $_POST['payee']).'",
+            list_order = "'.mysqli_real_escape_string ($connection, $_POST['list_order']).'",
+            member_id = "'.mysqli_real_escape_string ($connection, $_POST['member_id']).'",
+            producer_fee_percent = "'.mysqli_real_escape_string ($connection, $_POST['producer_fee_percent']).'",
+            pending = "'.mysqli_real_escape_string ($connection, $_POST['pending']).'",
+            unlisted_producer = "'.mysqli_real_escape_string ($connection, $_POST['unlisted_producer']).'",
+            pub_address = "'.mysqli_real_escape_string ($connection, $_POST['pub_address']).'",
+            pub_email = "'.mysqli_real_escape_string ($connection, $_POST['pub_email']).'",
+            pub_email2 = "'.mysqli_real_escape_string ($connection, $_POST['pub_email2']).'",
+            pub_phoneh = "'.mysqli_real_escape_string ($connection, $_POST['pub_phoneh']).'",
+            pub_phonew = "'.mysqli_real_escape_string ($connection, $_POST['pub_phonew']).'",
+            pub_phonec = "'.mysqli_real_escape_string ($connection, $_POST['pub_phonec']).'",
+            pub_phonet = "'.mysqli_real_escape_string ($connection, $_POST['pub_phonet']).'",
+            pub_fax = "'.mysqli_real_escape_string ($connection, $_POST['pub_fax']).'",
+            pub_web = "'.mysqli_real_escape_string ($connection, $_POST['pub_web']).'",
+            producttypes = "'.mysqli_real_escape_string ($connection, $_POST['producttypes']).'",
+            about = "'.mysqli_real_escape_string ($connection, $_POST['about']).'",
+            ingredients = "'.mysqli_real_escape_string ($connection, $_POST['ingredients']).'",
+            general_practices = "'.mysqli_real_escape_string ($connection, $_POST['general_practices']).'",
+            highlights = "'.mysqli_real_escape_string ($connection, $_POST['highlights']).'",
+            additional = "'.mysqli_real_escape_string ($connection, $_POST['additional']).'",
+            liability_statement = "'.mysqli_real_escape_string ($connection, $_POST['liability_statement']).'"';
     // Put together the proper query
     if ($_REQUEST['action'] == 'Update')
       {
@@ -358,15 +358,15 @@ if (count ($error_array) == 0 &&
             '.TABLE_PRODUCER.
           $query_values.'
           WHERE
-            producer_id = "'.mysql_real_escape_string($_POST['producer_id']).'"';
+            producer_id = "'.mysqli_real_escape_string ($connection, $_POST['producer_id']).'"';
         // Also update the producer registration table
         $query2 = '
           UPDATE
             '.TABLE_PRODUCER_REG.'
           SET
-            member_id = "'.mysql_real_escape_string($_POST['member_id']).'"
+            member_id = "'.mysqli_real_escape_string ($connection, $_POST['member_id']).'"
           WHERE
-            producer_id = "'.mysql_real_escape_string($_POST['producer_id']).'"';
+            producer_id = "'.mysqli_real_escape_string ($connection, $_POST['producer_id']).'"';
       }
     elseif ($_REQUEST['action'] == 'Add New')
       {
@@ -379,14 +379,14 @@ if (count ($error_array) == 0 &&
           INSERT INTO
             '.TABLE_PRODUCER_REG.'
           SET
-            member_id = "'.mysql_real_escape_string($_POST['member_id']).'",
-            producer_id = "'.mysql_real_escape_string($_POST['producer_id']).'"';
+            member_id = "'.mysqli_real_escape_string ($connection, $_POST['member_id']).'",
+            producer_id = "'.mysqli_real_escape_string ($connection, $_POST['producer_id']).'"';
       }
-    $result = mysql_query($query) or die (debug_print ("ERROR: 759843 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $result2 = mysql_query($query2) or die (debug_print ("ERROR: 752893 ", array ($query2,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 759843 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $result2 = mysqli_query ($connection, $query2) or die (debug_print ("ERROR: 752893 ", array ($query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     // Get the new or current producer_id
     if ($_REQUEST['action'] == 'Add New')
-      $_GET['producer_id'] = mysql_insert_id ();
+      $_GET['producer_id'] = mysqli_insert_id ($connection);
     else
       $_GET['producer_id'] = $_POST['producer_id'];
     // And force the submit button text to "Update"
@@ -399,9 +399,9 @@ if (isset ($_GET['producer_id']))
       SELECT *
       FROM '.TABLE_PRODUCER.'
       WHERE
-        producer_id="'.mysql_real_escape_string($_REQUEST['producer_id']).'"';
-    $result = mysql_query($query) or die (debug_print ("ERROR: 167935 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    $rows = @mysql_num_rows($result);
+        producer_id="'.mysqli_real_escape_string ($connection, $_REQUEST['producer_id']).'"';
+    $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 167935 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $rows = @mysqli_num_rows ($result);
     if ($rows == 0)
       {
         // We found no producer information, so open the form for adding a new producer
@@ -411,7 +411,7 @@ if (isset ($_GET['producer_id']))
       }
     else
       {
-        $producer_info = mysql_fetch_array($result);
+        $producer_info = mysqli_fetch_array ($result, MYSQLI_ASSOC);
       }
   }
 // If there was a validation error, then display it and use posted data to fill the form
@@ -705,5 +705,3 @@ echo '
   '.$content_edit_producer.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
-
-

@@ -46,11 +46,11 @@ if (CurrentMember::auth_type('producer_admin') && isset($_GET['producer_id']))
   $producer_id_you = $_GET['producer_id'];
 
 // Get a delivery_id for pulling current producer "invoices"
-if ($_GET['delivery_id']) $delivery_id = mysql_real_escape_string ($_GET['delivery_id']);
-else $delivery_id = mysql_real_escape_string (ActiveCycle::delivery_id());
+if ($_GET['delivery_id']) $delivery_id = mysqli_real_escape_string ($connection, $_GET['delivery_id']);
+else $delivery_id = mysqli_real_escape_string ($connection, ActiveCycle::delivery_id());
 // Get a basket_id in cases where we are looking at baskets or invoices...
-if ($_GET['basket_id']) $basket_id = mysql_real_escape_string ($_GET['basket_id']);
-else $basket_id = mysql_real_escape_string (CurrentBasket::basket_id());
+if ($_GET['basket_id']) $basket_id = mysqli_real_escape_string ($connection, $_GET['basket_id']);
+else $basket_id = mysqli_real_escape_string ($connection, CurrentBasket::basket_id());
 
 // Determine whether the order is open or not
 $order_open = false;
@@ -118,14 +118,14 @@ $query_limit = $list_start.', '.$pager['per_page'];
 $query .= '
   LIMIT '.$query_limit;
 
-$result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 785033 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result = @mysqli_query($connection, $query) or die (debug_print ("ERROR: 755237 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // Get the total number of rows (for pagination) -- not counting the LIMIT condition
 $query_found_rows = '
   SELECT
     FOUND_ROWS() AS found_rows';
-$result_found_rows = @mysql_query($query_found_rows, $connection) or die(debug_print ("ERROR: 860342 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+$result_found_rows = @mysqli_query ($connection, $query_found_rows) or die (debug_print ("ERROR: 860842 ", array ($query_found_rows, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // Handle pagination for multi-page results
-$row_found_rows = mysql_fetch_array($result_found_rows);
+$row_found_rows = mysqli_fetch_array ($result_found_rows, MYSQLI_ASSOC);
 $pager['found_rows'] = $row_found_rows['found_rows'];
 if ($_GET['page']) $pager['this_page'] = $_GET['page'];
 else $pager['this_page'] = 1;
@@ -141,7 +141,7 @@ $pager_navigation_display = pager_navigation($pager);
 $order_cycle_navigation_display = order_cycle_navigation($pager);
 
 // Iterate through the returned results and display products
-while ( $row = mysql_fetch_array($result) )
+while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
   {
     $unique['product_count'] ++;
     // If this row does not contain any product information, then break out of the "while" loop

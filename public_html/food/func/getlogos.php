@@ -18,11 +18,13 @@ if( $_GET['logo_id'] )
         '.TABLE_PRODUCER_LOGOS.'
       WHERE
         logo_id='.$_GET['logo_id'];
-    $result = @mysql_query($query);
-    $data = @mysql_result($result,0,"bin_data");
-    $type = @mysql_result($result,0,"filetype");
+    $result = @mysql_query($connection, $query);
+    if ($row = mysqli_fetch_object ($result))
+      {
+        $data = $row->bin_data;
+        $type = $row->filetype;
+      }
     Header( "Content-type: $type");
     echo $data;
     echo 'Click here to return to <a href="coopproducers.php">'.ORGANIZATION_TYPE.' producers</a>';
-  };
-?>
+  }

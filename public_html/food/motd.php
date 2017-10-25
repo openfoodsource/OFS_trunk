@@ -13,7 +13,7 @@ if (CurrentMember::auth_type('site_admin'))
           WHERE
             status_scope = "motd_viewed"
             AND status_value = "popup"';
-        $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 786340 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
+        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 786340 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         // We would send the return value and exit here, but we still need to get
         // the current number of views to send back, so do the next query first...
       }
@@ -25,8 +25,8 @@ if (CurrentMember::auth_type('site_admin'))
       WHERE
         status_scope = "motd_viewed"
         AND status_value = "popup"';
-    $result = @mysql_query($query, $connection) or die(debug_print ("ERROR: 578230 ", array ($query,mysql_error()), basename(__FILE__).' LINE '.__LINE__));
-    if ($row = mysql_fetch_object($result))
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 578230 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    if ($row = mysqli_fetch_object ($result))
       {
         $total_views = $row->total_views;
         $oldest_view = $row->oldest_view;
@@ -48,7 +48,6 @@ if (CurrentMember::auth_type('site_admin'))
         <input id="reset_motd" class="reset_motd" type="button" onblur="reset_motd(this,\'clear\')" onclick="reset_motd(this,\'set\')" value="RESET ALL MOTD VIEWS" title="Reset all MOTD views">
       </div>';
   }
-
 if($_GET['display_as'] == 'popup')
   {
     $display_as_popup = true;
@@ -60,10 +59,6 @@ else
     // Don't allow direct access to this page
     header('Location: '.PATH.'panel_member.php');
   }
-
-
-
-
 $page_specific_javascript = '
   <script type="text/javascript">
   // This function requires two clicks to execute, changing style between.
