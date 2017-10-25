@@ -124,6 +124,7 @@ $query = '
     AND membership_discontinued != 1';
 $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 427857 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
+$pid_count = $row['count'];
 $pid_half = ceil ($pid_count / 2);
 $content_list = '
 <table class="center">

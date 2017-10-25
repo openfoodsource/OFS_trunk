@@ -240,7 +240,7 @@ if ($type == 'update')
               COALESCE((
                 SELECT message_type_id
                 FROM '.NEW_TABLE_MESSAGE_TYPES.'
-                WHERE description = "'.mysql_real_escape_string('adjustment group memo').'"
+                WHERE description = "adjustment group memo"
                 LIMIT 1
                 ),0),
             referenced_key1 = "'.mysqli_real_escape_string ($connection, $new_transaction_group_id).'"';
