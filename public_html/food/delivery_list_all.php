@@ -80,7 +80,7 @@ while ( $row = mysqli_fetch_array ($rsr, MYSQLI_ASSOC) )
           LEFT JOIN '.TABLE_HUBS.' USING(hub_id)
           WHERE
             route_id = "'.mysqli_real_escape_string ($connection, $route_id).'"
-            AND '.NEW_TABLE_SITES.'.site_type = "customer"
+            AND '.NEW_TABLE_SITES.'.site_type LIKE "%customer%"
           GROUP BY
             site_id
           ORDER BY

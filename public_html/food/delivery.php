@@ -38,7 +38,7 @@ $query = '
     ) AS tangible_count USING(site_id)
   WHERE
     '.TABLE_ORDER_CYCLES.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
-    AND '.NEW_TABLE_SITES.'.site_type = "customer"
+    AND '.NEW_TABLE_SITES.'.site_type LIKE "%customer%"
   GROUP BY
     '.NEW_TABLE_SITES.'.site_id
   ORDER BY

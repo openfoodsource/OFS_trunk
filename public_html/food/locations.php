@@ -6,7 +6,7 @@ session_start();
 if (CurrentMember::auth_type('institution'))
   {
     $select_institution_sites = '
-      OR site_type = "institution"';
+      OR site_type LIKE "%institution%"';
   }
 else
   {
@@ -43,7 +43,7 @@ while ( $row = mysqli_fetch_array ($rsr, MYSQLI_ASSOC) )
       WHERE
         route_id = '.mysqli_real_escape_string ($connection, $route_id).'
         AND inactive != 1
-        AND (site_type = "customer"'.$select_institution_sites.')
+        AND (site_type LIKE "%customer%"'.$select_institution_sites.')
       GROUP BY
         site_id
       ORDER BY

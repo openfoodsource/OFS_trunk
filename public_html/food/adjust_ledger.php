@@ -663,7 +663,7 @@ function get_site_list ()
         site_long
       FROM '.NEW_TABLE_SITES.'
       WHERE
-        site_type = "customer"
+        site_type LIKE "%customer%"
       ORDER BY site_short';
     $result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 759320 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))

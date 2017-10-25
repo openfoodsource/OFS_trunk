@@ -30,7 +30,7 @@ $query = '
     AND '.NEW_TABLE_SITES.'.route_id = '.TABLE_ROUTE.'.route_id
     AND '.NEW_TABLE_SITES.'.site_id = "'.mysqli_real_escape_string ($connection, $site_id).'"
     AND '.TABLE_ORDER_CYCLES.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
-    AND '.NEW_TABLE_SITES.'.site_type = "customer"
+    AND '.NEW_TABLE_SITES.'.site_type LIKE "%customer%"
   ORDER BY
     route_name ASC';
 $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 269302 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
