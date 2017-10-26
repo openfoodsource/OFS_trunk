@@ -13,8 +13,6 @@ $per_page = 25;
 $top_special_markup = '';
 $limit_clause = mysqli_real_escape_string ($connection, floor (($data_page - 1) * $per_page).", ".floor ($per_page));
 
-// echo "<pre>".print_r($_POST,true)."</pre>";
-
 if ($account_type == '')
   {
     echo "Invalid request. Invalid account number or type.";
@@ -194,7 +192,6 @@ switch ($account_type)
     break;
   }
 
-// $ledger_data .= "<pre>$query</pre>";
 $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 757930 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // Get the total number of rows (for pagination) -- not counting the LIMIT condition
 $query_found_accounts = '

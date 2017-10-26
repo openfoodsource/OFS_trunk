@@ -54,4 +54,4 @@ echo '
   <!-- CONTENT BEGINS HERE -->
   '.$display_route.'
   <!-- CONTENT ENDS HERE -->';
-include("template_footer.php");?>
+include("template_footer.php");

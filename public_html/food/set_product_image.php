@@ -11,7 +11,6 @@ if (isset ($_GET['image_id'])) $image_id = mysqli_real_escape_string ($connectio
 if (isset ($_REQUEST['referrer'])) $referrer = mysqli_real_escape_string ($connection, $_REQUEST['referrer']);
 else $referrer = $_SERVER['HTTP_REFERER'];
 
-// 
 if($_GET['display_as'] == 'popup')
   {
     $display_as_popup = true;

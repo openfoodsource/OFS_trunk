@@ -814,7 +814,7 @@ $display_form_html .= $error_message.'
           <table id="section4c" width="100%">
             <tr>
               <td class="form_key"><strong>Organic Certifying Agency:</strong><br>
-              List orgainic certifying agency&#146;s name and address.</td>
+              List organic certifying agency&#146;s name and address.</td>
             </tr>
             <tr>
               <td><textarea cols="80" rows="5" name="certifying_agency">'.htmlspecialchars ($certifying_agency, ENT_QUOTES).'</textarea></td>

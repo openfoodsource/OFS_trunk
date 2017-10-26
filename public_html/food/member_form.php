@@ -298,7 +298,7 @@ $display_form_text .= '
   Preferred name: '.$preferred_name.'
   Business name:  '.$business_name.'
 
-  Address: 
+  Address:
       '.$address_line1.'
       '.$address_line2.'
       '.$city.', '.$state.' '.$zip.'

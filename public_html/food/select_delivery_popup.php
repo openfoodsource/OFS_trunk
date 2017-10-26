@@ -61,7 +61,7 @@ if (ActiveCycle::delivery_id() &&
 //           LEFT JOIN
 //             '.NEW_TABLE_SITES.' USING(site_id)
 //           WHERE
-//             '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string($connection, $_SESSION['member_id']).'"
+//             '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"
 //             AND '.NEW_TABLE_SITES.'.inactive = "0"
 //           ORDER BY
 //             delivery_id DESC
@@ -107,7 +107,7 @@ if (ActiveCycle::delivery_id() &&
         '.TABLE_MEMBER.')
       WHERE
         '.NEW_TABLE_SITES.'.inactive != "1"
-        AND '.TABLE_MEMBER.'.member_id = "'.mysqli_real_escape_string($connection, $_SESSION['member_id']).'"'.
+        AND '.TABLE_MEMBER.'.member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"'.
         $site_type_constraint.'
       ORDER BY
         site_long';

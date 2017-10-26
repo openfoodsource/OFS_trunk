@@ -232,16 +232,3 @@ a.select_block:hover {
   .basket_qty {
     color:#000;
     }
-
-
-/* ANYTHING BELOW THIS LINE IS BOGUS */
-
-
-#foo {
-  transition: height 1s;
-  -moz-transition: height 1s; /* Firefox 4 */
-  -webkit-transition: height 1s; /* Safari and Chrome */
-  -o-transition: height 1s; /* Opera */
-  }
-
-

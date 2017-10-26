@@ -260,8 +260,7 @@ function update_basket_item (array $data)
           WHERE
             product_id = "'.mysqli_real_escape_string ($connection, $product_info['product_id']).'"
             AND product_version = "'.mysqli_real_escape_string ($connection, $product_info['product_version']).'"';
-        $result = mysqli_query ($connection, $query)
-          or debug_print ("ERROR: 748032 ", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__);
+        $result = mysqli_query ($connection, $query) or debug_print ("ERROR: 748032 ", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__);
         // Now get the basket information we just posted
         $basket_item_info = get_basket_item ($basket_info['basket_id'], $data['product_id']);
       }

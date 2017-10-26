@@ -18,7 +18,7 @@ if( $_GET['logo_id'] )
         '.TABLE_PRODUCER_LOGOS.'
       WHERE
         logo_id='.$_GET['logo_id'];
-    $result = @mysql_query($connection, $query);
+    $result = @mysqli_query($connection, $query);
     if ($row = mysqli_fetch_object ($result))
       {
         $data = $row->bin_data;

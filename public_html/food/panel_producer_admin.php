@@ -46,7 +46,7 @@ if ($_GET['producer_id_you'])
       WHERE
         producer_id = "'.mysqli_real_escape_string ($connection, $_GET['producer_id_you']).'"';
     $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 830943 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
-    while ($row = mysqli_fetch_object($result))
+    while ($row = mysqli_fetch_object ($result))
       {
             $_SESSION['producer_id_you'] = $_GET['producer_id_you'];
             $active_business_name = $row->business_name;

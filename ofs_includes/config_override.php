@@ -24,4 +24,4 @@ $override_config = array (
   'debug'                 => true,                                                 // Debug mode for testing
 //  'error_flags'           => 'E_ERROR,E_WARNING,E_PARSE',                        // Error codes for testing
   'bogus'                 => ''                                                    // Catch trailing commas when commenting lines
-  )
+  );

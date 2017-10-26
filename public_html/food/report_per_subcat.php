@@ -45,7 +45,7 @@ $query = '
     '.TABLE_ORDER_CYCLES.'.delivery_date,
     '.TABLE_CATEGORY.'.category_name,
     '.TABLE_SUBCATEGORY.'.subcategory_name';
-$main_sql = mysqli_query($connection, $query);
+$main_sql = mysqli_query ($connection, $query);
 $categories = array ();
 $cat_total = array ();
 while ($row = mysqli_fetch_array ($main_sql, MYSQLI_ASSOC))

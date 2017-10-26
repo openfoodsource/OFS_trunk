@@ -100,7 +100,7 @@ $minimum_time = $minimum_time - $week_length;
 $maximum_time = $maximum_time + $week_length;
 // Make sure the calendar won't span too many weeks -- 2500 weeks is almost five years
 $calendar_week_span = ($maximum_time - $minimum_time) / $week_length;
-if ($calendar_week_span > 250)
+if ($calendar_week_span > 100)
   {
     $ledger_calendar = '
       <div class="error">Not showing calendar, which would span too many ('.$calendar_week_span.') weeks!</div>';

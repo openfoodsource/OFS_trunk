@@ -265,14 +265,14 @@ if ($row_balance_unlimited = mysqli_fetch_array($connection, $result_balance_unl
 
 // Get the running total for this set of transactions
 $result_balance_limited = mysqli_query($connection, $query_balance_limited) or die (debug_print ("ERROR: 567592 ", array ($query_balance_limited, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
-if ($row_balance_limited = mysqli_fetch_array($result_balance_limited, MYSQLI_ASSOC))
+if ($row_balance_limited = mysqli_fetch_array ($result_balance_limited, MYSQLI_ASSOC))
   {
     $running_total_limited = $row_balance_limited['running_total'];
   }
 
 $running_total = $running_total_limited - $running_total_unlimited;
 
-while ($row = mysqli_fetch_array($result_data, MYSQLI_ASSOC))
+while ($row = mysqli_fetch_array ($result_data, MYSQLI_ASSOC))
   {
     // Keep the desired account information on the "source" side...
     $row['delivery_id'] = $row['delivery_id_source'];

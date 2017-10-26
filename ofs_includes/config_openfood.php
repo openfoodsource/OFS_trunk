@@ -14,7 +14,7 @@ $database_config = array (
   );
 
 // Include override values, but only if the file exists
-@include_once ("config_override.php"); 
+@include_once ("config_override.php");
 
 // Establish database connection
 connect_to_database ($database_config);
@@ -26,7 +26,7 @@ get_configuration ($database_config, $override_config);
 date_default_timezone_set (LOCAL_TIME_ZONE);
 
 // Set error reporting level
-ini_set('display_errors', DEBUG); 
+ini_set('display_errors', DEBUG);
 
 
 // Set error reporting level

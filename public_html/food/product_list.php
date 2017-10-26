@@ -270,7 +270,6 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
     if (SHOW_ACTUAL_PRICE) $row['display_base_anonymous_price'] = $row['base_anonymous_cost'];
     else $row['display_base_anonymous_price'] = $row['unit_price'];
 
-// echo "<pre>".print_r($row,true)."</pre>";
     // Set up wholesale flag
     if ($row['listing_auth_type'] == "institution") $row['is_wholesale_item'] = true;
     else $row['is_wholesale_item'] = false;

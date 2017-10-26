@@ -239,11 +239,12 @@ if ($row_prior_closing = mysqli_fetch_array ($result_prior_closing, MYSQLI_ASSOC
   {
     $unique['prior_closing'] = $row_prior_closing['date_closed'];
     $unique['prior_delivery'] = $row_prior_closing['delivery_date'];
-    $and_since_prior_closing_date = 'AND '.NEW_TABLE_LEDGER.'.effective_datetime > "'.$row_prior_closing['date_closed'].'"';
+    $and_since_prior_closing_date = '
+      AND '.NEW_TABLE_LEDGER.'.effective_datetime > "'.$row_prior_closing['date_closed'].'"';
     $and_since_prior_delivery_date = '
-        AND '.NEW_TABLE_LEDGER.'.effective_datetime > "'.$row_prior_closing['delivery_date'].'"';
+      AND '.NEW_TABLE_LEDGER.'.effective_datetime > "'.$row_prior_closing['delivery_date'].'"';
     $and_before_prior_delivery_date = '
-    AND '.NEW_TABLE_LEDGER.'.effective_datetime < "'.$row_prior_closing['delivery_date'].'"';
+      AND '.NEW_TABLE_LEDGER.'.effective_datetime < "'.$row_prior_closing['delivery_date'].'"';
   }
 else
   {

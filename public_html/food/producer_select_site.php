@@ -27,11 +27,11 @@ if ($action == "Update")
       LEFT JOIN
         ( SELECT *
         FROM '.TABLE_AVAILABILITY.'
-        WHERE producer_id = "'.mysqli_real_escape_string($connection, $_SESSION['producer_id_you']).'") foo USING(site_id)';
+        WHERE producer_id = "'.mysqli_real_escape_string ($connection, $_SESSION['producer_id_you']).'") foo USING(site_id)';
       // This query is NOT constrained to site_type="producers" so it will be able to clear
       // any sites that might have been changed to site_type="customer"
     $result = mysqli_query($connection, $query) or die (debug_print ("ERROR: 217784 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
-    while ($row = mysqli_fetch_object($result))
+    while ($row = mysqli_fetch_object ($result))
       {
         // Check if we need to clear a row 
         if ($row->checked != 0 AND ! isset($_POST['select_'.$row->site_id]))
@@ -41,8 +41,8 @@ if ($action == "Update")
                 '.TABLE_AVAILABILITY.'
               WHERE
                 site_id = '.mysqli_real_escape_string ($connection, $row->site_id).'
-                AND producer_id = "'.mysqli_real_escape_string($connection, $_SESSION['producer_id_you']).'"';
-            $null = mysqli_query($connection, $query2) or die (debug_print ("ERROR: 829389 ", array ($query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+                AND producer_id = "'.mysqli_real_escape_string ($connection, $_SESSION['producer_id_you']).'"';
+            $null = mysqli_query ($connection, $query2) or die (debug_print ("ERROR: 829389 ", array ($query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
           }
 
         // Check if we need to clear a row 
@@ -53,8 +53,8 @@ if ($action == "Update")
                 '.TABLE_AVAILABILITY.'
               SET
                 site_id = '.mysqli_real_escape_string ($connection, $row->site_id).',
-                producer_id = "'.mysqli_real_escape_string($connection, $_SESSION['producer_id_you']).'"';
-            $null = mysqli_query($connection, $query2) or die (debug_print ("ERROR: 797841 ", array ($query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+                producer_id = "'.mysqli_real_escape_string ($connection, $_SESSION['producer_id_you']).'"';
+            $null = mysqli_query ($connection, $query2) or die (debug_print ("ERROR: 797841 ", array ($query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
           }
       }
   }
@@ -77,14 +77,14 @@ $query = '
   LEFT JOIN
     ( SELECT *
     FROM '.TABLE_AVAILABILITY.'
-    WHERE producer_id = "'.mysqli_real_escape_string($connection, $_SESSION['producer_id_you']).'") foo USING(site_id)
+    WHERE producer_id = "'.mysqli_real_escape_string ($connection, $_SESSION['producer_id_you']).'") foo USING(site_id)
   LEFT JOIN
-    '.TABLE_PRODUCER.' ON('.TABLE_PRODUCER.'.producer_id = "'.mysqli_real_escape_string($connection, $_SESSION['producer_id_you']).'")
+    '.TABLE_PRODUCER.' ON('.TABLE_PRODUCER.'.producer_id = "'.mysqli_real_escape_string ($connection, $_SESSION['producer_id_you']).'")
   WHERE
-    site_type = "producer"
+    site_type LIKE "%producer%"
   ORDER BY
     site_short;';
-$result = mysqli_query($connection, $query) or die (debug_print ("ERROR: 729478 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 729478 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $content .= '
     <table id="producer_site_list">
       <tr>
@@ -93,7 +93,7 @@ $content .= '
         <th>Site Name</th>
         <th>Product Types</th>
       </tr>';
-while ($row = mysqli_fetch_object($result))
+while ($row = mysqli_fetch_object ($result))
   {
     $business_name = $row->business_name;
     if ($row->checked != 0)

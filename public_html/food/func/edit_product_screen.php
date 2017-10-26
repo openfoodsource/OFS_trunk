@@ -1,5 +1,5 @@
 <?php
-include_once 'config_openfood.php';
+include_once ('config_openfood.php');
 include_once ('func.get_product.php');
 
 // Initialize variables
