@@ -388,7 +388,8 @@ function check_membership_renewal ($membership_info)
         $renewal_info['total_expiration_range'] = $membership_info['expire_after'];
         $renewal_info['used_expiration_range'] = (time() - strtotime($membership_info['last_renewal_date'])) / (365.24 * 24 * 3600);
         $renewal_info['membership_percent_complete'] = round(($renewal_info['used_expiration_range'] / $renewal_info['total_expiration_range']) * 100, 0);
-        $renewal_info['standard_renewal_date'] = date ('Y-m-d', strtotime ($membership_info['last_renewal_date']) + (365.24 * 24 * 3600 * $membership_info['expire_after']));
+        $standard_renewal_date_unix = strtotime ($membership_info['last_renewal_date']) + (int)round (365.24 * 24 * 3600 * $membership_info['expire_after']);
+        $renewal_info['standard_renewal_date'] = date ('Y-m-d', (int)$standard_renewal_date_unix);
         // If the account is expired, then set the standard_renewal_date to the same day
         if ($renewal_info['used_expiration_range'] >= $membership_info['expire_after'])
           {
@@ -509,8 +510,12 @@ function renew_membership ($member_id, $membership_type_id)
       FROM
         '.TABLE_MEMBERSHIP_TYPES.'
       WHERE
-        membership_type_id = "'.$membership_type_id.'"';
-    $result_membership_type = mysqli_query($connection, $query_membership_type) or die (debug_print ("ERROR: 613080 ", array ($query_membership_type, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        membership_type_id = "'.mysqli_real_escape_string ($connection, $membership_type_id).'"
+        AND (
+        enabled_type = "2"
+          OR enabled_type = "3")
+        AND FIND_IN_SET(membership_type_id, "'.$membership_info['may_convert_to'].'")';
+    $result_membership_type = mysqli_query($connection, $query_membership_type) or die(debug_print ("ERROR: 683080 ", array ($query_membership_type,mysqli_error($connection)), basename(__FILE__).' LINE '.__LINE__));
     if (! $row_membership_type = mysqli_fetch_array ($result_membership_type, MYSQLI_ASSOC))
       {
         // Requested membership_type is not allowed
@@ -580,8 +585,8 @@ function membership_renewal_form ($membership_info) {
       FROM
         '.TABLE_MEMBERSHIP_TYPES.'
       WHERE
-        (enabled_type = 2
-          OR enabled_type = 3)
+        (enabled_type = "2"
+          OR enabled_type = "3")
         AND FIND_IN_SET(membership_type_id,"'.$membership_info['may_convert_to'].'")';
     $sql = mysqli_query ($connection, $query);
     while ($row = mysqli_fetch_object ($sql))
