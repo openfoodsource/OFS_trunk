@@ -403,8 +403,8 @@ $display_form_html .= $error_message.'
             <tr>
               <td class="form_key"><strong>*&nbsp;Locale:</strong></td>
               <td class="form_subkey"><strong>City</strong><br /><input maxlength="50" size="25" name="city" value="'.$city.'" tabindex="9"></td>
-              <td class="form_subkey"><strong>State</strong><br /><input maxlength="2" size="2" name="state" value="'.$state.'" tabindex="10"></td>
-              <td class="form_subkey"><strong>Zip</strong><br /><input maxlength="10" size="10" name="zip" value="'.$zip.'" tabindex="11"></td>
+              <td class="form_subkey"><strong>State</strong><br /><input maxlength="2" size="4" name="state" value="'.$state.'" tabindex="10"></td>
+              <td class="form_subkey"><strong>Postal Code</strong><br /><input maxlength="10" size="10" name="zip" value="'.$zip.'" tabindex="11"></td>
               <td colspan="2">&nbsp;</td>
             </tr>
             <tr>

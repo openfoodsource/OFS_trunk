@@ -93,8 +93,8 @@ elseif (!$error && $content_size)
     $return_info[$image_index]['name'] = $file_name;
     $return_info[$image_index]['size'] = $content_size;
     $return_info[$image_index]['type'] = $mime_type;
-    $return_info[$image_index]['url'] = PATH.'product_images/img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png';
-    $return_info[$image_index]['thumbnailUrl'] = PATH.'product_images/img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png';
+    $return_info[$image_index]['url'] = BASE_URL.PATH.'product_images/img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png';
+    $return_info[$image_index]['thumbnailUrl'] = BASE_URL.PATH.'product_images/img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png';
     $return_info[$image_index]['deleteUrl'] = $_SERVER['SCRIPT_NAME'].'?action=delete&image_id='.$image_id;
     $return_info[$image_index]['deleteType'] = 'DELETE';
 

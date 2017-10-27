@@ -596,7 +596,7 @@ $page_specific_javascript = '
       var image_id = obj.id.split("-")[1];
       if (action == "set") {
         if (jQuery(obj).hasClass("warn")) {
-          jQuery.get("'.PATH.'receive_image_uploads.php?action=delete&image_id="+image_id, function(data) {
+          jQuery.get("'.BASE_URL.PATH.'receive_image_uploads.php?action=delete&image_id="+image_id, function(data) {
             // If the return value is deleted
             if (data == "deleted") {
               // Remove the image from our list

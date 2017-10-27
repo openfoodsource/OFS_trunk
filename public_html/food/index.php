@@ -164,7 +164,7 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
               </label>
             </fieldset>
           </form>';
-        $content .= 
+        $content .=
       ($error_message ? '
         <div class="error_message">
           <p class="message">'.$error_message.'</p>
@@ -179,10 +179,10 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
 else
   {
     // Not login and not logged in, so show basic "info" screen
-    $content .= 
+    $content .=
       ($error_message ? '<div class="error_message">'.$error_message.'</div>' : '').'
-      <div id="info_container" style="background-image: url('.DIR_GRAPHICS.'info_background.png); background-repeat: no-repeat; width:100%;background-position:top right;min-height:401px;background-size:870px 410px;">
-        <h3 style="clear; padding-top:220px;">Information Links</h3>
+      <div id="info_container">
+        <h3>Information Links</h3>
         <ul class="info_links">
           <li><a href="'.PATH.'locations.php">Food Pickup/Delivery Locations</a></li>
           <li><a href="'.PATH.'prdcr_list.php">Active Producers</a></li>
@@ -291,6 +291,18 @@ label a {
 /* This is for wordpress 2013 */
 input.search-field {
   float:right;
+  }
+#info_container {
+  background-image: url('.DIR_GRAPHICS.'info_background.png);
+  background-repeat: no-repeat;
+  width:100%;
+  background-position:top right;
+  min-height:401px;
+  background-size:870px 410px;
+  }
+#info_container > h3 {
+  clear:both;
+  padding-top:220px;
   }
 
 </style>';
