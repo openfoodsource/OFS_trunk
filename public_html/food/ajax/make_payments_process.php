@@ -26,11 +26,6 @@ switch ($_POST['process'])
       // Validate the data: amount
       if (preg_match('/^[-]{0,1}[0-9]*(\.[0-9]{2}){0,1}$/', $_POST['amount']) != 1)
         array_push ($error_array, 'Payment must be numeric with decimal cents<br>(e.g. 45.67 or .89).');
-      // Validate the data: payment_type
-      if ($_POST['payment_type'] != 'cash' &&
-          $_POST['payment_type'] != 'check' &&
-          $_POST['payment_type'] != 'paypal')
-        array_push ($error_array, 'Please select a payment type.');
       // Validate the data: memo
       if (preg_match('/^[0-9]*$/', $_POST['memo']) != 1)
         array_push ($error_array, 'Memo must be numeric.');
@@ -110,30 +105,6 @@ switch ($_POST['process'])
 
 function get_make_payment_form ($delivery_id, $producer_id, $business_name, $error_message)
   {
-    // Set up payment_type selections and show-paypal option
-    if ($_POST['payment_type'] == 'cash')
-      {
-        $payment_type_cash = ' checked="checked"';
-        $paypal_display_style = 'display:none;';
-      }
-    elseif ($_POST['payment_type'] == 'check')
-      {
-        $payment_type_check = ' checked="checked"';
-        $paypal_display_style = 'display:none;';
-      }
-    elseif ($_POST['payment_type'] == 'paypal')
-      {
-        $payment_type_paypal = ' checked="checked"';
-        $paypal_display_style = 'display:inline;';
-      }
-    else // Default
-      {
-        $payment_type_check = ' checked="checked"';
-        $paypal_display_style = 'display:none;';
-      }
-
-    // Problem with paypal not showing, so override the display:none directive
-    $paypal_display_style = 'display:inline;';
     // Construct the make payment form
     $form_content = '
       <div id="make_payment_row" class="data_row">'.
@@ -160,29 +131,7 @@ function get_make_payment_form ($delivery_id, $producer_id, $business_name, $err
               <label id="comment_label" for="comment">Comment</label>
               <input id="comment" name="comment" placeholder="Ex. Maresey dotes and dosey dotes..." autocomplete="off" value="'.$_POST['comment'].'">
             </span>
-<!--
             <br>
-
-            <span class="nobr paypal_section" style="'.$paypal_display_style.'">
-              <label id="paypal_fee_label" for="paypal_fee">Paypal Fee</label>
-              <input id="paypal_fee" name="paypal_fee" pattern="[0-9]*(\.[0-9]{2}){0,1}" autocomplete="off" value="'.$_POST['paypal_fee'].'">
-            </span>
-
-            <span class="nobr paypal_section" style="'.$paypal_display_style.'">
-              <label id="paypal_comment_label" for="paypal_comment">Paypal&nbsp;Comment</label>
-              <input id="paypal_comment" name="paypal_comment" placeholder="Ex. Little lamsey divey. A kidley divey too." autocomplete="off" value="'.$_POST['paypal_comment'].'">
-            </span>
--->
-            <br>
-<!--
-            <span class="nobr">
-              <label for="payment_type_cash">Cash/Check</label>
-              <input type="radio" id="payment_type_cash_check" value="cash" name="payment_type" required'.$payment_type_cash.' onclick="jQuery(\'#paypal_fee\').val(\'0.00\');">
-
-              <label for="payment_type_paypal">Paypal</label>
-              <input type="radio" id="payment_type_paypal" value="paypal" name="payment_type" required'.$payment_type_paypal.' onclick="jQuery(\'#paypal_fee\').val((Math.round((jQuery(\'#amount\').val()*0.029+0.30) * 100)/100).toFixed(2));">
-            </span>
--->
             <input type="hidden" id="payment_type_cash_check" value="cash" name="payment_type">
 
             <span class="nobr">
