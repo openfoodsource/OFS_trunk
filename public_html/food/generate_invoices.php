@@ -96,7 +96,7 @@ function compile_customer_invoices() {
           document.getElementById("c_progress-right").style.width = c_progress_right+"px";
           document.getElementById(element_id).className = "c_complete";
           // If we are done with the list, then show the PDF button
-          if (i == c_arrElements.length) {
+          if (i == c_arrElements.length && USE_HTMLDOC == true) {
             // And go generate the pdf
             document.getElementById("cust_progress").style.display = "none"; /* Hide the progress bar */
             document.getElementById("load_customer_html").style.display = ""; /* Make html link visible */
@@ -186,7 +186,7 @@ function compile_producer_invoices() {
           document.getElementById("p_progress-right").style.width = p_progress_right+"px";
           document.getElementById(element_id).className = "p_complete";
           // If we\'re done with the list, then show the PDF button
-          if (i == p_arrElements.length) {
+          if (i == p_arrElements.length && USE_HTMLDOC == true) {
             // And go generate the pdf
             document.getElementById("prod_progress").style.display = "none"; /* Hide the progress bar */
             document.getElementById("load_producer_html").style.display = ""; /* Make html link visible */
