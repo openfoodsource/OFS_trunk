@@ -79,6 +79,8 @@ if ($action == 'post_edit' || $action == 'post_new')
       array_push ($error_array, 'Please enter Retail Markup as a number.');
     if (! is_numeric ($_POST['wholesale_markup']))
       array_push ($error_array, 'Please enter Wholesale Markup as a number.');
+    if (! is_numeric ($_POST['transport_id']))
+      array_push ($error_array, 'Please select a transport identity.');
     // If we had some errors, go back and ask for a revision
     if (count ($error_array) > 0)
       {
@@ -109,7 +111,8 @@ if ($action == 'post_edit' && $errors_found == false)
         invoice_price = "'.mysqli_real_escape_string ($connection, $_POST['invoice_price']).'",
         producer_markdown = "'.mysqli_real_escape_string ($connection, $_POST['producer_markdown']).'",
         retail_markup = "'.mysqli_real_escape_string ($connection, $_POST['retail_markup']).'",
-        wholesale_markup = "'.mysqli_real_escape_string ($connection, $_POST['wholesale_markup']).'"
+        wholesale_markup = "'.mysqli_real_escape_string ($connection, $_POST['wholesale_markup']).'",
+        transport_id = "'.mysqli_real_escape_string($connection, $_POST['transport_id']).'"
       WHERE
         delivery_id = "'.mysqli_real_escape_string ($connection, $_POST['delivery_id']).'"';
     $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 459821 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
@@ -134,7 +137,8 @@ elseif ($action == 'post_new' && $errors_found == false)
         invoice_price = "'.mysqli_real_escape_string ($connection, $_POST['invoice_price']).'",
         producer_markdown = "'.mysqli_real_escape_string ($connection, $_POST['producer_markdown']).'",
         retail_markup = "'.mysqli_real_escape_string ($connection, $_POST['retail_markup']).'",
-        wholesale_markup = "'.mysqli_real_escape_string ($connection, $_POST['wholesale_markup']).'"';
+        wholesale_markup = "'.mysqli_real_escape_string ($connection, $_POST['wholesale_markup']).'",
+        transport_id = "'.mysqli_real_escape_string($connection, $_POST['transport_id']).'"';
     $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 752821 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     // Get the insert_id to use for the "delivery_id" field
     $query = '
@@ -165,6 +169,7 @@ if ($errors_found == true)
   }
 else
   {
+    // Get information about this delivery_id
     $query = '
       SELECT
         *
@@ -189,6 +194,34 @@ $invoice_price = $order_cycle_info['invoice_price'];    /* 0=show coop price; 1=
 $producer_markdown = $order_cycle_info['producer_markdown'];
 $retail_markup = $order_cycle_info['retail_markup'];
 $wholesale_markup = $order_cycle_info['wholesale_markup'];
+// Get set of transport_identities
+$query = '
+  SELECT
+    DISTINCT('.NEW_TABLE_TRANSPORT_IDENTITIES.'.transport_id) AS transport_id,
+    '.NEW_TABLE_TRANSPORT_IDENTITIES.'.transport_identity_name,
+    MAX('.TABLE_ORDER_CYCLES.'.delivery_id) AS delivery_id
+  FROM
+    '.NEW_TABLE_TRANSPORT_IDENTITIES.'
+  LEFT JOIN '.TABLE_ORDER_CYCLES.' USING(transport_id)
+  WHERE 1
+  ORDER BY delivery_id DESC';
+$result = @mysqli_query($connection, $query) or die(debug_print ("ERROR: 750321 ", array ($query,mysqli_error($connection)), basename(__FILE__).' LINE '.__LINE__));
+if ($order_cycle_info['transport_id'] > 0)
+  {
+    // Pre-existing value exists, so do not preload a NULL default
+    $select_transport_id = '';
+  }
+else
+  {
+    // No pre-existing value, so set first option to NULL
+    $select_transport_id = '<option value="0">None Selected</option>';
+  }
+// Cycle through the transport_identities and prepare the option list
+while ($transport_id_info = mysqli_fetch_array($result, MYSQLI_ASSOC))
+  {
+    $select_transport_id .= '
+      <option value="'.$transport_id_info['transport_id'].'"'.($transport_id_info['transport_id'] == $order_cycle_info['transport_id'] ? ' selected' : '').'>'.$transport_id_info['transport_identity_name'].'</option>';
+  }
 
 // See documentation for the auto-fill menu at http://api.jqueryui.com/autocomplete/
 
@@ -226,6 +259,11 @@ $display = '
         <div class="option_block">
           <label for="show_coop">Separate line-item for fees</label>
           <input type="radio" id="show_coop" name="invoice_price" value="0"'.($invoice_price == 0 ? ' checked="checked"' : '').'>
+        </div>
+        <div class="select_block">
+          <label for="transport_identity">Select a Transport Configuration</label>
+          <select name="transport_id">'.$select_transport_id.'
+          </select>
         </div>
       </fieldset>
       <fieldset class="deprecated">

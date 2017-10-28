@@ -31,15 +31,19 @@ $query = '
     delivery_date,
     date_closed,
     order_fill_deadline,
+    customer_type,
     msg_all,
     msg_bottom,
     coopfee,
     invoice_price    /* 0=show coop price; 1=show retail price */
     producer_markdown,
     retail_markup,
-    wholesale_markup
+    wholesale_markup,
+    transport_identity_name
   FROM
     '.TABLE_ORDER_CYCLES.'
+  LEFT JOIN
+    '.NEW_TABLE_TRANSPORT_IDENTITIES.' USING (transport_id)
   ORDER BY delivery_date
   LIMIT '.$limit_clause;
 
@@ -209,6 +213,25 @@ else
             $cycle_div.'
           </div>';
         $display_month_prior = $display_month;
+        // Now see if there is an order cycle that opens this week...
+        foreach ($order_cycle_array as $row=>$order_cycle_data)
+          {
+            if (strtotime ($order_cycle_data['date_open']) > $this_week_start_time
+                && strtotime ($order_cycle_data['date_open']) < $this_week_finish_time)
+              {
+                $week_div .= $top_special_markup.'
+                  <div id="id-'.$order_cycle_data['delivery_id'].'" class="order_cycle_row distinct-'.$cycle_class.'" onclick="popup_src(\'edit_order_schedule.php?delivery_id='.$order_cycle_data['delivery_id'].'\', \'edit_order\', \'\');" onmouseout="restore_calendar(\''.$order_cycle_data['delivery_id'].'\')" onmouseover="highlight_calendar(\''.$order_cycle_data['delivery_id'].'\')">
+                    <div class="delivery_id"><span class="key">Delivery ID</span><span class="value">'.$order_cycle_data['delivery_id'].'</span></div>
+                    <div class="date_open"><span class="key">Opens</span><span class="value">'.$order_cycle_data['date_open'].'</span></div>
+                    <div class="date_closed"><span class="key">Closes</span><span class="value">'.$order_cycle_data['date_closed'].'</span></div>
+                    <div class="order_fill_deadline"><span class="key">Fill By</span><span class="value">'.$order_cycle_data['order_fill_deadline'].'</span></div>
+                    <div class="delivery_date"><span class="key">Delivery Day</span><span class="value">'.$order_cycle_data['delivery_date'].'</span></div>
+                    <div class="customer_type"><span class="key">Open For</span><span class="value">'.$order_cycle_data['customer_type'].'</span></div>
+                    <div class="transport_identity_name"><span class="key">Transport Identity</span><span class="value">'.$order_cycle_data['transport_identity_name'].'</span></div>
+                  </div>';
+                $top_special_markup = '';
+              }
+          }
         // Increment the day_time counter
         $this_week_start_time = $this_week_finish_time;
       }
@@ -219,30 +242,6 @@ $ledger_data['markup'] = '
   <div id="calendar">
   '.$week_div.'
   </div>';
-// Set up the header information for the data table
-$ledger_data['markup'] .= '
-      <div id="id-header" class="order_cycle_row">
-        <div class="delivery_id">Del #</div>
-        <div class="date_open">Date Open</div>
-        <div class="date_closed">Date Closed</div>
-        <div class="order_fill_deadline">Fill Deadline</div>
-        <div class="delivery_date">Delivery</div>
-      </div>';
-$top_special_markup = '';
-// Set up the information for the data table
-foreach ($order_cycle_array as $row=>$order_cycle_data)
-  {
-    // build the order schedule output
-    $ledger_data['markup'] .= '
-      <div id="id-'.$order_cycle_data['delivery_id'].'" class="order_cycle_row" onclick="popup_src(\'edit_order_schedule.php?delivery_id='.$order_cycle_data['delivery_id'].'\', \'edit_order\', \'\');" onmouseout="restore_calendar(\''.$order_cycle_data['delivery_id'].'\')" onmouseover="highlight_calendar(\''.$order_cycle_data['delivery_id'].'\')">
-        <div class="delivery_id">'.$order_cycle_data['delivery_id'].'</div>
-        <div class="date_open">'.$order_cycle_data['date_open'].'</div>
-        <div class="date_closed">'.$order_cycle_data['date_closed'].'</div>
-        <div class="order_fill_deadline">'.$order_cycle_data['order_fill_deadline'].'</div>
-        <div class="delivery_date">'.$order_cycle_data['delivery_date'].'</div>
-      </div>';
-    $top_special_markup = '';
-  }
 
 $ledger_data['query'] = $query;
 $ledger_data['maximum_data_page'] = $found_pages;

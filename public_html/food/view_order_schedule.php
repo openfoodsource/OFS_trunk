@@ -205,70 +205,57 @@ $page_specific_css = '
   .order_cycle_row {
     width:60%;
     height:40px;
-    font-size:12px;
+    font-size:10px;
     cursor:default;
+    position: absolute;
+    left:105%; /* Just more than calendar width */
+    margin-top:-45px; /* Move it up a tad over one calendar row */
+    overflow:auto;
+    padding: 8px;
+    border: 1px solid #888;
+    border-radius: 10px;
+    width:150%
     }
   .order_cycle_row:hover {
     background-color:rgba(0, 0, 0, .2);
     }
-  .delivery_id {
-    position:relative;
-    top:0px; left:0px;
-    height:15px;
-    width:50px;
-    overflow:hidden;
-    text-align:left;
-    padding-right:1em;
+  .order_cycle_row .key +.value:before {
+    content:": ";
     }
-  .date_open {
-    position:relative;
-    top:-15px; left:50px;
-    height:15px;
-    width:150px;
-    overflow:hidden;
+  .order_cycle_row .key {
+    font-weight:bold;
     }
-  .date_closed {
-    position:relative;
-    top:-30px; left:200px;
-    height:15px;
-    width:150px;
-    overflow:hidden;
-    }
-  .order_fill_deadline {
-    position:relative;
-    top:-45px; left:350px;
-    height:15px;
-    width:150px;
-    overflow:hidden;
-    } 
-  .delivery_date {
-    position:relative;
-    top:-60px; left:500px;
-    height:15px;
-    width:150px;
-    overflow:hidden;
-    } 
-
-  .edit_link {
-    position:relative;
-    top:-75px; left:650px;
-    height:15px;
-    width:50px;
-    overflow:hidden;
-    text-align:center;
-    cursor:pointer;
+  .delivery_id,
+  .date_open,
+  .date_closed,
+  .order_fill_deadline,
+  .customer_type,
+  .delivery_date,
+  .transport_identity_name {
+    white-space:nowrap;
+    display:inline-block;
+    margin-right:1em;
     }
 
   /* BEGIN STYLES FOR CALENDAR */
   #calendar {
-    float:right;
+    float:left;
     position:relative;
-    width:30%;
+    width:38%;
+    }
+  .month_name {
+    display:block;
+    position:absolute;
+    line-height:150%;
+    left:0;
+    font-size:25px;
+    font-weight:bold;
+    color:rgba(128,128,64,.5);
     }
   .week_row {
     position:static;
     overflow:hidden;
-    height:40px;
+    height:50px;
     width:99.5%;
     border-left:1px solid #ccc;
     }
@@ -280,7 +267,7 @@ $page_specific_css = '
     border-bottom:0;
     }
   .day_frame {
-    height:40px;
+    height:50px;
     width:14.25%;
     float:left;
     z-index:10;
@@ -323,28 +310,32 @@ $page_specific_css = '
     opacity:0.8;
     border-bottom:1px solid #888;
     }
+  /* Color code for the various order cycles */
+  .order_cycle_row.distinct-1,
   .distinct-1 div {
     background-color:#ace;
     }
+  .order_cycle_row.distinct-2,
   .distinct-2 div {
     background-color:#aec;
     }
+  .order_cycle_row.distinct-3,
   .distinct-3 div {
     background-color:#cea;
     }
+  .order_cycle_row.distinct-4,
   .distinct-4 div {
     background-color:#cae;
     }
+  .order_cycle_row.distinct-5,
   .distinct-5 div {
     background-color:#eac;
     }
+  .order_cycle_row.distinct-6,
   .distinct-6 div {
     background-color:#eca;
     }
-  .distinct-6 div {
-    background-color:#ccc;
-    }
-
+  /* Give months distinctive colors */
   .month_no-1,
   .month_no-3,
   .month_no-5,
