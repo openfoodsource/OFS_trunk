@@ -3,6 +3,7 @@
 /* Styles pertaining to receive_payments.php */
 .nobr {
   white-space: nowrap;
+  display:inline-block;
   }
 .basket_section {
   margin:1em 0;
@@ -93,7 +94,8 @@ fieldset {
   border-color:#480;
   }
 label#comment_label,
-label#paypal_comment_label {
+label#paypal_comment_label,
+label#square_comment_label {
   width:125px;
   }
 label#effective_datetime_label {
@@ -103,7 +105,8 @@ label#non_basket_payment_label {
   width:200px;
   }
 #amount,
-#paypal_fee {
+#paypal_fee,
+#square_fee {
   width:75px;
   text-align:right;
   }

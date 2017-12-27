@@ -17,6 +17,10 @@
 INSERT INTO ofs_configuration (section, name, constant, options, value, description) VALUES
 ('6. Software', 'new_table_transport_identities', 'NEW_TABLE_TRANSPORT_IDENTITIES', 'input_pattern=\r\n[A-Za-z0-9.-_]+', 'transport_identities', 'Name of the database table containing names for transport identities - i.e. named groups of transport routes that can be used over multiple cycles.'),
 
+-- UPDATE QUERIES:
+
+// Allow Square messages
+INSERT INTO ofs_message_types SET key1_target = 'ledger.transaction_id', key2_target = '', description = 'ledger square comment';
 
 -- NEW DATABASE TABLES --
 

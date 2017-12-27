@@ -246,9 +246,6 @@ function get_receive_payment_form ($member_id, $basket_id, $preferred_name, $err
         $paypal_display_style = 'display:none;';
         $square_display_style = 'display:none;';
       }
-
-    // Problem with paypal not showing, so override the display:none directive
-    $paypal_display_style = 'display:inline;';
     // Construct the receive payment form
     $form_content = '
       <div id="receive_payment_row" class="data_row">'.
@@ -261,75 +258,72 @@ function get_receive_payment_form ($member_id, $basket_id, $preferred_name, $err
             </legend>
             <span class="nobr">
               <label id="effective_datetime_label" for="effective_datetime">Effective Date/Time</label>
-              <input id="effective_datetime" name="effective_datetime" required pattern="[0-9]{4}\-[0-9]{2}\-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}" placeholder="'.date('Y-m-d H:i:s', time()).'" autocomplete="off" value="'.($_POST['effective_datetime'] ? $_POST['effective_datetime'] : date('Y-m-d H:i:s', time())).'">
+              <input id="effective_datetime" name="effective_datetime" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}" placeholder="'.date('Y-m-d H:i:s', time()).'" autocomplete="off" value="'.($_POST['effective_datetime'] ? $_POST['effective_datetime'] : date('Y-m-d H:i:s', time())).'">
             </span>
-
-            <br>
-
-            <span class="nobr">
-              <label for=amount>Payment</label>
-              <input id=amount name=amount type=text required autofocus pattern="[-]{0,1}[0-9]*(\.[0-9]{2}){0,1}" autocomplete="off" value="'.$_POST['amount'].'">
-            </span>
-
-            <span class="nobr">
-              <label id="comment_label" for="comment">Comment</label>
-              <input id="comment" name="comment" placeholder="Ex. Maresey dotes and dosey dotes..." autocomplete="off" value="'.$_POST['comment'].'">
-            </span>
-
-            <br>
-
-            <span class="nobr">
-              <label id="memo_label" for="memo">Memo</label>
-              <input id="memo" name="memo" placeholder="Ex. 12345" pattern="[0-9]*" autocomplete="off" value="'.$_POST['memo'].'">
-            </span>
-
-            <span class="nobr">
-              <label for="batch_number">Batch No</label>
-              <input id="batch_number" name="batch_number" placeholder="Ex. AB-2468" autocomplete="off" value="'.$_POST['batch_number'].'">
-            </span>';
-    if (PAYPAL_ENABLED == true)
-      {
-        $form_content .= '
-            <div id="paypal_section" style="'.$paypal_display_style.'">
+            <div>
               <span class="nobr">
+                <label for=amount>Payment</label>
+                <input id=amount name=amount type=text required autofocus pattern="[-]{0,1}[0-9]*(\.[0-9]{2}){0,1}" autocomplete="off" value="'.$_POST['amount'].'">
+              </span>
+              <span class="nobr">
+                <label id="comment_label" for="comment">Comment</label>
+                <input id="comment" name="comment" placeholder="Ex. Maresey dotes and dosey dotes..." autocomplete="off" value="'.$_POST['comment'].'">
+              </span>
+            </div>
+            '.
+            (PAYPAL_ENABLED == true ? '
+            <div>
+              <span class="nobr paypal_section" style="'.$paypal_display_style.'">
                 <label id="paypal_fee_label" for="paypal_fee">Paypal Fee</label>
                 <input id="paypal_fee" name="paypal_fee" pattern="[0-9]*\.[0-9]{2}" autocomplete="off" value="'.$_POST['paypal_fee'].'">
               </span>
-              <span class="nobr">
+              <span class="nobr paypal_section" style="'.$paypal_display_style.'">
                 <label id="paypal_comment_label" for="paypal_comment">Paypal&nbsp;Comment</label>
                 <input id="paypal_comment" name="paypal_comment" placeholder="Ex. Little lamsey divey. A kidley divey too." autocomplete="off" value="'.$_POST['paypal_comment'].'">
               </span>
-            </div>';
-      }
-    if (SQUARE_ENABLED == true)
-      {
-        $form_content .= '
-            <div id="square_section" style="'.$square_display_style.'">
-              <span class="nobr">
+            </div>
+            '
+            : '').
+            (SQUARE_ENABLED == true ? '
+            <div>
+              <span class="nobr square_section" style="'.$square_display_style.'">
                 <label id="square_fee_label" for="square_fee">Square Fee</label>
                 <input id="square_fee" name="square_fee" pattern="[0-9]*\.[0-9]{2}" autocomplete="off" value="'.$_POST['square_fee'].'">
               </span>
-              <span class="nobr">
+              <span class="nobr square_section" style="'.$square_display_style.'">
                 <label id="square_comment_label" for="square_comment">Square&nbsp;Comment</label>
                 <input id="square_comment" name="square_comment" placeholder="Ex. Little lamsey divey. A kidley divey too." autocomplete="off" value="'.$_POST['square_comment'].'">
               </span>
-            </div>';
-      }
-    $form_content .= '
-            <div class="button" onclick="receive_payment('.$member_id.','.$basket_id.')">Enter<br>Payment</div>
-
-            <div id="select_payment_type" class="nobr">
-              <input type="radio" id="payment_type_cash" value="cash" name="payment_type" required'.$payment_type_cash.' onclick="jQuery(\'#square_fee\').val(\'0.00\');jQuery(\'#paypal_fee\').val(\'0.00\');jQuery(\'#paypal_section\').hide();jQuery(\'#square_section\').hide();">
-              <label for="payment_type_cash">Cash</label><br />
-              <input type="radio" id="payment_type_check" value="check" name="payment_type" required'.$payment_type_check.' onclick="jQuery(\'#square_fee\').val(\'0.00\');jQuery(\'#paypal_fee\').val(\'0.00\');jQuery(\'#paypal_section\').hide();jQuery(\'#square_section\').hide();">
-              <label for="payment_type_cash">Check</label><br />'.
-              (PAYPAL_ENABLED == true ? '
-              <input type="radio" id="payment_type_paypal" value="paypal" name="payment_type" required'.$payment_type_paypal.' onclick="jQuery(\'#paypal_section\').show();jQuery(\'#square_section\').hide();jQuery(\'#square_fee\').val(\'0.00\');jQuery(\'#paypal_fee\').val((Math.round((jQuery(\'#amount\').val()*0.029+0.30) * 100)/100).toFixed(2));">
-              <label for="payment_type_paypal">Paypal</label><br />' : '').
-              (SQUARE_ENABLED == true ? '
-              <input type="radio" id="payment_type_square" value="square" name="payment_type" required'.$payment_type_square.' onclick="jQuery(\'#square_section\').show();jQuery(\'#paypal_section\').hide();jQuery(\'#paypal_fee\').val(\'0.00\');jQuery(\'#square_fee\').val((Math.round((jQuery(\'#amount\').val()*0.0265) * 100)/100).toFixed(2));">
-              <label for="payment_type_square">Square</label><br />' : '' ).'
             </div>
+            '
+            : '').'
+            <div>
+              <span class="nobr">
+                <label for="payment_type_cash">Cash</label>
+                <input type="radio" id="payment_type_cash" value="cash" name="payment_type" required'.$payment_type_cash.' onclick="jQuery(\'#paypal_fee\').val(\'0.00\');jQuery(\'#square_fee\').val(\'0.00\');jQuery(\'.paypal_section\').hide();jQuery(\'.square_section\').hide();">
+                <label for="payment_type_check">Check</label>
+                <input type="radio" id="payment_type_check" value="check" name="payment_type" required'.$payment_type_check.' onclick="jQuery(\'#paypal_fee\').val(\'0.00\');jQuery(\'#square_fee\').val(\'0.00\');jQuery(\'.paypal_section\').hide();jQuery(\'.square_section\').hide();">'.
+                (PAYPAL_ENABLED == true ? '
+                <label for="payment_type_paypal">Paypal</label>
+                <input type="radio" id="payment_type_paypal" value="paypal" name="payment_type" required'.$payment_type_paypal.' onclick="jQuery(\'#paypal_fee\').val((Math.round((jQuery(\'#amount\').val()*0.029+0.30) * 100)/100).toFixed(2));jQuery(\'#square_fee\').val(\'0.00\');jQuery(\'.paypal_section\').show();jQuery(\'.square_section\').hide();">'
+                : '').
+                (SQUARE_ENABLED == true ? '
+                <label for="payment_type_square">Square</label>
+                <input type="radio" id="payment_type_square" value="square" name="payment_type" required'.$payment_type_square.' onclick="jQuery(\'#paypal_fee\').val(\'0.00\');jQuery(\'#square_fee\').val((Math.round((jQuery(\'#amount\').val()*0.0265) * 100)/100).toFixed(2));jQuery(\'.paypal_section\').hide();jQuery(\'.square_section\').show();">'
+                : '').'
+              </span>
+            </div>
+            <div>
+              <span class="nobr">
+                <label id="memo_label" for="memo">Memo</label>
+                <input id="memo" name="memo" placeholder="Ex. 12345" pattern="[0-9]*" autocomplete="off" value="'.$_POST['memo'].'">
+              </span>
+              <span class="nobr">
+                <label for="batch_number">Batch No</label>
+                <input id="batch_number" name="batch_number" placeholder="Ex. AB-2468" autocomplete="off" value="'.$_POST['batch_number'].'">
+              </span>
+            </div>
+            <div class="button" onclick="receive_payment('.$member_id.','.$basket_id.')">Enter<br>Payment</div>
           </fieldset>
         </form>
       </div>';
