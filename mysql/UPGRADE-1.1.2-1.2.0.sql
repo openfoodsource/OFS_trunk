@@ -52,11 +52,40 @@ INSERT INTO ofs_configuration SET section = 6, name = 'new_table_transport_ident
 INSERT INTO ofs_configuration SET section = 4, name = 'show_customer_note_on_label', constant = 'SHOW_CUSTOMER_NOTE_ON_LABEL', options = 'checkbox=\r\nfalse\r\ntrue', value= 'false', description = 'Check this box to show customer notes on labels. Otherwise, the producer will only see an asterisk (*) indicating there is a customer note for the product.';
 
 -- UPDATE QUERIES:
+ALTER TABLE ofs_baskets
+  CHANGE delivery_type delivery_type CHAR(1) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+
+ALTER TABLE ofs_categories
+  ADD FULLTEXT category_name_fulltext (category_name);
+
+ALTER TABLE ofs_ledger
+  CHANGE site_id site_id SMALLINT(5) UNSIGNED NULL DEFAULT NULL COMMENT 'References key from sites table';
+
+ALTER TABLE ofs_members
+  CHANGE username username VARCHAR(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL;
+
+ALTER TABLE ofs_order_cycles
+  ADD transport_id INT( 11 ) NOT NULL DEFAULT '0' AFTER customer_type;
+
+ALTER TABLE ofs_products
+  ADD approved TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER confirmed,
+  ADD active TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER approved;
+ALTER TABLE ofs_products
+  ADD INDEX pricing_unit (pricing_unit),
+  ADD INDEX ordering_unit (ordering_unit),
+  ADD FULLTEXT product_name_fulltext (product_name),
+  ADD FULLTEXT product_description_fulltext (product_description);
+
+ALTER TABLE ofs_product_images
+  CHANGE file_name file_name VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT '',
+  CHANGE mime_type mime_type VARCHAR(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT '',
+  ADD INDEX producer_id (producer_id);
+
+ALTER TABLE ofs_subcategories ADD FULLTEXT subcategory_name_fulltext (subcategory_name);
 
 // Allow Square messages
 INSERT INTO ofs_message_types SET key1_target = 'ledger.transaction_id', key2_target = '', description = 'ledger square comment';
 
--- NEW DATABASE TABLES --
 
 -- Add transport_identities table
 CREATE TABLE IF NOT EXISTS ofs_transport_identities (
