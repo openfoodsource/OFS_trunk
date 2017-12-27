@@ -3,6 +3,29 @@ include_once 'config_openfood.php';
 session_start();
 // Validations are done in the product_list/* files
 
+// See if this is a producer-related page (if so, exempt from needing to select a site)
+$producer_page = false;
+if (isset ($_GET['type'])) $product_list_type = $_GET['type'];
+if ($product_list_type == 'labels_byproduct'
+    || $product_list_type == 'labels_bystoragecustomer'
+    || $product_list_type == 'producer_byproduct'
+    || $product_list_type == 'producer_bystoragecustomer'
+    || $product_list_type == 'producer_bycustomer'
+    || $product_list_type == 'producer_list')
+  {
+    $producer_page = true;
+  }
+// Do not show product lists unless the member has already opened a basket, so go do that...
+unset ($_SESSION['redirect_after_basket_select']);
+if (! CurrentBasket::basket_id()
+    && ! $producer_page)
+  {
+    // Put the originally requested URI into the $_SESSION for later retrieval
+    $_SESSION['redirect_after_basket_select'] = $_SERVER['REQUEST_URI'];
+    header ('Location: '.BASE_URL.PATH.'select_delivery_page.php?first_call=true');
+    exit (0);
+  }
+
 // Sanitize variables that are expected to be numeric
 if (isset ($_GET['producer_id'])) $_GET['producer_id'] = preg_replace ('/[^0-9]/', '', $_GET['producer_id']);
 if (isset ($_GET['category_id'])) $_GET['category_id'] = preg_replace ('/[^0-9]/', '', $_GET['category_id']);
@@ -167,7 +190,7 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
     $row['display_base_price'] = $display_base_price;
     $row['display_anonymous_price'] = $display_anonymous_price;
     $row['is_wholesale_item'] = $is_wholesale_item;
-    $row['availability_array'] = explode (',', $row['availability_list']);
+// $row['availability_array'] = explode (',', $row['availability_list']);
     // $row['site_id_you'] = CurrentBasket::site_id();
     // $row['site_short_you'] = CurrentBasket::site_short();
     // $row['site_long_you'] = CurrentBasket::site_long();
@@ -278,9 +301,9 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
     // Two conditions will allow products to be purchased (availability = true):
     //   1. No availibility set for the producer means the product is available everywhere
     //   2. Customer's site is in the set of availabile locations for the producer
-    if ($row['availability_list'] == '' || in_array ($row['site_id_you'], $row['availability_array'])) $row['availability'] = true;
+// if ($row['availability_list'] == '' || in_array ($row['site_id_you'], $row['availability_array'])) $row['availability'] = true;
     // Otherwise the product is not available for this customer to purchase
-    else $row['availability'] = false;
+//else $row['availability'] = false;
     $row['row_activity_link'] = row_activity_link_calc($row, $pager, $unique);
     $row['random_weight_display'] = random_weight_display_calc($row);
     $row['business_name_display'] = business_name_display_calc($row);

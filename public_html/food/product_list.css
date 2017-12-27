@@ -34,6 +34,23 @@ ul.list-markup3 a:link {
   color: #a00;
   font-weight: bold;
   }
+.error {
+  display:inline-block;
+  float:left;
+  background-color:#800;
+  color:#fed;
+  font-size: 60%;
+  padding:0.5rem;
+  margin-top:0.5rem;
+  max-width:10rem;
+  }
+.error::before {
+  display:block;
+  color:#fed;
+  content:'!';
+  font-size: 350%;
+  float:left;
+  }
 
 
 /* Following styles are for product_list.php */

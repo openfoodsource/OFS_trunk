@@ -2,6 +2,15 @@
 include_once 'config_openfood.php';
 session_start();
 
+// Do not show product lists unless the member has already opened a basket, so go do that...
+unset ($_SESSION['redirect_after_basket_select']);
+if (! CurrentBasket::basket_id())
+  {
+    // Put the originally requested URI into the $_SESSION for later retrieval
+    $_SESSION['redirect_after_basket_select'] = $_SERVER['REQUEST_URI'];
+    header ('Location: '.BASE_URL.PATH.'select_delivery_page.php?first_call=true');
+  }
+
 // valid_auth(''); // anyone can view these pages
 
 //The function of this script is to create an html-formatted output of the categories and subcategories
@@ -126,7 +135,10 @@ $query ='
     '.TABLE_SUBCATEGORY.'.subcategory_id,
     '.TABLE_SUBCATEGORY.'.subcategory_name,
     COUNT(DISTINCT('.NEW_TABLE_PRODUCTS.'.product_id)) AS qty_of_items,
-    SUM(IF(DATEDIFF(NOW(), '.NEW_TABLE_PRODUCTS.'.created) < '.DAYS_CONSIDERED_NEW.', 1, 0)) AS qty_of_new_items
+    SUM(IF(DATEDIFF(NOW(), '.NEW_TABLE_PRODUCTS.'.created) < '.DAYS_CONSIDERED_NEW.', 1, 0)) AS qty_of_new_items,
+    IF('.NEW_TABLE_PRODUCTS.'.inventory_id > 0, FLOOR('.TABLE_INVENTORY.'.quantity / '.NEW_TABLE_PRODUCTS.'.inventory_pull), 1) AS inventory,
+    0 AS qty_of_new_items, /* Disabled because of inconsistency problems with MySQL */
+    (SELECT COUNT(site_id) FROM '.TABLE_AVAILABILITY.' WHERE '.TABLE_AVAILABILITY.'.site_id = '.NEW_TABLE_BASKETS.'.site_id AND '.TABLE_AVAILABILITY.'.producer_id = '.TABLE_PRODUCER.'.producer_id) AS availability
   FROM
     '.NEW_TABLE_PRODUCTS.'
   LEFT JOIN
@@ -137,6 +149,8 @@ $query ='
     '.TABLE_PRODUCER.' USING(producer_id)
   LEFT JOIN
     '.TABLE_INVENTORY.' USING(inventory_id)
+  LEFT JOIN
+    '.NEW_TABLE_BASKETS.' ON ('.NEW_TABLE_BASKETS.'.basket_id = "'.mysqli_real_escape_string ($connection, CurrentBasket::basket_id()).'")
   WHERE 1'.
     $where_producer_pending.
     $where_auth_type.
@@ -146,6 +160,7 @@ $query ='
   GROUP BY
     '.TABLE_SUBCATEGORY.'.category_id,
     '.TABLE_SUBCATEGORY.'.subcategory_id
+  HAVING availability = 1
   ORDER BY
     '.TABLE_CATEGORY.'.sort_order,
     '.TABLE_SUBCATEGORY.'.subcategory_name';

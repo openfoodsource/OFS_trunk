@@ -96,7 +96,7 @@ $query = '
     '.TABLE_PRODUCER.'.producer_fee_percent,
     '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock,
     '.NEW_TABLE_BASKET_ITEMS.'.quantity AS basket_quantity,
-    (SELECT GROUP_CONCAT(site_id) FROM '.TABLE_AVAILABILITY.' WHERE '.TABLE_AVAILABILITY.'.producer_id='.NEW_TABLE_PRODUCTS.'.producer_id) AS availability_list,
+    IF ('.TABLE_AVAILABILITY.'.site_id = '.NEW_TABLE_BASKETS.'.site_id, 1, 0) AS availability,
     '.NEW_TABLE_MESSAGES.'.message
   FROM
     ('.NEW_TABLE_PRODUCTS.',
@@ -105,7 +105,9 @@ $query = '
   LEFT JOIN '.TABLE_SUBCATEGORY.' ON '.TABLE_SUBCATEGORY.'.subcategory_id = '.NEW_TABLE_PRODUCTS.'.subcategory_id
   LEFT JOIN '.TABLE_CATEGORY.' ON '.TABLE_CATEGORY.'.category_id = '.TABLE_SUBCATEGORY.'.category_id
   LEFT JOIN '.TABLE_PRODUCT_TYPES.' ON '.TABLE_PRODUCT_TYPES.'.production_type_id = '.NEW_TABLE_PRODUCTS.'.production_type_id
-  LEFT JOIN '.TABLE_AVAILABILITY.' ON '.TABLE_AVAILABILITY.'.producer_id = '.TABLE_PRODUCER.'.producer_id
+  LEFT JOIN '.TABLE_AVAILABILITY.' ON (
+    '.TABLE_AVAILABILITY.'.producer_id = '.TABLE_PRODUCER.'.producer_id
+    AND '.TABLE_AVAILABILITY.'.site_id = '.NEW_TABLE_BASKETS.'.site_id)
   LEFT JOIN '.TABLE_INVENTORY.' ON '.NEW_TABLE_PRODUCTS.'.inventory_id = '.TABLE_INVENTORY.'.inventory_id
   LEFT JOIN '.TABLE_PRODUCT_STORAGE_TYPES.' ON '.NEW_TABLE_PRODUCTS.'.storage_id = '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_id
   LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' ON
@@ -123,5 +125,6 @@ $query = '
     $where_confirmed.'
     AND FIND_IN_SET(listing_auth_type, COALESCE((SELECT auth_type FROM '.TABLE_MEMBER.' WHERE member_id = "'.$_SESSION['member_id'].'"), "member")) > 0
   GROUP BY CONCAT('.NEW_TABLE_PRODUCTS.'.product_id, "-", '.NEW_TABLE_PRODUCTS.'.product_version)
+  HAVING availability = 1
   ORDER BY'.
     $order_by;

@@ -211,7 +211,7 @@ if ($_SESSION['producer_id_you'])
         <img src="'.DIR_GRAPHICS.'labels.png" width="32" height="32" align="left" hspace="2" alt="Delivery Day Functions">
         <b>'.$active_business_name.' Delivery Day Functions</b>
         <ul class="fancyList1">
-          <!-- <li class="last_of_group"><a href="producer_select_site.php">Select Collection Point</a></li> -->
+          <li class="last_of_group"><a onClick="popup_src(\'producer_select_site.php?producer_id='.$_SESSION['producer_id_you'].'&display_as=popup\', \'producer_select_site\', \'\');">Select Collection Point(s)</a></li>
           <li><a href="product_list.php?&type=labels_bystoragecustomer">Labels &ndash; One per Customer/Storage</a></li>
           <li class="last_of_group"><a href="product_list.php?&type=labels_byproduct">Labels &ndash; One per Item</a></li>
         </ul>
@@ -253,7 +253,8 @@ $display .= '
           <img src="'.DIR_GRAPHICS.'kcron.png" width="32" height="32" align="left" hspace="2" alt="Delivery Cycle Functions">
           <b>Delivery Cycle Functions</b>
           <ul class="fancyList1">
-            <li class="last_of_group"><a href="orders_prdcr_list.php?delivery_id='.ActiveCycle::delivery_id().'">Producers with Customers this Cycle</a></li>
+            <li><a href="orders_prdcr_list.php?delivery_id='.ActiveCycle::delivery_id().'">Producers with Customers this Cycle</a></li>
+            <li class="last_of_group"><a href="producer_select_site.php">Collection Points for ALL producers</a></li>
           </ul>
           <img src="'.DIR_GRAPHICS.'bottom.png" width="32" height="32" align="left" hspace="2" alt="Producer Membership Information">
           <b>Producer Membership Information</b>

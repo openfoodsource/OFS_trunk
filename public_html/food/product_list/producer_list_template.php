@@ -394,7 +394,7 @@ function show_listing_row($data, $row_type)
                 ($data['confirmed'] == 1 ? 'confirmed<br><br>' : '').'</span>
                 <span class="conf_date">'.date ('Y-M-d H:i:s', strtotime ($data['modified'])).'</span>
               </td>
-              <td class="product'.($data['availability'] == false || ($data['inventory_quantity'] == 0 && $data['inventory_id']) ? ' inactive' : '').'">
+              <td class="product'.($data['inventory_quantity'] == 0 && $data['inventory_id'] ? ' inactive' : '').'">
                 '.$data['image_display'].'
                 <strong>'.$data['product_name'].'</strong><br>
                 '.$data['inventory_display'].$data['ordering_unit_display'].$data['random_weight_display'].'

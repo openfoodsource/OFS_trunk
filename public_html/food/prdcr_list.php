@@ -3,23 +3,25 @@ include_once 'config_openfood.php';
 session_start();
 // valid_auth('member'); // anyone can see this list
 
+// Do not show product lists unless the member has already opened a basket, so go do that...
+unset ($_SESSION['redirect_after_basket_select']);
+if (! CurrentBasket::basket_id())
+  {
+    // Put the originally requested URI into the $_SESSION for later retrieval
+    $_SESSION['redirect_after_basket_select'] = $_SERVER['REQUEST_URI'];
+    header ('Location: '.BASE_URL.PATH.'select_delivery_page.php?first_call=true');
+    exit (0);
+  }
 
 // Items dependent upon the location of this header
 $color1 = "#DDDDDD";
 $color2 = "#CCCCCC";
 $row_count = 0;
 
+$show_all = false;
 if ($_GET['show'] == 'all')
   {
     $show_all = true;
-    $show_unlisted_query = '';
-  }
-else
-  {
-    // We ALWAYS do not show suspended producers.
-    // But on this condition, also do not show "unlisted" producers.
-    $show_unlisted_query = '
-    AND '.TABLE_PRODUCER.'.unlisted_producer != 1 /* NOT UNLISTED */';
   }
 
 $query = '
@@ -27,19 +29,31 @@ $query = '
     '.TABLE_PRODUCER.'.producer_id,
     '.TABLE_PRODUCER.'.business_name,
     '.TABLE_PRODUCER.'.producttypes,
-    IF('.TABLE_PRODUCER.'.unlisted_producer < 1, COUNT('.NEW_TABLE_PRODUCTS.'.product_id), 0) AS product_count
+    '.NEW_TABLE_SITES.'.site_short AS site_short,
+    IF('.TABLE_PRODUCER.'.unlisted_producer < 1, COUNT('.NEW_TABLE_PRODUCTS.'.product_id), 0) AS product_count,
+    IF ('.TABLE_AVAILABILITY.'.site_id = '.NEW_TABLE_BASKETS.'.site_id, 1, 0) AS availability
   FROM
     '.TABLE_PRODUCER.'
   LEFT JOIN '.NEW_TABLE_PRODUCTS.' ON '.TABLE_PRODUCER.'.producer_id = '.NEW_TABLE_PRODUCTS.'.producer_id
   LEFT JOIN '.TABLE_INVENTORY.' USING(inventory_id)
+  LEFT JOIN '.NEW_TABLE_BASKETS.' ON ('.NEW_TABLE_BASKETS.'.basket_id = "'.mysqli_real_escape_string ($connection, CurrentBasket::basket_id()).'")
+  LEFT JOIN '.NEW_TABLE_SITES.' ON '.NEW_TABLE_BASKETS.'.site_id = '.NEW_TABLE_SITES.'.site_id
+  LEFT JOIN '.TABLE_AVAILABILITY.' ON (
+    '.TABLE_AVAILABILITY.'.producer_id = '.TABLE_PRODUCER.'.producer_id
+    AND '.TABLE_AVAILABILITY.'.site_id = '.NEW_TABLE_BASKETS.'.site_id)
   WHERE
     '.NEW_TABLE_PRODUCTS.'.listing_auth_type = "member"
     AND '.TABLE_PRODUCER.'.pending = 0
     AND '.NEW_TABLE_PRODUCTS.'.confirmed = 1
     AND '.TABLE_PRODUCER.'.unlisted_producer != 2 /* NOT SUSPENDED */'.
-    $show_unlisted_query.'
+    (!$show_all ? '
+    AND '.TABLE_PRODUCER.'.unlisted_producer != 1 /* NOT UNLISTED */'
+    : '').'
   GROUP BY
-    '.TABLE_PRODUCER.'.producer_id
+    '.TABLE_PRODUCER.'.producer_id'.
+  (!$show_all ? '
+  HAVING availability = 1'
+  : '').'
   ORDER BY
     '.TABLE_PRODUCER.'.business_name';
 $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 897650 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
@@ -49,6 +63,8 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
     $business_name = $row['business_name'];
     $producttypes = $row['producttypes'];
     $product_count = $row['product_count'];
+    $site_short = $row['site_short'];
+    $availability = $row['availability'];
     if ($product_count > 0 || $show_all)
       {
         $show_name = "";
@@ -56,7 +72,7 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
         $display_top .= '
           <tr bgcolor="'.$row_color.'">
             <td width="25%"><font face="arial" size="3"><b><a href="product_list.php?type=producer_id&producer_id='.$producer_id.'">'.$business_name.'</a></b></td>
-            <td width="75%">'.strip_tags ($producttypes).' ('.($product_count > 0 ? number_format ($product_count, 0).' '.Inflect::pluralize_if ($product_count, 'product') : 'no products currently listed').')</font></td>
+            <td width="75%">'.strip_tags ($producttypes).' ('.($availability == 0 ? 'Sorry! Products are not available at '.$site_short : ($product_count > 0 ? number_format ($product_count, 0).' '.Inflect::pluralize_if ($product_count, 'product') : 'No products currently listed')).')</font></td>
           </tr>';
         $row_count++;
       }

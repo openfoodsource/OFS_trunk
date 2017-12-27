@@ -1,11 +1,11 @@
 -- --------------------------------------------------------------------- --
 --                                                                       --
---      QUERIES FOR UPDATING OFS DATABASE FROM V1.1.1 TO V1.1.2          --
+--      QUERIES FOR UPDATING OFS DATABASE FROM V1.1.1 TO V1.2.0          --
 --                                                                       --
 -- --------------------------------------------------------------------- --
 -- 
 -- The following queries should bring most aspects of an existing system --
--- from OFS v1.1.0 to OFS v1.1.1. Information that might have changed in --
+-- from OFS v1.1.1 to OFS v1.2.0. Information that might have changed in --
 -- operational systems should be handled properly. As always, please     --
 -- be sure to make backups before upgrading a system.
 --

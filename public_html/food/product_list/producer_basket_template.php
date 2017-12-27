@@ -191,7 +191,8 @@ function row_activity_link_calc($data, $pager, &$unique)
           <span class="order_text">Weight:<br /></span>
           <span class="order_weight"><input type="text" id="weight'.$data['bpid'].'" name="weight'.$data['bpid'].'" value="'.number_format($data['total_weight'], 2).'" onchange="SetItem ('.$data['bpid'].',\'set_weight\'); return false;"></span>'
           : '').'
-        </div>
+        </div>'.
+        ($data['availability'] != true ? '<span class="error">'.$data['availability_id'].'<strong>Unavailable at '.$data['site_short'].'.</strong> The customer switched to an unavailable site after ordering this product.</span>' : '').'
       </td>';
     $unique['order_amount_total_prior'] = $unique['order_amount_total'];
     $unique['ship_quantity_total_prior'] = $unique['ship_quantity_total'];

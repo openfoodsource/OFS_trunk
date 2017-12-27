@@ -216,7 +216,7 @@ if ($_SESSION['producer_id_you'])
         <img src="'.DIR_GRAPHICS.'labels.png" width="32" height="32" align="left" hspace="2" alt="Delivery Day Functions">
         <b>'.$active_business_name.' Delivery Day Functions</b>
         <ul class="fancyList1">
-          <!-- <li class="last_of_group"><a href="producer_select_site.php">Select Collection Point</a></li> -->
+          <li class="last_of_group"><a onClick="popup_src(\'producer_select_site.php?display_as=popup\', \'producer_select_site\', \'\');">Select Collection Point(s)</a></li>
           <li><a href="product_list.php?&type=labels_bystoragecustomer">Labels &ndash; One per Customer/Storage</a></li>
           <li class="last_of_group"><a href="product_list.php?&type=labels_byproduct">Labels &ndash; One per Item</a></li>
         </ul>

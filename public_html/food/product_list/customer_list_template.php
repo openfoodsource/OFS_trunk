@@ -166,7 +166,7 @@ function row_activity_link_calc($data, $pager)
       ($data['availability'] == true ?
         ($data['basket_quantity'] > 0 || !$data['inventory_id'] || $data['inventory_quantity'] > 0 ?
           // ADD PRODUCT TO BASKET
-          '<form action="'.$_SERVER['SCRIPT_NAME'].'?type='.$_GET['type'].'#X'.$data['product_id'].'" method="post">
+          ($data['availability'] == true ? '<form action="'.$_SERVER['SCRIPT_NAME'].'?type='.$_GET['type'].'#X'.$data['product_id'].'" method="post">
              <input id="add'.$data['product_id'].'" class="basket_add" type="image" name="basket_add" src="'.DIR_GRAPHICS.'basket_add.png" width="24" height="24" border="0" alt="Submit" onclick="AddToCart('.$data['product_id'].','.$data['product_version'].',\'add\'); return false;" '.($data['basket_quantity'] > 0 ? ($data['inventory_id'] && $data['inventory_quantity'] == 0 ? 'style="display:none;"' : '') : 'style="display:none;"').'>
              <input id="sub'.$data['product_id'].'" class="basket_sub" type="image" name="basket_sub" src="'.DIR_GRAPHICS.'basket_sub.png" width="24" height="24" border="0" alt="Submit" onclick="AddToCart('.$data['product_id'].','.$data['product_version'].',\'sub\'); return false;" '.($data['basket_quantity'] > 0 ? '' : 'style="display:none;"').'>
              <input type="hidden" name="product_id" value="'.$data['product_id'].'">
@@ -180,8 +180,9 @@ function row_activity_link_calc($data, $pager)
              <input id="basket_empty'.$data['product_id'].'" class="basket" type="image" name="basket" src="'.DIR_GRAPHICS.'basket-egi_add.png" width="48" height="48" border="0" alt="Submit" onClick="AddToCart('.$data['product_id'].','.$data['product_version'].',\'add\'); return false;" '.($data['basket_quantity'] > 0 ? 'style="display:none;"' : '').'>
              <img id="basket_full'.$data['product_id'].'" class="basket" src="'.DIR_GRAPHICS.'basket-fcs.png" width="48" height="48" border="0" '.($data['basket_quantity'] > 0 ? '' : 'style="display:none;"').'>
              </div>
-           </form>
-           <span id="in_basket'.$data['product_id'].'" class="in_basket" '.($data['basket_quantity'] > 0 ? '' : 'style="display:none;"').'><span id="basket_qty'.$data['product_id'].'" class="basket_qty">'.$data['basket_quantity'].'</span> in basket</span>'
+           </form>' : '').'
+           <span id="in_basket'.$data['product_id'].'" class="in_basket" '.($data['basket_quantity'] > 0 ? '' : 'style="display:none;"').'><span id="basket_qty'.$data['product_id'].'" class="basket_qty">'.$data['basket_quantity'].'</span> in basket</span>
+           '.($data['availability'] != true ? '<span class="error">'.$data['availability_id'].'Product is available, but not at <strong>'.$data['site_short_you'].'.</strong></span>' : '')
           :
           // NOT ABLE TO ADD ANYTHING
           ''
