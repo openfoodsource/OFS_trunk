@@ -84,14 +84,12 @@ $content_faq = '
   </div>';
 
 $page_specific_css = '
-  <style type="text/css">
     .warn {
       color:#800;
       }
     #faq_content {
       width:80%;
-      }
-  </style>';
+      }';
 
 $page_title_html = '<span class="title">Member Resources</span>';
 $page_subtitle_html = '<span class="subtitle">How to Order FAQ</span>';

@@ -1125,7 +1125,6 @@ if (count ($error_array) == 0 && ($_POST['action'] == 'Submit' || $_POST['action
   }
 
 $page_specific_css = '
-<style type="text/css">
   #section1a tr td {
     padding-left:1em;
     }
@@ -1178,14 +1177,10 @@ $page_specific_css = '
   #producer_form td.form_key strong {
     color:#230;
     font-weight:bold;
-    }
-  </style>';
+    }';
 
 
 $page_specific_javascript = '
-<script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-<script type="text/javascript">
-
 function check_producer_link () {
   var allowed_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-.";
   var producer_link;
@@ -1242,8 +1237,7 @@ function check_producer_link () {
             }
         )
     }
-  }
-</script>';
+  }';
 
 $page_title_html = '<span class="title">Producer Info.</span>';
 $page_subtitle_html = '<span class="subtitle">'.(! $producer_id ? 'New Producer Application Form' : 'Edit All Producer Information').'</span>';

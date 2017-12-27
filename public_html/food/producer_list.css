@@ -1,0 +1,186 @@
+#producer_list {
+  margin-top:3rem;
+  }
+#producer_list header {
+  text-align:left;
+  }
+#producer_list header .toggle {
+  display:block;
+  position:absolute;
+  right:1rem;
+  bottom:0.75rem;
+  cursor:pointer;
+  background-color:#aaa;
+  border:1px solid #888;
+  border-radius:0.5rem;
+  line-height:1.7rem;
+  padding:3px 5px;
+  }
+
+/* STYLES FOR LIST VIEW **************************************************************/
+
+#producer_list.list .producer_list_inner {
+  -moz-column-width:40em;
+  -moz-column-gap:2em;
+  -webkit-column-width:40em;
+  -webkit-column-gap:2em;
+  column-width:40em;
+  column-gap:2em;
+  margin:auto;
+  }
+#producer_list.list .producer_listing {
+  margin:2rem 0;
+  overflow:auto;
+  background-color:#fff;
+  border:1px solid #888;
+  padding:1rem;
+  border-radius:1rem;
+  }
+#producer_list.list .producer_details a.business_name {
+  clear:both;
+  display:block;
+  font-size:150%;
+  font-weight:bold;
+  box-shadow:none;
+  }
+#producer_list.list .producer_details a:hover {
+  text-decoration:underline;
+  }
+#producer_list.list .producer_details a img {
+  max-width:50%;
+  height:150px;
+  margin:0.5rem 0.5rem 1rem 1rem;
+  float:right;
+  box-shadow:none;
+  }
+#producer_list.list .producer_details .producttype_text {
+  display:block;
+  clear:both;
+  margin-top:1rem;
+  border-top:1px solid #888;
+  border-bottom:1px solid #888;
+  background-color:#eee;
+  }
+#producer_list.list .subcategory_list {
+  -moz-column-width:15em;
+  -moz-column-gap:2em;
+  -webkit-column-width:15em;
+  -webkit-column-gap:2em;
+  column-width:15em;
+  column-gap:2em;
+  margin:auto;
+  padding:0.5rem 1rem 0;
+  }
+#producer_list.list .subcategory_list a {
+  box-shadow:none;
+  }
+#producer_list.list .subcategory_list a:hover {
+  text-decoration:underline;
+  }
+#producer_list.list header .list {
+  display:inline;
+  }
+#producer_list.list header .grid {
+  display:none;
+  }
+#producer_list.list .producer_details .producer_section {
+  display:block;
+  margin-bottom:1rem;
+  }
+.producer_section.about > a {
+  box-shadow:none;
+  }
+/* STYLES FOR GRID VIEW **************************************************************/
+/* HIDE OVERALL PRODUCT TOTAL (SUPER CATEGORY) */
+#producer_list.grid .levelX {
+  display:none;
+  }
+/* GRID BLOCK */
+#producer_list.grid .producer_list_inner {
+  overflow:auto;
+  }
+#producer_list.grid .producer_listing {
+  display:block;
+  position:relative;
+  float:left;
+  border:1px solid #888;
+  width:180px;
+  height:300px;
+  padding:5px;
+  margin:7px;
+  border-radius:13px;
+  box-shadow:4px 4px 4px #444;
+  overflow:auto;
+  line-height:1.8rem;
+  }
+#producer_list.grid .producer_listing .subcategory_list {
+  line-height:1.3;
+  }
+#producer_list.grid .producer_listing .subcategory_list .count {
+  display:none;
+  }
+/* GRID BLOCK TITLE */
+#producer_list.grid .producer_listing .producer_details {
+  display:block;
+  color:#fff;
+  font-weight:normal;
+  text-align:center;
+  background-color:#264;
+  opacity:0.7;
+  border-radius:10px;
+  padding:5px 5px;
+  font-size:80%;
+  line-height:1.45;
+  overflow:auto;
+  }
+#producer_list.grid .producer_listing .producer_details a {
+  display:block;
+  width:100%;
+  background-color:#fff;
+  font-weight:bold;
+  text-align:left;
+  border-radius:5px;
+  padding:3px 3px;
+  font-size:80%;
+  overflow:auto;
+  }
+#producer_list.grid .producer_listing .producer_logo {
+  float:right;
+  max-height:75px;
+  width:auto;
+  margin:0 0 3px 3px;
+  box-shadow:none !important;
+  }
+#producer_list.grid .producer_listing .producttype_text {
+  display:block;
+  margin:0.3rem 0;
+  font-size:75%;
+  font-style:italic;
+  font-weight:normal;
+  line-height:1.3;
+  }
+#producer_list.grid .producer_listing .about {
+  display:none;
+  }
+/* GRID BLOCK SUBCATEGORIES */
+#producer_list.grid .subcategory {
+    display: inline;
+    padding: 2px 0.5em 2px 0;
+  }
+#producer_list.grid .producer_listing {
+  background-color:#fff;
+  }
+#producer_list.grid a.subcat {
+  font-size:12px;
+  color:#000;
+  transition:all 0.25s;
+  }
+#producer_list.grid header .grid {
+  display:inline;
+  }
+#producer_list.grid header .list {
+  display:none;
+  }
+
+
+

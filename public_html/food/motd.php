@@ -60,7 +60,6 @@ else
     header('Location: '.PATH.'panel_member.php');
   }
 $page_specific_javascript = '
-  <script type="text/javascript">
   // This function requires two clicks to execute, changing style between.
   function reset_motd (obj, action) {
     if (action == "set") {
@@ -76,10 +75,8 @@ $page_specific_javascript = '
     if (action == "clear") {
       jQuery(obj).removeClass("warn");
       }
-    }
-  </script>';
+    }';
 $page_specific_css = '
-  <style type="text/css">
   .alert_box {
     width:35%;
     padding:10px;
@@ -134,8 +131,7 @@ $page_specific_css = '
   #motd_admin #reset_motd.warn {
     background-color:#a00;
     }
-  '.MOTD_CSS.'
-  </style>';
+  '.MOTD_CSS;
 
 include("template_header.php");
 echo '

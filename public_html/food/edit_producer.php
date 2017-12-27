@@ -564,137 +564,135 @@ $content_edit_producer =
 </html>';
 
 $page_specific_css = '
-    <style type="text/css">
-    fieldset {
-      margin:1em auto;
-      border: 1px solid #060;
-      border-radius:5px;
-      background-color: #fff;
-      }
-    fieldset.setup_info,
-    fieldset.expository_info,
-    fieldset.personal_info {
-      width: 60%;
-      min-width:200px;
-      }
-    legend {
-      margin:0 5px;
-      padding:2px 5px;
-      font-weight:bold;
-      color:#040;
-      }
-    label,
-    div.option_label {
-      clear: both;
-      color: #008;
-      display: block;
-      font-size: 70%;
-      width: 100%;
-      }
-    fieldset .input_block {
-      display:inline-block;
-      min-width:3em;
-      float:left;
-      }
-    fieldset.personal_info {
-      background-color:#efd;
-      }
-    fieldset.setup_info {
-      background-color:#def;
-      }
-    fieldset.expository_info {
-      background-color:#edf;
-      }
-    .form_buttons button,
-    fieldset input,
-    fieldset button,
-    .option_block,
-    textarea {
-      font-size:12px;
-      padding:3px 8px;
-      line-height:1.5;
-      margin:2px;
-      border-width:0;
-      border-style:none;
-      border-radius:5px;
-      border-color:none;
-      background:none;
-      border:1px solid #686;
-      box-shadow:2px 2px 0px 0px #bcb;
-      background-color:#eee;
-      color:#060;
-      }
-    .option_block .input_block {
-      background:none;
-      border-radius:5px;
-      width:4.9em;
-      height:6em;
-      text-align:center;
-      margin:0 8px;
-      }
-    .option_block .input_block label {
-      display:table-cell;
-      vertical-align:bottom;
-      width:7em; /* width of containing input_block / 70% (font size) */
-      height:4.5em;
-      text-align:center;
-      color:#060;
-      }
-    .input_block label {
-      min-width:5em;
-      }
-    .form_buttons button:hover,
-    fieldset input:hover,
-    fieldset button:hover,
-    fieldset textarea:hover,
-    .option_block .input_block:hover {
-      background-color:#cdc;
-      color:#040;
-      }
-    /* This rule overrides styles from wordpress */
-    input:focus,
-    textarea:focus {
-      border:1px solid #686;
-      }
-    /* Fields that need some spacing at the bottom */
-    .expository_info .textarea textarea,
-    div.username,
-    div.password2,
-    div.auth_type,
-    div.producership_type,
-    div.last_renewal_date,
-    div.publish_info,
-    div.producer_fee_percent,
-    div.miscellaneous,
-    div.how_heard,
-    div.notes,
-    div.list_order,
-    div.member_id,
-    div.county,
-    div.work_zip,
-    div.email_address_2,
-    div.toll_free {
-      margin-bottom:1em;
-      }
-    .expository_info .textarea {
-      width:95%;
-      }
-    .expository_info .textarea textarea {
-      width:100%;
-      height:100px;
-      }
-    .form_buttons {
-      position:fixed;
-      left:10px;
-      bottom:10px;
-      }
-    .form_buttons button {
-      display:block;
-      clear:both;
-      width:5em;
-      margin-bottom:2em;
-      }
-    </style>';
+  fieldset {
+    margin:1em auto;
+    border: 1px solid #060;
+    border-radius:5px;
+    background-color: #fff;
+    }
+  fieldset.setup_info,
+  fieldset.expository_info,
+  fieldset.personal_info {
+    width: 60%;
+    min-width:200px;
+    }
+  legend {
+    margin:0 5px;
+    padding:2px 5px;
+    font-weight:bold;
+    color:#040;
+    }
+  label,
+  div.option_label {
+    clear: both;
+    color: #008;
+    display: block;
+    font-size: 70%;
+    width: 100%;
+    }
+  fieldset .input_block {
+    display:inline-block;
+    min-width:3em;
+    float:left;
+    }
+  fieldset.personal_info {
+    background-color:#efd;
+    }
+  fieldset.setup_info {
+    background-color:#def;
+    }
+  fieldset.expository_info {
+    background-color:#edf;
+    }
+  .form_buttons button,
+  fieldset input,
+  fieldset button,
+  .option_block,
+  textarea {
+    font-size:12px;
+    padding:3px 8px;
+    line-height:1.5;
+    margin:2px;
+    border-width:0;
+    border-style:none;
+    border-radius:5px;
+    border-color:none;
+    background:none;
+    border:1px solid #686;
+    box-shadow:2px 2px 0px 0px #bcb;
+    background-color:#eee;
+    color:#060;
+    }
+  .option_block .input_block {
+    background:none;
+    border-radius:5px;
+    width:4.9em;
+    height:6em;
+    text-align:center;
+    margin:0 8px;
+    }
+  .option_block .input_block label {
+    display:table-cell;
+    vertical-align:bottom;
+    width:7em; /* width of containing input_block / 70% (font size) */
+    height:4.5em;
+    text-align:center;
+    color:#060;
+    }
+  .input_block label {
+    min-width:5em;
+    }
+  .form_buttons button:hover,
+  fieldset input:hover,
+  fieldset button:hover,
+  fieldset textarea:hover,
+  .option_block .input_block:hover {
+    background-color:#cdc;
+    color:#040;
+    }
+  /* This rule overrides styles from wordpress */
+  input:focus,
+  textarea:focus {
+    border:1px solid #686;
+    }
+  /* Fields that need some spacing at the bottom */
+  .expository_info .textarea textarea,
+  div.username,
+  div.password2,
+  div.auth_type,
+  div.producership_type,
+  div.last_renewal_date,
+  div.publish_info,
+  div.producer_fee_percent,
+  div.miscellaneous,
+  div.how_heard,
+  div.notes,
+  div.list_order,
+  div.member_id,
+  div.county,
+  div.work_zip,
+  div.email_address_2,
+  div.toll_free {
+    margin-bottom:1em;
+    }
+  .expository_info .textarea {
+    width:95%;
+    }
+  .expository_info .textarea textarea {
+    width:100%;
+    height:100px;
+    }
+  .form_buttons {
+    position:fixed;
+    left:10px;
+    bottom:10px;
+    }
+  .form_buttons button {
+    display:block;
+    clear:both;
+    width:5em;
+    margin-bottom:2em;
+    }';
 
 if($_GET['display_as'] == 'popup')
   $display_as_popup = true;

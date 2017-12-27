@@ -834,7 +834,6 @@ $page_title = 'Member Resources: '.($_SESSION['show_name'] ? 'Update Membership 
 $page_tab = 'member_panel';
 
 $page_specific_css = '
-  <style type="text/css">
   th.memberform {
     background:#cca;
     }
@@ -855,10 +854,8 @@ $page_specific_css = '
     color:#758954;
     text-align:left;
     }
-  </style>';
 
 $page_specific_javascript = '
-<script type="text/javascript">
   function set_preferred_name() {
     // CASE WHERE BOTH LAST NAMES ARE ENTERED
     if (document.getElementById("last_name").value && document.getElementById("last_name_2").value) {
@@ -904,7 +901,6 @@ $page_specific_javascript = '
     document.getElementById("preferred_name").value =
       document.getElementById("business_name").value;
     }
-</script>';
 
 include("template_header.php");
 echo '

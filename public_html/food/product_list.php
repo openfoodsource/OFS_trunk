@@ -408,11 +408,22 @@ if (isset ($pager['found_rows']))
     $search_display .= '
       <span class="found_rows">Found '.$pager['found_rows'].' '.Inflect::pluralize_if ($pager['found_rows'], 'item').'</span>';
   }
+$page_specific_stylesheets['product_list'] = array (
+  'name'=>'product_list',
+  'src'=>BASE_URL.PATH.'product_list.css',
+  'dependencies'=>array('ofs_stylesheet'),
+  'version'=>'2.1.1',
+  'media'=>'all'
+  );
+$page_specific_stylesheets['basket_dropdown'] = array (
+  'name'=>'basket_dropdown',
+  'src'=>BASE_URL.PATH.'basket_dropdown.css',
+  'dependencies'=>array('ofs_stylesheet'),
+  'version'=>'2.1.1',
+  'media'=>'all'
+  );
 
 $page_specific_css .= '
-<link rel="stylesheet" type="text/css" href="'.PATH.'product_list.css">
-<link rel="stylesheet" type="text/css" href="basket_dropdown.css">
-<style type="text/css">
 #basket_dropdown {
   right:3%;
   }
@@ -494,11 +505,9 @@ $page_specific_css .= '
   display: inline-block;
   line-height: 1.5;
   padding: 0 15px;
-  }
-</style>';
+  }';
 
 $page_specific_javascript .= '
-<script type="text/javascript">
 var add_to_cart_array = [];
 function AddToCart (product_id, product_version, action) {
   var elem;
@@ -652,7 +661,6 @@ function update_image (product_id, product_version, new_image_id) {
     jQuery("#image-"+product_id+"-"+product_version).attr("class", "product_image");
     }
   }
-</script>
 ';
 
 $csv_link = '

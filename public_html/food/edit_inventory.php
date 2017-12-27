@@ -303,20 +303,31 @@ $page_title = $business_name.': '.($_REQUEST['target_inventory_id'] ? 'Set Inven
 $page_tab = 'producer_panel';
 
 $page_specific_css = '
-  <style type="text/css">
-    #inventory_help {
-      border:2px solid #000;
-      background-color:#eee;
-      }
-    #inventory {
-       border:1px solid #000;
-       width:100%;
-       }
-    #inventory th {background-color:#006;color:#ffe;padding:3px;}
-    #inventory td {background-color:#ffe;padding:3px;}
-    .button {margin:1em;padding:0.5em;}
-    .conf_check {display:inline-block;width:1em;}
-  </style>';
+  #inventory_help {
+    border:2px solid #000;
+    background-color:#eee;
+    }
+  #inventory {
+     border:1px solid #000;
+     width:100%;
+     }
+  #inventory th {
+    background-color:#006;
+    color:#ffe;
+    padding:3px;
+    }
+  #inventory td {
+    background-color:#ffe;
+    padding:3px;
+    }
+  .button {
+    margin:1em;
+    padding:0.5em;
+    }
+  .conf_check {
+    display:inline-block;
+    width:1em;
+    }';
 
 include("template_header.php");
 echo '

@@ -426,12 +426,21 @@ $content .= '
   </div>
 </div>';
 
-$page_specific_javascript = '
-    <script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-    <script type="text/javascript" src="'.PATH.'members/transactions_to_ledger.js"></script>';
+$page_specific_scripts['transactions_to_ledger'] = array (
+  'name'=>'transactions_to_ledger',
+  'src'=>BASE_URL.PATH.'transactions_to_ledger.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'4.21.0',
+  'location'=>false
+  );
 
-$page_specific_css = '
-    <link href="/shop/members/transactions_to_ledger.css" rel="stylesheet" type="text/css">';
+$page_specific_stylesheets['transactions_to_ledger'] = array (
+  'name'=>'transactions_to_ledger',
+  'src'=>BASE_URL.PATH.'transactions_to_ledger.css',
+  'dependencies'=>array('ofs_stylesheet'),
+  'version'=>'2.1.1',
+  'media'=>'all'
+  );
 
 $page_title_html = '<span class="title">Site Admin Functions</span>';
 $page_subtitle_html = '<span class="subtitle">Convert Accounting</span>';

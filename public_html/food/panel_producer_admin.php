@@ -277,7 +277,6 @@ $display .= '
 
 
 $page_specific_css .= '
-<style type="text/css">
 #this_producer {
   border:3px solid #ddd;
   padding:0.5em;
@@ -300,8 +299,7 @@ li.suspended a {
   width:90%;
   overflow:scroll;
   border:1px solid black;
-  }
-</style>';
+  }';
 
 
 $page_title_html = '<span class="title">'.$active_business_name.'</span>';

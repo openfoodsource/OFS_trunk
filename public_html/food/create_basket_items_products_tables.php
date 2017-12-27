@@ -436,12 +436,21 @@ $content .= '
   <div id="process_target">[process here]</div>
 </div>';
 
-$page_specific_javascript = '
-    <script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-    <script type="text/javascript" src="'.PATH.'create_basket_items_products_tables.js"></script>';
+$page_specific_scripts['create_basket_items_products_tables'] = array (
+  'name'=>'create_basket_items_products_tables',
+  'src'=>BASE_URL.PATH.'create_basket_items_products_tables.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'4.21.0',
+  'location'=>false
+  );
 
-$page_specific_css = '
-    <link href="'.PATH.'create_basket_items_products_tables.css" rel="stylesheet" type="text/css">';
+$page_specific_stylesheets['create_basket_items_products_tables'] = array (
+  'name'=>'create_basket_items_products_tables',
+  'src'=>BASE_URL.PATH.'create_basket_items_products_tables.css',
+  'dependencies'=>array('ofs_stylesheet'),
+  'version'=>'2.1.1',
+  'media'=>'all'
+  );
 
 $page_title_html = '<span class="title">Site Admin Functions</span>';
 $page_subtitle_html = '<span class="subtitle">Convert Accounting</span>';

@@ -196,11 +196,9 @@ while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
 </blockquote>';
 
 $page_specific_css = '
-<style type="text/css">
   table.primary tr td {
     border:1px dotted #ccc;
-    }
-</style>';
+    }';
 
 $page_title_html = '<span class="title">'.SITE_NAME.'</span>';
 $page_subtitle_html = '<span class="subtitle">Answers to Producer Questionnaire</span>';

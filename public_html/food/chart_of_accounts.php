@@ -56,13 +56,15 @@ $display = '
 </div>
 ';
 
-$page_specific_javascript = '
-  <script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-  <script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>
-  <script type="text/javascript" src="'.PATH.'adjust_ledger.js"></script>
-  <script type="text/javascript" src="'.PATH.'ajax/jquery-ui.js"></script>
+$page_specific_scripts['adjust_ledger'] = array (
+  'name'=>'adjust_ledger',
+  'src'=>BASE_URL.PATH.'adjust_ledger.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'2.1.1',
+  'location'=>false
+  );
 
-  <script type="text/javascript">
+$page_specific_javascript = '
   // Load the first page automatically
   jQuery( document ).ready(function() {
     // Handler for .ready() called.
@@ -186,13 +188,10 @@ $page_specific_javascript = '
         jQuery("#"+this_tab+"_content").html(chart_info.markup);
         });
       }
-    }
-  </script>';
+    }';
 
 $page_specific_css = '
-  <style type="text/css">
-
-/* BEGIN TAB STYLES */
+  /* BEGIN TAB STYLES */
 
   #tab_holder {
     width:100%;
@@ -388,8 +387,7 @@ $page_specific_css = '
     top:0px;
     right:0px;
     cursor:pointer;
-  }
-  </style>';
+  }';
 
 $page_title_html = '<span class="title">Reports</span>';
 $page_subtitle_html = '<span class="subtitle">Inspect Accounts</span>';

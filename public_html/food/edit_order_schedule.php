@@ -82,18 +82,9 @@ if ($action == 'post_edit' || $action == 'post_new')
     if (! is_numeric ($_POST['transport_id']))
       array_push ($error_array, 'Please select a transport identity.');
     // If we had some errors, go back and ask for a revision
-    if (count ($error_array) > 0)
-      {
-        $errors_found = true;
-        $error_message = '
-          <div class="error_message">
-            <p class="message">Information was not accepted. Please correct the following problems and resubmit.</p>
-            <ul class="error_list">
-              <li>'.implode ("</li>\n<li>", $error_array).'</li>
-            </ul>
-          </div>';
-      }
   }
+$error_message = display_alert('error', 'Please correct the following problems and resubmit.', $error_array);
+if (strlen ($error_message) > 0) $errors_found = true;
 if ($action == 'post_edit' && $errors_found == false)
   {
     $query = '
@@ -294,176 +285,169 @@ $display = '
   </div>';
 
 $page_specific_javascript = '
-  <script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-  <script type="text/javascript">
-    // Execute after the DOM is loaded
-    jQuery(function() {
-      var no_submit = 0;
-      jQuery("#action_delete").click(function(event) {
-        no_submit++;
-        jQuery("#action_delete").val("Confirm Delete"); // Change the button label
-        jQuery("#action_delete").addClass("warn"); // Change the button style
-        jQuery("#action_delete").attr("form", "edit_schedule"); // Connect to form for submission
-        if (no_submit < 2) return false;
-        });
-      jQuery("#action_delete").blur(function(event) {
-        no_submit = 0;
-        jQuery("#action_delete").val("Delete"); // Change the button label
-        jQuery("#action_delete").removeClass("warn"); // Change the button style
-        jQuery("#action_delete").attr("form", "null"); // Disconnect to form for submission
-        });
+  // Execute after the DOM is loaded
+  jQuery(function() {
+    var no_submit = 0;
+    jQuery("#action_delete").click(function(event) {
+      no_submit++;
+      jQuery("#action_delete").val("Confirm Delete"); // Change the button label
+      jQuery("#action_delete").addClass("warn"); // Change the button style
+      jQuery("#action_delete").attr("form", "edit_schedule"); // Connect to form for submission
+      if (no_submit < 2) return false;
       });
-  </script>';
+    jQuery("#action_delete").blur(function(event) {
+      no_submit = 0;
+      jQuery("#action_delete").val("Delete"); // Change the button label
+      jQuery("#action_delete").removeClass("warn"); // Change the button style
+      jQuery("#action_delete").attr("form", "null"); // Disconnect to form for submission
+      });
+    });';
 
 $page_specific_css = '
-<head>
-  <style type="text/css">
-    body {
-      margin:10px;
-      }
-    fieldset {
-      padding:10px;
-      }
-    legend {
-      font-size:80%;
-      }
-    .required legend {
-      color:#008;
-      }
-    .deprecated legend {
-      color:#800;
-      }
-    .optional legend {
-      color:#060;
-      }
-    input {
-      float:left;
-      clear:left;
-      margin-bottom:0.5em;
-      }
-    input:invalid {
-      color:#800;
-      }
-    input[type=text],
-    input[type=datetime] {
-      width:24em;
-      }
-    input[type=radio] {
-      float:none;
-      }
-    input[type=checkbox] {
-      float:none;
-      }
-    .option_block {
-      width:45%;
-      max-width:10em;
-      float:left;
-      text-align:center;
-      background-color:#fff;
-      border:1px solid #9e9e9e;
-      margin-bottom:0.5em;
-      }
-    .option_block:first-of-type {
-      border-right:0;
-      clear:left;
-      }
-    .option_block:last-of-type {
-      border-left:0;
-      }
-    label {
-      display:block;
-      width:100%;
-      clear:both;
-      font-size:70%;
-      color:#008;
-      }
-    textarea {
-      width:100%;
-      height:80px;
-      }
-    .required {
-      float:left;
-      border:1px solid #008;
-      width:100%;
-      background-color:#ddf;
-      }
-    .deprecated {
-      display:none;
-      float:right;
-      width:100%;
-      background-color:#fdd;
-      border:1px solid #800;
-      }
-    .optional {
-      clear:both;
-      margin-top:5px;
-      width:100%;
-      background-color:#dfd;
-      border:1px solid #060;
-      }
-    .controls {
-      float:left;
-      width:100%;
-      border:0;
-      }
-    .controls input[type=submit],
-    .controls input[type=reset] {
-      clear:none;
-      width:15%;
-      min-width:8em;
-      margin:1em;
-      float:left;
-      }
-    .controls input:hover {
-      font-weight:bold;
-      }
-    input.warn {
-      color:#800;
-      background-color:#ff8;
-      }
-    .error_message {
-      background-image: url("'.DIR_GRAPHICS.'error.png");
-      background-repeat:no-repeat;
-      background-position:left top;
-      position:absolute;
-      z-index:5;
-      width:0px;
-      height:70px;
-      color:#fff;
-      opacity:0.7;
-      padding:10px 10px 10px 40px;
-      background-color:#800;
-      font-weight:normal;
-      font-style:italic;
-      font-size: 1.1em;
-      overflow:hidden;
-      border-radius: 25px;
-      border-radius: 25px;
-      box-shadow: 5px 5px 5px #000;
-      }
-    .error_message:hover {
-      width:50%;
-      height:auto;
-      opacity:0.9;
-      }
-    p.message {
-      width:95%;
-      margin:10px 20px;
-      font-size: 1.1em;
-      color:#008;
-      }
-    .error_list {
-      font-weight:normal;
-      font-style:italic;
-      font-size: 1.1em;
-      color:#ff8;
-      clear:left;
-      }
-    .error_message .message {
-      color:#fff;
-      }
-  </style>';
-
+  body {
+    margin:10px;
+    }
+  fieldset {
+    padding:10px;
+    }
+  legend {
+    font-size:80%;
+    }
+  .required legend {
+    color:#008;
+    }
+  .deprecated legend {
+    color:#800;
+    }
+  .optional legend {
+    color:#060;
+    }
+  input {
+    float:left;
+    clear:left;
+    margin-bottom:0.5em;
+    }
+  input:invalid {
+    color:#800;
+    }
+  input[type=text],
+  input[type=datetime] {
+    width:24em;
+    }
+  input[type=radio] {
+    float:none;
+    }
+  input[type=checkbox] {
+    float:none;
+    }
+  .option_block {
+    width:45%;
+    max-width:10em;
+    float:left;
+    text-align:center;
+    background-color:#fff;
+    border:1px solid #9e9e9e;
+    margin-bottom:0.5em;
+    }
+  .option_block:first-of-type {
+    border-right:0;
+    clear:left;
+    }
+  .option_block:last-of-type {
+    border-left:0;
+    }
+  label {
+    display:block;
+    width:100%;
+    clear:both;
+    font-size:70%;
+    color:#008;
+    }
+  textarea {
+    width:100%;
+    height:80px;
+    }
+  .required {
+    float:left;
+    border:1px solid #008;
+    width:100%;
+    background-color:#ddf;
+    }
+  .deprecated {
+    display:none;
+    float:right;
+    width:100%;
+    background-color:#fdd;
+    border:1px solid #800;
+    }
+  .optional {
+    clear:both;
+    margin-top:5px;
+    width:100%;
+    background-color:#dfd;
+    border:1px solid #060;
+    }
+  .controls {
+    float:left;
+    width:100%;
+    border:0;
+    }
+  .controls input[type=submit],
+  .controls input[type=reset] {
+    clear:none;
+    width:15%;
+    min-width:8em;
+    margin:1em;
+    float:left;
+    }
+  .controls input:hover {
+    font-weight:bold;
+    }
+  input.warn {
+    color:#800;
+    background-color:#ff8;
+    }
+  .error_message {
+    background-image: url("'.DIR_GRAPHICS.'error.png");
+    background-repeat:no-repeat;
+    background-position:left top;
+    position:absolute;
+    z-index:5;
+    width:0px;
+    height:70px;
+    color:#fff;
+    opacity:0.7;
+    padding:10px 10px 10px 40px;
+    background-color:#800;
+    font-weight:normal;
+    font-style:italic;
+    font-size: 1.1em;
+    overflow:hidden;
+    border-radius: 25px;
+    border-radius: 25px;
+    box-shadow: 5px 5px 5px #000;
+    }
+  .error_message:hover {
+    width:50%;
+    height:auto;
+    opacity:0.9;
+    }
+  p.message {
+    width:95%;
+    margin:10px 20px;
+    font-size: 1.1em;
+    color:#008;
+    }
+  .error_list {
+    font-weight:normal;
+    font-style:italic;
+    font-size: 1.1em;
+    color:#ff8;
+    clear:left;
+    }
+  .error_message .message {
+    color:#fff;
+    }';
 
 // This is always a popup dialog
 $display_as_popup = true;

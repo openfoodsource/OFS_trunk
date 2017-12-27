@@ -290,31 +290,29 @@ $content_delivery = '
   </table>';
 
 $page_specific_css = '
-  <style type="text/css">
-    #delivery_id_nav {
-      width:45%;
-      max-width:40rem;
-      margin:5px auto 0;
-      height:1.5em;
-      background-color:#eef;
-      }
-    #delivery_id_nav .prior,
-    #delivery_id_nav .next {
-      display:block;
-      line-height:1.5;
-      padding:0 5px;
-      }
-    #delivery_id_nav .prior {
-      float:left;
-      }
-    #delivery_id_nav .next {
-      float:right;
-      }
-    .intangible {
-      color:#aaa;
-      font-style:italic;
-      }
-  </style>';
+  #delivery_id_nav {
+    width:45%;
+    max-width:40rem;
+    margin:5px auto 0;
+    height:1.5em;
+    background-color:#eef;
+    }
+  #delivery_id_nav .prior,
+  #delivery_id_nav .next {
+    display:block;
+    line-height:1.5;
+    padding:0 5px;
+    }
+  #delivery_id_nav .prior {
+    float:left;
+    }
+  #delivery_id_nav .next {
+    float:right;
+    }
+  .intangible {
+    color:#aaa;
+    font-style:italic;
+    }';
 
 $page_title_html = '<span class="title">All Members With Orders on Each Route</span>';
 $page_subtitle_html = '<span class="subtitle">'.date ('F d, Y', strtotime ($delivery_date)).'</span>';

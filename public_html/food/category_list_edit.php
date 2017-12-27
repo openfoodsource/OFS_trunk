@@ -557,8 +557,13 @@ if ($_GET['action'] == '' || $_GET['action'] == 'List')
     $page_html .= '<ul class="cat0"><li class="cat0">'.$overall_category_name."\n".$sublist_html.'</li></ul>';
   };
 
-$page_specific_css = '
-    <link href="product_list.css" rel="stylesheet" type="text/css">';
+$page_specific_stylesheets['product_list'] = array (
+  'name'=>'product_list',
+  'src'=>BASE_URL.PATH.'product_list.css',
+  'dependencies'=>array('ofs_stylesheet'),
+  'version'=>'2.1.1',
+  'media'=>'all'
+  );
 
 $content_edit = '
 <div align="center">

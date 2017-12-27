@@ -82,7 +82,6 @@ if ($_GET['content'] == 'membership_types')
   {
     // Send the membership_types display and form
     $page_specific_javascript .= '
-      <script type="text/javascript">
         var edit_count = 0;
         function toggle_view(type_id)
           {
@@ -108,26 +107,29 @@ if ($_GET['content'] == 'membership_types')
               {
                 document.getElementById("form_submit").style.display = "none";
               }
-          }
-      </script>';
+          }';
     $page_specific_css .= '
-      <style type="text/css">
-        .edit {font-size:80%; color:#048;}
-        .membership_class {text-decoration:underline;font-size:120%;}
-        .membership_description {color:#aaa;}
-        #form_submit {margin-left:auto;margin-right:auto;}
-      </style>';
+        .edit {
+          font-size:80%;
+          color:#048;
+          }
+        .membership_class {
+          text-decoration:underline;
+          font-size:120%;
+          }
+        .membership_description {
+          color:#aaa;
+          }
+        #form_submit {
+          margin-left:auto;
+          margin-right:auto;
+          }';
     $content_types .= '
       <form method="post" action="'.$_SERVER['SCRIPT_NAME'].'">
         '.$membership_types_display.'
         <input id="form_submit" type="submit" name="action" value="Update ALL Membership Type Changes" style="display:none;">
       </form>';
   }
-
-
-
-
-
 
 // If not using jquery and doing an update, then get the posted info and do it...
 if ($_GET['content'] == 'members' && $_POST['update'] == 'Make changes')
@@ -272,54 +274,128 @@ if ($_GET['content'] == 'members')
       }
 
     $page_specific_css = '
-      <style type="text/css">
-        body {font-family:verdana,arial,sans-serif;}
-        td.radio {text-align:center;border-left:1px solid #999;border-top:1px solid #999;}
-        th {text-align:center;border-left:1px solid #999;font-size:90%;padding:3px;color:#ffc;}
-        th a {color:#ffc;text-decoration:none;}
-        th a:hover {text-decoration:underline;}
-        td.member_id {border-top:1px solid #999;padding:0 5px;font-size:80%;vertical-align:top;width:10%;}
-        td.name {border-top:1px solid #999;border-left:1px solid #999;padding:0 5px;font-size:80%;vertical-align:top;width:40%;}
-        td.username {border-top:1px solid #999;border-left:1px solid #999;padding:0 5px;font-size:80%;vertical-align:top;width:20%;}
-        td.radio {padding:5px;width:30%;}
-        .pending {background-color:#eee;}
-        .producer {color:#444;}
-        .radio select {font-size:80%;}
-        .page_link {display:block;background-color:#ffe;padding:2px 15px;float:left;margin-bottom:5px;border:1px solid #999;border-left:0;}
-        .page_link:hover {background-color:#dcb;}
-        .this_page {display:block;background-color:#fed;padding:2px 15px;float:left;margin-bottom:5px;border:1px solid #999;border-left:0;}
-        .page_link_text {display:block;padding:2px 15px;float:left;margin-bottom:5px;border-top:1px solid #999;border:1px solid #999;}
-        table {border:1px solid #999;}
-        tr.data:hover {background-color:#ddd;}
-        td.changed {background-color:#444;}
-        #submit_button {text-align:center;margin-top:1em;}
-      </style>';
+      body {
+        font-family:verdana,arial,sans-serif;
+        }
+      td.radio {
+        text-align:center;
+        border-left:1px solid #999;
+        border-top:1px solid #999;
+        }
+      th {
+        text-align:center;
+        border-left:1px solid #999;
+        font-size:90%;
+        padding:3px;
+        color:#ffc;
+        }
+      th a {
+        color:#ffc;
+        text-decoration:none;
+        }
+      th a:hover {
+        text-decoration:underline;
+        }
+      td.member_id {
+        border-top:1px solid #999;
+        padding:0 5px;
+        font-size:80%;
+        vertical-align:top;
+        width:10%;
+        }
+      td.name {
+        border-top:1px solid #999;
+        border-left:1px solid #999;
+        padding:0 5px;
+        font-size:80%;
+        vertical-align:top;
+        width:40%;
+        }
+      td.username {
+        border-top:1px solid #999;
+        border-left:1px solid #999;
+        padding:0 5px;
+        font-size:80%;
+        vertical-align:top;
+        width:20%;
+        }
+      td.radio {
+        padding:5px;width:30%;
+        }
+      .pending {
+        background-color:#eee;
+        }
+      .producer {
+        color:#444;
+        }
+      .radio select {
+        font-size:80%;
+        }
+      .page_link {
+        display:block;
+        background-color:#ffe;
+        padding:2px 15px;
+        float:left;
+        margin-bottom:5px;
+        border:1px solid #999;
+        border-left:0;
+        }
+      .page_link:hover {
+        background-color:#dcb;
+        }
+      .this_page {
+        display:block;
+        background-color:#fed;
+        padding:2px 15px;
+        float:left;
+        margin-bottom:5px;
+        border:1px solid #999;
+        border-left:0;
+        }
+      .page_link_text {
+        display:block;
+        padding:2px 15px;
+        float:left;
+        margin-bottom:5px;
+        border-top:1px solid #999;
+        border:1px solid #999;
+        }
+      table {
+        border:1px solid #999;
+        }
+      tr.data:hover {
+        background-color:#ddd;
+        }
+      td.changed {
+        background-color:#444;
+        }
+      #submit_button {
+        text-align:center;
+        margin-top:1em;
+        }';
 
     $page_specific_javascript = '
-      <script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-      <script type="text/javascript">
-        function update_member_info(member_id, field_name, new_value)
-          {
-            jQuery.post("'.PATH.'ajax/update_member_info.php", { query_data: ""+member_id+":"+field_name+":"+new_value }, function(data) {
-                if (data == "Unauthorizied access") {
-                  alert ("Your session has timed out or you are not authorized to perform this operation");
-                  }
-                else if (data == "Invalid field") {
-                  alert ("["+field_name+"] is not a valid field in the members table");
-                  }
-                else if (data.substring(0,13) == "Changed value") {
-                  document.getElementById("row["+member_id+"]").className = "radio changed";
-                  //alert ("Changed from "+data.substring(14));
-                  }
-                else if (data == "Not changed") {
-                  };
-              });
-          }
-        // Hide the regular "submit" button after loading the page iff JQuery is up and running
-        jQuery(document).ready(function() {
-          jQuery("#submit_button").css("visibility","hidden");
-          });
-      </script>';
+      function update_member_info(member_id, field_name, new_value)
+        {
+          jQuery.post("'.PATH.'ajax/update_member_info.php", { query_data: ""+member_id+":"+field_name+":"+new_value }, function(data) {
+              if (data == "Unauthorizied access") {
+                alert ("Your session has timed out or you are not authorized to perform this operation");
+                }
+              else if (data == "Invalid field") {
+                alert ("["+field_name+"] is not a valid field in the members table");
+                }
+              else if (data.substring(0,13) == "Changed value") {
+                document.getElementById("row["+member_id+"]").className = "radio changed";
+                //alert ("Changed from "+data.substring(14));
+                }
+              else if (data == "Not changed") {
+                };
+            });
+        }
+      // Hide the regular "submit" button after loading the page iff JQuery is up and running
+      jQuery(document).ready(function() {
+        jQuery("#submit_button").css("visibility","hidden");
+        });';
 
     $content_types .= '
       <form name="member_list" method="post" action="'.$_SERVER['SCRIPT_NAME'].'?content=members&page='.$page.'&sort='.$sort.'">

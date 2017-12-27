@@ -1,7 +1,6 @@
 <?php
 
-include_once 'general_functions.php'; // just in case it got missed from the base page
-include_once ('wordpress_utilities.php');
+include_once ('general_functions.php'); // just in case it got missed from the base page
 $content_header = '';
 $google_tracking_code = '';
 $panel_member_menu = '';
@@ -17,16 +16,12 @@ $basket_menu = '';
 $login_menu = '';
 $header_title = '';
 $onload_action = '';
+$script_id = strtr (basename ($_SERVER['SCRIPT_NAME']), '.', '-');
 if (!isset($page_tab)) $page_tab = '';
 if (!isset($modal_action)) $modal_action = '';
-if (!isset ($display_as_popup)) $display_as_popup = false;
+if (isset ($_GET['display_as']) && $_GET['display_as'] == 'popup') $display_as_popup = true;
+elseif (!isset ($display_as_popup)) $display_as_popup = false;
 $site_is_down = false;
-
-
-$wordpress_menu = '';
-$wordpress_producer_menu = '';
-$wordpress_cashier_menu = '';
-$wordpress_board_menu = '';
 
 // Prepare google tracking code
 if (strlen (GOOGLE_TRACKING_ID) > 0)
@@ -40,7 +35,173 @@ $header_title =
   <img id="header_logo" src="'.DIR_GRAPHICS.'logo.jpg" border="0" alt="'.SITE_NAME.'">' : '').
   (SHOW_HEADER_SITENAME ? '
   <h1 class="site-title">'.SITE_NAME.'</h1>' : '');
-$content_login = (WORDPRESS_ENABLED == true ? wordpress_show_usermenu() : '');
+
+// Add boiler-plate stylesheet to the page-specific styles
+$page_specific_stylesheets['ofs_stylesheet'] = array (
+  'name'=>'ofs_stylesheet',
+  'src'=>BASE_URL.PATH.'stylesheet.css',
+  'dependencies'=>array(),
+  'version'=>'2.1.1',
+  'media'=>'all',
+  );
+// Add boiler-plate scripts to the page-specific scripts array
+$page_specific_scripts['jquery'] = array (
+  'name'=>'jquery',
+  'src'=>BASE_URL.PATH.'ajax/jquery.js',
+  'dependencies'=>array(),
+  'version'=>'3.2.1',
+  'location'=>false
+  );
+$page_specific_scripts['jquery-ui'] = array (
+  'name'=>'jquery-ui',
+  'src'=>BASE_URL.PATH.'ajax/jquery-ui.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'1.11.1',
+  'location'=>false
+  );
+$page_specific_scripts['jquery-simplemodal'] = array (
+  'name'=>'jquery-simplemodal',
+  'src'=>BASE_URL.PATH.'ajax/jquery-simplemodal.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'1.4.5',
+  'location'=>false
+  );
+$page_specific_scripts['rangeslider'] = array (
+  'name'=>'rangeslider',
+  'src'=>BASE_URL.PATH.'js/rangeslider.min.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'2.1.1',
+  'location'=>false
+  );
+$page_specific_scripts['ofs_javascript'] = array (
+  'name'=>'ofs_javascript',
+  'src'=>BASE_URL.PATH.'javascript.js',
+  'dependencies'=>array(),
+  'version'=>'1.2.0',
+  'location'=>false
+  );
+
+// Get basket information, but don't re-query if we already have it
+if (isset ($_SESSION['member_id'])
+    && ! isset ($_SESSION['basket_quantity'])
+    && ActiveCycle::delivery_id())
+  {
+    $query = '
+      SELECT
+        COUNT(product_id) AS basket_quantity,
+        '.NEW_TABLE_BASKET_ITEMS.'.basket_id
+      FROM
+        '.NEW_TABLE_BASKET_ITEMS.'
+      LEFT JOIN '.NEW_TABLE_BASKETS.' ON '.NEW_TABLE_BASKETS.'.basket_id = '.NEW_TABLE_BASKET_ITEMS.'.basket_id
+      WHERE
+        '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"
+        AND '.NEW_TABLE_BASKETS.'.delivery_id = '.mysqli_real_escape_string ($connection, ActiveCycle::delivery_id()).'
+      GROUP BY
+        '.NEW_TABLE_BASKETS.'.member_id';
+    $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 780934 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $basket_quantity = 0;
+    if ($row = mysqli_fetch_object ($result))
+      {
+        // Keep basket info as session variables (these will be set upon login, prior to visiting any
+        // WordPress pages, so does not need to be invoked from WordPress)
+        $_SESSION['basket_quantity'] = $row->basket_quantity;
+        $_SESSION['basket_id'] = $row->basket_id;
+      }
+  }
+// Check if we need to force a membership update or if it is member-requested
+// if..elseif... to ensure we only process one popup at a time
+if ($_SESSION['renewal_info']['membership_expired'] == true
+    && $update_membership_page != true)
+  {
+    // Force the membership_renewal popup
+    $page_specific_javascript .= '
+      jQuery(document).ready(function() {
+        popup_src("update_membership.php?display_as=popup", "membership_renewal", "index.php?action=logout");
+        });';
+    // Include membership_renewal styles
+    $page_specific_stylesheets['membership_renewal'] = array (
+      'name'=>'membership_renewal',
+      'src'=>BASE_URL.PATH.'membership_renewal.css',
+      'dependencies'=>array('ofs_stylesheet'),
+      'version'=>'2.1.1',
+      'media'=>'all',
+      );
+  }
+// Handle the MOTD inclusion
+elseif (MOTD_REPEAT_TIME >= 0 &&
+        strlen (MOTD_CONTENT) > 0 &&
+        ofs_get_status ('motd_viewed', $_SESSION['member_id']) == false)
+  {
+    // Force the MOTD popup
+    $page_specific_javascript .= '
+      jQuery(document).ready(function() {
+        popup_src("motd.php?display_as=popup", "motd", "");
+        });';
+    // Include MOTD styles
+    $page_specific_stylesheets['motd'] = array (
+      'name'=>'motd',
+      'src'=>BASE_URL.PATH.'motd.css.css',
+      'dependencies'=>array('ofs_stylesheet'),
+      'version'=>'2.1.1',
+      'media'=>'all',
+      );
+  }
+// Handle the customer site selection (applies also to non-logged-in users)
+elseif (USE_AVAILABILITY_MATRIX == true
+        && $is_customer_product_page == true
+        && ! isset ($_COOKIE['ofs_customer']['site_id'])
+        && ! isset ($_COOKIE['ofs_customer']['site_id']))
+  {
+    // Force the customer_select_site popup
+    $page_specific_javascript .= '
+      jQuery(document).ready(function() {
+        popup_src("customer_select_site.php?display_as=popup", "customer_select_site", "");
+        });';
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+//////////////                                              ////////////////////
+//////////////     ASSEMBLE FINAL OUTPUT FOR POPUP PAGES    ////////////////////
+//////////////                                              ////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+if ($display_as_popup == true) // Do not distinguish Wordpress vs. non-Wordpress
+  {
+    // Since popups are often modal dialogues, we will sometimes need to close or refresh other windows
+    // according to the information returned by the modal pages
+    // Functions just_close(delay) and reload_parent() are defined in javascript.js, included from this header
+    // Other functions can be used by passing them in as something like: function_foo(parent.variable_bar)
+    // ... where the parent page will be responsible for supplying function_foo() and variable_bar
+    $inline_styles = get_inline_styles ($page_specific_stylesheets, $page_specific_css);
+    $inline_scripts = get_inline_scripts ($page_specific_scripts, $page_specific_javascript);
+    $content_header = '<!DOCTYPE html>
+<html style="overflow:auto;height:100%;box-sizing:border-box;">
+  <head>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="-1">'.
+    $favicon.
+    (isset ($inline_styles) ? $inline_styles : '').
+    (isset ($inline_scripts) ? $inline_scripts : '').'
+  </head>
+  <body class="popup" lang="en-us"'.(strlen ($modal_action) > 0 ? ' onload="'.$modal_action.'"' : '').'>'.
+  $google_tracking_code.'
+    <div class="modal_content">
+      <div class="full_modal">';
+  echo $content_header;
+  }
+else // This is not a popup page
+  {
+    // So fork over to wordpress or openfood headers to complete the header for non-popup pages
+    if (WORDPRESS_ENABLED == true)
+      {
+        include_once ('wordpress_utilities.php');
+        include_once (FILE_PATH.PATH.'template_header_wordpress.php');
+      }
+    else
+      {
+        include_once (FILE_PATH.PATH.'template_header_openfood.php');
+      }
+  }
 
 // // Site down processing -- not yet implemented
 // $site_is_down = false;
@@ -55,233 +216,92 @@ $content_login = (WORDPRESS_ENABLED == true ? wordpress_show_usermenu() : '');
 // if (time() > strtotime($site_down_at_time) && time() < strtotime($site_down_at_time) + $down_time_duration) $site_is_down = true;
 // if (time() > strtotime($site_down_at_time) - $down_time_warning && time() < strtotime($site_down_at_time) + $down_time_duration) $warn_now = true;
 
-// Check if the member is logged in
-if (isset ($_SESSION['member_id']))
+// Get markup for styles in the proper order for loading
+function get_inline_styles ($page_specific_stylesheets, $page_specific_css)
   {
-    // Get basket information, but don't re-query if we already have it
-    if (! isset ($basket_quantity) && ActiveCycle::delivery_id())
+    // Compile the stylesheets
+    $styles_array = array();
+    // Avoid infinite recursive loops
+    $max_iterations = ceil (0.5 * count ($page_specific_stylesheets) * count ($page_specific_stylesheets));
+    while (count ($page_specific_stylesheets) > 0 && $max_iterations-- > 0)
       {
-        $query = '
-          SELECT
-            COUNT(product_id) AS basket_quantity,
-            '.NEW_TABLE_BASKET_ITEMS.'.basket_id
-          FROM
-            '.NEW_TABLE_BASKET_ITEMS.'
-          LEFT JOIN '.NEW_TABLE_BASKETS.' ON '.NEW_TABLE_BASKETS.'.basket_id = '.NEW_TABLE_BASKET_ITEMS.'.basket_id
-          WHERE
-            '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"
-            AND '.NEW_TABLE_BASKETS.'.delivery_id = '.mysqli_real_escape_string ($connection, ActiveCycle::delivery_id()).'
-          GROUP BY
-            '.NEW_TABLE_BASKETS.'.member_id';
-        $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 780934 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
-        $basket_quantity = 0;
-        if ($row = mysqli_fetch_object ($result))
+        // Cycle through the page_specific_styles and peel off those with dependencies that have been met
+        foreach ($page_specific_stylesheets as $style_name=>$style)
           {
-            $basket_quantity = $row->basket_quantity;
-            $basket_id = $row->basket_id;
+            $okay_to_add = false;
+            // If there are no dependencies, then we can add this style
+            if (count ($style['dependencies']) == 0) $okay_to_add = true;
+            // If there are no unmet dependencies, then we can add this style
+            else
+              {
+                $okay_to_add = true;
+                foreach ($style['dependencies'] as $style_dependency)
+                  {
+                    if (! isset ($styles_array[$style_dependency])) $okay_to_add = false;
+                  }
+              }
+            // If it is still okay to add the style, then do so
+            if ($okay_to_add == true)
+              {
+                $styles_array[$style['name']] = '
+                  <link rel="stylesheet" type="text/css" href="'.$style['src'].'?ver='.$style['version'].'">';
+                // And remove the element from the page_specific_styles array
+                unset ($page_specific_stylesheets[$style['name']]);
+              }
           }
       }
-    // Check if this is a forced update or if it is member-requested
-    if ($_SESSION['renewal_info']['membership_expired'] && $update_membership_page != true)
-      {
-        $popup_renew_membership .= '
-          <script type="text/javascript">
-            jQuery(document).ready(function() {
-              popup_src("update_membership.php?display_as=popup", "membership_renewal", "index.php?action=logout");
-              });
-          </script>';
-        $page_specific_css .= '
-          <link rel="stylesheet" id="membership_renewal_styles" href="'.PATH.'membership_renewal.css" type="text/css" media="all" />';
-      }
-    // Handle the MOTD inclusion
-    elseif (MOTD_REPEAT_TIME >= 0 &&
-            strlen (MOTD_CONTENT) > 0 &&
-            ! ofs_get_status ('motd_viewed', $_SESSION['member_id']))
-      {
-        $popup_motd .= '
-          <script type="text/javascript">
-            jQuery(document).ready(function() {
-              popup_src("motd.php?display_as=popup", "motd", "");
-              });
-          </script>';
-        $page_specific_css .= '
-          <link rel="stylesheet" id="motd_styles"  href="'.PATH.'motd.css" type="text/css" media="all" />';
-      }
-    // Set up the page tabs
-    if (CurrentMember::auth_type('member'))
-      $panel_member_menu = '
-        <div class="tab_frame">
-          <a href="'.PATH.'panel_member.php" class="'.($page_tab == 'member_panel' ? ' current_tab' : '').'">Member Panel</a>
-        </div>';
-    if (CurrentMember::auth_type('member'))
-      $panel_shopping_menu = '
-        <div class="tab_frame">
-          <a href="'.PATH.'panel_shopping.php" class="'.($page_tab == 'shopping_panel' ? ' current_tab' : '').'">Shopping</a>
-        </div>';
-    if (CurrentMember::auth_type('producer'))
-      $panel_producer_menu = '
-        <div class="tab_frame">
-          <a href="'.PATH.'panel_producer.php" class="'.($page_tab == 'producer_panel' ? ' current_tab' : '').'">Producer Panel</a>
-        </div>';
-    if (CurrentMember::auth_type('route_admin'))
-      $panel_route_admin_menu = '
-        <div class="tab_frame">
-          <a href="'.PATH.'panel_route_admin.php" class="'.($page_tab == 'route_admin_panel' ? ' current_tab' : '').'">Route Admin</a>
-        </div>';
-    if (CurrentMember::auth_type('producer_admin'))
-      $panel_producer_admin_menu = '
-        <div class="tab_frame">
-          <a href="'.PATH.'panel_producer_admin.php" class="'.($page_tab == 'producer_admin_panel' ? ' current_tab' : '').'">Producer Admin</a>
-        </div>';
-    if (CurrentMember::auth_type('member_admin'))
-      $panel_member_admin_menu = '
-        <div class="tab_frame">
-          <a href="'.PATH.'panel_member_admin.php" class="'.($page_tab == 'member_admin_panel' ? ' current_tab' : '').'">Member Admin</a>
-        </div>';
-    if (CurrentMember::auth_type('cashier'))
-      $panel_cashier_menu = '
-        <div class="tab_frame">
-          <a href="'.PATH.'panel_cashier.php" class="'.($page_tab == 'cashier_panel' ? ' current_tab' : '').'">Cashiers</a>
-        </div>';
-    if (CurrentMember::auth_type('site_admin'))
-      $panel_admin_menu = '
-        <div class="tab_frame">
-          <a href="'.PATH.'panel_admin.php" class="'.($page_tab == 'admin_panel' ? ' current_tab' : '').'">Site Admin</a>
-        </div>';
-    $logout_menu = '
-        <div class="tab_frame right">
-          <a href="'.PATH.'index.php?action=logout" class="'.($page_tab == 'login' ? ' current_tab' : '').'">Logout</a>
-        </div>';
-    if (isset ($basket_id) && $basket_id != 0)
-      {
-        if (CurrentMember::auth_type('orderex') || ( ActiveCycle::ordering_window() == 'open'))
-          {
-            $basket_menu = '
-        <div class="tab_frame right">
-          <a href="'.PATH.'product_list.php?type=basket" class="">View Basket ['.$basket_quantity.' '.Inflect::pluralize_if($basket_quantity, 'item').']</a>
-        </div>';
-          }
-      }
-  }
-// If they're not logged in, then they will have a login link
-else
-  {
-    $login_menu = '
-        <div class="tab_frame right">
-          <a href="'.PATH.'index.php?action=login" class="'.($page_tab == 'login' ? ' current_tab' : '').'">Login</a>
-        </div>';
-  }
-// Put it all together now
-
-////////////////////////////////////////////////////////////////////////////////
-//////////////                                              ////////////////////
-//////////////     ASSEMBLE FINAL OUTPUT FOR POPUP PAGES    ////////////////////
-//////////////                                              ////////////////////
-////////////////////////////////////////////////////////////////////////////////
-if ($display_as_popup == true)
-  {
-    // Since popups are often modal dialogues, we will sometimes need to close or refresh other windows
-    // according to the information returned by the modal pages
-    // Functions just_close() and reload_parent() are defined in javascript.js, included from this header
-    // Other functions can be used by passing them in as something like: function_foo(parent.variable_bar)
-    // ... where the parent page will be responsible for supplying function_foo() and variable_bar
-    $content_header = '<!DOCTYPE html>
-<html style="overflow:auto;">
-  <head>'.
-    $favicon.'
-    <link href="'.PATH.'stylesheet.css" rel="stylesheet" type="text/css">'.
-    (isset ($page_specific_css) ? $page_specific_css : '').'
-    <script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-    <script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>
-    <script src="'.PATH.'javascript.js" type="text/javascript"></script>
-    <script type="text/javascript">
-      function init() {
-        // Do not throw an error if page does not have a load_target element...
-        if (document.getElementById ("load_target")) {
-          var text_input = document.getElementById ("load_target");
-          text_input.focus ();
-          text_input.select ();
-          }
-        }
-      window.onload = init;
-    </script>'.
-    (isset ($page_specific_javascript) ? $page_specific_javascript : '').'
-  </head>
-  <body lang="en-us"'.(strlen ($modal_action) > 0 ? ' onload="parent.'.$modal_action.'"' : '').' style="margin:0;">'.
-  $google_tracking_code;
-  }
-////////////////////////////////////////////////////////////////////////////////
-//////////////                                              ////////////////////
-//////////////   ASSEMBLE FINAL OUTPUT FOR STANDARD PAGES   ////////////////////
-//////////////                                              ////////////////////
-////////////////////////////////////////////////////////////////////////////////
-else
-  {
-    $content_header = '<!DOCTYPE html>
-<html>
-  <head>
-    <title>'.SITE_NAME.' - '.$page_title.'</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <script src="'.PATH.'ajax/jquery.js" type="text/javascript"></script>
-    <script src="'.PATH.'ajax/jquery-ui.js" type="text/javascript"></script>
-    <script type="text/javascript" src="'.PATH.'ajax/jquery-simplemodal.js"></script>'.
-    $favicon.'
-    <link href="'.PATH.'stylesheet.css" rel="stylesheet" type="text/css">'.
-    (isset ($page_specific_css) ? $page_specific_css : '').'
-    <script src="'.PATH.'javascript.js" type="text/javascript"></script>
-    <script type="text/javascript">
-      function init() {
-        // Do not throw an error if page does not have a load_target element...
-        if (document.getElementById ("load_target")) {
-          var text_input = document.getElementById ("load_target");
-          text_input.focus ();
-          text_input.select ();
-          }
-        }
-      window.onload = init;
-    </script>'.
-    (isset ($popup_renew_membership) ? $popup_renew_membership : ''). // not on popup pages to prevent recursion
-    (isset ($popup_motd) ? $popup_motd : '').                         // not on popup pages to prevent recursion
-    (isset ($page_specific_javascript) ? $page_specific_javascript : '').'
-  </head>
-  <body>'.
-    $google_tracking_code.'
-    <div id="header">
-      <a href="'.PATH.'">'.$header_title.'</a>
-      <div class="header_mission">'.
-        ($warn_now ? $site_down_message : '').'
-        '.MISSION_VISION_VALUES.'
-      </div>
-      <div class="tagline">
-        '.TAGLINE.'
-      </div>
-    </div><!-- #header -->
-    <!-- BEGIN MENU SECTION -->
-    <div id="menu">'.
-      $panel_member_menu.
-      $panel_shopping_menu.
-      $panel_producer_menu.
-      $panel_route_admin_menu.
-      $panel_producer_admin_menu.
-      $panel_member_admin_menu.
-      $panel_cashier_menu.
-      $panel_admin_menu.
-      $logout_menu.
-      $basket_menu.
-      // Menus above will be shown to members with approved auth_types
-      // Menu below will be shown when no member is logged in
-      $login_menu.'
-    </div><!-- #menu -->
-    <div id="content">
-      '.$page_title_html.'
-      '.$page_subtitle_html.'
-      <div class="clear"></div>';
+    // Combine and add page_specific_css
+    $inline_styles =
+      implode ('', $styles_array).
+      (strlen ($page_specific_css) > 0 ? '
+      <style type="text/css">'.
+        $page_specific_css.'
+      </style>'
+      : '');
+    return ($inline_styles);
   }
 
-echo $content_header;
-
-if ($site_is_down)
+// Get markup for scripts in the proper order for loading
+function get_inline_scripts ($page_specific_scripts, $page_specific_javascript)
   {
-    include ('template_footer.php');
-    exit (0);
+    // Compile the scripts
+    $scripts_array = array();
+    // Avoid infinite recursive loops
+    $max_iterations = ceil (0.5 * count ($page_specific_scripts) * count ($page_specific_scripts));
+    while (count ($page_specific_scripts) > 0 && $max_iterations-- > 0)
+      {
+        // Cycle through the page_specific_scripts and peel off those with dependencies that have been met
+        foreach ($page_specific_scripts as $script_name=>$script)
+          {                                          // Okay to add to scripts_array if...
+            $okay_to_add = false;
+            // If there are no dependencies, then we can add this script
+            if (count ($script['dependencies']) == 0) $okay_to_add = true;
+            // If there are no unmet dependencies, then we can add this script
+            else
+              {
+                $okay_to_add = true;
+                foreach ($script['dependencies'] as $script_dependency)
+                  {
+                    if (! isset ($scripts_array[$script_dependency])) $okay_to_add = false;
+                  }
+              }
+            // If it is still okay to add the script, then do so
+            if ($okay_to_add == true)
+              {
+                $scripts_array[$script['name']] = '
+                  <script type="text/javascript" src="'.$script['src'].'?ver="'.$script['version'].'"></script>';
+                // And remove the element from the page_specific_scripts array
+                unset ($page_specific_scripts[$script['name']]);
+              }
+          }
+      }
+    // Combine and add page_specific_javascript
+    $inline_scripts =
+      implode ('', $scripts_array).
+      (strlen ($page_specific_javascript) > 0 ? '
+      <script type="text/javascript">'.
+        $page_specific_javascript.'
+      </script>'
+      : '');
+    return ($inline_scripts);
   }

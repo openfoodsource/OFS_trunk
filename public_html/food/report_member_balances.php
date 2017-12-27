@@ -259,7 +259,6 @@ while ( $row = mysqli_fetch_object ($result_report) )
       </div>';
   }
 $page_specific_css .= '
-<style type="text/css">
 #delivery_id_nav {
   background-color: #eef;
   height: 1.5em;
@@ -348,8 +347,7 @@ $page_specific_css .= '
   float: left;
   font-size: 100%;
   padding: 1px 4px;
-  }
-</style>';
+  }';
 
 $page_title_html = '<span class="title">Member Balance Report</span>';
 $page_subtitle_html = '<span class="subtitle">Balances</span>';

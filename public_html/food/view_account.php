@@ -50,11 +50,14 @@ if ($account_type != '' && $account_key != '')
       get_account_info(\'data_page\');
       });';
 
+$page_specific_scripts['adjust_ledger'] = array (
+  'name'=>'adjust_ledger',
+  'src'=>BASE_URL.PATH.'adjust_ledger.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'2.1.1',
+  'location'=>false
+  );
 $page_specific_javascript = '
-  <script type="text/javascript" src="'.PATH.'adjust_ledger.js"></script>
-  <script type="text/javascript" src="'.PATH.'ajax/jquery-ui.js"></script>
-
-  <script type="text/javascript">
   '.$auto_load_request.'
   // Set default values
   var minimum = [];
@@ -227,12 +230,9 @@ $page_specific_javascript = '
         jQuery( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
         }
       })
-    });
-  </script>';
+    });';
 
 $page_specific_css = '
-  <style type="text/css">
-
   /* BEGIN AUTOCOMPLETION STYLES */
 
   .ui-state-focus {
@@ -527,9 +527,7 @@ $page_specific_css = '
     top:0px;
     right:0px;
     cursor:pointer;
-  }
-
-  </style>';
+    }';
 
 $page_title_html = '<span class="title">Reports</span>';
 $page_subtitle_html = '<span class="subtitle">Inspect Accounts</span>';

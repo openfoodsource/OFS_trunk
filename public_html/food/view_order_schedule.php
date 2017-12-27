@@ -28,9 +28,6 @@ $display = '
 ';
 
 $page_specific_javascript = '
-  <script type="text/javascript" src="'.PATH.'ajax/jquery-ui.js"></script>
-
-  <script type="text/javascript">
   // Load the first page automatically
   jQuery( document ).ready(function() {
     // Handler for .ready() called.
@@ -132,12 +129,9 @@ $page_specific_javascript = '
   function restore_calendar(target) {
     jQuery(".cycle-"+target).removeClass("highlight");
     // document.getElementById("id-"+target).style.color="#000000";
-    }
-  </script>';
+    }';
 
 $page_specific_css = '
-  <style type="text/css">
-
 /* BEGIN TAB STYLES */
 
   #main_content {
@@ -388,11 +382,10 @@ $page_specific_css = '
     top:0px;
     right:0px;
     cursor:pointer;
-  }
-  </style>';
+  }';
 
 $page_title_html = '<span class="title">Reports</span>';
-$page_subtitle_html = '<span class="subtitle">Inspect Accounts</span>';
+$page_subtitle_html = '<span class="subtitle">Ordering Calendar</span>';
 $page_title = 'Reports: Inspect Accounts';
 $page_tab = 'cashier_panel';
 

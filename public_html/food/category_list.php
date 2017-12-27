@@ -249,369 +249,44 @@ $list_markup = '
 ////////////////////////////////////////////////////////////////////////////////
 
 $page_specific_javascript = '
-<script type="text/javascript">
-function set_view (view_type) {
-  jQuery.each(["list", "cloud", "grid"], function(index, view_option) {
-    if (view_type == view_option) {
-      jQuery("#view_option_"+view_type).addClass("selected");
-      jQuery("#category2").addClass(view_type);
-      }
-    else {
-      jQuery("#view_option_"+view_option).removeClass("selected");
-      jQuery("#category2").removeClass(view_option);
-      }
-    });
-  }
-</script>';
+  function set_view (view_type) {
+    jQuery.each(["list", "cloud", "grid"], function(index, view_option) {
+      if (view_type == view_option) {
+        jQuery("#view_option_"+view_type).addClass("selected");
+        jQuery("#category2").addClass(view_type);
+        }
+      else {
+        jQuery("#view_option_"+view_option).removeClass("selected");
+        jQuery("#category2").removeClass(view_option);
+        }
+      });
+    }
+  /* Toggle between the three views */
+  function toggle_view() {
+    var classes = ["list", "cloud", "grid"];
+    if (jQuery("#category2").hasClass("grid")) { set_view ("cloud"); }
+    else if (jQuery("#category2").hasClass("cloud")) { set_view ("list"); }
+    else if (jQuery("#category2").hasClass("list")) { set_view ("grid"); }
+    };';
+
+$page_specific_stylesheets['category_list'] = array (
+  'name'=>'category_list',
+  'src'=>BASE_URL.PATH.'category_list.css',
+  'dependencies'=>array(),
+  'version'=>'2.1.1',
+  'media'=>'all'
+  );
 
 $page_specific_css = '
-<style type="text/css">
-  .levelX {
-    color:#58673f;
-    font-size: 150%;
-    font-family: Verdana, Arial, sans-serif;
-    }
-  /* STYLES FOR THE VIEW OPTION SELECTORS */
-  #view_option {
-    /*
-    border:1px solid #888;
-    border-radius:5px;
-    background-color:#bca;
-    padding:5px 10px;
-    */
-    text-align:center;
-    font-size:0;
-    display:inline-block;
-    }
-  #view_option .view_option {
-    display:inline-block;
-    float:left;
-    background-color:#6a8;
-    cursor:pointer;
-    font-size:12px;
-    color:#fff;
-    width:64px;
-    height:75px;
-    border:1px solid #264;
-    border-radius:4px;
-    margin:3px;
-    transition:all 0.25s;
-    text-align:center;
-    vertical-align:bottom;
-    }
-  #view_option .view_option:hover,
-  #view_option .view_option.selected:hover {
-    background-color:#486;
-    transition:all 0.25s;
-    }
-  #view_option .view_option.selected {
-    background-color:#264;
-    transition:all 0.25s;
-    }
-  #view_option .list,
-  #view_option .cloud,
-  #view_option .grid {
-    background-position:center top 10px;
-    background-repeat: no-repeat;
-    }
-  #view_option .list {
-    background-image:url("/food/grfx/list-icon.png");
-    }
-  #view_option .cloud {
-    background-image:url("/food/grfx/cloud-icon.png");
-    }
-  #view_option .grid {
-    background-image:url("/food/grfx/grid-icon.png");
-    }
-
-  /* STYLES FOR LIST VIEW */
-  #category2.list {
-    -moz-column-width:20em;
-    -moz-column-gap:2em;
-    -webkit-column-width:20em;
-    -webkit-column-gap:2em;
-    column-width:20em;
-    column-gap:2em;
-    margin:auto;
-    }
-  #category2.list .levelY::before,
-  #category2.list .levelZ::before {
-    content:" \2014";
-    }
-  #category2.list .count_new::before {
-    content:" (";
-    }
-  #category2.list .count_new::after {
-    content:" new)";
-    }
-  #category2.list .count_new.zero {
-    display:none;
-    }
-  #category2.list .category {
-    font-weight:bold;
-    }
-  #category2.list .count::after {
-    content:" item";
-    }
-  #category2.list .count.plural::after {
-    content:" items";
-    }
-  #category2.list .list_level-1 {
-    margin-left:1em;
-    }
-  #category2.list .list_level-2 {
-    margin-left:3em;
-    }
-  #category2.list .list_level-3 {
-    margin-left:5em;
-    }
-  #category2.list .level_group-1 {
-    display:inline;
-    }
-  #category2.list .category a {
-    color:#000;
-    transition:all 0.25s;
-    }
-  #category2.list .subcategory a {
-    color:#58673f;
-    transition:all 0.25s;
-    }
-  #category2.list .category a:hover,
-  #category2.list .subcategory a:hover {
-    text-decoration:underline;
-    color:#264;
-    transition:all 0.25s;
-    }
-
-  /* STYLES FOR CLOUD VIEW */
-  #category2.cloud  {
-    width:98%;
-    text-align:center;
-    }
-  #category2.cloud .levelX {
-    display:none;
-    }
-  #category2.cloud span {
-    display:inline;
-    }
-  #category2.cloud .category,
-  #category2.cloud .subcategory {
-    display:inline;
-    line-height:25px;
-    padding:2px 0.5em;
-    overflow:visible;
-    }
-  #category2.cloud .category a,
-  #category2.cloud .subcategory a {
-    color:#58673f;
-    background-color:rgba(255,255,255,0);
-    line-height:1;
-    padding:2px 5px;
-    transition:all 0.25s;
-    }
-  #category2.cloud .category a:hover,
-  #category2.cloud .subcategory a:hover {
-    text-decoration:none;
-    background-color:#dfc;
-    transition:all 0.25s;
-    }
-  #category2.cloud .count,
-  #category2.cloud .count_new {
-    display:none;
-    }
-  #category2.cloud .root-0  {display:none;  }
-  #category2.cloud .root-1  {font-size:7px;}
-  #category2.cloud .root-2  {font-size:8px;}
-  #category2.cloud .root-3  {font-size:9px;}
-  #category2.cloud .root-4  {font-size:10px;}
-  #category2.cloud .root-5  {font-size:11px;}
-  #category2.cloud .root-6  {font-size:12px;}
-  #category2.cloud .root-7  {font-size:13px;}
-  #category2.cloud .root-8  {font-size:14px;}
-  #category2.cloud .root-9  {font-size:15px;}
-  #category2.cloud .root-10 {font-size:16px;}
-  #category2.cloud .root-11 {font-size:17px;}
-  #category2.cloud .root-12 {font-size:19px;}
-  #category2.cloud .root-13 {font-size:21px;}
-  #category2.cloud .root-14 {font-size:23px;}
-  #category2.cloud .root-15 {font-size:25px;}
-  #category2.cloud .root-16 {font-size:27px;}
-  #category2.cloud .root-17 {font-size:29px;}
-  #category2.cloud .root-18 {font-size:30px;}
-  #category2.cloud .root-19 {font-size:31px;}
-  #category2.cloud .root-20 {font-size:33px;}
-  #category2.cloud .root-21 {font-size:35px;}
-  #category2.cloud .root-22 {font-size:37px;}
-  #category2.cloud .root-23 {font-size:39px;}
-  #category2.cloud .root-24 {font-size:41px;}
-
-  /* STYLES FOR GRID VIEW */
-  /* HIDE OVERALL PRODUCT TOTAL (SUPER CATEGORY) */
-  #category2.grid .levelX {
-    display:none;
-    }
-  /* GRID BLOCK */
-  #category2.grid span.level_group-1 {
-    display:block;
-    float:left;
-    border:1px solid #888;
-    width:200px;
-    height:200px;
-    padding:5px;
-    margin:7px;
-    border-radius:13px;
-    box-shadow:4px 4px 4px #444;
-    }
-  /* GRID BLOCK TITLE */
-  #category2.grid span.level_group-1 .list_level-1 a.cat {
-    display:block;
-    color:#fff;
-    font-weight:bold;
-    text-align:center;
-    background-color:#264;
-    opacity:0.7;
-    border-radius:10px;
-    padding:5px 5px 20px;
-    font-size:120%;
-    }
-  /* HIDE SUBCAT QUANTITIES AND NEW QUANTITIES */
-  #category2.grid .count,
-  #category2.grid .count_new {
-    display:none;
-    }
-  /* STYLE CATEGORY QUANTITY */
-  #category2.grid .levelY {
-    display:block;
-    position:relative;
-    top:-22px;
-    width:100%;
-    height:0;
-    text-align:center;
-    font-weight:bold;
-    }
-  #category2.grid .levelY a {
-    color:#ffc;
-    }
-  #category2.grid .levelY > .count {
-    display:block;
-    }
-  #category2.grid .levelY > .count::after {
-    content:" products";
-    }
-  #category2.grid .levelY > .count:hover {
-    cursor:default;
-    text-decoration:none;
-    }
-  /* BLOCK SUBCATEGORY CONTENTS */
-
-
-  #category2.grid a.subcat {
-    font-size:12px;
-    color:#000;
-    text-shadow:0 0 2px #fff;
-    transition:all 0.25s;
-    }
-  #category2.grid .subcategory a:hover {
-    text-decoration:none;
-    background-color:rgba(255,255,255,0.5);
-    transition:all 0.25s;
-    }
-  #category2.grid .list_level-2 {
-    display:inline;
-    padding:2px 0.5em 2px 0;
-    height:20px;
-    }
-  /* BLOCK BACKGROUNDS */
-  #category2.grid span {
-    background-position:left top;
-    background-repeat: no-repeat;
-    }
-  #category2.grid span.cat-1 {
-    background-image:url("/food/grfx/category_vegetable.png");
-    }
-  #category2.grid span.cat-2 {
-    background-image:url("/food/grfx/category_meat.png");
-    }
-  #category2.grid span.cat-3 {
-    background-image:url("/food/grfx/category_pasta.png");
-    }
-  #category2.grid span.cat-4 {
-    background-image:url("/food/grfx/category_dairy.png");
-    }
-  #category2.grid span.cat-5 {
-    background-image:url("/food/grfx/category_sauces.png");
-    }
-  #category2.grid span.cat-6 {
-    background-image:url("/food/grfx/category_bread.png");
-    }
-  #category2.grid span.cat-7 {
-    background-image:url("/food/grfx/category_beans.png");
-    }
-  #category2.grid span.cat-8 {
-    background-image:url("/food/grfx/category_keychain.png");
-    }
-  #category2.grid span.cat-9 {
-    background-image:url("/food/grfx/category_beverages.png");
-    }
-  #category2.grid span.cat-11 {
-    background-image:url("/food/grfx/category_jam.png");
-    }
-  #category2.grid span.cat-12 {
-    background-image:url("/food/grfx/category_feed.png");
-    }
-  #category2.grid span.cat-13 {
-    background-image:url("/food/grfx/category_fruit.png");
-    }
-  #category2.grid span.cat-14 {
-    background-image:url("/food/grfx/category_toiletries.png");
-    }
-  #category2.grid span.cat-15 {
-    background-image:url("/food/grfx/category_box.png");
-    }
-  #category2.grid span.cat-19 {
-    background-image:url("/food/grfx/category_herbs.png");
-    }
-  #category2.grid span.cat-20 {
-    background-image:url("/food/grfx/category_candy.png");
-    }
-  #category2.grid span.cat-21 {
-    background-image:url("/food/grfx/category_pantry.png");
-    }
-  #category2.grid span.cat-23 {
-    background-image:url("/food/grfx/category_household.png");
-    }
-  #category2.grid span.cat-24 {
-    background-image:url("/food/grfx/category_pets.png");
-    }
-  #category2.grid span.cat-25 {
-    background-image:url("/food/grfx/category_donate.png");
-    }
-  #category2.grid span.cat-28 {
-    background-image:url("/food/grfx/category_butcher.png");
-    }
-  #category2.grid span.cat-31 {
-    background-image:url("/food/grfx/category_nfc.png");
-    }
-  #category2.grid span.cat-32 {
-    background-image:url("/food/grfx/category_services.png");
-    }
-  #category2.grid span.cat-33 {
-    background-image:url("/food/grfx/category_refund.png");
-    }
-  #category2.grid span.cat-36 {
-    background-image:url("/food/grfx/category_plants.png");
-    }
-  #category2.grid span.cat-37 {
-    background-image:url("/food/grfx/category_misc.png");
-    }
-  #category2.grid span.cat-38 {
-    background-image:url("/food/grfx/category_camping.png");
-    }
-  #category2.grid span.cat-39 {
-    background-image:url("/food/grfx/category_vegplants.png");
-    }
-</style>
-';
+  #category2.list header {
+    background-image:url("'.DIR_GRAPHICS.'icon-list.png");
+    }
+  #category2.cloud header {
+    background-image:url("'.DIR_GRAPHICS.'icon-cloud.png");
+    }
+  #category2.grid header {
+    background-image:url("'.DIR_GRAPHICS.'icon-grid.png");
+    }';
 
 $page_title_html = '<span class="title">Products</span>';
 $page_subtitle_html = '<span class="subtitle">Browse Categories</span>';

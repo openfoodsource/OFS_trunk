@@ -60,11 +60,9 @@ $content_list .= '
 </table>';
 
 $page_specific_css .= '
-<style type="text/css">
 table.center {
   margin:auto;
-  }
-</style>';
+  }';
 
 $page_title_html = '<span class="title">Reports</span>';
 $page_subtitle_html = '<span class="subtitle">Producer Email List</span>';

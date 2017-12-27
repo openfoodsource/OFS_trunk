@@ -222,127 +222,125 @@ $content_list = '
 </table>';
 
 $page_specific_css = '
-  <style type="text/css">
-    #delivery_id_nav {
-      width:45%;
-      max-width:40rem;
-      margin:5px auto 0;
-      height:1.5em;
-      background-color:#eef;
-      }
-    #delivery_id_nav .prior,
-    #delivery_id_nav .next {
-      display:block;
-      line-height:1.5;
-      padding:0 5px;
-      }
-    #delivery_id_nav .prior {
-      float:left;
-      }
-    #delivery_id_nav .next {
-      float:right;
-      }
-    table#producer_baskets {
-      border:1px solid #666;
-      border-collapse:separate;
-      }
-    #producer_baskets th {
-      text-align:center;
-      background-color:#040;
-      color:#fff;
-      }
-    #producer_baskets th a {
-      color:#ffa;
-      }
-    #producer_baskets td {
-      border-bottom:1px solid #ddd;
-      }
-    #producer_baskets td:nth-child(1) /* est basket total */
-      {
-        text-align:right;
-        border-right:1px solid #ddd;
-      }
-    #producer_baskets td:nth-child(2) /* invoice total */
-      {
-        text-align:right;
-        font-weight:bold;
-        border-right:1px solid #ddd;
-      }
-    #producer_baskets td:nth-child(3) /* producer_id */
-      {
-        text-align:right;
-      }
-    #producer_baskets td:nth-child(4) /* payee */
-      {
-        text-align:left;
-      }
-    .zero_qty {
-      color:#aaa;
-      vertical-align:top;
-      }
-    .need_checkout {
-      color:#800;
-      vertical-align:top;
-      }
-    .all_checked_out {
-      color:#000;
-      vertical-align:top;
-      }
-    td.weights_needed {
-      font-size:75%;
-      color:#800;
-      }
-    td.producer_links,
-    td.order_links {
-      font-size:75%;
-      text-align:center;
-      }
-    td.producer_links a {
-      cursor:pointer;
-      }
-    /* BEGIN STYLES FOR SIMPLEMODAL OVERLAY */
-    a.popup {
-      cursor:pointer;
-      }
-    #simplemodal-data {
-      height:100%;
-      background-color:#fff;
-      }
-    #simplemodal-container {
-      box-shadow:10px 10px 10px #000;
-      }
-    #simplemodal-data iframe {
-      border:0;
-      height:95%;
-      width:100%;
-      }
-    #simplemodal-container a.modalCloseImg:hover {
-      background:url('.DIR_GRAPHICS.'/simplemodal_x_hover.png) no-repeat;
-      }
-    #simplemodal-container a.modalCloseImg {
-      background:url('.DIR_GRAPHICS.'/simplemodal_x.png) no-repeat;
-      width:40px;
-      height:46px;
-      display:inline;
-      z-index:3200;
-      position:absolute;
-      top:-20px;
-      right:-20px;
-      cursor:pointer;
-      }
-    ul.producer_list {
-      list-style-type:none;
-      margin:0;
-      padding-left:10px;
-      }
-    ul.producer_list li.producer {
-      font-size:80%;
-      color:#008;
-      cursor:pointer;
-      }
-  </style>';
+  #delivery_id_nav {
+    width:45%;
+    max-width:40rem;
+    margin:5px auto 0;
+    height:1.5em;
+    background-color:#eef;
+    }
+  #delivery_id_nav .prior,
+  #delivery_id_nav .next {
+    display:block;
+    line-height:1.5;
+    padding:0 5px;
+    }
+  #delivery_id_nav .prior {
+    float:left;
+    }
+  #delivery_id_nav .next {
+    float:right;
+    }
+  table#producer_baskets {
+    border:1px solid #666;
+    border-collapse:separate;
+    }
+  #producer_baskets th {
+    text-align:center;
+    background-color:#040;
+    color:#fff;
+    }
+  #producer_baskets th a {
+    color:#ffa;
+    }
+  #producer_baskets td {
+    border-bottom:1px solid #ddd;
+    }
+  #producer_baskets td:nth-child(1) /* est basket total */
+    {
+      text-align:right;
+      border-right:1px solid #ddd;
+    }
+  #producer_baskets td:nth-child(2) /* invoice total */
+    {
+      text-align:right;
+      font-weight:bold;
+      border-right:1px solid #ddd;
+    }
+  #producer_baskets td:nth-child(3) /* producer_id */
+    {
+      text-align:right;
+    }
+  #producer_baskets td:nth-child(4) /* payee */
+    {
+      text-align:left;
+    }
+  .zero_qty {
+    color:#aaa;
+    vertical-align:top;
+    }
+  .need_checkout {
+    color:#800;
+    vertical-align:top;
+    }
+  .all_checked_out {
+    color:#000;
+    vertical-align:top;
+    }
+  td.weights_needed {
+    font-size:75%;
+    color:#800;
+    }
+  td.producer_links,
+  td.order_links {
+    font-size:75%;
+    text-align:center;
+    }
+  td.producer_links a {
+    cursor:pointer;
+    }
+  /* BEGIN STYLES FOR SIMPLEMODAL OVERLAY */
+  a.popup {
+    cursor:pointer;
+    }
+  #simplemodal-data {
+    height:100%;
+    background-color:#fff;
+    }
+  #simplemodal-container {
+    box-shadow:10px 10px 10px #000;
+    }
+  #simplemodal-data iframe {
+    border:0;
+    height:95%;
+    width:100%;
+    }
+  #simplemodal-container a.modalCloseImg:hover {
+    background:url('.DIR_GRAPHICS.'/simplemodal_x_hover.png) no-repeat;
+    }
+  #simplemodal-container a.modalCloseImg {
+    background:url('.DIR_GRAPHICS.'/simplemodal_x.png) no-repeat;
+    width:40px;
+    height:46px;
+    display:inline;
+    z-index:3200;
+    position:absolute;
+    top:-20px;
+    right:-20px;
+    cursor:pointer;
+    }
+  ul.producer_list {
+    list-style-type:none;
+    margin:0;
+    padding-left:10px;
+    }
+  ul.producer_list li.producer {
+    font-size:80%;
+    color:#008;
+    cursor:pointer;
+    }';
 
-$page_specific_javascript .= '';
+$page_specific_javascript = '';
 
 $page_title_html = '<span class="title">Delivery Cycle Functions</span>';
 $page_subtitle_html = '<span class="subtitle">Producer Orders with Totals</span>';
@@ -355,3 +353,4 @@ echo '
   '.$content_list.'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");
+

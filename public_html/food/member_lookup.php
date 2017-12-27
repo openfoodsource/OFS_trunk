@@ -141,7 +141,6 @@ $page_title = 'Membership Information: Find/Edit Members';
 $page_tab = 'member_admin_panel';
 
 $page_specific_css = '
-  <style type="text/css">
   legend {
     margin:0 5px;
     padding:2px 5px;
@@ -252,9 +251,8 @@ $page_specific_css = '
     text-decoration: line-through;
     color:#ccc;
     }
-  </style>';
 
-$page_specific_javascript .= '';
+$page_specific_javascript = '';
 
 include("template_header.php");
 echo '

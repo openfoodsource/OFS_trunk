@@ -515,7 +515,6 @@ $content_edit_member =
 </html>';
 
 $page_specific_css = '
-    <style type="text/css">
     fieldset {
       margin:1em auto;
       border: 1px solid #060;
@@ -670,8 +669,7 @@ $page_specific_css = '
       clear:both;
       width:5em;
       margin-bottom:2em;
-      }
-    </style>';
+      }';
 
 if($_GET['display_as'] == 'popup')
   $display_as_popup = true;

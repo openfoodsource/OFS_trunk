@@ -150,17 +150,24 @@ $display .= '
     </tr>
   </table>';
 
-$page_specific_javascript = '';
+$page_specific_javascript = '
+  // Functions to highlight calendar segments
+  function highlight_calendar(target) {
+    jQuery(".cycle-"+target).addClass("highlight");
+    // document.getElementById("id-"+target).style.color="#880000";
+    }
+  function restore_calendar(target) {
+    jQuery(".cycle-"+target).removeClass("highlight");
+    // document.getElementById("id-"+target).style.color="#000000";
+    }';
 
 $page_specific_css = '
-<style type="text/css">
 .warn {
   color:#844;
   }
 input[type="submit"] {
   padding:5px 10px;
-  }
-</style>';
+  }';
 
 $page_title_html = '<span class="title">'.$_SESSION['show_name'].'</span>';
 $page_subtitle_html = '<span class="subtitle">Shopping Panel</span>';

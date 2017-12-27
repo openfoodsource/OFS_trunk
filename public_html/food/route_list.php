@@ -189,13 +189,11 @@ ________________________________________________________________________________
   }
 
 $page_specific_css = '
-  <style type="text/css">
     pre {
       background: none repeat scroll 0 0 #fff;
       font-size:10px;
       color: #000;
-      }
-  </style>';
+      }';
 
 // Conditional for generating PDF invoices
 if ($_GET['output'] == 'pdf')
@@ -210,13 +208,11 @@ else
     echo '<a href="'.$_SERVER['SCRIPT_NAME'].'?type='.$type.'&delivery_id='.$delivery_id.($_GET['producer_id'] ? '&producer_id='.$_GET['producer_id'] : '').'&output=pdf&paginate=true">Download as PDF (paginated)</a>';
     if (! $_GET['producer_id'])
       {
-        echo '
-          <style type="text/css">
+        $page_specific_css .= '
             @media print {
               pre {
                 page-break-after:always;
-                }
-          </style>';
+                }';
       }
     echo $output;
     include("template_footer.php");

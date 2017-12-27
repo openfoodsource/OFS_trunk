@@ -193,10 +193,21 @@ while ($this_row ++ < $number_of_rows)
 // Close the page
 $display .= close_list_bottom($product_data, $adjustment_data, $unique_data);
 
+$page_specific_stylesheets['show_report'] = array (
+  'name'=>'show_report',
+  'src'=>BASE_URL.PATH.'show_report.css',
+  'dependencies'=>array('ofs_stylesheet'),
+  'version'=>'2.1.1',
+  'media'=>'all'
+  );
+$page_specific_stylesheets['basket_dropdown'] = array (
+  'name'=>'basket_dropdown',
+  'src'=>BASE_URL.PATH.'basket_dropdown.css',
+  'dependencies'=>array('ofs_stylesheet'),
+  'version'=>'2.1.1',
+  'media'=>'all'
+  );
 $page_specific_css .= '
-<link rel="stylesheet" type="text/css" href="'.PATH.'show_report.css">
-<link rel="stylesheet" type="text/css" href="basket_dropdown.css">
-<style type="text/css">
 #basket_dropdown {
   right:3%;
   }
@@ -205,6 +216,9 @@ $page_specific_css .= '
   }
 .pager a {
   width:'.($pager['last_page'] == 0 ? 0 : number_format(72/$pager['last_page'],2)).'%;
+  }
+.price {
+  white-space:nowrap;
   }
 .adjustment {
   font-size:80%;
@@ -232,11 +246,15 @@ $page_specific_css .= '
     top:0px;
     right:0px;
     cursor:pointer;
-  }
-</style>';
+  }';
 
-$page_specific_javascript .= '
-<script type="text/javascript" src="'.PATH.'adjust_ledger.js"></script>';
+$page_specific_scripts['adjust_ledger'] = array (
+  'name'=>'adjust_ledger',
+  'src'=>BASE_URL.PATH.'adjust_ledger.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'2.1.1',
+  'location'=>false
+  );
 
 $content_list = 
   ($content_top ? '

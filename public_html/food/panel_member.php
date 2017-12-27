@@ -93,12 +93,25 @@ $display = '
     </table>';
 
 $page_specific_css = '
-  <style type="text/css">
-    .paypal_message {
-      font-size:70%;
-      margin:0.5em 0 1em;
-      }
-  </style>';
+  .paypal_message {
+    font-size:70%;
+    margin:0.5em 0 1em;
+    }
+  .member_resources header {
+    background-image:url("'.DIR_GRAPHICS.'status.png");
+    }
+  .membership_info header {
+    background-image:url("'.DIR_GRAPHICS.'type.png");
+    }
+  iframe#simplemodal-iframe-reset_password html {
+    min-height:100%;
+    }
+  iframe#simplemodal-iframe-reset_password html body {
+    min-height:100%;
+    }
+  .fullscreen {
+    display:table-cell;
+    }';
 
 $page_title_html = '<span class="title">'.$_SESSION['show_name'].'</span>';
 $page_subtitle_html = '<span class="subtitle">Member Panel</span>';

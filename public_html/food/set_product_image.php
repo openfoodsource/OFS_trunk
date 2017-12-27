@@ -393,10 +393,8 @@ elseif ($_REQUEST['action'] == 'edit_image')
     echo $page_specific_css.$page_content;
     exit (0);
   }
- 
 
 $page_specific_css = '
-  <style type="text/css">
   /* STYLES FOR DISPLAYING THE SELECT_IMAGE PAGE */
     /* Instructions style */
     #version_option {
@@ -586,11 +584,9 @@ $page_specific_css = '
     .image_fields {
       border:1px solid #888;
       float:right;
-      }
-  </style>';
+      }';
 
 $page_specific_javascript = '
-  <script type="text/javascript">
     // This function requires two clicks to delete, changing style between.
     function delete_image (obj, action) {
       var image_id = obj.id.split("-")[1];
@@ -670,8 +666,7 @@ $page_specific_javascript = '
           alert ("Sorry, the image was not updated");
           }
         });
-      }
-  </script>';
+      }';
 
 include("func/show_businessname.php");
 

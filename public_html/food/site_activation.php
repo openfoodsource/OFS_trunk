@@ -135,7 +135,6 @@ $content .= '
 $content .= '</div>';
 
 $page_specific_css = '
-  <style type="text/css">
   #customer_site_list {
     border:1px;
     background-color:#eee;
@@ -163,9 +162,7 @@ $page_specific_css = '
   #customer_site_list tr td {
     border:1px solid #aaa;
     padding:2px;
-    }
-  </style>
-  ';
+    }';
 
 $page_title_html = '<span class="title">Route Information</span>';
 $page_subtitle_html = '<span class="subtitle">Activate Delivery Locations</span>';

@@ -83,10 +83,14 @@ $display = '
 //       <td colspan="9"></td>
 //     </tr>
 
+$page_specific_scripts['jquery-autocomplete'] = array (
+  'name'=>'jquery-autocomplete',
+  'src'=>BASE_URL.PATH.'ajax/jquery-autocomplete.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'1.11.1',
+  'location'=>false
+  );
 $page_specific_javascript = '
-<script type="text/javascript" src="'.PATH.'ajax/jquery.autocomplete.js"></script>
-<script type="text/javascript">
-
 // Set some initial variables for autocompletion
 var lt_options, lt, ahs, aht, dd;
 lt_options = {
@@ -312,12 +316,9 @@ function close_editor () {
   jQuery("#working_area").removeClass("open"); 
   }
 
-load_autocompletion();
-
-</script>';
+load_autocompletion();';
 
 $page_specific_css = '
-  <style type="text/css">
   /* #load_target {
     width:40%;
     } */
@@ -564,7 +565,7 @@ $page_specific_css = '
   textarea {
     width:300px;
     height:50px;
-  </style>';
+    }';
 
 $page_title_html = '<span class="title">Reports</span>';
 $page_subtitle_html = '<span class="subtitle">Member Balances Lookup</span>';

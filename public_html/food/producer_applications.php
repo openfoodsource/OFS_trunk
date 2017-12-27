@@ -42,13 +42,11 @@ $content_applications .= '
 </table>';
 
 $page_specific_css .= '
-<style type="text/css">
 small {
   font-size:0.9em;
   color:#006;
   font-weight:bold;
-  }
-</style>';
+  }';
 
 $page_title_html = '<span class="title">Producer Membership Information</span>';
 $page_subtitle_html = '<span class="subtitle">Producer Applications</span>';

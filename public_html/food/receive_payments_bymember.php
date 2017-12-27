@@ -69,13 +69,23 @@ if ($member_count != PER_PAGE)
 $pager_display .= '
   </div>';
 
+$page_specific_scripts['receive_payments'] = array (
+  'name'=>'receive_payments',
+  'src'=>BASE_URL.PATH.'receive_payments.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'2.1.1',
+  'location'=>false
+  );
 
-$page_specific_javascript = '
-  <script src="'.PATH.'receive_payments.js" type="text/javascript"></script>';
+$page_specific_stylesheets['receive_payments'] = array (
+  'name'=>'receive_payments',
+  'src'=>BASE_URL.PATH.'receive_payments.css',
+  'dependencies'=>array('ofs_stylesheet'),
+  'version'=>'2.1.1',
+  'media'=>'all'
+  );
 
 $page_specific_css = '
-  <link href="'.PATH.'receive_payments.css" rel="stylesheet" type="text/css">
-  <style type="text/css">
     .pager a {
       width:'.number_format(45/$this_page,2).'%;
       }
@@ -88,8 +98,7 @@ $page_specific_css = '
     .pager {
       display:inline-block;
       margin-bottom:15px;
-      }
-  </style>';
+      }';
 
 $page_title_html = '<span class="title">Delivery Cycle Functions</span>';
 $page_subtitle_html = '<span class="subtitle">Receive Payments</span>';

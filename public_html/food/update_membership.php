@@ -82,7 +82,6 @@ if ($do_update_membership == true)
   }
 
 $page_specific_css = '
-  <style type="text/css">
     #membership_renewal_content {
       padding:1em;
       }
@@ -113,8 +112,7 @@ $page_specific_css = '
       background-color:#eee;
       border-right: 1px solid #ddd;
       border-bottom: 1px solid #ddd;
-      }
-  </style>';
+      }';
 
 if($_GET['display_as'] == 'popup')
   $display_as_popup = true;

@@ -93,70 +93,68 @@ $content_delivery = '
     </div>';
 
 $page_specific_css = '
-  <style type="text/css">
-    /* DELIVERY DATE NAVIGATION STYLES */
-    #delivery_id_nav {
-      width:45%;
-      max-width:40rem;
-      margin:5px auto 0;
-      height:1.5em;
-      background-color:#eef;
-      }
-    #delivery_id_nav .prior,
-    #delivery_id_nav .next {
-      display:block;
-      line-height:1.5;
-      padding:0 5px;
-      }
-    #delivery_id_nav .prior {
-      float:left;
-      }
-    #delivery_id_nav .next {
-      float:right;
-      }
-    /* DISPLAY TABLE STYLES */
-    #site_list {
-      display:table;
-      margin:auto;
-      width:80%;
-      border:1px solid #888;
-      padding:0 1em 1em;
-      }
-    .route_row {
-      display:table-row;
-      }
-    .site_row {
-      display:table-row;
-      }
-    .site_row:hover {
-      background-color:#eea;
-      }
-    .route_name {
-      text-align:center;
-      padding-top:1em;
-      text-align:center;
-      font-weight:bold;
-      color:#246;
-      }
-    .link,
-    .hub,
-    .site_orders,
-    .site_short {
-      display:table-cell;
-      }
-    .num_orders::before {
-      content:" (";
-      }
-    .num_orders::after {
-      content:")";
-      }
-    .suspended {
-      display:none;
-      }
-    .standby {
-      color:#aaa;
-      }
-  </style>';
+  /* DELIVERY DATE NAVIGATION STYLES */
+  #delivery_id_nav {
+    width:45%;
+    max-width:40rem;
+    margin:5px auto 0;
+    height:1.5em;
+    background-color:#eef;
+    }
+  #delivery_id_nav .prior,
+  #delivery_id_nav .next {
+    display:block;
+    line-height:1.5;
+    padding:0 5px;
+    }
+  #delivery_id_nav .prior {
+    float:left;
+    }
+  #delivery_id_nav .next {
+    float:right;
+    }
+  /* DISPLAY TABLE STYLES */
+  #site_list {
+    display:table;
+    margin:auto;
+    width:80%;
+    border:1px solid #888;
+    padding:0 1em 1em;
+    }
+  .route_row {
+    display:table-row;
+    }
+  .site_row {
+    display:table-row;
+    }
+  .site_row:hover {
+    background-color:#eea;
+    }
+  .route_name {
+    text-align:center;
+    padding-top:1em;
+    text-align:center;
+    font-weight:bold;
+    color:#246;
+    }
+  .link,
+  .hub,
+  .site_orders,
+  .site_short {
+    display:table-cell;
+    }
+  .num_orders::before {
+    content:" (";
+    }
+  .num_orders::after {
+    content:")";
+    }
+  .suspended {
+    display:none;
+    }
+  .standby {
+    color:#aaa;
+    }';
 
 $page_title_html = '<span class="title">Route Information</span>';
 $page_subtitle_html = '<span class="subtitle">Deliveries and Pickups<br>'.date ('F d, Y', strtotime ($delivery_date)).'</span>';

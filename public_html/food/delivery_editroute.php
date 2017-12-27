@@ -418,42 +418,40 @@ $content_edit = '
 </div>';
 
 $page_specific_css = '
-  <style type="text/css">
-    .show_hide_link {
-      cursor:pointer;
-      }
-    .update_button {
-      float:right;
-      padding:0.3em 1em !important;
-      margin:0.75em;
-      }
-    .site_info tr td {
-      background-color:#efd;
-      }
-    .site_info tr.site_header td {
-      background-color: #684;
-      color:#ffd;
-      }
-    .route_info tr td {
-       background-color:#def;
-       }
-    .route_info tr.route_header td {
-       background-color:#57a;
-      color:#ffd;
-       }
-    .quicklink {
-      margin-left:1em;
-      }
-    .info {
-      background-color:#ccc;
-      }
-    .new {
-      color:#840;
-      font-style:italic;
-      }
-    .hidden {
-      display:none;
-  </style>';
+  .show_hide_link {
+    cursor:pointer;
+    }
+  .update_button {
+    float:right;
+    padding:0.3em 1em !important;
+    margin:0.75em;
+    }
+  .site_info tr td {
+    background-color:#efd;
+    }
+  .site_info tr.site_header td {
+    background-color: #684;
+    color:#ffd;
+    }
+  .route_info tr td {
+     background-color:#def;
+     }
+  .route_info tr.route_header td {
+     background-color:#57a;
+    color:#ffd;
+     }
+  .quicklink {
+    margin-left:1em;
+    }
+  .info {
+    background-color:#ccc;
+    }
+  .new {
+    color:#840;
+    font-style:italic;
+    }
+  .hidden {
+    display:none;';
 
 $page_title_html = '<span class="title">Route Information</span>';
 $page_subtitle_html = '<span class="subtitle">Edit Route Info.</span>';

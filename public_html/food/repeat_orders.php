@@ -412,14 +412,35 @@ $display .= '
   </table>';
 
 $page_specific_css = '
-  <style type="text/css">
-    .prod_desc {width:30%; text-align:right; vertical-align:middle;font-weight:bold;}
-    .prod_data {width:20%; text-align:left; vertical-align:middle;}
-    .button {padding:4px; margin:10px;}
-    .control {border:3px solid #aaf;}
-    .completion_list {font-size: 80%; color:#008;background-color:#eef;border:1px solid #aaf;padding:0.5em;}
-    .add {background-color:#eee;color:#a00;;}
-  </style>';
+    .prod_desc {
+      width:30%;
+      text-align:right;
+      vertical-align:middle;
+      font-weight:bold;
+      }
+    .prod_data {
+      width:20%;
+      text-align:left;
+      vertical-align:middle;
+      }
+    .button {
+      padding:4px;
+      margin:10px;
+      }
+    .control {
+      border:3px solid #aaf;
+      }
+    .completion_list {
+      font-size: 80%;
+      color:#008;
+      background-color:#eef;
+      border:1px solid #aaf;
+      padding:0.5em;
+      }
+    .add {
+      background-color:#eee;
+      color:#a00;
+      }';
 
 $page_title_html = '<span class="title">Admin Maintenance</span>';
 $page_subtitle_html = '<span class="subtitle">Repeating Orders</span>';

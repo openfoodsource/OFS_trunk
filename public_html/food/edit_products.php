@@ -97,32 +97,35 @@ $page_subtitle_html = '<span class="subtitle">Edit Product'.($product_id ? ' #'.
 $page_title = $business_name.': Edit Product';
 $page_tab = 'producer_panel';
 
+
+$page_specific_scripts['javascript_popup'] = array (
+  'name'=>'javascript_popup',
+  'src'=>BASE_URL.PATH.'javascript_popup.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'4.21.0',
+  'location'=>false
+  );
+
 $page_specific_javascript = '
-  <script type="text/javascript" src="javascript_popup.js"></script>
-  <script type="text/javascript">
   function updatePrices()
     {
     document.getElementById("unit_price_prdcr").value=(document.getElementById("unit_price_coop").value*'.(1 - ActiveCycle::producer_markdown_next ()).').toFixed(2);
     document.getElementById("unit_price_cust").value=(document.getElementById("unit_price_coop").value*'.(1 + (SHOW_ACTUAL_PRICE ? ActiveCycle::retail_markup_next () : 0)).'*(1+(document.getElementById("product_fee_percent").value/100)+'.($subcat_adjust_fee + $producer_adjust_fee).')).toFixed(2);
     document.getElementById("unit_price_institution").value=(document.getElementById("unit_price_coop").value*'.(1 + (SHOW_ACTUAL_PRICE ? ActiveCycle::wholesale_markup_next () : 0)).'*(1+(document.getElementById("product_fee_percent").value/100)+'.($subcat_adjust_fee + $producer_adjust_fee).')).toFixed(2);
-    }
-  </script>';
+    }';
 $page_specific_css = '
-<style type="text/css">
-.normal_row {
-  background-color:#ddd;
-  }
-.random_wt_row {
-  background-color:#bbd;
-  }
-.control_row {
-  background-color:#ddd;
-  }
-.admin_row {
-  background-color:#fdb;
-  }
-</style>';
-
+  .normal_row {
+    background-color:#ddd;
+    }
+  .random_wt_row {
+    background-color:#bbd;
+    }
+  .control_row {
+    background-color:#ddd;
+    }
+  .admin_row {
+    background-color:#fdb;
+    }';
 
 include("template_header.php");
 echo '

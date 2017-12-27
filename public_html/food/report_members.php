@@ -240,7 +240,6 @@ else // Send output to web page
   }
 
 $page_specific_css .= '
-<style type="text/css">
 small {
   font-size:0.9em;
   color:#006;
@@ -271,8 +270,7 @@ table.member_list tr th, table.member_list tr td {
 table.member_list tr td {
   font-size:80%;
   vertical-align:top;
-  }
-</style>';
+  }';
 
 $page_title_html = '<span class="title">Reports</span>';
 $page_subtitle_html = '<span class="subtitle">Spreadsheet of All '.($_REQUEST['p'] == 1 ? 'Producers' : 'Members').'</span>';

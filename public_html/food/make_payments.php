@@ -84,11 +84,21 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
       </div>';
   }
 
-$page_specific_javascript = '
-  <script src="'.PATH.'make_payments.js" type="text/javascript"></script>';
+$page_specific_scripts['make_payments'] = array (
+  'name'=>'make_payments',
+  'src'=>BASE_URL.PATH.'make_payments.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'4.21.0',
+  'location'=>false
+  );
 
-$page_specific_css = '
-  <link href="'.PATH.'make_payments.css" rel="stylesheet" type="text/css">';
+$page_specific_stylesheets['make_payments'] = array (
+  'name'=>'make_payments',
+  'src'=>BASE_URL.PATH.'make_payments.css',
+  'dependencies'=>array('ofs_stylesheet'),
+  'version'=>'2.1.1',
+  'media'=>'all'
+  );
 
 $page_title_html = '<span class="title">Delivery Cycle Functions</span>';
 $page_subtitle_html = '<span class="subtitle">Make Payments</span>';

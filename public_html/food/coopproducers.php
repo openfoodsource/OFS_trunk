@@ -3,7 +3,6 @@ include_once 'config_openfood.php';
 session_start();
 valid_auth('site_admin,producer_admin');
 
-
 function prdcr_contact_info($start, $half)
   {
     global $connection;
@@ -147,7 +146,6 @@ $content_list = '
   </tr>
 </table>';
 $page_specific_css .= '
-<style type="text/css">
   table.center {
     margin:auto;
     }
@@ -158,8 +156,7 @@ $page_specific_css .= '
   .unlisted,
   .unlisted a {
     color:#888;
-    }
-</style>';
+    }';
 
 $page_title_html = '<span class="title">Reports</span>';
 $page_subtitle_html = '<span class="subtitle">Producer Contact Info.</span>';

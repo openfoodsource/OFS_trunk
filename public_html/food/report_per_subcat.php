@@ -159,67 +159,65 @@ $content = '
   </table>';
 
 $page_specific_css = '
-  <style type="text/css">
-    th {
-      font-weight:bold;
-      font-size:70%;
-      position:relative;
-      }
-    th.date {
-      transform: rotate(-90deg);
-      height:150px;
-      }
-    #subcat_sales {
-      table-layout:fixed;
-      border-collapse:collapse;
-      border:1px solid black;
-      border-spacing:0px;
-      }
-    #subcat_sales tr td,
-    #subcat_sales tr th {
-      border:1px solid black;
-      }
-    .total {
-      text-align: right;
-      font-weight:bold;
-      padding-top:10px;
-      }
-    .category {
-      font-size:80%;
-      color:#000;
-      margin-top:20px;
-      }
-    .subcat {
-      padding-left:15px;
-      color:#777;
-      }
-    .date {
-      color:#444;
-      text-align:left;
-      font-size:90%;
-      }
-    .col1 {
-      text-align:left;
-      }
-    .currency {
-      text-align:right;
-      }
-    #report_container {
-      table-layout:fixed;
-      width:100%;
-      }
-    #report_container tr td {
-      }
-    #content {
-      overflow-x:scroll;
-      }
-    #report_range .text {
-      width:50px;
-      }
-    #report_range .submit_button {
-      padding:3px 20px;
-      }
-  </style>';
+  th {
+    font-weight:bold;
+    font-size:70%;
+    position:relative;
+    }
+  th.date {
+    transform: rotate(-90deg);
+    height:150px;
+    }
+  #subcat_sales {
+    table-layout:fixed;
+    border-collapse:collapse;
+    border:1px solid black;
+    border-spacing:0px;
+    }
+  #subcat_sales tr td,
+  #subcat_sales tr th {
+    border:1px solid black;
+    }
+  .total {
+    text-align: right;
+    font-weight:bold;
+    padding-top:10px;
+    }
+  .category {
+    font-size:80%;
+    color:#000;
+    margin-top:20px;
+    }
+  .subcat {
+    padding-left:15px;
+    color:#777;
+    }
+  .date {
+    color:#444;
+    text-align:left;
+    font-size:90%;
+    }
+  .col1 {
+    text-align:left;
+    }
+  .currency {
+    text-align:right;
+    }
+  #report_container {
+    table-layout:fixed;
+    width:100%;
+    }
+  #report_container tr td {
+    }
+  #content {
+    overflow-x:scroll;
+    }
+  #report_range .text {
+    width:50px;
+    }
+  #report_range .submit_button {
+    padding:3px 20px;
+    }';
 $page_specific_javascript = '';
 
 $page_title_html = '<span class="title">Reports</span>';

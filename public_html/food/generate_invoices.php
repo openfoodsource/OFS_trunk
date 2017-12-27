@@ -28,10 +28,6 @@ if ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
   }
 
 $page_specific_javascript = '
-<script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-<script type="text/javascript">
-
-
 var c_arrElements;
 var p_arrElements;
 var i;
@@ -226,292 +222,256 @@ function prod_generate_pdf() {
     document.getElementById("prod_generate_start").style.display = ""; /* Bring back the button */
     document.getElementById("prod_html2pdf_message").style.display = ""; /* Hide the html2pdf conversion message */
     })
-  }
-
-</script>';
+  }';
 // ' // Just an extra single-quote to make the editor parser happy :-)
 
 $page_specific_css = '
-<style type="text/css">
-h3 {
-  margin: 0px;
-  padding: 0px;
+  h3 {
+    margin: 0px;
+    padding: 0px;
+    }
+  blink {
+    animation-name: blinker;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-delay: 0s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-play-state: running;
+    /* Safari and Chrome: */
+    -webkit-animation-name: blinker;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-delay: 0s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-direction: alternate;
+    -webkit-animation-play-state: running;
+    }
+  @-webkit-keyframes blinker {
+    0% {opacity: 1}
+    50% {opacity: 0}
   }
-
-blink {
-  animation-name: blinker;
-  animation-duration: 2s;
-  animation-timing-function: linear;
-  animation-delay: 0s;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  animation-play-state: running;
-  /* Safari and Chrome: */
-  -webkit-animation-name: blinker;
-  -webkit-animation-duration: 2s;
-  -webkit-animation-timing-function: linear;
-  -webkit-animation-delay: 0s;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-direction: alternate;
-  -webkit-animation-play-state: running;
+  @keyframes blinker {
+    0% {opacity: 1}
+    50% {opacity: 0}
   }
-@-webkit-keyframes blinker {
-  0% {opacity: 1}
-  50% {opacity: 0}
-}
-@keyframes blinker {
-  0% {opacity: 1}
-  50% {opacity: 0}
-}
-
-li.c_complete a, li.p_complete a {
-  color: #000;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-weight:normal;
-  text-align:left;
-  }
-
-li.c_incomplete a, li.p_incomplete a {
-  color: #ddd;
-/*  height: 0; */
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-weight:normal;
-  text-align:left;
-  }
-
-#left-column {
-  float:left;
-  margin: 0px;
-  width: 49%;
-  }
-
-#right-column {
-  float:right;
-  margin: 0px;
-  width: 49%;
-  }
-
-#customerBox {
-  clear:both;
-/*  position: relative; */
-  margin: auto;
-  margin-top:10px;
-  width: 80%;
-  height:500px;
-  overflow:auto;
-  background-color: #fff;
-  -moz-border-radius: 7px;
-/*  -webkit-border-radius: 7px; */
-  border: 2px solid #000;
-  }
-
-#producerBox {
-  clear:both;
-  position: relative;
-  margin: auto;
-  margin-top:10px;
-  width: 80%;
-  height:500px;
-  overflow:auto;
-  background-color: #fff;
-  -moz-border-radius: 7px;
-/*  -webkit-border-radius: 7px; */
-  border: 2px solid #000;
-  }
-
-input {
-  /*display:block;*/
-  margin: auto;
-  margin-top:10px;
-  }
-
-.customerList {
-  margin: 0px;
-  padding: 0px;
-  }
-
-ul {
-  list-style-type:none;
-  padding-left:5px;
-  }
-
-/*
-.customerList li {
-  margin: 0px 0px 3px 0px;
-  cursor: pointer;
-  } */
-
-.customerList li:hover {
-  background-color: #ccc;
-  color:#000;
-  }
-
-.producerList {
-  margin: 0px;
-  padding: 0px;
-  }
-
-/*
-.producerList li {
-  margin: 0px 0px 3px 0px;
-  cursor: pointer;
-  } */
-
-.producerList li:hover {
-  background-color: #ccc;
-  color:#000;
-  }
-
-#cust_progress, #prod_progress {
-  display:none;
-  position: relative;
-  margin: auto;
-  margin-top:10px;
-  margin-bottom:36px;
-  height:20px;
-  border: 2px solid #000;
-  width: 301px;
-  }
-
-#p_progress-left, #c_progress-left {
-  float:left;
-  border-right: 1px solid #000;
-  width: 0px;
-  height:20px;
-  background: #ff0;
-  text-align:left;
-  }
-
-#p_progress-right #c_progress-right {
-  float:right;
-  border: 0;
-  width: 300px;
-  height:20px;
-  background: #aaa;
-  text-align:left;
-  }
-
-a:link, a:visited {
-  text-decoration:none;
-  color:#228;
-  }
-
-a:hover {
-  text-decoration:underline;
-  color:#161;
-  }
-
-h1 {
-  text-align:center;
-  }
-
-.order_nav {
-  text-align:center;
-  background-color:#edc;
-  color:#000;
-  width: 25em;
-  margin:auto;
-  padding: 5px;
-  margin-bottom:3em;
-  border:1px solid #420;
-  }
-
-#cust_generate_start,
-#prod_generate_start {
-  height:60px;
-  text-align:center;
-  }
-
-#cust_html_link,
-#cust_pdf_link,
-#cust_html2pdf_message,
-#prod_html_link,
-#prod_pdf_link,
-#prod_html2pdf_message {
-  clear:both;
-  width:80%;
-  height:30px;
-  margin:auto;
-  font-size:1.3em;
-  text-align:center;
-  }
-
-.order_nav order_nav,
-#cust_html_link a:hover,
-#cust_pdf_link a:hover,
-#cust_generate_start a:hover,
-#cust_html2pdf_message a:hover,
-#prod_html_link a:hover,
-#prod_pdf_link a:hover,
-#prod_generate_start a:hover,
-#prod_html2pdf_message a:hover {
-  color:#5d872b;
-  text-decoration:underline;
-  }
-
-#prod_html2pdf_message,
-#cust_html2pdf_message {
-  display:none;
-  color: #a00;
-  font-size:1.3em;
-  }
-
-#cust_pdf_link,
-#prod_pdf_link {
-  display:'.(USE_HTMLDOC ? 'block' : 'none').';
-  }
-
-.p_list_pid {
-  width:5em;
-  float:left;
-  text-align:center;
-  padding-right:1em;
-  font-family:verdana;
-  }
-
-.c_list_cid strong,
-.p_list_pid strong {
-  color:#a22;
-  }
-
-.p_list_name {
-  padding-left:6em;
-  font-family:verdana;
-  }
-
-.p_list_header {
-  position:relative;
-  font-weight:bold;
-  text-decoration:underline;
-  color:#008;
-  }
-
-.c_list_cid {
-  width:3em;
-  float:left;
-  text-align:right;
-  padding-right:1em;
-  font-family:verdana;
-  }
-
-.c_list_name {
-  padding-left:4em;
-  font-family:verdana;
-  }
-
-.c_list_header {
-  position:relative;
-  font-weight:bold;
-  text-decoration:underline;
-  color:#008;
-  }
-
-</style>';
-
+  li.c_complete a, li.p_complete a {
+    color: #000;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-weight:normal;
+    text-align:left;
+    }
+  li.c_incomplete a, li.p_incomplete a {
+    color: #ddd;
+  /*  height: 0; */
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-weight:normal;
+    text-align:left;
+    }
+  #left-column {
+    float:left;
+    margin: 0px;
+    width: 49%;
+    }
+  #right-column {
+    float:right;
+    margin: 0px;
+    width: 49%;
+    }
+  #customerBox {
+    clear:both;
+  /*  position: relative; */
+    margin: auto;
+    margin-top:10px;
+    width: 80%;
+    height:500px;
+    overflow:auto;
+    background-color: #fff;
+    -moz-border-radius: 7px;
+  /*  -webkit-border-radius: 7px; */
+    border: 2px solid #000;
+    }
+  #producerBox {
+    clear:both;
+    position: relative;
+    margin: auto;
+    margin-top:10px;
+    width: 80%;
+    height:500px;
+    overflow:auto;
+    background-color: #fff;
+    -moz-border-radius: 7px;
+  /*  -webkit-border-radius: 7px; */
+    border: 2px solid #000;
+    }
+  input {
+    /*display:block;*/
+    margin: auto;
+    margin-top:10px;
+    }
+  .customerList {
+    margin: 0px;
+    padding: 0px;
+    font-size:0.8rem;
+    }
+  ul {
+    list-style-type:none;
+    padding-left:5px;
+    }
+  /*
+  .customerList li {
+    margin: 0px 0px 3px 0px;
+    cursor: pointer;
+    } */
+  .customerList li:hover {
+    background-color: #ccc;
+    color:#000;
+    }
+  .producerList {
+    margin: 0px;
+    padding: 0px;
+    font-size:0.8rem;
+    }
+  /*
+  .producerList li {
+    margin: 0px 0px 3px 0px;
+    cursor: pointer;
+    } */
+  .producerList li:hover {
+    background-color: #ccc;
+    color:#000;
+    }
+  #cust_progress, #prod_progress {
+    display:none;
+    position: relative;
+    margin: auto;
+    margin-top:10px;
+    margin-bottom:36px;
+    height:20px;
+    border: 2px solid #000;
+    width: 301px;
+    }
+  #p_progress-left, #c_progress-left {
+    float:left;
+    border-right: 1px solid #000;
+    width: 0px;
+    height:20px;
+    background: #ff0;
+    text-align:left;
+    }
+  #p_progress-right #c_progress-right {
+    float:right;
+    border: 0;
+    width: 300px;
+    height:20px;
+    background: #aaa;
+    text-align:left;
+    }
+  a:link, a:visited {
+    text-decoration:none;
+    color:#228;
+    }
+  a:hover {
+    text-decoration:underline;
+    color:#161;
+    }
+  h1 {
+    text-align:center;
+    }
+  .order_nav {
+    text-align:center;
+    background-color:#edc;
+    color:#000;
+    width: 25em;
+    margin:auto;
+    padding: 5px;
+    margin-bottom:3em;
+    border:1px solid #420;
+    }
+  #cust_generate_start,
+  #prod_generate_start {
+    height:60px;
+    text-align:center;
+    }
+  #cust_html_link,
+  #cust_pdf_link,
+  #cust_html2pdf_message,
+  #prod_html_link,
+  #prod_pdf_link,
+  #prod_html2pdf_message {
+    clear:both;
+    width:80%;
+    height:30px;
+    margin:auto;
+    font-size:1.3em;
+    text-align:center;
+    }
+  .order_nav order_nav,
+  #cust_html_link a:hover,
+  #cust_pdf_link a:hover,
+  #cust_generate_start a:hover,
+  #cust_html2pdf_message a:hover,
+  #prod_html_link a:hover,
+  #prod_pdf_link a:hover,
+  #prod_generate_start a:hover,
+  #prod_html2pdf_message a:hover {
+    color:#5d872b;
+    text-decoration:underline;
+    }
+  #prod_html2pdf_message,
+  #cust_html2pdf_message {
+    display:none;
+    color: #a00;
+    font-size:1.3em;
+    }
+  #cust_pdf_link,
+  #prod_pdf_link {
+    display:'.(USE_HTMLDOC ? 'block' : 'none').';
+    }
+  .p_list_pid {
+    width:5em;
+    float:left;
+    text-align:center;
+    padding-right:1em;
+    font-family:verdana;
+    }
+  .c_list_cid strong,
+  .p_list_pid strong {
+    color:#a22;
+    }
+  .p_list_name {
+    padding-left:0;
+    font-family:verdana;
+    float:left;
+    }
+  .p_list_header {
+    position:relative;
+    font-weight:bold;
+    text-decoration:underline;
+    color:#008;
+    }
+  .c_list_cid {
+    width:5em;
+    float:left;
+    text-align:right;
+    padding-right:1em;
+    font-family:verdana;
+    }
+  .c_list_name {
+    padding-left:0;
+    font-family:verdana;
+    float:left;
+    }
+  .c_list_header {
+    position:relative;
+    font-weight:bold;
+    text-decoration:underline;
+    color:#008;
+    }';
 
 $prior_delivery_link = ' &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ';
 $next_delivery_link = ' &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ';

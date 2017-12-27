@@ -228,7 +228,6 @@ $content .= '
   </form>';
 
 $page_specific_css = '
-  <style type="text/css">
   #producer_select_site {
     text-align:center;
     display:inline-block;
@@ -326,11 +325,9 @@ $page_specific_css = '
     width:3rem;
     max-width:3rem;
     }
-  </style>
   ';
 
 $page_specific_javascript .= '
-<script type="text/javascript">
 function adjust_producer_site_checks (true_false) {
   $(".producer_check:checkbox:checked").each(function () {
     var producer_checked = (this.checked ? $(this).prop("name").substr(9) : ""); // Get the numeric part of... e.g. "producer-23"
@@ -342,8 +339,7 @@ function adjust_producer_site_checks (true_false) {
       $("#select-"+producer_checked+"-"+site_checked).prop("checked", true_false);
       });
     });
-  }
-</script>';
+  }';
 
 if ($_GET['display_as'] == 'popup') $display_as_popup = true;
 

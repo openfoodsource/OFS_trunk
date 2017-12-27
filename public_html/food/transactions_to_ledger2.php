@@ -353,20 +353,20 @@ while($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   }
 $content .= '
 <div id="instructions">
-    <p>Select from the buttons below to pick a family (parent) set of transactions to work with.
-      General information about those transactions and suggested translation values will be
-      displayed with each transaction type.</p>
-    <p>After modifying the translations to set new and/or default values, click the &quot;Show
-      List&quot; at the left to load the list of transactions from the database in preparation
-      for processing.</p>
-    <p>Click on transactions that are loaded in the list to see how they will be converted into
-      ledger entries. When everything looks good, either process them singly or uncheck the
-      &quot;Pause&quot; checkbox to automatically move on through the list. Note that transactions
-      will be flagged in the database so they will not be processed more than once.</p>
-    <p>Transactions that were used to zero-out other transactions are shown stricken-out. <i>In
-      combination with</i> the transaction they were used to zero, they can probably be ignored.
-      The recommended action is to find and &quot;Mark as Processed&quot; each of the two before
-      processing the list as a batch.</p>
+  <p>Select from the buttons below to pick a family (parent) set of transactions to work with.
+    General information about those transactions and suggested translation values will be
+    displayed with each transaction type.</p>
+  <p>After modifying the translations to set new and/or default values, click the &quot;Show
+    List&quot; at the left to load the list of transactions from the database in preparation
+    for processing.</p>
+  <p>Click on transactions that are loaded in the list to see how they will be converted into
+    ledger entries. When everything looks good, either process them singly or uncheck the
+    &quot;Pause&quot; checkbox to automatically move on through the list. Note that transactions
+    will be flagged in the database so they will not be processed more than once.</p>
+  <p>Transactions that were used to zero-out other transactions are shown stricken-out. <i>In
+    combination with</i> the transaction they were used to zero, they can probably be ignored.
+    The recommended action is to find and &quot;Mark as Processed&quot; each of the two before
+    processing the list as a batch.</p>
 </div>
 <div id="reporting">
   <div id="left-column">
@@ -450,12 +450,21 @@ $content .= '
   </div>
 </div>';
 
-$page_specific_javascript = '
-    <script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-    <script type="text/javascript" src="'.PATH.'transactions_to_ledger2.js"></script>';
+$page_specific_scripts['transactions_to_ledger2'] = array (
+  'name'=>'transactions_to_ledger2',
+  'src'=>BASE_URL.PATH.'transactions_to_ledger2.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'2.1.1',
+  'location'=>false
+  );
 
-$page_specific_css = '
-    <link href="'.PATH.'transactions_to_ledger2.css" rel="stylesheet" type="text/css">';
+$page_specific_stylesheets['transactions_to_ledger2'] = array (
+  'name'=>'transactions_to_ledger2',
+  'src'=>BASE_URL.PATH.'transactions_to_ledger2.css',
+  'dependencies'=>array('ofs_stylesheet'),
+  'version'=>'2.1.1',
+  'media'=>'all'
+  );
 
 $page_title_html = '<span class="title">Site Admin Functions</span>';
 $page_subtitle_html = '<span class="subtitle">Convert Accounting</span>';

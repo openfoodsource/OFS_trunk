@@ -185,70 +185,126 @@ while ( $row = mysqli_fetch_object ($sql) )
   }
 
 $page_specific_javascript = '
-<script type="text/javascript">
-<!--
-
-// Script will auto-fill affected prices -- it does not auto-update the percentages in the "Adjust fees for..." columns.
-var c_arrElements;
-var p_arrElements;
-var i;
-
-function getElementsByClass (needle) {
-  var my_array = document.getElementsByTagName("td");
-  var retvalue = new Array();
+  // Script will auto-fill affected prices -- it does not auto-update the percentages in the "Adjust fees for..." columns.
+  var c_arrElements;
+  var p_arrElements;
   var i;
-  var j;
 
-  for (i = 0, j = 0; i < my_array.length; i++) {
-    var c = " " + my_array[i].className + " ";
-    if (c.indexOf(" " + needle + " ") != -1)
-      retvalue[j++] = my_array[i];
-    }
-  return retvalue;
-  }
-function updatePrices (textfield) {
-  var textfield_id = textfield.id;
-  c_arrElements = getElementsByClass (textfield_id);
-  for (i = 0; i < c_arrElements.length; i++) {
-    // ID is returned as [retail|wholesale]-producer_id-subcategory_id-product_id
-    var id_parts = c_arrElements[i].id.split(\'-\');
-    if (id_parts[0] == \'retail\') {
-      document.getElementById(c_arrElements[i].id).innerHTML=\'$ \'+ ( (1+Number('.$retail_markup.')) * (1 + Number(document.getElementById(\'producer_af_\'+id_parts[1]).value)/100 + Number(document.getElementById(\'subcat_af_\'+id_parts[2]).value)/100 + Number(document.getElementById(\'product_af_\'+id_parts[3]).value)/100) * Number(document.getElementById(\'pid_\'+id_parts[3]).innerHTML) ).toFixed(2);
-      }
-    if (id_parts[0] == \'wholesale\') {
-      document.getElementById(c_arrElements[i].id).innerHTML=\'$ \'+ ( (1+Number('.$wholesale_markup.')) * (1 + Number(document.getElementById(\'producer_af_\'+id_parts[1]).value)/100 + Number(document.getElementById(\'subcat_af_\'+id_parts[2]).value)/100 + Number(document.getElementById(\'product_af_\'+id_parts[3]).value)/100) * Number(document.getElementById(\'pid_\'+id_parts[3]).innerHTML) ).toFixed(2);
-      }
-    }
-  }
+  function getElementsByClass (needle) {
+    var my_array = document.getElementsByTagName("td");
+    var retvalue = new Array();
+    var i;
+    var j;
 
--->
-</script>';
+    for (i = 0, j = 0; i < my_array.length; i++) {
+      var c = " " + my_array[i].className + " ";
+      if (c.indexOf(" " + needle + " ") != -1)
+        retvalue[j++] = my_array[i];
+      }
+    return retvalue;
+    }
+  function updatePrices (textfield) {
+    var textfield_id = textfield.id;
+    c_arrElements = getElementsByClass (textfield_id);
+    for (i = 0; i < c_arrElements.length; i++) {
+      // ID is returned as [retail|wholesale]-producer_id-subcategory_id-product_id
+      var id_parts = c_arrElements[i].id.split(\'-\');
+      if (id_parts[0] == \'retail\') {
+        document.getElementById(c_arrElements[i].id).innerHTML=\'$ \'+ ( (1+Number('.$retail_markup.')) * (1 + Number(document.getElementById(\'producer_af_\'+id_parts[1]).value)/100 + Number(document.getElementById(\'subcat_af_\'+id_parts[2]).value)/100 + Number(document.getElementById(\'product_af_\'+id_parts[3]).value)/100) * Number(document.getElementById(\'pid_\'+id_parts[3]).innerHTML) ).toFixed(2);
+        }
+      if (id_parts[0] == \'wholesale\') {
+        document.getElementById(c_arrElements[i].id).innerHTML=\'$ \'+ ( (1+Number('.$wholesale_markup.')) * (1 + Number(document.getElementById(\'producer_af_\'+id_parts[1]).value)/100 + Number(document.getElementById(\'subcat_af_\'+id_parts[2]).value)/100 + Number(document.getElementById(\'product_af_\'+id_parts[3]).value)/100) * Number(document.getElementById(\'pid_\'+id_parts[3]).innerHTML) ).toFixed(2);
+        }
+      }
+    }
+  ';
 
 $page_specific_css = '
-  <style type="text/css">
-    table { border-collapse:collapse; border: 1px solid #000; }
-    tr { font-size:0.8em; }
-    td { padding-left:4px; padding-right:4px; }
-    .producer_head { color:#fff; background-color:#876; }
-    .producer_form { color:#4c3d2f; background-color:#c3b7ab; text-align:right; }
-    .subcat_head { color:#fff; background-color:#687; }
-    .subcat_form { color:#2f4c3d; background-color:#abc3b7; text-align:right; }
-    .product_form { background-color:#eee; text-align:right; border-bottom:1px solid #aaa; border-right: 1px solid #aaa }
-    .input { font-weight:bold; font-family:courier; font-size: 1em;}
-    tr.producer_head, tr.subcat_head { height:2em; font-weight:bold; font-size: 1em; border-top: 1px solid #000; border-bottom: 1px solid #bbb; }
-    tr.head { font-weight:bold; }
-    form { float:right; }
-    .border_left { border-left: 1px solid black; }
-    .border_right { border-right: 1px solid black; }
-    .center { text-align:center; }
-    .strike { color:#888; }
-    .list_section {border-top: 1px solid #bbb; }
-    .next_link { font-size: 0.8em; }
-    .next_link a { color:#fed; text-decoration:none; font-weight:normal; }
-    .next_link a:hover { text-decoration:underline; }
-    table, p { width:95%; margin:auto; padding-bottom:1em; };
-  </style>';
-
+  table {
+    border-collapse:collapse;
+    border: 1px solid #000;
+    }
+  tr {
+    font-size:0.8em;
+    }
+  td {
+    padding-left:4px;
+    padding-right:4px;
+    }
+  .producer_head {
+    color:#fff;
+    background-color:#876;
+    }
+  .producer_form {
+    color:#4c3d2f;
+    background-color:#c3b7ab;
+    text-align:right;
+    }
+  .subcat_head {
+    color:#fff;
+    background-color:#687;
+    }
+  .subcat_form {
+    color:#2f4c3d;
+    background-color:#abc3b7;
+    text-align:right;
+    }
+  .product_form {
+    background-color:#eee;
+    text-align:right;
+    border-bottom:1px solid #aaa;
+    border-right: 1px solid #aaa;
+    }
+  .input {
+    font-weight:bold;
+    font-family:courier;
+    font-size: 1em;
+    }
+  tr.producer_head,
+  tr.subcat_head {
+    height:2em;
+    font-weight:bold;
+    font-size: 1em;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #bbb;
+    }
+  tr.head {
+    font-weight:bold;
+    }
+  form {
+    float:right;
+    }
+  .border_left {
+    border-left: 1px solid black;
+    }
+  .border_right {
+    border-right: 1px solid black;
+    }
+  .center {
+    text-align:center;
+    }
+  .strike {
+    color:#888;
+    }
+  .list_section {
+    border-top: 1px solid #bbb;
+    }
+  .next_link {
+    font-size: 0.8em;
+    }
+  .next_link a {
+    color:#fed;
+    text-decoration:none;
+    font-weight:normal;
+    }
+  .next_link a:hover {
+    text-decoration:underline;
+    }
+  table, p {
+    width:95%;
+    margin:auto;
+    padding-bottom:1em;
+    };';
 
 $content_edit = '
     <p><strong>Instructions:</strong> In this worksheet, any number of values can be entered to observe how

@@ -1,0 +1,93 @@
+/* STYLES FOR THE HEADER USERMENU */
+#user_menu {
+  position:absolute;
+  top:3px;
+  right:3px;
+  background-color:rgba(200,200,200,0.8);
+  z-index:100;
+  width:300px;
+  height:66px;
+  border:1px solid rgba(100,100,100,0.8);
+  }
+#user_menu img.user_logo {
+  float:left;
+  width:64px;
+  height:64px;
+  margin:0px;
+  }
+#user_menu ul {
+  float:left;
+  width:230px;
+  list-style:none;
+  margin:0;
+  padding:0;
+  }
+#user_menu ul form {
+  display:inline;
+  }
+#user_menu li {
+  display:inline;
+  }
+#user_menu > li#user_menu_profile,
+#user_menu > li#user_menu_logout {
+  display: inline-block;
+  }
+#user_menu li input,
+#user_menu li a {
+  margin:4px 0 4px 10px;
+  font-size:80%;
+  height:26px;
+  padding:6px;
+  display:inline-block;
+  }
+#user_menu li input {
+  width:100px;
+  }
+#basket_info_link {
+  width:100px;
+  }
+#user_menu li a.display-name {
+  margin:4px 0 4px 10px;
+  height:26px;
+  padding:6px;
+  border-radius:3px;
+  display:inline-block;
+  background-color: rgba(255,255,255,0.4);
+  width:200px;
+  overflow:hidden;
+  }
+#user_menu .button a {
+  margin: 0 0 0 0.8rem;
+  text-decoration:underline;
+  cursor:pointer;
+  }
+#user_menu input[type="submit"] {
+  color:#eee;
+  background-color:#222;
+  margin:4px 0 0 10px;
+  float:left;
+  font-weight:normal;
+  font-size:12px;
+  line-height:12px;
+  height:20px;
+  width:auto;
+  border-radius:16px;
+  padding:4px 8px;
+  }
+/* Set background color for input/textarea placeholders */
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  color:#ddd;
+  font-weight:bold;
+  }
+::-moz-placeholder { /* Firefox 19+ */
+  color:#ddd;
+  font-weight:bold;
+  }
+:-ms-input-placeholder { /* IE 10+ */
+  color:#ddd;
+  font-weight:bold;
+  }
+:-moz-placeholder { /* Firefox 18- */
+  color:#ddd;
+  font-weight:bold;
+  }

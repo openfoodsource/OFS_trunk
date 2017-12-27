@@ -248,7 +248,6 @@ $member_content .= '
 
 // Prepare page for display
 $page_specific_css = '
-  <style type="text/css">
     #member_info_main {
       position:relative;
       width:90%;
@@ -375,7 +374,12 @@ $page_specific_css = '
     .money {
       text-align:right;
       }
-  </style>';
+
+    .note {
+      clear:both;
+      margin:0 2em;
+      color:#800;
+      }';
 
 $page_title_html = '<span class="title">Member Information</span>';
 $page_subtitle_html = '<span class="subtitle">Details for '.$row_member_info['preferred_name'].'</span>';

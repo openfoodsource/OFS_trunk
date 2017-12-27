@@ -201,111 +201,96 @@ else
 
 $page_specific_javascript = '';
 $page_specific_css .= '
-<style type="text/css">
-.full_screen {
-  width:100%;
-  height:100%;
-  position:absolute;
-  left:0;
-  top:0;
-  background-color:#000;
-  opacity:0.7;
-  filter:alpha(opacity=70)
-  }
-.inner_window {
-  width:70%;
-  height:70%;
-  margin:15%;
-  position:absolute;
-  left:0;
-  top:0;
-  padding:10px;
-  background-color:#fff;
-  overflow-y:auto;
-  box-shadow: 3px 3px 8px 5px #000;
-  background-color:#eee;
-  }
-fieldset {
-  width:425px;
-  height:175px;
-  margin:auto;
-  padding:0px;
-  padding-left:10px;
-  border:1px solid #b7a777;
-  border-bottom-right-radius: 100px;
-  border-top-right-radius: 100px;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-  }
-label {
-  display:block;
-  float:left;
-  font-size:20px;
-  width:200px;
-  font-style:italic;
-  color:#87753e;
-  }
-input {
-  display:block;
-  float:left;
-  height:35px;
-  width:200px;
-  color:#58673f;
-  font-size:20px;
-  border:1px solid #87753e;
-  }
-/* Style the big round button */
-button::-moz-focus-inner {  
-  border:0;
-  }
-button {
-  border: 1px solid #b7a777;
-  border-radius: 65px;
-  box-shadow: -25px -25px 35px #97a97b inset;
-  color: #758954;
-  display: block;
-  float: right;
-  font-size: 40px;
-  font-weight: bold;
-  height: 130px;
-  margin: 20px 25px;
-  outline: 0 none;
-  width: 130px;
-  }
-button:focus,
-button:hover {
-  box-shadow: -25px -25px 35px #758954 inset;
-  color:#556a35;
-  border:1px solid #87753e;
-  }
-fieldset a {
-  display:block;
-  clear:both;
-  width:300px;
-  }
-label a {
-  line-height:1;
-  font-size: 50%;
-  padding-top:10px;
-  }
-/* This is for wordpress 2013 */
-input.search-field {
-  float:right;
-  }
-#info_container {
-  background-image: url('.DIR_GRAPHICS.'info_background.png);
-  background-repeat: no-repeat;
-  width:100%;
-  background-position:top right;
-  min-height:401px;
-  background-size:870px 410px;
-  }
-#info_container > h3 {
-  clear:both;
-  padding-top:220px;
-  }
-
-</style>';
+  #page_login fieldset {
+    font-size:100%;
+    position:relative;
+    padding:0;
+    max-width:50rem;
+    height:18rem;
+    border-top-right-radius:9rem;
+    border-bottom-right-radius:9rem;
+    }
+  #page_login .submit {
+    font-size:100%;
+    position:absolute;
+    right:2rem;
+    top:2rem;
+    height:14rem;
+    width:14rem;
+    border-radius:8rem;
+    background-color:#84b03e;
+    box-shadow:-25px -25px 35px #5c6e40 inset;
+    border: 1px solid rgba(0,64,0,0.5);
+    }
+  #page_login .submit:hover {
+    background-color:#a4d04e;
+    box-shadow:-25px -25px 35px #6c7e50 inset;
+    }
+  #page_login .submit:active {
+    background-color:#74902e;
+    box-shadow:-25px -25px 35px #3c4e20 inset;
+    }
+  #page_login .text_field {
+    width:40%;
+    float:left;
+    clear:left;
+    }
+  #page_login label {
+    display:block;
+    float:left;
+    clear:both;
+    height:2rem;
+    margin:0 0 0 1rem;
+    padding:1rem 0 0 0;
+    line-height:1.5rem;
+    font-size:1.25rem;
+    }
+  #page_login input {
+    height:2.5rem;
+    padding:0 0.75rem;
+    margin:0.25em 0 0 1rem;
+    border-radius:1.25rem;
+    border: 1px solid rgba(0,64,0,0.5);
+    line-height:2.5rem;
+    font-size:1.5rem;
+    }
+  #page_login input.password {
+    margin-bottom:3rem;
+    }
+  #page_login .link {
+    display:block;
+    float:left;
+    clear:left;
+    height:2rem;
+    line-height:1.5rem;
+    font-size:1rem;
+    margin:0.5rem 0 0 1rem;
+    }
+  #page_login .link a {
+    border-bottom:0;
+    }
+  /* Full-size first -- then small-screen following next */
+  @media screen and (max-width: 40em) {
+    #page_login fieldset {
+      border-top-right-radius:5px;
+      border-bottom-left-radius:9rem;
+      min-width:18rem;
+      width:18rem;
+      height:34rem;
+      }
+    #page_login .submit {
+      top:18rem;
+      }
+    #page_login .text_field {
+      width:80%;
+      }
+    #page_login input.password {
+      margin-bottom:2rem;
+      }
+    #page_login .link {
+      height:1.5rem;
+      }
+    }';
 
 // $page_title_html = '<span class="title">'.SITE_NAME.'</span>';
 // $page_subtitle_html = '<span class="subtitle">Login</span>';

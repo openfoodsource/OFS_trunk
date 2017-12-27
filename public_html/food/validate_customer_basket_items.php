@@ -510,12 +510,21 @@ $content .= '
   <div id="process_target">[process here]</div>
 </div>';
 
-$page_specific_javascript = '
-    <script type="text/javascript" src="'.PATH.'ajax/jquery.js"></script>
-    <script type="text/javascript" src="'.PATH.'validate_customer_basket_items.js"></script>';
+$page_specific_scripts['validate_customer_basket_items'] = array (
+  'name'=>'validate_customer_basket_items',
+  'src'=>BASE_URL.PATH.'validate_customer_basket_items.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'4.21.0',
+  'location'=>false
+  );
 
-$page_specific_css = '
-    <link href="'.PATH.'validate_customer_basket_items.css" rel="stylesheet" type="text/css">';
+$page_specific_stylesheets['validate_customer_basket_items'] = array (
+  'name'=>'validate_customer_basket_items',
+  'src'=>BASE_URL.PATH.'validate_customer_basket_items.css',
+  'dependencies'=>array('ofs_stylesheet'),
+  'version'=>'2.1.1',
+  'media'=>'all'
+  );
 
 $page_title_html = '<span class="title">Site Admin Functions</span>';
 $page_subtitle_html = '<span class="subtitle">Correct Old Basket Items</span>';

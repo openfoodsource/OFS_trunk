@@ -236,27 +236,25 @@ $content_delivery = '
 </div>';
 
 $page_specific_css = '
-  <style type="text/css">
-    #delivery_id_nav {
-      width:45%;
-      max-width:40rem;
-      margin:5px auto 0;
-      height:1.5em;
-      background-color:#eef;
-      }
-    #delivery_id_nav .prior,
-    #delivery_id_nav .next {
-      display:block;
-      line-height:1.5;
-      padding:0 5px;
-      }
-    #delivery_id_nav .prior {
-      float:left;
-      }
-    #delivery_id_nav .next {
-      float:right;
-      }
-  </style>';
+  #delivery_id_nav {
+    width:45%;
+    max-width:40rem;
+    margin:5px auto 0;
+    height:1.5em;
+    background-color:#eef;
+    }
+  #delivery_id_nav .prior,
+  #delivery_id_nav .next {
+    display:block;
+    line-height:1.5;
+    padding:0 5px;
+    }
+  #delivery_id_nav .prior {
+    float:left;
+    }
+  #delivery_id_nav .next {
+    float:right;
+    }';
 
 $page_title_html = '<span class="title">'.$site_array['route_name'].' Route Members</span>';
 $page_subtitle_html = '<span class="subtitle">'.date ('F d, Y', strtotime ($site_array['delivery_date'])).'</span>';

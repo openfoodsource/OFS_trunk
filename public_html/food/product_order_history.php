@@ -128,14 +128,30 @@ $page_title = $business_name.': Order History for '.$product_name;
 $page_tab = 'producer_panel';
 
 $page_specific_css = '
-  <style>
-  #product_history td, #product_history th{padding-left:1em;}
-  tr.prodhead {background:#efd}
-  tr.prodhead th {text-align:left;font-size:1.1em;font-weight:bolder;border-bottom:1px solid #000;}
-  tr.proddata {background:#ffe;color:#000;}
-  tr.proddata:hover {background:#ffffcc;color:#008;}
-  tr.proddata td.new_section {border-top:1px solid #ccc;}
-  </style>';
+  #product_history td,
+  #product_history th {
+    padding-left:1em;
+    }
+  tr.prodhead {
+    background:#efd;
+    }
+  tr.prodhead th {
+    text-align:left;
+    font-size:1.1em;
+    font-weight:bolder;
+    border-bottom:1px solid #000;
+    }
+  tr.proddata {
+    background:#ffe;
+    color:#000;
+    }
+  tr.proddata:hover {
+    background:#ffffcc;
+    color:#008;
+    }
+  tr.proddata td.new_section {
+    border-top:1px solid #ccc;
+    }';
 
 
 include("template_header.php");

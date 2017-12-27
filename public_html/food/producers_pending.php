@@ -177,11 +177,9 @@ $content_pending .= '
 
 
 $page_specific_css .= '
-<style type="text/css">
 table, td, th {
   border: 1px solid #CCCCCC;
-  }
-</style>';
+  }';
 
 $page_title_html = '<span class="title">Producer Membership Information</span>';
 $page_subtitle_html = '<span class="subtitle">Pending Producers</span>';
