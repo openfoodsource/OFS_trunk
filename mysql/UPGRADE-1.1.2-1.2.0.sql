@@ -98,3 +98,243 @@ CREATE TABLE IF NOT EXISTS ofs_transport_identities (
 INSERT INTO ofs_transport_identities (transport_id, transport_identity_name) VALUES
 (0, 'No transport configured for this cycle');
 
+-- CONVERT PRODUCTS TABLE --------------------------------------------------------------------------
+
+-- We are moving away from a single "confirmed" field to using two fields: "approved" and "active"
+-- The following series of queries is NOT an authoritative solution. Please read through the steps
+-- before executing them and try to understand what is going on. There is only one DELETE step
+-- where products are at risk for being deleted. This can be skipped to be on the safe side. The
+-- cost benefit tradeoff is that the less of these steps are done, the more products will need to
+-- reconfirmed because they missed confirmation in the older versions.
+
+-- Convert products table to include explicit fields for "confirmed" and "approved"
+ALTER TABLE ofs_products
+  ADD approved TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' AFTER confirmed,
+  ADD active TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' AFTER approved
+
+-- We will use an abbreviated copy of the ofs_products table to help with some of
+-- the following updates
+
+CREATE TABLE ofs_products2 (
+  pvid int(11) unsigned NOT NULL auto_increment ,
+  product_id int(11) NOT NULL ,
+  product_version mediumint(9) unsigned NOT NULL default '1',
+  product_name varchar(75) NOT NULL default '',
+  product_description longtext NOT NULL ,
+  unit_price decimal(9, 3) NOT NULL default '0.000',
+  pricing_unit varchar(20) NOT NULL default '',
+  ordering_unit varchar(20) NOT NULL default '',
+  extra_charge decimal(9, 2) default '0.00',
+  confirmed tinyint(1) NOT NULL default '0',
+  approved tinyint(1) unsigned NOT NULL default '0',
+  active tinyint(1) unsigned NOT NULL default '0',
+  created datetime NOT NULL ,
+  modified datetime NOT NULL ,
+  tangible tinyint(1) NOT NULL default '1',
+  PRIMARY KEY (pvid),
+  KEY product_version (product_id, product_version),
+  KEY confirmed (confirmed))
+
+INSERT INTO ofs_products2
+SELECT
+  pvid,
+  product_id,
+  product_version,
+  product_name,
+  product_description,
+  unit_price,
+  pricing_unit,
+  ordering_unit,
+  extra_charge,
+  confirmed,
+  approved,
+  active,
+  created,
+  modified,
+  tangible
+FROM ofs_products;
+
+-- Set all "preferred" products as "active" products
+UPDATE ofs_products
+  SET active = 1
+  WHERE confirmed = -1
+
+-- NOW BEGIN ASSIGNING "approved" PRODUCTS
+
+-- NOTE: At any time in the following, use this query to discover how many
+-- products remain to be approved:
+    SELECT COUNT(pvid)
+    FROM ofs_products
+    WHERE approved = 0
+
+-- Set all "confirmed" products as "approved" products
+UPDATE ofs_products SET approved = 1 WHERE confirmed = 1
+
+-- If you want to assume that any product previously purchased should be approved
+-- then set all previously-purchased versions of a product to "approved"
+UPDATE ofs_products
+  LEFT JOIN ofs_basket_items USING (product_id, product_version)
+  SET ofs_products.approved = 1
+  WHERE bpid IS NOT NULL
+
+-- The earlier OFS version did not correctly keep "approved" product settings
+-- so many products that are not "active" were probably once approved. We need
+-- to make some simplifying assumptions to prevent the need to suddenly have
+-- hundreds or thousands of products to re-approve from the web front-end.
+
+-- For the following queries, we will use approved > 1 as a conditional approval value
+-- as we require approved products to pass all the applied filters below
+
+-- Sometimes products are mistakenly assigned tangible=0 when they really are tangible.
+-- If you want to conditionally approve all products with tangible=1:
+UPDATE ofs_products
+SET approved = 2
+WHERE
+  approved = 0
+  AND tangible = 1
+
+-- Sometimes producer just forget to enter a price
+-- If you want to conditionally approve all products with either a unit_price or extra_charge:
+UPDATE ofs_products
+SET approved = 3                                    /* One more than value SET in the prior step */
+WHERE
+  approved = 2                                      /* Match value SET in prior step */
+  AND (unit_price != 0 OR extra_charge != 0)
+
+-- The following step will approve all products having a product_name that matches an existing
+-- "approved" product_name (If it was okay once then it should be okay again, right?)
+-- NOTE: On one system this query many minutes to complete; timeouts may apply
+UPDATE ofs_products
+LEFT JOIN ofs_products2 USING(product_name)
+SET ofs_products.approved = 4                       /* One more than value SET in the prior step */
+WHERE
+  ofs_products.approved = 3                         /* One more than value SET in the prior step */
+  AND ofs_products2.product_name IS NOT NULL        /* product_name matches a product */
+  AND ofs_products2.approved = 1                    /* where it was previously approved */
+
+-- The following step will approve all products having a product_description that matches an existing
+-- "approved" product_description (If it was okay once then it should be okay again, right?)
+-- NOTE: Since product descriptions are long and diverse, this requirement may be overly limiting
+-- ALSO NOTE: On one system this query required more than an hour to complete; timeouts may apply
+SELECT
+  ofs_products.pvid,
+  ofs_products.product_id,
+  ofs_products.product_version,
+  ofs_products.product_name
+UPDATE ofs_products
+LEFT JOIN ofs_products2 USING(product_description)
+SET ofs_products.approved = 5                       /* One more than value SET in the prior step */
+WHERE
+  ofs_products.approved = 4                         /* One more than value SET in the prior step */
+  AND ofs_products2.product_description IS NOT NULL /* product_description matches a product */
+  AND ofs_products2.approved = 1                    /* where it was previously approved */
+
+-- The following step will approve all products having an ordering_unit that matches an existing
+-- "approved" ordering_unit (If it was okay once then it should be okay again, right?)
+-- NOTE: On one system this query over seven minutes to complete; timeouts may apply
+UPDATE ofs_products
+LEFT JOIN ofs_products2 USING(ordering_unit)
+SET ofs_products.approved = 6                       /* One more than value SET in the prior step */
+WHERE
+  ofs_products.approved = 5                         /* One more than value SET in the prior step */
+  AND ofs_products2.product_description IS NOT NULL /* ordering_unit matches a product */
+  AND ofs_products2.approved = 1                    /* where it was previously approved */
+
+-- The following step will approve all products having an pricing_unit that matches an existing
+-- "approved" pricing_unit (If it was okay once then it should be okay again, right?)
+UPDATE ofs_products
+LEFT JOIN ofs_products2 USING(pricing_unit)
+SET ofs_products.approved = 7                       /* One more than value SET in the prior step */
+WHERE
+  ofs_products.approved = 6                         /* One more than value SET in the prior step */
+  AND ofs_products2.product_description IS NOT NULL /* pricing_unit matches a product */
+  AND ofs_products2.approved = 1                    /* where it was previously approved */
+
+-- You can check how many products passed/failed the various criteria above with this query
+SELECT
+  COUNT(pvid),
+  approved
+FROM ofs_products
+WHERE approved > 1
+GROUP BY approved
+ORDER BY approved
+
+-- Now convert all the products that passed all filters (approved = 7) to approved = 1
+UPDATE ofs_products
+SET approved = 1
+WHERE
+  approved = 7
+
+-- Finally, convert all products that did not pass all filters back to approved = 0
+UPDATE ofs_products
+SET approved = 0
+WHERE
+  approved > 1
+
+-- If desired, you can simply delete those products that have never been ordered
+-- and have been unconfirmed for a certain period of time (e.g. a year = 365 days)
+
+-- Here is a list of those products (invert the > sign to see the products that would remain)
+SELECT
+  pvid,
+  product_id,
+  product_version,
+  product_name,
+  modified
+FROM ofs_products
+LEFT JOIN ofs_basket_items USING (product_id, product_version)
+WHERE
+  approved = 0
+  AND bpid IS NULL
+  AND DATEDIFF(NOW(), modified) > 365 /* Number of days old */
+
+-- And apply the condition to delete those products
+DELETE ofs_products
+FROM ofs_products
+LEFT JOIN ofs_basket_items USING (product_id, product_version)
+WHERE
+  approved = 0
+  AND bpid IS NULL
+  AND DATEDIFF(NOW(), modified) > 365 /* Number of days old */
+
+-- If there is still no "active" version for any particular product_id, then
+-- set it equal to the highest "confirmed" (aka "approved") version
+UPDATE ofs_products
+SET ofs_products.active = 1
+WHERE
+  ofs_products.product_version = (
+    SELECT MAX( product_version )
+    FROM (SELECT product_id, product_version, confirmed FROM ofs_products) foo
+    WHERE foo.product_id = ofs_products.product_id
+      AND foo.confirmed =1
+    )
+  AND (
+    SELECT SUM(active)
+    FROM (SELECT product_id, product_version, confirmed, active FROM ofs_products) bar
+    WHERE bar.product_id = ofs_products.product_id
+    GROUP BY product_id
+    ) = 0
+
+-- Check all products that will remain to be confirmed
+SELECT
+  product_id,
+  product_version,
+  product_name,
+  confirmed,
+  active,
+  approved
+FROM ofs_products
+WHERE approved = 0
+
+-- Check for products without an active version (There may be a few recently added products)
+SELECT
+  product_id,
+  product_version,
+  SUM(active) AS sum_approved
+FROM ofs_products
+WHERE 1
+GROUP BY product_id
+HAVING sum_approved = 0
+
+
+
