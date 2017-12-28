@@ -299,7 +299,7 @@ function open_list_top(&$product, &$unique)
           <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Price</font></th>
           <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Quantity</font></th>
           <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Weight</font></th>
-          <th valign="bottom" bgcolor="#444444" align=right width="8%"><font color="#ffffff" size="-1">Amount</font></th>
+          <th class="price" valign="bottom" bgcolor="#444444" align=right width="8%"><font color="#ffffff" size="-1">Amount</font></th>
         </tr>'
 : '
         <tr>
@@ -318,7 +318,9 @@ function open_list_top(&$product, &$unique)
 function close_list_bottom(&$product, &$adjustment, &$unique)
   {
     $this_row = $product['this_row'];
-    return
+    return '
+      </tbody>
+      <tbody class="invoice_totals">'.
 ($product[$this_row]['adjustments_exist'] != '' ? '
         <tr align="left">
           <td></td>
@@ -330,30 +332,30 @@ function close_list_bottom(&$product, &$adjustment, &$unique)
 <!-- NEED 7 -->
         <tr>
           <td colspan="6" align="right" style="text-align:right;"><br><b>SUBTOTAL</b></td>
-          <td align="right" width="8%" style="text-align:right;"><br><b>$&nbsp;'.number_format($unique['total_order_amount'] - ($unique['invoice_price'] == 1 ? 0 : $unique['total_order_customer_fee']) - $unique['total_order_tax'], 2).'</b></td>
+          <td class="price" align="right" width="8%" style="text-align:right;"><br><b>$&nbsp;'.number_format($unique['total_order_amount'] - ($unique['invoice_price'] == 1 ? 0 : $unique['total_order_customer_fee']) - $unique['total_order_tax'], 2).'</b></td>
         </tr>'.
 ($product[$this_row]['delivery_id'] >= DELIVERY_NO_PAYPAL && $unique['invoice_price'] == 0 && $unique['customer_fee_percent'] != 0 ? '
         <tr>
           <td colspan="6" align="right" style="text-align:right;"><b>+ '.number_format($unique['customer_fee_percent'], 0).'% Fee</b></td>
-          <td align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['total_order_customer_fee'], 2).'</b></td>
+          <td class="price" align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['total_order_customer_fee'], 2).'</b></td>
         </tr>'
 : '').
 ($unique['total_order_tax'] != 0 ? '
         <tr>
           <td colspan="6" align="right" style="text-align:right;"><b>* Sales tax</b></td>
-          <td align="right" width="8%" style="text-align:right;"><b>$ '.number_format($unique['total_order_tax'], 2).'</b></td>
+          <td class="price" align="right" width="8%" style="text-align:right;"><b>$ '.number_format($unique['total_order_tax'], 2).'</b></td>
         </tr>'
 : '').
 ($product[$this_row]['exempt_adjustment_cost'] != 0 ? '
         <tr>
           <td colspan="6" align="right" style="text-align:right;"><b>Non-taxed Adjustments</b></td>
-          <td  align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($product[$this_row]['exempt_adjustment_cost'], 2).'</b></font></td>
+          <td class="price"  align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($product[$this_row]['exempt_adjustment_cost'], 2).'</b></font></td>
         </tr>'
 : '').
 ($adjustment['total_delivery_cost'] != 0 ? '
         <tr>
           <td colspan="6" align="right" style="text-align:right;"><b>Extra Charge for Delivery </b></font></td>
-          <td  align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($adjustment['total_delivery_cost'], 2).'</b></td>
+          <td class="price" align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($adjustment['total_delivery_cost'], 2).'</b></td>
         </tr>'
 : '').
 $unique['invoice_included_adjustments'].'
@@ -363,7 +365,7 @@ $unique['invoice_included_adjustments'].'
         </tr>
         <tr>
           <td colspan="6" align="right" style="text-align:right;"><b>Invoice&nbsp;Total </b></td>
-          <td align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['total_order_amount'] + $unique['invoice_included_adjustment_total'], 2).'</b></td>
+          <td class="price" align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['total_order_amount'] + $unique['invoice_included_adjustment_total'], 2).'</b></td>
         </tr>
         <tr>
           <td colspan="7">&nbsp;</td>
@@ -371,7 +373,7 @@ $unique['invoice_included_adjustments'].'
 ($unique['balance_forward'] != 0 ? '
         <tr>
           <td colspan="6" align="right" style="text-align:right;"><b>Previous '.($unique['balance_forward'] < 0 ? 'Credit' : 'Balance Due').'</b></td>
-          <td align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['balance_forward'], 2).'</b></td>
+          <td class="price" align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['balance_forward'], 2).'</b></td>
         </tr>'
 : '').
 $unique['other_included_adjustments'].'
@@ -381,8 +383,9 @@ $unique['other_included_adjustments'].'
         </tr>
         <tr>
           <td colspan="6" align="right" style="text-align:right;"><font size="+2">PLEASE PAY:&nbsp;</font></td>
-          <td align="right" style="text-align:right;"><font size="+2">'.($product[$this_row]['unfilled_random_weight'] ? '<font size="-1">'.$product[$this_row]['display_weight_pending_text'].'</font>' : '$&nbsp;'.number_format ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['invoice_included_adjustment_total'] + $unique['other_included_adjustment_total'], 2)).'</font></td>
-        </tr>'.
+          <td class="price" align="right" style="text-align:right;"><font size="+2">'.($product[$this_row]['unfilled_random_weight'] ? '<font size="-1">'.$product[$this_row]['display_weight_pending_text'].'</font>' : '$&nbsp;'.number_format ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['invoice_included_adjustment_total'] + $unique['other_included_adjustment_total'], 2)).'</font></td>
+        </tr>
+'.
 // ADJUSTMENT DISPLAY
 $unique['excluded_adjustments'].
 (round ($product[$this_row]['most_recent_payment_amount'], 2) > 0 ? '
@@ -408,7 +411,7 @@ $unique['excluded_adjustments'].
               </tr>
               <tr>
                 <td valign="top" style="padding:5px;height:21px;font-size:16px;">
-                  Pay $&nbsp;'.number_format ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['invoice_included_adjustment_total'] + $unique['other_included_adjustment_total'], 2).' by money-order or check at order pickup
+                  Pay $&nbsp;'.number_format ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['invoice_included_adjustment_total'] + $unique['other_included_adjustment_total'], 2).' by cash or check at order pickup
                 </td>
               </tr>'.
 // Only show PayPal if PayPal is enabled and if there is a real basket_id for this order
@@ -424,7 +427,7 @@ $unique['excluded_adjustments'].
                   'span2_content' => '',
                   'form_target' => 'paypal',
                   'allow_editing' => true,
-                  'amount' => number_format ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['invoice_included_adjustment_total'] + $unique['other_included_adjustment_total'], 2),
+                  'amount' => round ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['invoice_included_adjustment_total'] + $unique['other_included_adjustment_total'], 2),
                   'business' => PAYPAL_EMAIL,
                   'item_name' => htmlentities (ORGANIZATION_ABBR.' '.$unique['member_id'].' '.$unique['preferred_name']),
                   'notify_url' => BASE_URL.PATH.'paypal_utilities.php',
@@ -442,18 +445,16 @@ $unique['excluded_adjustments'].
                   <div style="clear:both;font-size:80%;margin-top:1em;">If paying with PayPal, be sure to print/bring your PayPal receipt with you to order pickup as proof of payment.</div>
                 </td>
               </tr>'
-: '&nbsp;')
-
-
+: '&nbsp;').
 (SQUARE_ENABLED == true && $unique['basket_id'] && $product[$this_row]['unfilled_random_weight'] == false ? '
-                <tr>
-                  <td colspan="2" style="padding:15px 20px;">OR</td>
-                </tr>
-                <tr>
-                  <td colspan="2" style="padding:5px;padding:5px;height:21px;font-size:16px;">
-                    Pay $&nbsp;'.(number_format (($unique['total_order_amount'] + $unique['balance_forward'] + $unique['included_adjustment_total']) * 1.0265, 2)).' by Square (2.65% added to cover Square fees).
-                  </td>
-                </tr>'
+              <tr>
+                <td colspan="2" style="padding:15px 20px;">OR</td>
+              </tr>
+              <tr>
+                <td colspan="2" style="padding:5px;padding:5px;height:21px;font-size:16px;">
+                  Pay $&nbsp;'.(number_format (($unique['total_order_amount'] + $unique['balance_forward'] + $unique['included_adjustment_total']) * 1.0265, 2)).' by Square (2.65% added to cover Square fees).
+                </td>
+              </tr>'
 : '&nbsp;')
 : '').'
             </table>
@@ -560,7 +561,7 @@ function show_product_row(&$product, &$unique)
       {
         $tax_display = ($product[$this_row]['taxable'] == 1 ? '* ' : '');
         $display_line = '
-          <tr align="center" class="'.$adjustment_class.'">
+          <tr class="center line_item '.$adjustment_class.'">
             <td width="40" align="right" valign="top">'.($unique['view'] == 'editable' ? '<img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=product&amp;target='.$product[$this_row]['bpid'].'\', \'edit_transaction\', \'\');">' : '').'</td>
             <td width="50" align="right" valign="top">'.$product[$this_row]['product_id'].'&nbsp;&nbsp;</td>
 
@@ -584,7 +585,7 @@ function show_product_row(&$product, &$unique)
                   : '(wt.&nbsp;pending)')
                 : '').'</td>
 
-            <td width="13" align="right" valign="top" style="text-align:right;"><b>'.$tax_display.'$'.number_format($product['total_product_amount'] - $product['total_product_tax'], 2).'</b></td>
+            <td class="price" width="13" align="right" valign="top" style="text-align:right;"><b>'.$tax_display.'$'.number_format($product['total_product_amount'] - $product['total_product_tax'], 2).'</b></td>
           </tr>'.
           // Show adjustment comment (kept in an associative array keyed by the adjustment text -- to prevent duplication of message)
           (count ($unique['adjustment_markup']) > 0 ? implode ('', $unique['adjustment_markup']) : '');
@@ -623,7 +624,7 @@ function show_adjustment_row(&$adjustment, &$unique)
                   ('.date ('M d, Y', strtotime ($adjustment[$this_row]['effective_datetime'])).')'.
                   (strlen ($adjustment[$this_row]['ledger_message']) > 0 ? '<span class="adjustment"><br>'.$adjustment[$this_row]['ledger_message'].'</span>' : '').'
                 </td>
-                <td align="right" valign="top" style="text-align:right;">
+                <td class="price" align="right" valign="top" style="text-align:right;">
                   $&nbsp;'.number_format ($adjustment[$this_row]['amount'] * $adjustment[$this_row]['multiplier'], 2).'
                 </td>
               </tr>';
@@ -645,7 +646,7 @@ function show_adjustment_row(&$adjustment, &$unique)
                   <img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=single&amp;target='.$adjustment[$this_row]['transaction_id'].'\', \'edit_transaction\', \'\');">' : '').'
                   '.ucfirst ($adjustment[$this_row]['text_key']).'
                 </td>
-                <td align="right" valign="top" style="text-align:right;">
+                <td class="price" align="right" valign="top" style="text-align:right;">
                   $&nbsp;'.number_format ($adjustment[$this_row]['amount'] * $adjustment[$this_row]['multiplier'], 2).'
                 </td>
               </tr>';
@@ -663,7 +664,7 @@ function show_adjustment_row(&$adjustment, &$unique)
                   ('.date ('M d, Y', strtotime ($adjustment[$this_row]['effective_datetime'])).')'.
                   (strlen ($adjustment[$this_row]['ledger_message']) > 0 ? '<span class="adjustment"><br>'.$adjustment[$this_row]['ledger_message'].'</span>' : '').'
                 </td>
-                <td align="right" valign="top" style="text-align:right;">
+                <td class="price" align="right" valign="top" style="text-align:right;">
                   $&nbsp;'.number_format ($adjustment[$this_row]['amount'] * $adjustment[$this_row]['multiplier'], 2).'
                 </td>
               </tr>';

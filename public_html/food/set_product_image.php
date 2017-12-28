@@ -43,7 +43,7 @@ if ($_GET['action'] == 'select_image')
         <fieldset id="options">
           <input type="checkbox" name="select_all_versions" id="select_all_versions">
           <label for="select_all_versions" id="version_option">Check here if you want to set the image for ALL versions of this product at once.</label>
-          <div id="return_button"><a href="'.$referrer.'">Return to previous page</a></div>
+          <!-- <div id="return_button"><a href="'.$referrer.'">Return to previous page</a></div> -->
           <span id="instructions">INSTRUCTIONS:<p>To switch images for this product, click on the &#10004; check
             of the selected product. You can also
             (1) upload new images using the &#8686; arrow,
@@ -82,7 +82,7 @@ if ($_GET['action'] == 'select_image')
         '.TABLE_PRODUCT_IMAGES.'
       WHERE
         '.TABLE_PRODUCT_IMAGES.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"
-      ORDER BY image_id';
+      ORDER BY COALESCE(title, caption, file_name, 0)';
     $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 522967 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
       {
@@ -98,11 +98,11 @@ if ($_GET['action'] == 'select_image')
         if (strlen ($title) == 0) $title = $file_name;
         $page_content .= '
           <div class="gallery_block">
-            <div id="image-'.$image_id.'" class="gallery_image'.($image_id == $image_id_target ? ' selected' : '').'" title="'.$product_list.'">
+            <div id="image-'.$image_id.'" class="gallery_image'.($image_id == $image_id_target ? ' selected' : '').'" title="'.$product_list.'" style="background-image:url(\''.get_image_path_by_id ($image_id).'\');" onclick="jQuery(this).toggleClass(\'hover\');">
               <input id="edit-'.$image_id.'" class="image_edit" type="button" title="Edit this image" value="&#9998;" onclick="popup_src(\''.$_SERVER['SCRIPT_NAME'].'?action=edit_image&image_id='.$image_id.'\', \'upload_image\', \'\')"></input>
               '.(strlen ($product_list) == 0 ? '<input id="delete-'.$image_id.'" class="image_delete" type="button" title="Delete this image" value="&#215;" onclick="delete_image(this,\'set\')" onblur="delete_image(this,\'clear\')"></input>' : '').'
               <input id="select-'.$image_id.'" class="image_select" type="button" title="Select this image" value="&#10004;" onclick="set_image('.$image_id.')"></input>
-              <img src="'.get_image_path_by_id ($image_id).'">
+              <!-- <img src="'.get_image_path_by_id ($image_id).'"> -->
             </div>
           <figcaption>'.$title.'</figcaption>
           </div>';
@@ -134,6 +134,76 @@ elseif ($_POST['action'] == 'remove_image')
       {
         $json['result'] = "failure";
       }
+    echo json_encode ($json);
+    exit (0);
+  }
+elseif ($_POST['action'] == 'rotate_image')
+  {
+    // Variables used in remove_image
+    if (isset ($_POST['rotation'])) $rotation = mysqli_real_escape_string ($connection, $_POST['rotation']);
+    if (isset ($_POST['image_id'])) $image_id = mysqli_real_escape_string ($connection, $_POST['image_id']);
+    // Get the image from the database
+    $query = '
+      SELECT
+        *
+      FROM
+        '.TABLE_PRODUCT_IMAGES.'
+      WHERE
+        image_id = "'.$image_id.'"';
+    $result = @mysqli_query ($connection, $query) or die(debug_print ("ERROR: 785922 ", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+    $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
+    // Use Imagick to rotate the image
+    $image = new Imagick ();
+    // $image->setResolution (100, 100) or die(debug_print ("ERROR: 892023 ", 'Failed setResolution', basename(__FILE__).' LINE '.__LINE__)); // Need this for PDF images
+    $image->readImageBlob ($row['image_content']) or die(debug_print ("ERROR: 748923 ", 'Failed readImageBlob', basename(__FILE__).' LINE '.__LINE__));
+    $db_image_size = $image->getImageGeometry () or die(debug_print ("ERROR: 794210 ", 'Failed getImageGeometry', basename(__FILE__).' LINE '.__LINE__));
+    // First increase the canvas size to allow full rotation by increments of 90 deg
+    $max_dimension = max (array ($db_image_size['width'], $db_image_size['height']));
+    $image->extentImage ($max_dimension, $max_dimension, ($db_image_size['width'] - $max_dimension) / 2, ($db_image_size['height'] - $max_dimension) / 2) or die(debug_print ("ERROR: 753202 ", 'Failed extentImage', basename(__FILE__).' LINE '.__LINE__));
+    // Now do the rotation
+    $image->rotateImage (new ImagickPixel('#00000000'), $rotation) or die(debug_print ("ERROR: 793434 ", 'Failed rotateImage', basename(__FILE__).' LINE '.__LINE__));
+    // And adjust the width/height
+    if ($rotation == 90 || $rotation == 270)
+      {
+        // Swap original width/height
+        list ($db_image_size['width'], $db_image_size['height']) = array ($db_image_size['height'], $db_image_size['width']);
+      }
+    $image->cropImage ($db_image_size['width'], $db_image_size['height'], ($max_dimension - $db_image_size['width']) / 2, ($max_dimension - $db_image_size['height']) / 2) or die(debug_print ("ERROR: 103743 ", 'Failed cropImage', basename(__FILE__).' LINE '.__LINE__));
+    // Since we are modifying the image, we will keep it in the database as jpeg format for conservation of size
+    // It will be converted to png if/when an image file is created.
+    $image->setImageCompression(Imagick::COMPRESSION_JPEG) or die(debug_print ("ERROR: 742905 ", 'Failed setImageCompression', basename(__FILE__).' LINE '.__LINE__));
+    $image->setImageCompressionQuality(80) or die(debug_print ("ERROR: 750248 ", 'Failed setImageCompressionQuality', basename(__FILE__).' LINE '.__LINE__));
+    $image->stripImage() or die(debug_print ("ERROR: 720894 ", 'Failed stripImage', basename(__FILE__).' LINE '.__LINE__));
+    $image->setImageFormat("jpeg") or die(debug_print ("ERROR: 734002 ", 'Failed setImageFormat', basename(__FILE__).' LINE '.__LINE__));
+    $rotated_image_data = $image->getImageBlob() or die(debug_print ("ERROR: 854362 ", 'Failed getImageBlob', basename(__FILE__).' LINE '.__LINE__));
+    // Now put this into the database
+    $query = '
+      UPDATE
+        '.TABLE_PRODUCT_IMAGES.'
+      SET
+        image_content = "'.mysqli_real_escape_string ($connection, $rotated_image_data).'",
+        content_size = "'.strlen ($rotated_image_data).'",
+        mime_type = "image/jpeg",
+        width = "'.$db_image_size['width'].'",
+        height = "'.$db_image_size['height'].'"
+      WHERE
+        image_id = "'.mysqli_real_escape_string ($connection, $image_id).'"';
+    $result = @mysqli_query ($connection, $query) or die(debug_print ("ERROR: 752893 ", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+// 
+// 
+// // echo "<pre>SIZE: ".strlen($image->getImageBlob ())."</pre>";
+// // header( "Content-type: image/png");
+// echo "<pre>$query</pre>";
+// exit (0);
+// 
+// 
+// 
+// 
+    // Now unlink the image file, if it exists (might fail if file does not exist)
+    unlink (FILE_PATH.PRODUCT_IMAGE_PATH.'img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png');
+    // $json['result'] = "failure";
+    $json['uniqid'] = uniqid();
+    $json['result'] = "success";
     echo json_encode ($json);
     exit (0);
   }
@@ -230,12 +300,12 @@ elseif ($_REQUEST['action'] == 'edit_image')
             $product_version = $row['product_version'];
             $product_name = $row['product_name'];
             $caption = $row['caption'];
-
-            $image_info = getimagesizefromstring($row['image_content']);
-            $actual_width = $image_info[0];
-            $actual_height = $image_info[1];
-            $width_to_height = $actual_width / $actual_height;
-            if ($actual_width <= PRODUCT_IMAGE_SIZE && $actual_height <= PRODUCT_IMAGE_SIZE)
+            $image = new Imagick();
+            $image->setResolution(100, 100); // This is low resolution for a PDF image, but should be high enough for images.
+            $image->readimageblob($row['image_content']);
+            $image_info = $image->getImageGeometry();
+            $width_to_height = $image_info['width'] / $image_info['height'];
+            if ($image_info['width'] <= PRODUCT_IMAGE_SIZE && $image_info['height'] <= PRODUCT_IMAGE_SIZE)
               $stretch_text = '<br>SMALL<br>IMAGE<br>IS<br>STRETCHED<br>TO<br>FIT';
             else
               $stretch_text = '';
@@ -246,9 +316,15 @@ elseif ($_REQUEST['action'] == 'edit_image')
               {
                 $page_content .= '
               <h3>Information for image #'.$image_id.'</h3>
-              <div class="gallery_image_large">
-                <img src="'.get_image_path_by_id ($image_id).'">
+              <div id="gallery_image_large-'.$image_id.'" class="gallery_image_large" style="background-image:url(\''.get_image_path_by_id ($image_id).'\');">
                 <div id="small_size_message">'.$stretch_text.'</div>
+              </div>
+              <div class="gallery_image_rotation">
+                <div class="instruction">Rotate</div>
+                <div class="orientation">&bull;<div id="rotate_image_none-'.$image_id.'" class="up" style="background-image:url(\''.get_image_path_by_id ($image_id).'\');" onclick="rotate_image(this, 0);"></div></div>
+                <div class="orientation">&#x21b7;<div id="rotate_image_right-'.$image_id.'" class="right" style="background-image:url(\''.get_image_path_by_id ($image_id).'\');" onclick="rotate_image(this, 90);"></div></div>
+                <div class="orientation">&#x21bb;<div id="rotate_image_down-'.$image_id.'" class="down" style="background-image:url(\''.get_image_path_by_id ($image_id).'\');" onclick="rotate_image(this, 180);"></div></div>
+                <div class="orientation">&#x21b6;<div id="rotate_image_left-'.$image_id.'" class="left" style="background-image:url(\''.get_image_path_by_id ($image_id).'\');" onclick="rotate_image(this, 270);"></div></div>
               </div>
               <div class="image_info">
                 <fieldset class="image_fields">
@@ -256,8 +332,8 @@ elseif ($_REQUEST['action'] == 'edit_image')
                     <input id="save_button" name="post_action" type="submit" value="Save">
                     <input type="hidden" name="action" value="edit_image">
                     <input type="hidden" name="image_id" value="'.$row['image_id'].'">
-                    '.($row['width'] != $actual_width ? '<input type="hidden" name="width" value="'.$actual_width.'">' : '').'
-                    '.($row['height'] != $actual_height ? '<input type="hidden" name="height" value="'.$actual_height.'">' : '').'
+                    '.($row['width'] != $image_info['width'] ? '<input type="hidden" name="width" value="'.$image_info['width'].'">' : '').'
+                    '.($row['height'] != $image_info['height'] ? '<input type="hidden" name="height" value="'.$image_info['height'].'">' : '').'
                     <label for="title">Title (For organizing images)</label>
                     <input type="text" id="title" name="title" value="'.$row['title'].'">
                     <label for="caption">Caption</label>
@@ -271,9 +347,9 @@ elseif ($_REQUEST['action'] == 'edit_image')
                 <span id="mime_type_label" class="label">Original type<br>Note: all images are served as PNG)</span>
                 <span id="mime_type_info" class="info">'.$row['mime_type'].'</span>
                 <span id="width_label" class="label">Original width (pixels)</span>
-                <span id="width_info" class="info">'.$actual_width.'</span>
+                <span id="width_info" class="info">'.$image_info['width'].'</span>
                 <span id="height_label" class="label">Original height (pixels)</span>
-                <span id="height_info" class="info">'.$actual_height.'</span>
+                <span id="height_info" class="info">'.$image_info['height'].'</span>
               </div>
               <div class="product_list">';
               }
@@ -302,95 +378,183 @@ elseif ($_REQUEST['action'] == 'edit_image')
             '.$page_content_prior.'
               </div>';
       }
-    // We're not going to send header and footer for this page
     $page_specific_css .= '
-      <style type="text/css">
-        /* STYLES FOR DISPLAYING THE EDIT_IMAGE PAGE */
-          h3 {
-            margin:5px 20px;
-            }
-          .image_fields {
-            border:0;
-            padding:0;
-            margin:0;
-            }
-          #save_button {
-            height:5em;
-            width:5em;
-            float:right;
-            margin:20px 25px 10px 10px;
-            }
-          #save_button:hover {
-            background-color:#ddd;
-            color:#008;
-            }
-          label,
-          .label {
-            display:block;
-            font-size:80%;
-            margin:5px 10px 1px 10px;
-            }
-          input[type=text],
-          .info {
-            display:block;
-            border:1px solid #aaa;
-            margin: 0 10px 5px 10px;
-            font-family: Helvetica,sans-serif;
-            font-size:14px;
-            padding:3px;
-            }
-          .info {
-            background-color:#ddd;
-            }
-          .gallery_image_large {
-            width:'.PRODUCT_IMAGE_SIZE.'px;
-            height:'.PRODUCT_IMAGE_SIZE.'px;
-            position:relative;
-            float:left;
-            background-color:#ddd;
-            border:1px solid #888;
-            z-index:-20;
-            margin:10px 20px;
-            transition:color 2s;
-            }
-          #small_size_message {
-            position:absolute;
-            top:0;
-            width:100%;
-            height:100%;
-            font-size:30px;
-            text-align:center;
-            color:rgba(128,128,128,0);
-            transition:color 2s;
-            z-index:5;
-            }
-          #small_size_message:hover {
-            color:rgba(128,128,128,1);
-            }
-          .gallery_image_large img {
-            '.$size_style.'
-            margin:auto;
-            }
-          .image_info {
-            float:left;
-            min-width:'.PRODUCT_IMAGE_SIZE.'px;
-            min-height:'.PRODUCT_IMAGE_SIZE.'px;
-            border:1px solid #888;
-            max-width:50%;
-            margin:10px 20px;
-            }
-          .product_list {
-            float:left;
-            clear:both;
-            min-width:'.PRODUCT_IMAGE_SIZE.'px;
-            max-width:'.(PRODUCT_IMAGE_SIZE*2.1).'px;
-            min-height:50px;
-            border:1px solid #888;
-            margin:10px 20px;
-            padding:10px;
-            }
-      </style>';
-    echo $page_specific_css.$page_content;
+      /* STYLES FOR DISPLAYING THE EDIT_IMAGE PAGE */
+        h3 {
+          margin:5px 20px;
+          }
+        .image_fields {
+          border:0;
+          padding:0;
+          margin:0;
+          }
+        #save_button {
+          height:5em;
+          width:5em;
+          float:right;
+          margin:20px 25px 10px 10px;
+          }
+        #save_button:hover {
+          background-color:#ddd;
+          color:#008;
+          }
+        label,
+        .label {
+          display:block;
+          font-size:80%;
+          margin:5px 10px 1px 10px;
+          }
+        input[type=text],
+        .info {
+          display:block;
+          border:1px solid #aaa;
+          margin: 0 10px 5px 10px;
+          font-family: Helvetica,sans-serif;
+          font-size:14px;
+          padding:3px;
+          }
+        .info {
+          background-color:#ddd;
+          }
+        .gallery_image_large {
+          background-repeat:no-repeat;
+          background-position:center;
+          background-size:contain;
+          width:'.PRODUCT_IMAGE_SIZE.'px;
+          height:'.PRODUCT_IMAGE_SIZE.'px;
+          position:relative;
+          float:left;
+          background-color:#ddd;
+          border:1px solid #888;
+          z-index:-20;
+          margin:10px 20px;
+          transition:color 2s;
+          }
+        #small_size_message {
+          position:absolute;
+          top:0;
+          width:100%;
+          height:100%;
+          font-size:30px;
+          text-align:center;
+          color:rgba(128,128,128,0);
+          transition:color 2s;
+          z-index:5;
+          }
+        #small_size_message:hover {
+          color:rgba(128,128,128,1);
+          }
+        .gallery_image_large img {
+          '.$size_style.'
+          margin:auto;
+          }
+        .image_info {
+          float:left;
+          min-width:'.PRODUCT_IMAGE_SIZE.'px;
+          min-height:'.PRODUCT_IMAGE_SIZE.'px;
+          border:1px solid #888;
+          max-width:50%;
+          margin:10px 20px;
+          }
+        .product_list {
+          float:left;
+          clear:both;
+          min-width:'.PRODUCT_IMAGE_SIZE.'px;
+          max-width:'.(PRODUCT_IMAGE_SIZE*2.1).'px;
+          min-height:50px;
+          border:1px solid #888;
+          margin:10px 20px;
+          padding:10px;
+          }
+        /* Styles for rotation options */
+        .instruction {
+          text-align:center;
+          font-size:80%;
+          }
+        .gallery_image_rotation {
+          margin: 10px 20px;
+          float:left;
+          border:1px solid #888;
+          padding:0;
+          }
+        .gallery_image_rotation div.orientation {
+          font-size:200%;
+          text-align:right;
+          margin:2px 10px;
+          }
+        .gallery_image_rotation div.orientation div {
+          display:inline-block;
+          background-color:#ddd;
+          background-repeat:no-repeat;
+          background-position:center;
+          background-size:contain;
+          height:'.floor ((PRODUCT_IMAGE_SIZE / 4) - 19).'px;
+          width:'.floor ((PRODUCT_IMAGE_SIZE / 4) - 19).'px;
+          min-height:20px;
+          min-width:20px;
+          border:1px solid #888;
+          margin:2px;
+          cursor:pointer;
+          }
+        .orientation .right {
+          transform: rotate(90deg);
+          }
+        .orientation .down {
+          transform: rotate(180deg);
+          }
+        .orientation .left {
+          transform: rotate(270deg);
+          }';
+
+    $page_specific_javascript = '
+      // This function rotates an image by a specified number of degrees
+      function rotate_image (obj, rotation) {
+        var image_id = obj.id.split("-")[1];
+        if (rotation != 0) {
+          jQuery.ajax({
+            type: "POST",
+            url: "'.PATH.'set_product_image.php",
+            cache: false,
+            data: {
+              rotation: rotation,
+              image_id: image_id,
+              action: "rotate_image"
+              }
+            })
+          .done(function(return_values) {
+            returned = JSON.parse(return_values);
+            if (returned["result"] == "success") {
+              // Force the image to reload
+              var image_url = "'.PATH.'get_image.php?image_id="+image_id+"&"+returned["uniqid"];
+              // Udate all the images
+              jQuery ("#gallery_image_large-"+image_id).css("background-image", "url(" + image_url + ")");
+              jQuery ("#rotate_image_none-"+image_id).css("background-image", "url(" + image_url + ")");
+              jQuery ("#rotate_image_right-"+image_id).css("background-image", "url(" + image_url + ")");
+              jQuery ("#rotate_image_down-"+image_id).css("background-image", "url(" + image_url + ")");
+              jQuery ("#rotate_image_left-"+image_id).css("background-image", "url(" + image_url + ")");
+              // Now have the parent page reload the image as well
+              // parent.update_image (product_id, product_version, new_image_id);
+              parent.reload_image (image_id, image_url);
+              }
+            else {
+              alert ("Sorry, the image was not rotated");
+              }
+            });
+          }
+        }';
+
+    $display_as_popup = true;
+    $page_title_html = '<span class="title">'.$business_name.'</span>';
+    $page_subtitle_html = '<span class="subtitle">Set an Image for #'.$product_id_target.' '.$product_name_target.'</span>';
+    $page_title = $business_name.': Set an Image for #'.$product_id_target.' '.$product_name_target;
+    $page_tab = 'producer_panel';
+
+    include("template_header.php");
+    echo '
+      <!-- CONTENT ENDS HERE -->
+      '.$page_content.'
+      <!-- CONTENT ENDS HERE -->';
+    include("template_footer.php");
     exit (0);
   }
 
@@ -442,7 +606,9 @@ $page_specific_css = '
       }
     /* Default gallery image blocks (not images, but hold the gallery images) */
     .gallery_image {
-      position:relative;
+      background-repeat:no-repeat;
+      background-position:center;
+      background-size:contain;
       width:112px;
       height:112px;
       border:6px solid rgba(128,128,128,0.2);
@@ -453,6 +619,7 @@ $page_specific_css = '
       cursor:pointer;
       }
     /* Border color of the images during mouseover */
+    .gallery_image.hover,
     .gallery_image:hover {
       border:6px solid rgba(128,128,128,0.6);
       height:118px;
@@ -466,15 +633,9 @@ $page_specific_css = '
       padding:0;
       }
     /* Border color of the currently-selected image during mouseover */
+    .gallery_image.selected.hover,
     .gallery_image.selected:hover {
       border:6px solid rgba(128,64,64,0.8);
-      }
-    /* Position of images within the gallery blocks */
-    .gallery_image img {
-      position:absolute;
-      bottom:0;
-      max-width:100px;
-      max-height:100px;
       }
     /* Appearance of the upload and remove icons */
     .gallery_image .upload_icon,
@@ -520,10 +681,12 @@ $page_specific_css = '
       border-radius:30px;
       }
     /* Exposes action areas which are otherwise invisible */
+    .gallery_image.hover input,
     .gallery_image:hover input {
       display:block;
       }
     /* Style the specific action areas when they are hovered */
+    .gallery_image.hover input,
     .gallery_image input:hover {
       opacity:0.7;
       color:#000;
@@ -592,7 +755,7 @@ $page_specific_javascript = '
       var image_id = obj.id.split("-")[1];
       if (action == "set") {
         if (jQuery(obj).hasClass("warn")) {
-          jQuery.get("'.BASE_URL.PATH.'receive_image_uploads.php?action=delete&image_id="+image_id, function(data) {
+          jQuery.get("'.PATH.'receive_image_uploads.php?action=delete&image_id="+image_id, function(data) {
             // If the return value is deleted
             if (data == "deleted") {
               // Remove the image from our list
@@ -666,6 +829,10 @@ $page_specific_javascript = '
           alert ("Sorry, the image was not updated");
           }
         });
+      }
+    // This function reloads an image that might have changed (i.e. from rotation)
+    function reload_image (image_id, new_target) {
+      jQuery ("#image-"+image_id).css("background-image", "url(" + new_target + ")");
       }';
 
 include("func/show_businessname.php");

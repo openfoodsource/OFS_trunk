@@ -3,8 +3,14 @@ include_once 'config_openfood.php';
 session_start();
 // valid_auth('member');  // Do not authenticate so this page is accessible to everyone
 
+if($_GET['display_as'] == 'popup')
+  {
+    $display_as_popup = true;
+  }
 
 $message = '';
+$error_array = array();
+$notice_array = array();
 
 // Rather than use the check_valid_user function, we need to trap the result
 if ( ! $_SESSION['member_id'] )
@@ -92,27 +98,30 @@ if ( ! $_SESSION['member_id'] )
             $result = mysqli_query ($connection, $query_update) or die (debug_print ("ERROR: 262562 ", array ($query_update, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
             // Need to break DOMAIN_NAME into an array of separate names so we can use the first element
             $domain_names = preg_split("/[\n\r]+/", DOMAIN_NAME);
-            $message =
+            $email_message =
               'Account security notice:
 
                 The password for an account registered with this email address
                 has been reset from the website at '.($domain_names[0]).'
                 Username: '.$valid_username.'
                 The new password is: '.$password;
-            mail ( $valid_email, 'Updated account info for '.($domain_names[0]), $message, "from: ".MEMBERSHIP_EMAIL);
-            header( 'refresh: 7; url='.PATH );
+            mail ( $valid_email, 'Updated account info for '.($domain_names[0]), $email_message, "from: ".MEMBERSHIP_EMAIL);
             $display_password .= '
-              <table width="50%" align="center" cellspacing="5">
-                <tr>
-                  <td><p style="font-size:1.2em">An email has been sent to the validated address.
-                    If you do not receive it, contact '.MEMBERSHIP_EMAIL.'</p>
-                  <p style="font-size:1.2em">In a few seconds, you will be redirected to the main page.</p></td>
-                </tr>
-              </table>';
+                  <div class="modal_message">An email has been sent to the validated address. If you do
+                  not receive it, contact '.MEMBERSHIP_EMAIL.'.</div>';
             $page_title_html = '<span class="title">Member Resources</span>';
             $page_subtitle_html = '<span class="subtitle">Password Successfully Reset</span>';
             $page_title = 'Member Resources: Password Successfully Reset';
             $page_tab = 'member_panel';
+            $page_specific_css = '
+              .modal_message {
+                font-size:2rem;
+                color:#888;
+                }';
+            if ($display_as_popup == true)
+              {
+                $modal_action = 'just_close(6000)';
+              }
             include("template_header.php");
             echo '
               <!-- CONTENT BEGINS HERE -->
@@ -125,48 +134,94 @@ if ( ! $_SESSION['member_id'] )
           // Information did not validate, so return to the form
           {
           $_POST['form_data'] = 'false';
-          $message = '<p style="font-size:1.2em;color:#700;">Sorry... the information you submitted did not validate.</p>';
+          array_push ($error_array, 'The information provided does not match any known account.');;
           }
       }
     if ( $_POST['form_data'] != 'true' )
       // Form data was not posted or was invalid, so show the form for input
       {
+        $display_errors = display_alert('notice', 'You may try another combination and resubmit.', $error_array);
         $display_password .= '
-          <form method="post" action="'.$_SERVER['SCRIPT_NAME'].'" name="change_password">
-          <table width="50%" align="center" cellspacing="5">
-            <tr>
-              <td colspan="3">'.$message.'<p style="color:#462">In order to reset your password, you must correctly
-                enter two of the three pieces of information below.  Then a new password will be
-                e-mailed to you.</p><p style="color:#462">For security purposes, you will not be told which information
-                is incorrect.</p>
-                <p style="color:#462">Because of possible email delays, please allow up to an hour to receive your new password.</td>
-            </tr>
-            <tr>
-              <td align="right" style="padding-bottom:1em;"><b>Username</b>:</td>
-              <td align="left" colspan="2" style="padding-bottom:1em;"><input type="input" name="username" size="25" placeholder="username" maxlength="20"></td>
-            </tr>
-            <tr>
-              <td align="right" style="padding-bottom:1em;"><b>Email Address</b>:</td>
-              <td align="left" colspan="2" style="padding-bottom:1em;"><input type="text" name="email_address" size="25" placeholder="email@site.com" maxlength="50"></td>
-            </tr>
-            <tr>
-              <td align="right" rowspan="2" style="padding-bottom:1em;"><b>Full Name</b>:</td>
-              <td align="left" width="10"><input type="input" name="first_name" size="25" maxlength="25" placeholder="first name" onClick="javascript:this.focus();this.select();"></td>
-              <td valign="middle" rowspan="2" align="left" style="padding-bottom:1em;"> Both required</td>
-            </tr>
-            <tr>
-              <td align="left" width="10" style="padding-bottom:1em;"><input type="input" name="last_name" size="25" maxlength="25" placeholder="last name" onClick="javascript:this.focus();this.select();"></td>
-           </tr>
-            <tr>
-              <td colspan="3" align="center"><input type="hidden" name="form_data" value="true">
-                <input type="submit" name="submit" value="Send New Password"></td>
-            </tr>
-          </table>
+          <form action="'.$_SERVER['SCRIPT_NAME'].($display_as_popup == true ? '?display_as=popup' : '').'" name="change_password" id="change_password" method="post">'.
+            $display_errors.'
+            <div class="form_buttons">
+              <button type="submit" name="action" id="action" value="Send">Send</button>
+            </div>
+            <fieldset class="reset_password grouping_block">
+              <legend>Reset Password</legend>
+              <div class="note">
+                <p>In order to reset your password, you must correctly enter two of the three pieces of information below
+                (Username and E-Mail, Username and Full Name, or E-Mail and Full Name). Then a new password will be e-mailed to you.</p>
+                <p>For security reasons, you will not be told if any information is incorrect.</p>
+                <p>Please allow up to an hour to receive your new password.</p>
+              </div>
+              <div class="input_block_group">
+                <div class="input_block username">
+                  <label for="username">Username</label>
+                  <input type="text" id="username" name="username">
+                </div>
+              </div>
+              <div class="input_block_group">
+                <div class="input_block email_address">
+                  <label for="email_address">E-Mail Address</label>
+                  <input type="text" id="email_address" name="email_address">
+                </div>
+              </div>
+              <div class="input_block_group full_name">
+                <div class="input_block first_name">
+                  <label for="first_name">First Name</label>
+                  <input type="text" id="first_name" name="first_name">
+                </div>
+                <div class="input_block last_name">
+                  <label for="last_name">Last Name</label>
+                  <input type="text" id="last_name" name="last_name">
+                  <input type="hidden" name="form_data" value="true">
+                </div>
+              </div>
+            </fieldset>
           </form>';
         $page_title_html = '<span class="title">Member Resources</span>';
         $page_subtitle_html = '<span class="subtitle">Identity Validation</span>';
         $page_title = 'Member Resources: Identity Validation';
         $page_tab = 'member_panel';
+        $page_specific_css = '
+          /* Styles for submit/reset/clear/etc. form buttons */
+          .form_buttons {
+            position:fixed;
+            left:10px;
+            bottom:10px;
+            }
+          .form_buttons button {
+            display:block;
+            clear:both;
+            width:5em;
+            margin-bottom:2em;
+            }
+          /* Set fieldset colors */
+          fieldset.reset_password {
+            background-color:#f8f4f0;
+            width:80%;
+            text-align:center;
+            }
+          fieldset.reset_password legend {
+            background-color:#f8f4f0;
+            }
+          .grouping_block .input_block {
+            }
+          .input_block_group {
+            display:block;
+            margin:0.75rem 0;
+            text-align:center;
+            }
+          .input_block.username,
+          .input_block.email_address,
+          .input_block.first_name,
+          .input_block.last_name {
+            display:inline-block;
+            }
+          .first_name::after {
+            content:" + ";
+            }';
         include("template_header.php");
         echo '
           <!-- CONTENT BEGINS HERE -->
@@ -185,12 +240,22 @@ else
         $new_password1 = $_POST['new_password1'];
         $new_password2 = $_POST['new_password2'];
         // Make sure everything is filled in
-        if($_SESSION['member_id'] && $old_password && $new_password1 && $new_password2)
+        if($_SESSION['member_id'] && ($old_password || $new_password1 || $new_password2))
           {
             // Check that the new passwords match
             if ( $new_password1 != $new_password2 )
               {
-                $message .= '<p style="font-size:1.2em;color:#700;">New passwords do not match.</p>';
+                array_push ($error_array, 'New passwords do not match.');
+              }
+            else
+              {
+                $password_strength = test_password ($new_password1);
+                array_push ($notice_array, 'New password strength: '.$password_strength);
+                if ($password_strength < MIN_PASSWORD_STRENGTH)
+                  {
+                    array_push ($error_array, 'Password strength ('.$password_strength.') is too weak.');
+                    array_push ($error_array, 'Minimum password strength is: '.MIN_PASSWORD_STRENGTH);
+                  }
               }
             // Check that the old password is correct
             $query_pw = '
@@ -205,9 +270,9 @@ else
             $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
             if ( $row['valid_password'] != 'true' && md5($old_password) != MD5_MASTER_PASSWORD)
               {
-                $message .= '<p style="font-size:1.2em;color:#700;">Incorrect old password was provided.</p>';
+                array_push ($error_array, 'Incorrect value for old password.');
               }
-            if ($message == '')
+            if (count ($error_array) == 0)
               // Everything looks good, so go ahead and update the password
               {
                 $query_update = '
@@ -218,18 +283,24 @@ else
                   WHERE
                     member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"';
                 $result = mysqli_query ($connection, $query_update) or die (debug_print ("ERROR: 137864 ", array ($query_update, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
-                header( 'refresh: 7; url=panel_member.php' );
-                $display_password .= '
-                <table width="50%" align="center" cellspacing="5">
-                  <tr>
-                    <td><p style="font-size:1.2em">Your password has been updated. </p>
-                    <p style="font-size:1.2em">In a few seconds, you will be redirected to the login page.</p></td>
-                  </tr>
-                </table>';
+                $display_notices = display_alert('notice', '', $notice_array);
+                $display_password .= $display_notices.'
+                    <div class="modal_message">Your password has been updated.</div>';
                 $page_title_html = '<span class="title">Member Resources</span>';
                 $page_subtitle_html = '<span class="subtitle">Successfully Changed Password</span>';
                 $page_title = 'Member Resources: Password Successfully Changed';
                 $page_tab = 'member_panel';
+                $page_specific_css = '
+                  <style type="text/css">
+                  .modal_message {
+                    font-size:2rem;
+                    color:#888;
+                    }
+                  </style>';
+                if ($display_as_popup == true)
+                  {
+                    $modal_action = 'just_close(6000)';
+                  }
                 include("template_header.php");
                 echo '
                   <!-- CONTENT BEGINS HERE -->
@@ -252,41 +323,67 @@ else
     if ( $_POST['form_data'] != 'true' )
       // Form data was not posted or was invalid, so show the form for input
       {
-        $display_password .= '<form method="post" action="'.$_SERVER['SCRIPT_NAME'].'" name="change_password">';
+        $display_errors = display_alert('error', 'Please correct the following problems and resubmit.', $error_array);
         $display_password .= '
-          <table width="50%" align="center" cellspacing="5">
-            <tr>
-              <td colspan="2">';
-        if ($message)
-          {
-            $display_password .= $message.'<p style="font-size:1.2em;color:#700;">Please re-enter your information.</p>';
-          }
-        else
-          {
-            $display_password .= '<p style="font-size:1.2em">In order to change your password, please enter your old password and
-              enter your new password twice for confirmation.</p>';
-          }
-        $display_password .= '
-              </td>
-            </tr>
-            <tr>
-              <td align="right"><b>Old Password</b>:</td>
-              <td align="left"><input type="password" name="old_password" size="17" maxlength="20"></td>
-            </tr>
-            <tr>
-              <td align="right"><b>New Password</b>:</td>
-              <td align="left"><input type="password" name="new_password1" size="17" maxlength="25"></td>
-            </tr>
-            <tr>
-              <td align="right"><b>New Password (confirm)</b>:</td>
-              <td align="left"><input type="password" name="new_password2" size="17" maxlength="25"></td>
-            </tr>
-            <tr>
-              <td colspan="2" align="right"><input type="hidden" name="form_data" value="true">
-                <input type="submit" name="submit" value="Update"></td>
-            </tr>
-          </table>
+          <form action="'.$_SERVER['SCRIPT_NAME'].($display_as_popup == true ? '?display_as=popup' : '').'" name="change_password" id="change_password" method="post">'.
+            $display_errors.'
+            <div class="form_buttons">
+              <button type="submit" name="action" id="action" value="Change">Change</button>
+            </div>
+            <fieldset class="change_password grouping_block">
+              <legend>Change Password</legend>
+              <div class="note">
+                <p>In order to change your password, please enter your old password and
+                enter your new password twice for confirmation.</p>
+              </div>
+              <div class="input_block old_password">
+                <label for="old_password">Old Password</label>
+                <input type="password" id="old_password" name="old_password">
+              </div>
+              <div class="input_block new_password1">
+                <label for="new_password1">New Password</label>
+                <input type="password" id="new_password1" name="new_password1">
+              </div>
+              <div class="input_block new_password2">
+                <label for="new_password2">New Password (confirm)</label>
+                <input type="password" id="new_password2" name="new_password2">
+                <input type="hidden" name="form_data" value="true">
+              </div>
+            </fieldset>
           </form>';
+        $page_specific_css = '
+          <style type="text/css">
+          /* Styles for submit/reset/clear/etc. form buttons */
+          .form_buttons {
+            position:fixed;
+            left:10px;
+            bottom:10px;
+            }
+          .form_buttons button {
+            display:block;
+            clear:both;
+            width:5em;
+            margin-bottom:2em;
+            }
+          /* Set fieldset colors */
+          fieldset.change_password {
+            background-color:#f8f4f0;
+            width:80%;
+            text-align:center;
+            }
+          fieldset.change_password legend {
+            background-color:#f8f4f0;
+            }
+          .grouping_block .input_block {
+            }
+          .input_block.old_password,
+          .input_block.new_password1,
+          .input_block.new_password2 {
+            display:block;
+            margin:0.5rem auto;
+            width:10rem;
+            }
+          </style>';
         $page_title_html = '<span class="title">Member Resources</span>';
         $page_subtitle_html = '<span class="subtitle">Change Password</span>';
         $page_title = 'Member Resources: Change Password';

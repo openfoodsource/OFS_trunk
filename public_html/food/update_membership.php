@@ -27,7 +27,7 @@ if (isset ($_POST['update_membership']) && $_POST['update_membership'] == 'true'
     if (! $_SESSION['renewal_info']['membership_expired'])
       {
         // This flag is also used to determine whether the information was processed/accepted
-        $modal_action = 'reload_parent()';
+        $modal_action = 'parent.reload_parent()';
       }
   }
 $do_update_membership = false;
@@ -58,61 +58,101 @@ if ($do_update_membership == true)
     if ($member_request == true)
       {
         // Instructions for optional membership changes
-        $renew_membership_form .= '
-          <h3>Change Membership Type</h3>
+        $display_form_title = '
+          <h1>Change Membership</h1>';
+        $renew_message = '
           <p>Depending on the changes you are making, this could adversely affect your renewal date and/or other membership priviliges with the '.ORGANIZATION_TYPE.'. Multiple changes might result in additional membership dues that will need to be manually adjusted. For additional help, please contact <a href="mailto:'.MEMBERSHIP_EMAIL.'?Subject=Changing%20Membership%20(member%20#'.$_SESSION['member_id'].')">'.MEMBERSHIP_EMAIL.'</a>.</p>
-          <p>Select from the option(s) below to change your membership type:</p>';
+          <p>Select from the option(s) below to change your membership type.</p>';
+        $submit_button = 'Change';
       }
     else
       {
         // Instructions for mandatory membership changes
-        $renew_membership_form .= '
-          <h3>Membership Renewal</h3>
+        $display_form_title = '
+          <h1>Membership Renewal</h1>';
+        $renew_message = '
           <p>'.$membership_renewal_form['expire_message'].' Any charges will be added to your next ordering invoice.</p>
           <p>Please select from the option(s) below to continue.</p>';
+        $submit_button = 'Renew';
       }
-    $renew_membership_form .= '
-        <form action="'.$_SERVER['SCRIPT_NAME'].($_GET['display_as'] == 'popup' ? '?display_as=popup' : '').'" method="post">'.
-        $membership_renewal_form['same_renewal'].
-        $membership_renewal_form['changed_renewal'].
-        '<input type="hidden" name="update_membership" value="true">
-        <input id="renew_membership" type="submit" name="submit" value="Renew now!">
+    $renew_membership_form .= $display_form_title.'
+        <form action="'.$_SERVER['SCRIPT_NAME'].($_GET['display_as'] == 'popup' ? '?display_as=popup' : '').'" method="post">
+          <div class="form_buttons">
+            <button type="submit" name="action" id="action" value="'.$submit_button.'">'.$submit_button.'</button>
+            <button type="reset" name="reset" id="reset" value="Reset">Reset</button>
+          </div>
+          <fieldset class="renewal_options grouping_block">
+            <legend>Membership Options</legend>
+            <div class="note">'.
+              $renew_message.'
+            </div>'.
+            $membership_renewal_form['same_renewal'].
+            $membership_renewal_form['changed_renewal'].'
+          </fieldset>
+        <input type="hidden" name="update_membership" value="true">
         </form>
       </div>';
   }
 
 $page_specific_css = '
-    #membership_renewal_content {
-      padding:1em;
-      }
-    #renew_membership {
-      display:block;
-      margin:auto;
-      }
-    .membership_message {
-      font-size:200%;
-      color:#660;
-      text-align:center;
-      margin:2em;
-      }
-    .expire_message {
-      font-weight:bold;
-      }
-    .same_renewal,
-    .changed_renewal {
-      font-weight:bold;
-      padding-left:50px;
-      margin:10px 3px 3px 3px;
-      }
-    .same_renewal_desc,
-    .changed_renewal_desc {
-      font-style:italic;
-      margin:3px 20px 10px 100px;
-      padding:0.5em;
-      background-color:#eee;
-      border-right: 1px solid #ddd;
-      border-bottom: 1px solid #ddd;
-      }';
+  .form_buttons {
+    position:fixed;
+    left:10px;
+    bottom:10px;
+    }
+  .form_buttons button {
+    display:block;
+    clear:both;
+    width:5em;
+    margin-bottom:2em;
+    }
+  fieldset.renewal_options {
+    background-color:#f8f4f0;
+    width:80%;
+    text-align:left;
+    }
+  fieldset.renewal_options legend {
+    background-color:#f8f4f0;
+    }
+  .grouping_block .input_block {
+    float:left;
+    }
+  /* Special styles for Membership Types block */
+  .membership_type_list {
+    width: 100%;
+    }
+  .membership_type_group {
+    border-top: 1px solid #ccc;
+    display: table;
+    height: auto;
+    margin: 0 2rem 0 0.5rem;
+    overflow: auto;
+    padding: 0.5rem 0 1rem;
+    width: 98%;
+    }
+  .membership_class {
+    display: table-cell;
+    font-weight: bold;
+    padding-right: 2rem;
+    white-space: nowrap;
+    width: 1px;
+    }
+  input.membership_type_id {
+    margin: 0 1rem;
+    }
+  .membership_description {
+    display: table-cell;
+    }
+  .renew {
+    color: #600;
+    display: block;
+    text-align: center;
+    text-transform: uppercase;
+    }
+  .renew::before,
+  .renew::after {
+    content:"-";
+    }';
 
 if($_GET['display_as'] == 'popup')
   $display_as_popup = true;
@@ -123,6 +163,6 @@ $message = '<div class="membership_message">'.($display_as_popup == true ? 'Relo
 include("template_header.php");
 echo '
   <!-- CONTENT BEGINS HERE -->
-  '.($modal_action != 'reload_parent()' ? $renew_membership_form : $message).'
+  '.($modal_action != 'parent.reload_parent()' ? $renew_membership_form : $message).'
   <!-- CONTENT ENDS HERE -->';
 include("template_footer.php");

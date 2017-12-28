@@ -34,8 +34,8 @@ $query = '
   LEFT JOIN '.TABLE_CATEGORY.' USING(category_id)
   LEFT JOIN '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   WHERE
-    '.NEW_TABLE_LEDGER.'.delivery_id <= "'.mysqli_real_escape_string($connection, $stop).'"
-    AND '.NEW_TABLE_LEDGER.'.delivery_id >= "'.mysqli_real_escape_string($connection, $start).'"
+    '.NEW_TABLE_LEDGER.'.delivery_id <= "'.mysqli_real_escape_string ($connection, $stop).'"
+    AND '.NEW_TABLE_LEDGER.'.delivery_id >= "'.mysqli_real_escape_string ($connection, $start).'"
     AND replaced_by IS NULL
     AND (
       text_key = "quantity cost"
@@ -61,23 +61,22 @@ while ($row = mysqli_fetch_array ($main_sql, MYSQLI_ASSOC))
 
 $query = '
   SELECT
-    delivery_id,
     delivery_date
   FROM
     '.TABLE_ORDER_CYCLES.'
   WHERE
-    delivery_id <= "'.mysqli_real_escape_string($connection, $stop).'"
-    AND delivery_id >= "'.mysqli_real_escape_string($connection, $start).'"
+    delivery_id <= "'.mysqli_real_escape_string ($connection, $stop).'"
+    AND delivery_id >= "'.mysqli_real_escape_string ($connection, $start).'"
   ORDER BY
     delivery_date DESC';
 $dates_sql = mysqli_query ($connection, $query);
 
-$delivery_id = array ();
+$delivery_dates = array ();
 $spreadsheet = "Subcategory / Date";
 $date_headers = "";
 while ($row = mysqli_fetch_array ($dates_sql, MYSQLI_ASSOC))
   {
-    array_push($delivery_id, $row["delivery_date"]);
+    array_push($delivery_dates, $row["delivery_date"]);
     $date_headers .= '
       <th class="date">'.$row["delivery_date"].'</th>';
     $spreadsheet .= "\t".$row["delivery_date"];
@@ -99,7 +98,7 @@ foreach ($categories as $cat_name => $cat)
           <tr>
             <th class="subcat col1">'.$subcat_name.'</th>';
         $subcat_spreadsheet_rows .= $subcat_name;
-        foreach ($delivery_id as $date)
+        foreach ($delivery_dates as $date)
           {
 //            $value = (isset($subcat[$date]) && $subcat[$date] != 0) ? number_format($subcat[$date], 2) : "-";
             $value = (isset ($subcat[$date]) && $subcat[$date] != 0) ? round ($subcat[$date], 2) : 0.00;
@@ -115,7 +114,7 @@ foreach ($categories as $cat_name => $cat)
     // Put together the category totals
     $cat_totals_table_row = '';
     $cat_totals_spreadsheet_row = '';
-    foreach ($delivery_id as $date)
+    foreach ($delivery_dates as $date)
       {
         $value = (isset ($cat_total[$date]) && $cat_total[$date] != 0) ? round ($cat_total[$date], 2) : 0.00;
         $cat_totals_table_row .= '

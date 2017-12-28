@@ -68,7 +68,7 @@ $page_specific_scripts['jquery-simplemodal'] = array (
   );
 $page_specific_scripts['rangeslider'] = array (
   'name'=>'rangeslider',
-  'src'=>BASE_URL.PATH.'js/rangeslider.min.js',
+  'src'=>BASE_URL.PATH.'js/rangeslider.js',
   'dependencies'=>array('jquery'),
   'version'=>'2.1.1',
   'location'=>false

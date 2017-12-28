@@ -51,7 +51,7 @@ $display_page = generate_producer_summary ($producer_id, $delivery_id, $detail_t
 include("func/show_businessname.php");
 
 $page_title_html = '<span class="title">'.$business_name.'</span>';
-$page_subtitle_html = '<span class="subtitle">Order Summary</span>';
+$page_subtitle_html = '<span class="subtitle">Order Summary'.($_GET['detail_type'] == 'product' ? ' by Product' : ' by Customer').'</span>';
 $page_title = $business_name.': Order Summary';
 $page_tab = 'producer_panel';
 

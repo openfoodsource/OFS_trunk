@@ -181,7 +181,7 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
       <td class="producer_links">'.
         (CurrentMember::auth_type('producer_admin') == true ? '<a class="producer" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$producer_id.'&display_as=popup\', \'edit_producer\', \'\')">Edit</a>' : '').'
       </td>
-      <td class="order_links" valign="top"><a href="product_list.php?&type=producer_byproduct&amp;delivery_id='.$delivery_id.'&amp;producer_id='.$producer_id.'">Basket</a>&nbsp;|&nbsp;<a href="show_report.php?type=producer_invoice&amp;delivery_id='.$delivery_id.'&amp;producer_id='.$producer_id.'">Invoice</a></font></td>
+      <td class="order_links" valign="top"><a href="product_list.php?&type=producer_basket&amp;delivery_id='.$delivery_id.'&amp;producer_id='.$producer_id.'">Basket</a>&nbsp;|&nbsp;<a href="show_report.php?type=producer_invoice&amp;delivery_id='.$delivery_id.'&amp;producer_id='.$producer_id.'">Invoice</a></font></td>
     </tr>';
     $member_id_list .= '#'.$member_id;
   }

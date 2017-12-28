@@ -78,6 +78,10 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
                 session_start ();
                 if (count($_GET) > 0) $_SESSION['_GET'] = $_GET;
                 if (count($_POST) > 0) $_SESSION['_POST'] = $_POST;
+                // Allow long query results for order_cycle_list and member_order_cycle_list
+                $query = '
+                  SET SESSION group_concat_max_len = 1000000;';
+                $result = @mysqli_query ($connection, $query) or die(debug_print ("ERROR: 758902 ", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
                 // Then start a session and set the basic SESSION veraiables.. things that can prevent any
                 // unnecessary database access later
                 $query = '
@@ -89,9 +93,21 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
                     '.TABLE_MEMBER.'.preferred_name,
                     '.TABLE_MEMBER.'.email_address,
                     '.TABLE_MEMBER.'.pending,
-                    '.TABLE_PRODUCER.'.producer_id
+                    '.TABLE_PRODUCER.'.producer_id,
+                    '.TABLE_PRODUCER.'.business_name AS producer_business_name,
+                    (SELECT GROUP_CONCAT(CONCAT(delivery_id))
+                      FROM '.TABLE_ORDER_CYCLES.'
+                      WHERE 1) AS delivery_id_list,
+                    (SELECT GROUP_CONCAT(CONCAT(delivery_date))
+                      FROM '.TABLE_ORDER_CYCLES.'
+                      WHERE 1) AS delivery_date_list,
+                    (SELECT GROUP_CONCAT(CONCAT(delivery_id))
+                      FROM '.TABLE_ORDER_CYCLES.'
+                      LEFT JOIN '.NEW_TABLE_BASKETS.' USING (delivery_id)
+                      WHERE member_id = '.mysqli_real_escape_string ($connection, $member_id).') AS member_delivery_id_list
                   FROM
-                    '.TABLE_MEMBER.'
+                    ('.TABLE_MEMBER.',
+                    '.TABLE_ORDER_CYCLES.')
                   LEFT JOIN '.TABLE_PRODUCER.' USING(member_id)
                   WHERE
                     member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"';
@@ -100,16 +116,45 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
                   {
                     $_SESSION['member_id'] = $row['member_id'];
                     $_SESSION['producer_id_you'] = $row['producer_id'];
+                    $_SESSION['producer_business_name'] = $row['producer_business_name'];
                     $_SESSION['show_name'] = $row['preferred_name'];
+                    // Create session arrays of delivery_ids <==> delivery_dates for all cycles
+                    $_SESSION['delivery_id_array'] = array_combine (explode(',', $row['delivery_id_list']), explode(',', $row['delivery_date_list']));
+                    // Create session arrays of delivery_ids <==> delivery_dates for this member
+                    $_SESSION['customer_delivery_id_array'] = array ();
+                    foreach (explode(',', $row['member_delivery_id_list']) as $key)
+                      {
+                        $_SESSION['customer_delivery_id_array'][$key] = $_SESSION['delivery_id_array'][$key];
+                      }
                     $username = $row['username'];
                     $_SESSION['username'] = $username;
                     $member_id = $row['member_id'];
                     // Following is needed for gravatar (c.f. http://en.gravatar.com/site/implement/hash/)
                     $gravatar_hash = md5( strtolower( trim( $row['email_address'] ) ) );
+                    $_SESSION['email_address'] = $row['email_address'];
                     $_SESSION['gravatar_hash'] = $gravatar_hash;
                     // Following values are used for the wordpress interface
                     $password_hash = $row['password'];
                     $auth_types = $row['auth_type'];
+                    $_SESSION['auth_types'] = $auth_types;
+                    // Convert an existing $_COOKIE['ofs_customer']['site_id'] into a $_SESSION['ofs_customer']['site_id'];
+                    if (isset ($_COOKIE['ofs_customer']['site_id'])) $_SESSION['ofs_customer']['site_id'] = $_COOKIE['ofs_customer']['site_id'];
+                    if (isset ($_COOKIE['ofs_customer']['delivery_type'])) $_SESSION['ofs_customer']['delivery_type'] = $_COOKIE['ofs_customer']['delivery_type'];
+                  }
+                // If this is a producer, then fill the producer_delivery_id_array
+                $query = '
+                  SELECT
+                    DISTINCT(delivery_id) AS delivery_id,
+                    delivery_date
+                  FROM '.NEW_TABLE_BASKETS.'
+                  LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' USING (basket_id)
+                  LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING (product_id, product_version)
+                  LEFT JOIN '.TABLE_ORDER_CYCLES.' USING (delivery_id)
+                  WHERE producer_id = "'.mysqli_real_escape_string ($connection, $_SESSION['producer_id_you']).'"';
+                $result = @mysqli_query ($connection, $query) or die(debug_print ("ERROR: 742902 ", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+                while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
+                  {
+                    $_SESSION['producer_delivery_id_array'][$row['delivery_id']] = $row['delivery_date'];
                   }
                 // Save the membership/renewal information into the SESSION to avoid gathering it again
                 $membership_info = get_membership_info ($member_id);
@@ -120,6 +165,7 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
                     // Wordpress needs these to be arrays
                     $_GET = array ();
                     $_POST = array ();
+                    $_SESSION['wp_auth_okay'] = true; // Tell Wordpress it's okay to authenticate this user
                     require ('wordpress_utilities.php');
                     wordpress_login ($member_id, $auth_types);
                   }
@@ -149,22 +195,22 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
     if (! $_SESSION['member_id'])
       {
         $form_block .= '
-          <form class="login" method="post" action="'.$_SERVER['SCRIPT_NAME'].'?action=login" name="login">
+          <form class="login" id="page_login" method="post" action="'.$_SERVER['SCRIPT_NAME'].'?action=login" name="login">
             <fieldset>
-              <button type="submit" name="submit" tabindex="3">go</button>
               <label>Username</label>
-              <input id="load_target" type="text" name="username" placeholder="Username" tabindex="1">
+              <input type="text" class="text_field username" name="username" placeholder="Username" tabindex="1" autofocus>
               <label>Password</label>
-              <input type="password" name="password" placeholder="Password" tabindex="2">
-              <label>
+              <input type="password" class="text_field password" name="password" placeholder="Password" tabindex="2">
+              <div class="link">
                 <a href="reset_password.php" tabindex="4">Forgot your password?</a>
-              <label>
-              </label>
+              </div>
+              <div class="link">
                 <a href="member_form.php" tabindex="5">Register as a new member...</a>
-              </label>
+              </div>
+              <button type="submit" class="submit" name="submit" tabindex="3">Login</button>
             </fieldset>
           </form>';
-        $content .=
+        $content .= 
       ($error_message ? '
         <div class="error_message">
           <p class="message">'.$error_message.'</p>
@@ -181,11 +227,11 @@ else
     // Not login and not logged in, so show basic "info" screen
     $content .=
       ($error_message ? '<div class="error_message">'.$error_message.'</div>' : '').'
-      <div id="info_container">
-        <h3>Information Links</h3>
+      <div id="info_container" style="background-image: url('.DIR_GRAPHICS.'info_background.png); background-repeat: no-repeat; width:100%;background-position:top right;min-height:401px;background-size:870px 410px;">
+        <h3 style="clear; padding-top:220px;">Information Links</h3>
         <ul class="info_links">
           <li><a href="'.PATH.'locations.php">Food Pickup/Delivery Locations</a></li>
-          <li><a href="'.PATH.'prdcr_list.php">Active Producers</a></li>
+          <li><a href="'.PATH.'producer_list.php">Active Producers</a></li>
           <li><a href="'.PATH.'contact.php">Contacts</a></li>
           <li><a href="'.PATH.'category_list.php?display_as=grid">Current Product Listings</a></li>
           <li><a href="'.PATH.'member_form.php">Membership Application Form</a></li>

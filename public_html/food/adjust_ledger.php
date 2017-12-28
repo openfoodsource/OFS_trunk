@@ -57,9 +57,25 @@ if ($type == 'single')
     $heading_markup = get_heading_row ();
     if ($method != 'ajax')
       {
-        display_page_header ();
-        echo '
-          <table id="adjust">'.
+        $page_specific_stylesheets['basket_dropdown'] = array (
+          'name'=>'basket_dropdown',
+          'src'=>BASE_URL.PATH.'adjust_ledger.css',
+          'dependencies'=>array('ofs_stylesheet'),
+          'version'=>'2.1.1',
+          'media'=>'all'
+          );
+        $page_specific_scripts['adjust_ledger'] = array (
+          'name'=>'adjust_ledger',
+          'src'=>BASE_URL.PATH.'adjust_ledger.js',
+          'dependencies'=>array('jquery'),
+          'version'=>'2.1.1',
+          'location'=>false
+          );
+        // display_page_header ();
+        $display_as_popup = true;
+        $display = '
+          <table id="adjust">
+            <h3>Edit transaction information</h3>'.
             $heading_markup.'
             <tr class="data_entry adjustment_memo">
               <td colspan="10">
@@ -70,7 +86,13 @@ if ($type == 'single')
             </tr>'.
             $row_markup.'
           </table>';
-        display_page_footer ();
+        // display_page_footer ();
+        include("template_header.php");
+        echo '
+          <!-- CONTENT BEGINS HERE -->
+          '.$display.'
+          <!-- CONTENT ENDS HERE -->';
+        include("template_footer.php");
       }
     elseif ($method == 'ajax')
       {
@@ -106,9 +128,25 @@ if ($type == 'product')
     $heading_markup = get_heading_row ();
     if ($method != 'ajax')
       {
-        display_page_header ();
-        echo '
-          <table id="adjust">'.
+        $page_specific_stylesheets['basket_dropdown'] = array (
+          'name'=>'basket_dropdown',
+          'src'=>BASE_URL.PATH.'adjust_ledger.css',
+          'dependencies'=>array('ofs_stylesheet'),
+          'version'=>'2.1.1',
+          'media'=>'all'
+          );
+        $page_specific_scripts['adjust_ledger'] = array (
+          'name'=>'adjust_ledger',
+          'src'=>BASE_URL.PATH.'adjust_ledger.js',
+          'dependencies'=>array('jquery'),
+          'version'=>'2.1.1',
+          'location'=>false
+          );
+        // display_page_header ();
+        $display_as_popup = true;
+        $display = '
+          <table id="adjust">
+            <h3>Edit transaction information</h3>'.
             $heading_markup.'
             <tr class="data_entry adjustment_memo">
               <td colspan="10">
@@ -119,7 +157,13 @@ if ($type == 'product')
             </tr>'.
             $row_markup.'
           </table>';
-        display_page_footer ();
+        // display_page_footer ();
+        include("template_header.php");
+        echo '
+          <!-- CONTENT BEGINS HERE -->
+          '.$display.'
+          <!-- CONTENT ENDS HERE -->';
+        include("template_footer.php");
       }
     elseif ($method == 'ajax')
       {
@@ -672,29 +716,4 @@ function get_site_list ()
           <option value="'.$row['site_id'].'" label="'.str_pad ($row['site_id'], 3, '0', STR_PAD_LEFT).' '.$row['site_short'].'">'.str_pad ($row['site_id'], 3, '0', STR_PAD_LEFT).' '.$row['site_long'].'</option>';
       }
     return $site_list;
-  }
-
-function display_page_header ()
-  {
-    echo '<!DOCTYPE html>
-<html>
-  <head>
-    <title>Adjust Ledger</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    <link href="'.PATH.'stylesheet.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" type="text/css" href="'.PATH.'adjust_ledger.css">
-    <script src="'.PATH.'ajax/jquery.js" type="text/javascript"></script>
-    <script src="'.PATH.'ajax/jquery-ui.js" type="text/javascript"></script>
-    <script src="'.PATH.'adjust_ledger.js" type="text/javascript"></script>
-  </head>
-  <body lang="en-us">
-    <h3>Edit transaction information</h3>';
-  }
-
-function display_page_footer ()
-  {
-    echo '
-  </body>
-</html>';
   }

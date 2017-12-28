@@ -24,73 +24,92 @@ if (isset ($_POST['update_membership']) && $_POST['update_membership'] == 'true'
 
 // Generate the display output
 $display = '
-  <table width="100%" class="compact">
-    <tr valign="top">
-      <td align="left" width="50%">
-    <img src="'.DIR_GRAPHICS.'type.png" width="32" height="32" align="left" hspace="2" alt="Membership Type">
-    <strong>Membership Type</strong> [<a onClick="popup_src(\''.PATH.'update_membership.php?display_as=popup\', \'membership_renewal\', \'\');">Change</a>]
-        <ul class="fancyList1">
-          <li><strong>'.$_SESSION['renewal_info']['membership_class'].':</strong> '.$_SESSION['renewal_info']['membership_description'].'<br><br></li>
-          <li class="last_of_group">'.$_SESSION['renewal_info']['membership_message'].'</li>
-        </ul>
-    <img src="'.DIR_GRAPHICS.'time.png" width="32" height="32" align="left" hspace="2" alt="Information">
-    <strong>Next Renewal Date</strong>
-        <ul class="fancyList1">
-          <li class="last_of_group">'.date('F j, Y', strtotime($_SESSION['renewal_info']['standard_renewal_date'])).'</li>
-        </ul>
-    <img src="grfx/docs.png" width="32" height="32" align="left" hspace="2" alt="Documentation"><br>
-    <strong>Documentation</strong>
-        <ul class="fancyList1">
-          <li class="last_of_group">[<a onClick="popup_src(\''.PATH.'motd.php?display_as=popup\', \'motd\', \'\');">Message of the day</a>]</li>
-        </ul>
-      </td>
-      <td align="left" width="50%">
-        <img src="'.DIR_GRAPHICS.'status.png" width="32" height="32" align="left" hspace="2" alt="Member Resources">
-        <b>Member Resources</b>
-        <ul class="fancyList1">
-          <li><a href="locations.php">Food Pickup/Delivery Locations</a></li>
-          <li><a href="contact.php">How to Contact Us with Questions</a></li>
-          <li><a href="member_form.php">Update Membership Info.</a></li>
-          <li><a href="reset_password.php">Change Password</a></li>
-          <li><a href="faq.php">How to Order FAQ</a></li>
-          <li class="last_of_group"><a href="producer_form.php?action=new_producer">New Producer Application Form</a></li>
-        </ul>
-        <img src="'.DIR_GRAPHICS.'money.png" width="32" height="32" align="left" hspace="2" alt="Payment Options">
-        <b>Payment Options</b>
-        <ul class="fancyList1">'.
-        // Only show PayPal if PayPal is enabled and if there is a real member_id
-        (PAYPAL_ENABLED && $_SESSION['member_id'] ? 
-          paypal_display_form (array (
-            'form_id' => 'paypal_form2',
-            'span1_content' => '<li class="last_of_group"><strong>Pay with PayPal &nbsp; &nbsp;</strong><div class="paypal_message">(enter amount at PayPal)</div>',
-            'span2_content' => '',
-            'form_target' => 'paypal',
-            'allow_editing' => false,
-            'amount' => number_format (0, 2),
-            'business' => PAYPAL_EMAIL,
-            'item_name' => htmlentities (ORGANIZATION_ABBR.' '.$_SESSION['member_id'].' '.$_SESSION['show_name']),
-            'notify_url' => BASE_URL.PATH.'paypal_utilities.php',
-            'custom' => htmlentities ('member#'.$_SESSION['member_id']),
-            'no_note' => '0',
-            'cn' => 'Message:',
-            'cpp_cart_border_color' => '#3f7300',
-            'cpp_logo_image' => BASE_URL.DIR_GRAPHICS.'logo1_for_paypal.png',
-            'return' => BASE_URL.PATH.'panel_member.php',
-            'cancel_return' => BASE_URL.PATH.'panel_member.php',
-            'rm' => '2',
-            'cbt' => 'Return to '.SITE_NAME,
-            'paypal_button_src' => 'https://www.paypal.com/en_US/i/btn/btn_buynow_SM.gif'
-            )).'</li>'
-          : '').'
-          <li class="last_of_group">
-            <strong>Mail a check to :</strong><br><br>
-            '.SITE_MAILING_ADDR.'<br><br>
-            (Indicate &quot;Member #'.$_SESSION['member_id'].'&quot; on payment)
-          </li>
-        </ul>
-        </td>
-      </tr>
-    </table>';
+  <div class="subpanel membership_info">
+    <header>
+      Membership Information
+    </header>
+    <ul class="grid membership_info">
+      <li class="block block_33 membership_class"">
+        <a class="popup_link" onclick="popup_src(\''.PATH.'update_membership.php?display_as=popup\', \'membership_renewal\', \'\');">
+          <span>You are a </span><span class="title">'.$_SESSION['renewal_info']['membership_class'].'</span><span class="detail">(click to change)</span>
+        </a>
+      </li>
+      <li class="block block_33 membership_description">
+        <span class="title">Detail</span><span class="detail">'.$_SESSION['renewal_info']['membership_description'].'</span>
+      </li>
+      <li class="block block_33 membership_message">
+        <span class="title">Progress</span><span class="detail">'.$_SESSION['renewal_info']['membership_message'].'</span>
+      </li>
+      <li class="block block_33 renewal_date">
+        <span class="title">Next Renewal</span><span>'.date('F j, Y', strtotime($_SESSION['renewal_info']['standard_renewal_date'])).'</span>
+      </li>
+      <li class="block block_33">
+        <a class="popup_link" onClick="popup_src(\''.PATH.'motd.php?display_as=popup\', \'motd\', \'\');">
+          <span class="motd">View the Message of the Day</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="subpanel member_resources">
+    <header>
+      Member Resources
+    </header>
+    <ul class="grid member_resources">
+      <li class="block block_42">
+        <a class="popup_link" onClick="popup_src(\''.PATH.'member_form.php?display_as=popup\', \'member_form\', \'\');">Update My Contact Information</a>
+      </li>
+      <li class="block block_42">
+        <a class="popup_link" onClick="popup_src(\''.PATH.'reset_password.php?display_as=popup\', \'reset_password\', \'\');">Change My Password</a>
+      </li>
+      <li class="block block_42">
+        <a class="block_link" href="locations.php">View Available Pickup/Delivery Locations</a>
+      </li>
+      <li class="block block_42">
+        <a class="block_link" href="contact.php">How to Contact Us with Questions</a>
+      </li>
+      <li class="block block_42">
+        <a class="block_link" href="faq.php">How to Order FAQ</a>
+      </li>
+      <li class="block block_42">
+        <a class="popup_link" onClick="popup_src(\''.PATH.'producer_form.php?action=new_producer&display_as=popup\', \'member_form\', \'\');">New Producer Application Form</a>
+      </li>
+    </ul>
+  </div>
+  <div class="subpanel payment_options">
+    <header>
+      Make A Payment
+    </header>
+    <ul class="grid payment_options">'.
+      (PAYPAL_ENABLED && $_SESSION['member_id'] ? 
+        paypal_display_form (array (
+          'form_id' => 'paypal_form2',
+          'span1_content' => '<li class="block block_44"><span class="title">Pay with PayPal</span><span class="detail">Enter the amount at PayPal</span>',
+          'span2_content' => '',
+          'form_target' => 'paypal',
+          'allow_editing' => false,
+          'amount' => number_format (0, 2),
+          'business' => PAYPAL_EMAIL,
+          'item_name' => htmlentities (ORGANIZATION_ABBR.' '.$_SESSION['member_id'].' '.$_SESSION['show_name']),
+          'notify_url' => BASE_URL.PATH.'paypal_utilities.php',
+          'custom' => htmlentities ('member#'.$_SESSION['member_id']),
+          'no_note' => '0',
+          'cn' => 'Message:',
+          'cpp_cart_border_color' => '#3f7300',
+          'cpp_logo_image' => BASE_URL.DIR_GRAPHICS.'logo1_for_paypal.png',
+          'return' => BASE_URL.PATH.'panel_member.php',
+          'cancel_return' => BASE_URL.PATH.'panel_member.php',
+          'rm' => '2',
+          'cbt' => 'Return to '.SITE_NAME,
+          'paypal_button_src' => 'https://www.paypal.com/en_US/i/btn/btn_buynow_SM.gif'
+          )).'</li>'
+        : '').'
+        <li class="block block_44">
+          <span class="title">Mail a check to</span>
+          <span>'.SITE_MAILING_ADDR.'</span>
+          <span class="detail">Indicate &quot;Member #'.$_SESSION['member_id'].'&quot; on payment</span>
+        </li>
+    </ul>
+  </div>';
 
 $page_specific_css = '
   .paypal_message {

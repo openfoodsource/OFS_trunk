@@ -3,6 +3,10 @@ include_once 'config_openfood.php';
 session_start();
 valid_auth('producer,producer_admin');
 
+if($_GET['display_as'] == 'popup')
+  {
+    $display_as_popup = true;
+  }
 
 $producer_id = $_GET['producer_id'];
 include("func/show_businessname.php");
@@ -104,8 +108,8 @@ while ($row = mysqli_fetch_array ($sql, MYSQLI_ASSOC))
 $content_head = '
   <table id="product_history" align="center" border="0" cellspacing="0" cellpadding="2" width="90%">
   <tr class="prodhead">
-  <td colspan="7">
-    <div class="right"><a href="'.$referrer.'">Return to producer product list</a></div>
+  <td colspan="7">'.
+    ($display_as_popup == false ? '<div class="right"><a href="'.$referrer.'">Return to producer product list</a></div>' : '').'
     <h3>'.$product_name.'</h3>'.$detailed_notes.'<br><br>
   </td>
   </tr>

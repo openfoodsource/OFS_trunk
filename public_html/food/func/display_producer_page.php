@@ -85,11 +85,11 @@ function prdcr_info ($producer_id, $producer_link)
             if ( $logo_id )
               {
                 $display_logo = '<td width="150" align="left">
-                  <img src="'.PATH.'/func/getlogos.php?logo_id='.$logo_id.'" width="150" hspace="5" alt="'.$logo_desc.'"></td>';
+                  <img src="'.BASE_URL.PATH.'getlogos.php?logo_id='.$logo_id.'" width="150" hspace="5" alt="'.$logo_desc.'"></td>';
               }
           }
         $display .= '
-          <div align="right"><a href="prdcr_list.php">Back to Producers List</a></div>
+          <div align="right"><a href="producer_list.php">Back to Producers List</a></div>
           <table align="center" width="95%" cellpadding="10" cellspacing="2" border="1" bordercolor="#000000" bgcolor="#ffffff">
             <tr><td bgcolor="#DDDDDD" align="left">
             <table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#DDDDDD">

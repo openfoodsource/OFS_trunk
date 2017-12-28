@@ -192,7 +192,7 @@ while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
     <td align="center" colspan="2" class="d0">'.date ('l \t\h\e jS \d\a\y \o\f F, Y', strtotime ($date_added)).'</td>
   </tr>
   </table>
-<div align="right"><a href="'.$main_url.PATH.'prdcr_list.php">Back to producers list</a></div>
+<div align="right"><a href="'.$main_url.PATH.'producer_list.php">Back to producers list</a></div>
 </blockquote>';
 
 $page_specific_css = '

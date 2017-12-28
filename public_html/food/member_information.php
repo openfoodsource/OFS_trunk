@@ -83,27 +83,26 @@ $member_content .= '
   <table id="ledger">
     <tr>
       <th>Date</th>
-      <th>Reason<span style="font-weight:normal;font-size:80%;margin-left:1em;">(click for invoice)</span></th>
-      <th class="money">Charges</th>
+      <th>Delivery<span style="font-weight:normal;font-size:80%;margin-left:1em;">(click for invoice)</span></th>
+      <th>Notation</th>
+      <th class="money">Costs</th>
       <th class="money">Payments</th>
       <th class="money">Total</th>
     </tr>';
 
 $running_total = 0;
-$extra_lap = true;
-if ($_GET['restrict'] == 'true')
-  {
-    $new_accounting_restriction = 'AND (IF('.TABLE_ORDER_CYCLES.'.delivery_date IS NOT NULL, '.TABLE_ORDER_CYCLES.'.delivery_date, DATE(effective_datetime)) > "2013-03-01")';
-  }
 
 // Get the ledger history for this member
 $query_ledger = '
+SELECT *
+FROM
+  (
   SELECT
     '.NEW_TABLE_LEDGER.'.basket_id AS basket_id,
     '.NEW_TABLE_LEDGER.'.delivery_id AS delivery_id,
-    '.NEW_TABLE_LEDGER.'.text_key AS text_key,
+    IF('.NEW_TABLE_LEDGER.'.text_key LIKE "%tax", "tax", '.NEW_TABLE_LEDGER.'.text_key) AS text_key,
     SUM(amount * IF(source_type="member", -1, 1)) AS amount,
-    IF('.TABLE_ORDER_CYCLES.'.delivery_date IS NOT NULL, '.TABLE_ORDER_CYCLES.'.delivery_date, DATE(effective_datetime)) AS date
+    COALESCE('.TABLE_ORDER_CYCLES.'.delivery_date, DATE(effective_datetime)) AS date
   FROM '.NEW_TABLE_LEDGER.'
   LEFT JOIN '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   WHERE
@@ -115,15 +114,39 @@ $query_ledger = '
       AND target_key = "'.mysqli_real_escape_string ($connection, $member_id).'")
     )
     AND replaced_by IS NULL
-    '.$new_accounting_restriction.'
+    AND (IF('.TABLE_ORDER_CYCLES.'.delivery_date IS NOT NULL, '.TABLE_ORDER_CYCLES.'.delivery_date, DATE(effective_datetime)) > "'.ACCOUNTING_ZERO_DATETIME.'")
+    AND basket_id IS NOT NULL
   GROUP BY
-    date,
     basket_id,
     text_key
-  ORDER BY
-    date';
-// echo "<pre>$query_ledger</pre>";
-$result_ledger = @mysqli_query ($connection, $query_ledger) or die (debug_print ("ERROR: 734032 ", array ($query_ledger, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+UNION /* BECAUSE THESE GROUP DIFFERENTLY */
+  SELECT
+    "N/A" AS basket_id,
+    "N/A" AS delivery_id,
+    IF('.NEW_TABLE_LEDGER.'.text_key LIKE "%tax", "tax", '.NEW_TABLE_LEDGER.'.text_key) AS text_key,
+    SUM(amount * IF(source_type="member", -1, 1)) AS amount,
+    DATE(effective_datetime) AS date
+  FROM '.NEW_TABLE_LEDGER.'
+  WHERE
+    (
+      (source_type = "member"
+      AND source_key = "'.mysqli_real_escape_string ($connection, $member_id).'")
+    OR
+      (target_type = "member"
+      AND target_key = "'.mysqli_real_escape_string ($connection, $member_id).'")
+    )
+    AND replaced_by IS NULL
+    AND (DATE(effective_datetime) > "'.ACCOUNTING_ZERO_DATETIME.'")
+    AND basket_id IS NULL
+  GROUP BY
+    DATE(effective_datetime),
+    text_key
+  ) bar
+WHERE 1
+ORDER BY
+  date,
+  FIND_IN_SET(text_key, "payment received,membership dues,customer fee,quantity cost,weight cost,extra charge,delivery cost,tax") DESC';
+$result_ledger = @mysqli_query ($connection, $query_ledger) or die(debug_print ("ERROR: 784032 ", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // Cycle through all the rows... then one last (bogus) row for processing)
 while (($row_ledger = mysqli_fetch_array ($result_ledger, MYSQLI_ASSOC)) || $last_row++ < 1)
   {
@@ -132,89 +155,72 @@ while (($row_ledger = mysqli_fetch_array ($result_ledger, MYSQLI_ASSOC)) || $las
     $text_key = $row_ledger['text_key'];
     $amount = $row_ledger['amount'];
     $date = $row_ledger['date'];
-    // Stop AFTER the last row (rather than WITH the last row (so we have a chance to display the last row of data).
-    if ($row_ledger['date'] == '') $extra_lap = false;
-    // Start a new row if it is a new date and post information for the prior row
-    if ($date != $date_prior)
+    if ($text_key == 'customer fee'
+        || $text_key == 'quantity cost'
+        || $text_key == 'weight cost'
+        || $text_key == 'extra charge'
+        || $text_key == 'delivery cost'
+        || substr($text_key, -3, 3) == 'tax')
       {
-        if ($purchases_total != 0 || $payments_total != 0)
-          {
-            $running_total += $purchases_total + $payments_total;
-            $member_content .= '
-              <tr>
-                <td>'.$date_prior.'</td>
-                <td class="purchase">'.($delivery_id_prior ? '<a href="show_report.php?type=customer_invoice&delivery_id='.$delivery_id_prior.'&member_id='.$member_id.'" target="_blank">Delivery #'.$delivery_id_prior : '').($basket_id_prior ? ' (basket #'.$basket_id_prior.')</a>' : '').'</td>
-                <td class="money '.($purchases_total < -0.005 ? 'red' : 'black').'">'.number_format ($purchases_total, 2).'</td>
-                <td class="money '.($payments_total < -0.005 ? 'red' : 'black').'">'.number_format ($payments_total, 2).'</td>
-                <td class="money '.($running_total < -0.005 ? 'red' : 'black').'">'.number_format ($running_total, 2).'</td>
-              </tr>';
-            $purchases_total = 0;
-            $payments_total = 0;
-          }
-//         if ($payments_total != 0)
-//           {
-//             $running_total ;
-//             $member_content .= '
-//               <tr>
-//                 <td>'.$date_prior.'</td>
-//                 <td class="payment">Payments (delivery #'.$delivery_id_prior.' <a href="show_report.php?type=customer_invoice&delivery_id='.$delivery_id_prior.'&member_id='.$member_id.'" target="_blank">basket #'.$basket_id_prior.'</a>)</td>
-//                 <td class="money '.($payments_total < -0.005 ? 'red' : 'black').'">'.number_format ($payments_total, 2).'</td>
-//                 <td class="money '.($running_total < -0.005 ? 'red' : 'black').'">'.number_format ($running_total, 2).'</td>
-//               </tr>';
-//             $payments_total = 0;
-//           }
-        if ($other_total != 0)
-          {
-            $running_total += $other_total;
-            $member_content .= '
-              <tr>
-                <td>'.$date_prior.'</td>
-                <td class="other">Other ('.$other_reason.')</td>
-                <td class="money '.($other_total < -0.005 ? 'red' : 'black').'">'.number_format ($other_total, 2).'</td>
-                <td></td>
-                <td class="money '.($running_total < -0.005 ? 'red' : 'black').'">'.number_format ($running_total, 2).'</td>
-              </tr>';
-            $other_total = 0;
-            $other_reason = '';
-          }
+        $purchases_total += $amount;
+        $notation = 'purchases';
       }
-    switch ($text_key)
+    elseif ($text_key == 'payment received')
       {
-        case 'customer fee':
-          $purchases_total += $amount;
-          break;
-        case 'quantity cost':
-          $purchases_total += $amount;
-          break;
-        case 'weight cost':
-          $purchases_total += $amount;
-          break;
-        case 'extra charge':
-          $purchases_total += $amount;
-          break;
-        case 'delivery cost':
-          $purchases_total += $amount;
-          break;
-        case 'city tax':
-          $purchases_total += $amount;
-          break;
-        case 'state tax':
-          $purchases_total += $amount;
-          break;
-        case 'county tax':
-          $purchases_total += $amount;
-          break;
-        case 'payment received':
-          $payments_total += $amount;
-          break;
-        default:
-          $other_reason .= $text_key.' ';
-          $other_total += $amount;
-          break;
+        $payments_total += $amount;
+        $notation = 'payment received';
+      }
+    elseif ($text_key == 'membership dues')
+      {
+        $other_total += $amount;
+        $notation = 'membership dues';
+      }
+    elseif ($amount < 0)
+      {
+        $payments_total += $amount;
+        $notation = $text_key;
+      }
+    elseif ($amount > 0)
+      {
+        $other_total += $amount;
+        $notation = $text_key;
+      }
+    // Post information for the prior row; otherwise continue aggregating information
+    if ($notation_prior != ''
+        && ($date != $date_prior
+          || $notation != $notation_prior)
+        && ($purchases_total_prior != 0
+          || $payments_total_prior != 0
+          || $other_total_prior != 0))
+      {
+          {
+            $costs_total_prior = $other_total_prior + $purchases_total_prior;
+            $running_total += $payments_total_prior + $costs_total_prior;
+            $member_content .= '
+              <tr>
+                <td>'.$date_prior.'</td>
+                <td class="purchase">'.($delivery_id_prior != 'N/A' ? ($delivery_id_prior ? '<a href="show_report.php?type=customer_invoice&delivery_id='.$delivery_id_prior.'&member_id='.$member_id.'" target="_blank">Delivery '.$delivery_id_prior.'</a>' : '').($basket_id_prior ? ' &mdash; Invoice #'.$basket_id_prior : '') : '').'</td>
+                <td class="notation">'.$notation_prior.'</td>
+                <td class="money '.($costs_total_prior < -0.005 ? 'red' : 'black').'">'.(number_format ($costs_total_prior, 2) != '0.00' ? number_format ($costs_total_prior, 2) : '').'</td>
+                <td class="money '.($payments_total_prior < -0.005 ? 'red' : 'black').'">'.(number_format ($payments_total_prior, 2) != '0.00' ? number_format ($payments_total_prior, 2) : '').'</td>
+                <td class="money '.($running_total < -0.005 ? 'red' : 'black').'">'.number_format ($running_total, 2).'</td>
+              </tr>';
+            $costs_total_prior = 0;
+            $purchases_total_prior = 0;
+            $payments_total_prior = 0;
+            $other_total_prior = 0;
+          }
       }
     $date_prior = $date;
     $basket_id_prior = $basket_id;
     $delivery_id_prior = $delivery_id;
+    $notation_prior = $notation;
+    $purchases_total_prior += $purchases_total;
+    $payments_total_prior += $payments_total;
+    $other_total_prior += $other_total;
+    $purchases_total = 0;
+    $payments_total = 0;
+    $other_total = 0;
   }
 
 $member_content .= '
@@ -244,7 +250,7 @@ $member_content .= '
 // work_address_line2               // notes
 
 
-// // $num_members = mysqli_num_rows($result_member_info);
+// // $num_members = mysqli_num_rows ($result);
 
 // Prepare page for display
 $page_specific_css = '

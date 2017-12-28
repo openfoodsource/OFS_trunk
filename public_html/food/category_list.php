@@ -42,21 +42,8 @@ $display_as = (isset ($_GET['display_as']) ? $_GET['display_as'] : 'list');
 if ($display_as != 'list' && $display_as != 'grid' && $display_as != 'cloud') $display_as = 'list';
 $power = 0.5;
 
-// Set up the "listing_auth_type" field condition based on whether the member is an "institution" or not
-// Only institutions are allowed to see listing_auth_type=3 (wholesale products)
-$seconds_until_close = strtotime(ActiveCycle::date_closed()) - time();
-if (CurrentMember::auth_type('institution') && $seconds_until_close < INSTITUTION_WINDOW)
-  {
-    $where_auth_type = '
-    AND (
-      '.NEW_TABLE_PRODUCTS.'.listing_auth_type = "member"
-      OR '.NEW_TABLE_PRODUCTS.'.listing_auth_type = "institution")';
-  }
-else
-  {
-    $where_auth_type = '
-    AND '.NEW_TABLE_PRODUCTS.'.listing_auth_type = "member"';
-  }
+$where_auth_type = '
+    AND FIND_IN_SET('.NEW_TABLE_PRODUCTS.'.listing_auth_type, COALESCE((SELECT auth_type FROM '.TABLE_MEMBER.' WHERE member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"), "member")) > 0';
 
 // Normally, do not show producers that are pending (1) or suspended (2)
 $where_producer_pending = '
@@ -68,7 +55,8 @@ $where_unlisted_producer = '
 
 // Set the default subquery_confirmed to look only at confirmed products
 $where_confirmed = '
-    AND '.NEW_TABLE_PRODUCTS.'.confirmed = "1"';
+    AND '.NEW_TABLE_PRODUCTS.'.approved = "1"
+    AND '.NEW_TABLE_PRODUCTS.'.active = "1"';
 
 // Set up an exception for hiding zero-inventory products
 $where_zero_inventory = '';
@@ -119,7 +107,7 @@ $query = '
   GROUP BY
     '.TABLE_SUBCATEGORY.'.category_id
   ) foo';
-$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 205656 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$result = @mysqli_query ($connection, $query) or die(debug_print ("ERROR: 905656 ", array ($query2,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $row = mysqli_fetch_array ($result, MYSQLI_ASSOC);
 $max_quantity = $row['max_quantity'];
 // Now set up the scaling factor...
@@ -127,18 +115,46 @@ $max_quantity = $row['max_quantity'];
 $powered_max_quantity = ceil (pow ($max_quantity, $power));
 // So set the scale accordingly...
 $scale = 24 / $powered_max_quantity;
+
+// Configure to use the availability matrix -- or not
+if (USE_AVAILABILITY_MATRIX == true)
+  {
+    // Default to use the current basket site_id, if it exists
+    $ofs_customer_site_id = CurrentBasket::site_id();
+    // If not, then use the session site_id, if it exists
+    if (! $ofs_customer_site_id) $ofs_customer_site_id = $_SESSION['ofs_customer']['site_id'];
+    // If not, then use the cookie site_id, if it exists
+    if (! $ofs_customer_site_id) $ofs_customer_site_id = $_COOKIE['ofs_customer']['site_id'];
+    // Now set query values...
+    $select_availability = '
+    IF ('.TABLE_AVAILABILITY.'.site_id = "'.$ofs_customer_site_id.'", 1, 0) AS availability,
+    '.NEW_TABLE_SITES.'.site_long AS site_long_you,';
+    $join_availability = '
+  LEFT JOIN '.TABLE_AVAILABILITY.' ON (
+    '.TABLE_AVAILABILITY.'.producer_id = '.TABLE_PRODUCER.'.producer_id
+    AND '.TABLE_AVAILABILITY.'.site_id = "'.$ofs_customer_site_id.'")
+  LEFT JOIN '.NEW_TABLE_SITES.' ON '.NEW_TABLE_SITES.'.site_id = "'.$ofs_customer_site_id.'"';
+  }
+else
+  {
+    $select_availability = '
+    1 AS availability,';
+    $join_availability = '';
+  }
+
 // Get the cat/subcat/product information for each category/subcategory with products to list
 $query ='
   SELECT
     '.TABLE_CATEGORY.'.category_id,
     '.TABLE_CATEGORY.'.category_name,
     '.TABLE_SUBCATEGORY.'.subcategory_id,
-    '.TABLE_SUBCATEGORY.'.subcategory_name,
-    COUNT(DISTINCT('.NEW_TABLE_PRODUCTS.'.product_id)) AS qty_of_items,
-    SUM(IF(DATEDIFF(NOW(), '.NEW_TABLE_PRODUCTS.'.created) < '.DAYS_CONSIDERED_NEW.', 1, 0)) AS qty_of_new_items,
-    IF('.NEW_TABLE_PRODUCTS.'.inventory_id > 0, FLOOR('.TABLE_INVENTORY.'.quantity / '.NEW_TABLE_PRODUCTS.'.inventory_pull), 1) AS inventory,
-    0 AS qty_of_new_items, /* Disabled because of inconsistency problems with MySQL */
-    (SELECT COUNT(site_id) FROM '.TABLE_AVAILABILITY.' WHERE '.TABLE_AVAILABILITY.'.site_id = '.NEW_TABLE_BASKETS.'.site_id AND '.TABLE_AVAILABILITY.'.producer_id = '.TABLE_PRODUCER.'.producer_id) AS availability
+    '.TABLE_SUBCATEGORY.'.subcategory_name,'.
+    $select_availability.'
+    SUM(IF(
+      FLOOR('.TABLE_INVENTORY.'.quantity / '.NEW_TABLE_PRODUCTS.'.inventory_pull) >= 0, 1, 0)
+      ) AS qty_of_items,
+    0 /* SUM(IF(DATEDIFF(NOW(), '.NEW_TABLE_PRODUCTS.'.created) < '.DAYS_CONSIDERED_NEW.' && FLOOR('.TABLE_INVENTORY.'.quantity / '.NEW_TABLE_PRODUCTS.'.inventory_pull) >= 0, 1, 0)) *** Disabled because of inconsistency problems with MySQL ***/ AS qty_of_new_items,
+    IF('.NEW_TABLE_PRODUCTS.'.inventory_id > 0, FLOOR('.TABLE_INVENTORY.'.quantity / '.NEW_TABLE_PRODUCTS.'.inventory_pull), 1) AS inventory
   FROM
     '.NEW_TABLE_PRODUCTS.'
   LEFT JOIN
@@ -150,7 +166,8 @@ $query ='
   LEFT JOIN
     '.TABLE_INVENTORY.' USING(inventory_id)
   LEFT JOIN
-    '.NEW_TABLE_BASKETS.' ON ('.NEW_TABLE_BASKETS.'.basket_id = "'.mysqli_real_escape_string ($connection, CurrentBasket::basket_id()).'")
+    '.NEW_TABLE_BASKETS.' ON ('.NEW_TABLE_BASKETS.'.basket_id = "'.mysqli_real_escape_string ($connection, CurrentBasket::basket_id()).'")'.
+  $join_availability.'
   WHERE 1'.
     $where_producer_pending.
     $where_auth_type.
@@ -200,10 +217,10 @@ while ($count++ <= $found_rows)
         $markup_primary .= '
            <span class="level_group-1 cat-'.$category_id_prior.'">
              <div class="category list_level-1 cat-'.$category_id_prior.' root-'.$category_qty_root.'">
-               <a href="product_list.php?type=full&category_id='.$category_id_prior.'" class="cat">'.$category_name_prior.'</a>
+               <a href="product_list.php?type=customer_list&select_type=all&category_id='.$category_id_prior.'" class="cat">'.$category_name_prior.'</a>
                <span class="levelY">
-                 <a href="product_list.php?type=full&category_id='.$category_id_prior.'" class="count'.($category_qty_prior > 1 ? ' plural' : '').'">'.$category_qty_prior.'</a>
-                 <a href="product_list.php?type=new&category_id='.$category_id_prior.'" class="count_new'.($category_new_qty_prior == 0 ? ' zero' : '').($category_new_qty_prior > 1 ? ' plural' : '').'">'.$category_new_qty_prior.'</a>
+                 <a href="product_list.php?type=customer_list&select_type=all&category_id='.$category_id_prior.'" class="count'.($category_qty_prior > 1 ? ' plural' : '').'">'.$category_qty_prior.'</a>
+                 <a href="product_list.php?type=customer_list&select_type=new_changed&category_id='.$category_id_prior.'" class="count_new'.($category_new_qty_prior == 0 ? ' zero' : '').($category_new_qty_prior > 1 ? ' plural' : '').'">'.$category_new_qty_prior.'</a>
                </span>
              </div>'.$markup_secondary.'
             </span>';
@@ -219,10 +236,10 @@ while ($count++ <= $found_rows)
     $subcategory_qty_root = number_format (ceil (pow ($subcategory_qty, $power) * $scale), 0);
     $markup_secondary .= '
              <div class="subcategory list_level-2 subcat-'.$subcategory_id.' root-'.$subcategory_qty_root.'">
-               <a href="product_list.php?type=full&subcat_id='.$subcategory_id.'" class="subcat">'.$subcategory_name.'</a>
+               <a href="product_list.php?type=customer_list&select_type=all&subcat_id='.$subcategory_id.'" class="subcat">'.$subcategory_name.'</a>
                <span class="levelZ">
-                 <a href="product_list.php?type=full&subcat_id='.$subcategory_id.'" class="count '.($subcategory_qty > 1 ? ' plural' : '').'">'.$subcategory_qty.'</a>
-                 <a href="product_list.php?type=new&subcat_id='.$subcategory_id.'" class="count_new '.($subcategory_new_qty == 0 ? ' zero' : '').($subcategory_new_qty > 1 ? ' plural' : '').'">'.$subcategory_new_qty.'</a>
+                 <a href="product_list.php?type=customer_list&select_type=all&subcat_id='.$subcategory_id.'" class="count '.($subcategory_qty > 1 ? ' plural' : '').'">'.$subcategory_qty.'</a>
+                 <a href="product_list.php?type=customer_list&select_type=new_changed&subcat_id='.$subcategory_id.'" class="count_new '.($subcategory_new_qty == 0 ? ' zero' : '').($subcategory_new_qty > 1 ? ' plural' : '').'">'.$subcategory_new_qty.'</a>
                </span>
              </div>';
     $category_id_prior = $category_id;
@@ -236,10 +253,14 @@ $list_markup = '
     <div id="view_option_cloud" class="view_option cloud'.($display_as == 'cloud' ? ' selected' : '').'" onclick="set_view(\'cloud\');">Cloud</div>
     <div id="view_option_grid" class="view_option grid'.($display_as == 'grid' ? ' selected' : '').'" onclick="set_view(\'grid\');">Grid</div>
   </div>
-  <div id="category2" class="'.$display_as.'">
-    <span class="levelX">
-    </span>
-    '.$markup_primary.'
+  <div id="category2" class="subpanel category_list '.$display_as.'">
+    <header>Category List &mdash; <span class="list">List View</span><span class="grid">Grid View</span><span class="cloud">Cloud View</span><span class="toggle" onclick="toggle_view();">Switch View</span></header>
+    <div class="category2_inner">
+      <span class="levelX">
+      </span>
+      '.$markup_primary.'
+    </div>
+    <div class="clear"></div>
   </div>';
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -292,6 +313,9 @@ $page_title_html = '<span class="title">Products</span>';
 $page_subtitle_html = '<span class="subtitle">Browse Categories</span>';
 $page_title = 'Products - Browse Categories';
 $page_tab = 'shopping_panel';
+
+// Let the header know to handle this as a product_list page (i.e. ask for customer_site if needed)
+$is_customer_product_page = true;
 
 include("template_header.php");
 echo '

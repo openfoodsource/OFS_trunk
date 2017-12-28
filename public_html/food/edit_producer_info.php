@@ -16,11 +16,6 @@ elseif ($_SESSION['producer_id_you'])
     $producer_id = $_SESSION['producer_id_you'];
   }
 
-if ( $_SESSION['producer_id_you'] != $producer_id )
-  {
-    $fulllist_link = '<b> - <a href="edit_info_list.php#p_'.$producer_id.'">Return to List</a></b>';
-  }
-
 if ( $_REQUEST['producer_submit'] )
   {
     $sql = '

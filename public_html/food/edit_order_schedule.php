@@ -109,7 +109,7 @@ if ($action == 'post_edit' && $errors_found == false)
     $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 459821 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $message = '<p class="message">Order cycle has been updated.</p>';
     // Close the modal and reload the cycle list
-    $modal_action = 'reload_parent()';
+    $modal_action = 'parent.reload_parent()';
   }
 elseif ($action == 'post_new' && $errors_found == false)
   {
@@ -139,7 +139,7 @@ elseif ($action == 'post_new' && $errors_found == false)
     $_POST['delivery_id'] = $delivery_id;
     $message = 'New order cycle has been added.';
     // Close the modal and reload the cycle list
-    $modal_action = 'reload_parent()';
+    $modal_action = 'parent.reload_parent()';
   }
 elseif ($action == 'delete')
   {
@@ -151,7 +151,7 @@ elseif ($action == 'delete')
     $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 759121 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $message = 'Order cycle has been deleted.';
     // Close the modal and reload the cycle list
-    $modal_action = 'reload_parent()';
+    $modal_action = 'parent.reload_parent()';
   }
 // Query for information about this order cycle
 if ($errors_found == true)

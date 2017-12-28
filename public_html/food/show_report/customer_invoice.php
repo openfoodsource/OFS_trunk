@@ -294,7 +294,12 @@ $query_adjustment = '
     AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL
     AND '.NEW_TABLE_LEDGER.'.amount != 0 /* no need to show null adjustments */
     AND '.NEW_TABLE_LEDGER.'.bpid IS NULL /* do not consider basket items */
+
+    /* USE ONE OF THESE TWO LINES: */
     AND (('.NEW_TABLE_LEDGER.'.effective_datetime < "'.$unique_data['delivery_date'].'"'.
+
+    /* AND (('.NEW_TABLE_LEDGER.'.effective_datetime < (SELECT delivery_date FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'")*/'.
+
         $and_since_prior_delivery_date.')
     /* INCLUDE RELATED INFORMATION THAT DOES NOT ADJUST THIS INVOICE TOTAL */
       OR ('.NEW_TABLE_LEDGER.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
@@ -311,19 +316,26 @@ $query_balance = '
     SUM(amount * IF('.NEW_TABLE_LEDGER.'.source_type = "member", 1, -1)) AS total
   FROM
     '.NEW_TABLE_LEDGER.'
+/* DON'T NEED ORDER CYCLES?
   LEFT JOIN
-    '.TABLE_ORDER_CYCLES.' USING(delivery_id)
+    '.TABLE_ORDER_CYCLES.' USING(delivery_id) */
   WHERE
     (('.NEW_TABLE_LEDGER.'.source_type = "member"
       AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysqli_real_escape_string ($connection, $member_id).'")
     OR ('.NEW_TABLE_LEDGER.'.target_type = "member"
       AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysqli_real_escape_string ($connection, $member_id).'"))
     AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL
+
+/* USE ONE OF THESE TWO SETS OF LINES: */
     AND IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL, '.NEW_TABLE_LEDGER.'.effective_datetime, '.TABLE_ORDER_CYCLES.'.delivery_date) > "'.ACCOUNTING_ZERO_DATETIME.'"
     /* ALL CHARGES PRIOR TO PREVIOUS INVOICE DATE -- USING DELIVERY DATE FOR BASKET ITEMS */
     AND IF('.NEW_TABLE_LEDGER.'.bpid IS NULL, '.NEW_TABLE_LEDGER.'.effective_datetime, '.TABLE_ORDER_CYCLES.'.delivery_date) <= "'.$row_prior_closing['delivery_date'].'"';
 
-// echo "<pre>$query_balance</pre>";
+    /* Only consider charges prior to the order closing time */
+    /* AND '.NEW_TABLE_LEDGER.'.effective_datetime < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'") */'.
+    $and_before_prior_delivery_date.
+    $constrain_effective_datetime;
+
 $result_balance = mysqli_query ($connection, $query_balance) or die (debug_print ("ERROR: 275930 ", array ($query_balance, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 if ($row_balance = mysqli_fetch_array ($result_balance, MYSQLI_ASSOC))
   {

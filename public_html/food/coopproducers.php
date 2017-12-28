@@ -131,7 +131,7 @@ $content_list = '
     <td colspan="2" align="center">
       <h3>'.$pid_count.' Producers</h3>
       This list contains <span class="listed">listed</span> and <span class="unlisted">unlisted</span> (but not suspended) producers.
-      <br />Click here for <a href="prdcr_list.php"><b>Further details about each producer</b></a>
+      <br />Click here for <a href="producer_list.php"><b>Further details about each producer</b></a>
       <br />Contact us at <a href="mailto:'.MEMBERSHIP_EMAIL.'">'.MEMBERSHIP_EMAIL.'</a> if your contact information needs to be updated.
       <br /><br />
     </td>

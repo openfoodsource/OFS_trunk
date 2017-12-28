@@ -10,7 +10,6 @@ $account_type = isset($_POST['account_type']) ? mysqli_real_escape_string ($conn
 $data_page = isset($_POST['data_page']) ? mysqli_real_escape_string ($connection, $_POST['data_page']) : 1;
 $per_page = isset($_POST['per_page']) ? mysqli_real_escape_string ($connection, $_POST['per_page']) : PER_PAGE;
 
-
 $limit_begin_row = ($data_page - 1) * $per_page;
 $limit_query = mysqli_real_escape_string ($connection, floor ($limit_begin_row).", ".floor ($per_page));
 
@@ -264,7 +263,7 @@ if ($row_balance_unlimited = mysqli_fetch_array($connection, $result_balance_unl
   }
 
 // Get the running total for this set of transactions
-$result_balance_limited = mysqli_query($connection, $query_balance_limited) or die (debug_print ("ERROR: 567592 ", array ($query_balance_limited, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$result_balance_limited = mysqli_query ($connection, $query_balance_limited) or die (debug_print ("ERROR: 567592 ", array ($query_balance_limited, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 if ($row_balance_limited = mysqli_fetch_array ($result_balance_limited, MYSQLI_ASSOC))
   {
     $running_total_limited = $row_balance_limited['running_total'];

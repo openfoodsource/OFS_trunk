@@ -59,10 +59,18 @@ table.invoice_header {
   margin-bottom:0.5em;
   border-bottom:0;
   }
+table tr {
+  border-bottom: 0;
+  }
 table tr td {
   vertical-align:top;
   }
-
+table tr.line_item {
+  border-bottom:1px solid #ddd;
+  }
+.show_report {
+  margin:1em;
+  }
 .product_image {
   float:left;
   width:100px;
@@ -279,27 +287,6 @@ hr {
   font-size:70%;
   }
 
-/* PAYPAL FIELDS */
-  .paypal_amount_field {
-    display:inline;
-    text-align:left;
-    font-size:16px;
-    width:6em;
-    border:0;
-    }
-  .paypal_button {
-    float:right;
-    }
-  .paypal_span1,
-  .paypal_span2 {
-    padding: 3px 0;
-    font-size:16px;
-    }
-  #paypal_form1 {
-    }
-  .paypal_button {
-    }
-
 /* OVERRIDE WORDPRESS IMAGE STYLING */
 
 img.wide-line {
@@ -320,15 +307,32 @@ td {
     }
   #content {
     border:0;
+    font-size:9px;
     }
-  #header,
-  #menu,
-  #footer,
+  header,
+  menu,
+  footer,
   .pager,
   .option_link,
   .title,
   .subtitle,
   .found_rows {
-    display:none;
+    display:none !important;
+    }
+  #content .wrap {
+    padding:0 !important;
+    padding-bottom:0 !important;
+    }
+  #ofs_content {
+    padding:0;
+    }
+  .show_report {
+    margin:0
+    }
+  .site-content {
+    padding:0
+    }
+  table tbody.invoice_totals {
+    page-break-inside: avoid;
     }
   }

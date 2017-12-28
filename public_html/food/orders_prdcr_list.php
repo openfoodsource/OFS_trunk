@@ -77,9 +77,7 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
             <strong>'.$phone_number.'</strong> &ndash; <a href="mailto:'.$business_name.' &lt;'.$row['email_address'].'&gt;">'.$row['email_address'].'</a></font>
           </td>
           <td style="border-bottom:1px solid gray;font-size:70%;">
-            <a href="product_list.php?delivery_id='.$_REQUEST['delivery_id'].'&producer_id='.$row['producer_id'].'&type=producer_byproduct">Product</a><br/>
-            <a href="product_list.php?delivery_id='.$_REQUEST['delivery_id'].'&producer_id='.$row['producer_id'].'&type=producer_bystoragecustomer">Customer Storage</a><br/>
-            <a href="product_list.php?delivery_id='.$_REQUEST['delivery_id'].'&producer_id='.$row['producer_id'].'&type=producer_bycustomer">Customer</a><br/>
+            <a href="product_list.php?delivery_id='.$_REQUEST['delivery_id'].'&producer_id='.$row['producer_id'].'&type=producer_basket">Basket</a>
           </td>
           <td style="border-bottom:1px solid gray;font-size:70%;">';
     $query_weight = '

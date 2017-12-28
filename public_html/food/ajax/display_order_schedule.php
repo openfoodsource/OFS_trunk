@@ -1,14 +1,27 @@
 <?php
 include_once 'config_openfood.php';
 session_start();
-valid_auth('member_admin,site_admin,cashier');
-
 // $_POST = $_GET; // FOR DEBUGGING
+valid_auth('member'); // All members can access this page
+// But only site_admins can edit dates
+if ($_POST['non_admin'] == true) $site_admin = false;
+elseif (CurrentMember::auth_type('site_admin')) $site_admin = true;
+else $site_admin = false;
 
 $data_page = isset($_POST['data_page']) ? mysqli_real_escape_string ($connection, $_POST['data_page']) : 1;
 $per_page = isset($_POST['per_page']) ? mysqli_real_escape_string ($connection, $_POST['per_page']) : PER_PAGE;
-$per_page = 10;
-$limit_clause = mysqli_real_escape_string ($connection, floor (($data_page - 1) * $per_page).", ".floor ($per_page));
+// $per_page = 10;
+$order_limit_clause = '
+    ORDER BY delivery_date
+    LIMIT '.mysqli_real_escape_string ($connection, floor (($data_page - 1) * $per_page).", ".floor ($per_page));
+
+// "call_display_as_include" happens on the first page load because this file is INCLUDED instead of being CALLED by ajax
+if (isset ($call_display_as_include))
+  {
+    $order_limit_clause = '
+  ORDER BY delivery_date DESC
+  LIMIT '.mysqli_real_escape_string ($connection, $per_page);
+  }
 
 // // Set colors that will be used for consecutive calendar months
 // $month_color_array = array ('ace', 'aec', 'cae', 'cea', 'eac', 'eca');
@@ -24,8 +37,9 @@ $display_month_prior = 0;
 $display_month = '';
 // Query for the order cycles
 $query = '
+  (
   SELECT
-    SQL_CALC_FOUND_ROWS
+    (SELECT COUNT(DISTINCT(delivery_id)) FROM '.TABLE_ORDER_CYCLES.') AS found_cycles,
     delivery_id,
     date_open,
     delivery_date,
@@ -43,25 +57,18 @@ $query = '
   FROM
     '.TABLE_ORDER_CYCLES.'
   LEFT JOIN
-    '.NEW_TABLE_TRANSPORT_IDENTITIES.' USING (transport_id)
-  ORDER BY delivery_date
-  LIMIT '.$limit_clause;
-
-$result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 256930 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
-// Get the total number of rows (for pagination) -- not counting the LIMIT condition
-$query_found_cycles = '
-  SELECT
-    FOUND_ROWS() AS found_cycles';
-$result_found_cycles = @mysqli_query ($connection, $query_found_cycles) or die (debug_print ("ERROR: 752323 ", array ($query_found_cycles, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
-$row_found_cycles = mysqli_fetch_array ($result_found_cycles, MYSQLI_ASSOC);
-$found_cycles = $row_found_cycles['found_cycles'];
-$found_pages = ceil ($found_cycles / $per_page);
-
+    '.NEW_TABLE_TRANSPORT_IDENTITIES.' USING (transport_id)'.
+    $order_limit_clause.'
+  ) ORDER BY delivery_date ASC';
+$result = @mysqli_query ($connection, $query) or die(debug_print ("ERROR: 756930 ", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 $order_cycle_array = array ();
 while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     array_push ($order_cycle_array, $row);
+    // Get the total number of rows (for pagination) -- not counting the LIMIT condition
+    $found_cycles = $row['found_cycles'];
   }
+$found_pages = ceil ($found_cycles / $per_page);
 // Get the lowest and highest dates from the current span of order cycles
 $ordering_span = array();
 $filling_span = array();
@@ -104,6 +111,7 @@ $minimum_time = $minimum_time - $week_length;
 $maximum_time = $maximum_time + $week_length;
 // Make sure the calendar won't span too many weeks -- 2500 weeks is almost five years
 $calendar_week_span = ($maximum_time - $minimum_time) / $week_length;
+$order_cycle_displayed = array();
 if ($calendar_week_span > 100)
   {
     $ledger_calendar = '
@@ -183,15 +191,15 @@ else
         $days_div = '';
         foreach (array_values ($days_array) as $days_key=>$day_of_week)
           {
-            list ($day_of_month,
-                  $short_weekday,
-                  $long_weekday,
-                  $short_month,
-                  $long_month,
-                  $day_number,
-                  $week_number,
-                  $month_number,
-                  $year
+            list ($day_of_month,    // 1 .. 31
+                  $short_weekday,   // Mon .. Sun
+                  $long_weekday,    // Sunday .. Saturday
+                  $short_month,     // Jan .. Dec
+                  $long_month,      // January .. December
+                  $day_number,      // 1 .. 7 (Monday - Sunday)
+                  $week_number,     // 1 .. 52
+                  $month_number,    // 1 .. 12
+                  $year             // e.g. 2017
                   ) = explode ('-', date ('j-D-l-M-F-N-W-n-Y', $this_week_start_time + ($days_key * $day_length) + 3600)); // Add one hour to get past Daylight Savings Time in all cases
             $days_div .= '
               <div id="day-'.$week_number.'-'.$day_number.'-'.$days_key.'" class="day_frame day_no-'.number_format($day_number, 0).' date_no-'.$day_of_month.' month_no-'.$month_number.'">
@@ -214,13 +222,16 @@ else
           </div>';
         $display_month_prior = $display_month;
         // Now see if there is an order cycle that opens this week...
+        $already_showed_one_cycle = false;
         foreach ($order_cycle_array as $row=>$order_cycle_data)
           {
-            if (strtotime ($order_cycle_data['date_open']) > $this_week_start_time
-                && strtotime ($order_cycle_data['date_open']) < $this_week_finish_time)
+            if (strtotime ($order_cycle_data['date_open']) < $this_week_finish_time
+                && $order_cycle_displayed[$order_cycle_data['delivery_id']] != true
+                && $already_showed_one_cycle == false)
               {
+                $cycle_class = fmod ($order_cycle_data['delivery_id'], $distinct_cycles) + 1; // This is for coloring styles
                 $week_div .= $top_special_markup.'
-                  <div id="id-'.$order_cycle_data['delivery_id'].'" class="order_cycle_row distinct-'.$cycle_class.'" onclick="popup_src(\'edit_order_schedule.php?delivery_id='.$order_cycle_data['delivery_id'].'\', \'edit_order\', \'\');" onmouseout="restore_calendar(\''.$order_cycle_data['delivery_id'].'\')" onmouseover="highlight_calendar(\''.$order_cycle_data['delivery_id'].'\')">
+                  <div id="id-'.$order_cycle_data['delivery_id'].'" class="order_cycle_row distinct-'.$cycle_class.'" '.($site_admin ? 'onclick="popup_src(\'edit_order_schedule.php?delivery_id='.$order_cycle_data['delivery_id'].'\', \'edit_order\', \'\');" ' : '').'onmouseout="restore_calendar(\''.$order_cycle_data['delivery_id'].'\')" onmouseover="highlight_calendar(\''.$order_cycle_data['delivery_id'].'\')">
                     <div class="delivery_id"><span class="key">Delivery ID</span><span class="value">'.$order_cycle_data['delivery_id'].'</span></div>
                     <div class="date_open"><span class="key">Opens</span><span class="value">'.$order_cycle_data['date_open'].'</span></div>
                     <div class="date_closed"><span class="key">Closes</span><span class="value">'.$order_cycle_data['date_closed'].'</span></div>
@@ -230,6 +241,9 @@ else
                     <div class="transport_identity_name"><span class="key">Transport Identity</span><span class="value">'.$order_cycle_data['transport_identity_name'].'</span></div>
                   </div>';
                 $top_special_markup = '';
+                // Do not show this cycle data again
+                $order_cycle_displayed[$order_cycle_data['delivery_id']] = true;
+                $already_showed_one_cycle = true;
               }
           }
         // Increment the day_time counter
@@ -238,13 +252,14 @@ else
   }
 
 // Set up the calendar information
-$ledger_data['markup'] = '
+$calendar_data['markup'] = '
   <div id="calendar">
   '.$week_div.'
   </div>';
 
-$ledger_data['query'] = $query;
-$ledger_data['maximum_data_page'] = $found_pages;
-$ledger_data['data_page'] = $data_page;
+$calendar_data['query'] = $query;
+$calendar_data['maximum_data_page'] = $found_pages;
+$calendar_data['data_page'] = $data_page;
 // Send back the json data only when not called as an include file.
-if (! isset($call_display_as_include))  echo json_encode ($ledger_data);
+if (! isset($call_display_as_include)) echo json_encode ($calendar_data);
+else $calendar_data['data_page'] = $found_pages; // Use last page when call_display_as_include

@@ -515,7 +515,7 @@ $content .= '
   <div id="customerBox">
     <div class="customerList" id="customerList">
       <ul>
-        <li><div class="c_list_header c_list_cid">ID</div><div class="c_list_header c_list_name">Destination Hub: Delcode [Name]</div></a></li>';
+        <li><div class="c_list_header c_list_cid">ID</div><div class="c_list_header c_list_name">Hub/Delcode [Name]</div></a></li>';
 
 $query = '
   SELECT
@@ -582,7 +582,7 @@ while($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
         $ready_end = '</strong>';
       }
     $content .= '
-          <li id="basket_id:'.$basket_id.'" class="c_complete"><a href="show_report.php?type=customer_invoice&amp;delivery_id='.$delivery_id.'&amp;member_id='.$member_id.'" target="_blank"><div class="c_list_cid">'.$ready_begin.$row['member_id'].$ready_end.'</div><div class="c_list_name">'.$hub_short.': '.$site_short.' ['.$last_name.', '.$first_name.']</div></a></li>';
+          <li id="basket_id:'.$basket_id.'" class="c_complete"><a href="show_report.php?type=customer_invoice&amp;delivery_id='.$delivery_id.'&amp;member_id='.$member_id.'" target="_blank"><div class="c_list_cid">'.$ready_begin.$row['member_id'].$ready_end.'</div><div class="c_list_name">'.$hub_short.'/'.$site_short.' ['.$last_name.', '.$first_name.']</div></a></li>';
   }
 
 $content .= '

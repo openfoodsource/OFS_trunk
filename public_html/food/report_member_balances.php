@@ -347,6 +347,14 @@ $page_specific_css .= '
   float: left;
   font-size: 100%;
   padding: 1px 4px;
+  }
+.pager a {
+  width:'.($number_of_pages == 0 ? 0 : number_format(72/$number_of_pages,2)).'%;
+  word-wrap:normal;
+  }
+.pager a.last,
+.pager a.first {
+  min-width:5%;
   }';
 
 $page_title_html = '<span class="title">Member Balance Report</span>';

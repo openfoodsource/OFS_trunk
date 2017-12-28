@@ -9,7 +9,7 @@ if ($_GET['action'] == 'Search' &&
   {
     $query = '
       SELECT
-        '.TABLE_MEMBER.'.member_id,
+        DISTINCT('.TABLE_MEMBER.'.member_id) AS member_id,
         first_name,
         last_name,
         first_name_2,
@@ -47,6 +47,7 @@ if ($_GET['action'] == 'Search' &&
         $content_member_list .= '
           <fieldset class="lookup_result">
             <legend>Members Matching &ldquo;'.$_GET['member_query'].'&rdquo;</legend>
+<!--
             <div class="result_data">
               <div class="result_header">
                 <div class="header result member_id">ID</div>
@@ -54,7 +55,8 @@ if ($_GET['action'] == 'Search' &&
                 <div class="header result email">Email</div>
                 <div class="header result username">Username</div>
                 <div class="header result links">Action</div>
-              </div>';
+              </div>
+-->';
         while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
           {
             if ($row['membership_discontinued'] > 0)
@@ -72,7 +74,9 @@ if ($_GET['action'] == 'Search' &&
                 if (strlen ($row['producer_id']) > 0)
                   {
                     $producer_info_temporary = '
-                      <li class="producer" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\', \'\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</li>';
+                      <li class="block block_42">
+                        <a class="popup_link" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\', \'\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</a>
+                      </li>';
                   }
               }
             // Otherwise this is the same member as before so continue with the additional producer_info_line
@@ -82,26 +86,63 @@ if ($_GET['action'] == 'Search' &&
                   {
                     // Add to the producer_info_temporary and recreate the member_list_temporary
                     $producer_info_temporary .= '
-                      <li class="producer" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\', \'\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</li>';
+                      <li class="block block_42">
+                        <a class="popup_link" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\', \'\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</a>
+                      </li>';
                   }
               }
             $member_list_temporary = '
-              <div class="result_row'.$discontinued_class.'">
-                <div class="result member_id">'.$row['member_id'].'</div>
-                <div class="result member_name">
-                  <span style="color:#888;font-size:70%;">'.$row['first_name'].' '.$row['last_name'].' &nbsp; '.$row['first_name_2'].' '.$row['last_name_2'].'</span><br />
-                  '.$row['preferred_name'].'<br />
-                  <span class="member_business_name">'.$row['member_business_name'].
-                  (strlen ($producer_info_temporary) > 0 ? '<ul class="producer_list">'.$producer_info_temporary.'</ul>' : '').'
-                  </div>
-                <div class="result email"><a href="mailto:'.$row['email_address'].'">'.$row['email_address'].'</a>'.(strlen ($row['email_address_2']) > 0 ? '<br><a href="mailto:'.$row['email_address_2'].'">'.$row['email_address_2'].'</a>' : '').'</div>
-                <div class="result username">'.$row['username'].'</div>
-                <div class="result links">
-                  <a class="popup" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$row['member_id'].'&display_as=popup\', \'edit_member\', \'\')">Edit</a>
-                  &nbsp;/&nbsp;
-                  <a class="popup" onclick="popup_src(\'member_information.php?member_id='.$row['member_id'].'&display_as=popup\', \'member_information\', \'\')">View</a>
-                </div>
-              </div>';
+                <div class="option_label">#'.$row['member_id'].' '.$row['username'].'</div>
+
+                  <div class="grouping_block member_info">
+                    <div class="info_block preferred_name">
+                      <label>Preferred (invoice) Name</label>
+                      <p class="text_info">'.$row['preferred_name'].'</p>
+                    </div>
+                    <div class="info_block business_name">
+                      <label>Business Name (for ordering)</label>
+                      <p class="text_info">'.$row['member_business_name'].'</p>
+                    </div>
+                    <div class="info_block first_name">
+                      <label>Name 1 (first)</label>
+                      <p class="text_info">'.$row['first_name'].'</p>
+                    </div>
+                    <div class="info_block last_name">
+                      <label>(last)</label>
+                      <p class="text_info">'.$row['last_name'].'</p>
+                    </div>
+                    <div class="info_block first_name_2">
+                      <label>Name 2 (first)</label>
+                      <p class="text_info">'.$row['first_name'].'</p>
+                    </div>
+                    <div class="info_block last_name_2">
+                      <label>(last)</label>
+                      <p class="text_info">'.$row['last_name'].'</p>
+                    </div>
+                    <div class="info_block email_address">
+                      <label>Email Address</label>
+                      <p class="text_info">'.$row['email_address'].'</p>
+                    </div>
+                    <div class="info_block email_address_2">
+                      <label>Email Address 2</label>
+                      <p class="text_info">'.$row['email_address_2'].'</p>
+                    </div>'.(strlen ($producer_info_temporary) > 0 ? '
+                    <div class="control_block producerships">
+                      <label>Producerships</label>
+                      <ul class="grid">'.$producer_info_temporary.'</ul>
+                    </div>' :
+                      '').'
+                    <div class="control_block membership">
+                      <ul class="grid member_info">
+                        <li class="block block_22">
+                          <a class="popup_link" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$row['member_id'].'&display_as=popup\', \'edit_member\', \'\'); return false;">Edit Member Info.</a>
+                        </li>
+                        <li class="block block_22">
+                          <a class="popup_link" onclick="popup_src(\'member_information.php?member_id='.$row['member_id'].'&display_as=popup\', \'member_information\', \'\'); return false;">View Summary Info.</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>';
             $member_id_prior = $row['member_id'];
           }
         // Now we're done, so append the last member_list_temporary segment
@@ -116,7 +157,8 @@ $content_members .= '
 <form name="member_lookup" id="member_lookup" class="lookup_form" method="GET" action="'.$_SERVER['SCRIPT_NAME'].'">
   <fieldset class="lookup">
     <legend>Lookup Members</legend>
-    <div class="instructions">
+    <div class="option_label">Instructions</div>
+    <div class="option_block instructions">
       <p>Use any part of the following values to help lookup members:</p>
       <ul class="lookup_options">
         <li>First name</li>
@@ -127,13 +169,17 @@ $content_members .= '
         <li>Member number</li>
         <li>Email address</li>
         <li>Producer name</li>
-    </ul>
+      </ul>
     </div>
-    <input id="load_target" name="member_query" type="text" value="'.$_GET['member_query'].'">
-    <input type="submit" name="action" value="Search">
-  </fieldset>
-</form>
-';
+    <div class="input_block search_key">
+      <label class="" for="member_query">Search for...</label>
+      <input id="member_query" name="member_query" type="text" value="'.$_GET['member_query'].'" autofocus>
+    </div>
+  <div class="form_buttons">
+    <button id="action" value="Search" name="action" type="submit">Search</button>
+    <button id="reset" value="Reset" name="reset" type="reset">Reset</button>
+  </div>
+  </fieldset>';
 
 $page_title_html = '<span class="title">Membership Information</span>';
 $page_subtitle_html = '<span class="subtitle">Find/Edit Members</span>';
@@ -141,53 +187,62 @@ $page_title = 'Membership Information: Find/Edit Members';
 $page_tab = 'member_admin_panel';
 
 $page_specific_css = '
-  legend {
-    margin:0 5px;
-    padding:2px 5px;
-    font-weight:bold;
-    color:#040;
-    }
-  fieldset {
-    margin:1em auto;
-    border: 1px solid #060;
-    border-radius:5px;
-    background-color: #fff;
-    }
-  fieldset.lookup input {
-    font-size:12px;
-    padding:6px 8px;
-    line-height:1.2;
-    margin:2px;
-    border-width:0;
-    border-style:none;
-    border-radius:5px;
-    border-color:none;
-    background:none;
-    border:1px solid #686;
-    box-shadow:2px 2px 0px 0px #bcb;
-    background-color:#eee;
-    color:#060;
-    }
-  fieldset.lookup input:hover {
-    border:1px solid #040;
-    background:none;
-    background-color:#cdc;
-    color:#040;
-    }
-  fieldset.lookup input:active {
-    font-size:12px;
-    padding:6px 8px;
-    line-height:1;
-    margin:2px;
-    border-width:0;
-    border:1px solid #600;
-    background:none;
-    background-color:#dda;
-    color:#600;
-    }
   fieldset.lookup {
-    width: 40%;
-    min-width:200px;
+    background-color:#ffd;
+    }
+  /* Set fields that want a little extra spacing below */
+  div.instructions,
+  div.search_key,
+  div.member_info,
+  div.last_name_2,
+  div.business_name,
+  div.email_address {
+    margin-bottom:1em;
+    }
+  .grouping_block.member_info {
+    float:left;
+    background-color:#def;
+    width:100%;
+    }
+  .grouping_block.member_info:hover {
+    background-color:#bcd;
+    }
+  .grouping_block .info_block ul { /** for display of member records **/
+    padding-left:2em;
+    }
+  /* Set fields that begin new lines (left margin) */
+  .grouping_block .info_block {
+    float:left;
+    }
+  .first_name,
+  .email_address,
+  .producerships {
+    clear:left;
+    }
+  li.producer {
+    cursor:pointer;
+    }
+  .info_block.links {
+    cursor:pointer;
+    float:right;
+    }
+  .info_block.links li {
+    display:block;
+    float:right;
+    clear:both;
+    }
+  .control_block.producerships {
+    float:left;
+    }
+  .control_block.membership {
+    padding-top:1.2rem;
+    float:right;
+    }
+  .control_block.producerships label {
+    font-size: 70%;
+    }
+  .control_block.producerships li {
+    background-color:#dfe;
     }
   div.header,
   div.result {
@@ -250,7 +305,7 @@ $page_specific_css = '
   .discontinued a {
     text-decoration: line-through;
     color:#ccc;
-    }
+    }';
 
 $page_specific_javascript = '';
 

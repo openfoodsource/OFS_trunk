@@ -220,8 +220,8 @@ function generate_producer_summary ($producer_id, $delivery_id, $detail_type, $u
           {
             $page_links = '
             <a href="'.$_SERVER['SCRIPT_NAME'].'?detail_type=product">Summary by product</a><br>
-            <a href="'.PATH.'product_list.php?&type=labels_bystoragecustomer">One Label per Customer/Storage</a><br>
-            <a href="'.PATH.'product_list.php?&type=labels_byproduct">One Label per Item</a><br>
+            <a href="'.BASE_URL.PATH.'product_list.php?sort_type=storage_customer&type=labels">One Label per Customer/Storage</a><br>
+            <a href="'.BASE_URL.PATH.'product_list.php?sort_type=product&type=labels">One Label per Product</a><br>
             <!--<a href="'.$_SERVER['SCRIPT_NAME'].'?detail_type=labels">Labels for this order</a><br>
             <a href="configure_labels.php">Configure or select label format</a><br>--><br>
             <h2>Summary for<br>'.$a_business_name.'</h2>

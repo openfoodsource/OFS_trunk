@@ -5,7 +5,7 @@ valid_auth('route_admin,producer,producer_admin');
 
 $type = $_GET['type'];
 $delivery_id = $_GET['delivery_id'];
-$checkbox = '<img src="'.DIR_GRAPHICS.'checkbox.gif" style="height:1em;vertical-align:text-top;">';
+$checkbox = '<img src="'.BASE_URL.DIR_GRAPHICS.'checkbox.gif" style="height:1em;vertical-align:text-top;">';
 
 // Check how to restrict the results...
 if (isset ($_GET['producer_id']))
@@ -203,9 +203,6 @@ if ($_GET['output'] == 'pdf')
   }
 else
   {
-    include("template_header.php");
-    echo '<a href="'.$_SERVER['SCRIPT_NAME'].'?type='.$type.'&delivery_id='.$delivery_id.($_GET['producer_id'] ? '&producer_id='.$_GET['producer_id'] : '').'&output=pdf&paginate=false">Download as PDF (continuous)</a><br>';
-    echo '<a href="'.$_SERVER['SCRIPT_NAME'].'?type='.$type.'&delivery_id='.$delivery_id.($_GET['producer_id'] ? '&producer_id='.$_GET['producer_id'] : '').'&output=pdf&paginate=true">Download as PDF (paginated)</a>';
     if (! $_GET['producer_id'])
       {
         $page_specific_css .= '
@@ -214,6 +211,9 @@ else
                 page-break-after:always;
                 }';
       }
+    include("template_header.php");
+    echo '<a href="'.$_SERVER['SCRIPT_NAME'].'?type='.$type.'&delivery_id='.$delivery_id.($_GET['producer_id'] ? '&producer_id='.$_GET['producer_id'] : '').'&output=pdf&paginate=false">Download as PDF (continuous)</a><br>';
+    echo '<a href="'.$_SERVER['SCRIPT_NAME'].'?type='.$type.'&delivery_id='.$delivery_id.($_GET['producer_id'] ? '&producer_id='.$_GET['producer_id'] : '').'&output=pdf&paginate=true">Download as PDF (paginated)</a>';
     echo $output;
     include("template_footer.php");
   }

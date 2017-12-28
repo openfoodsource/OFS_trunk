@@ -1,29 +1,17 @@
 <?php
 include_once 'config_openfood.php';
 session_start();
-// Validations are done in the product_list/* files
+// Except for this hook, validations are done in the product_list files
+// This is used to force reloading the same page after login
+if (isset ($_GET['auth_type']) && $_GET['auth_type'] == 'member') valid_auth('member');
 
-// See if this is a producer-related page (if so, exempt from needing to select a site)
-$producer_page = false;
+// Only customer pages need to select select a site
+$is_customer_product_page = false;
 if (isset ($_GET['type'])) $product_list_type = $_GET['type'];
-if ($product_list_type == 'labels_byproduct'
-    || $product_list_type == 'labels_bystoragecustomer'
-    || $product_list_type == 'producer_byproduct'
-    || $product_list_type == 'producer_bystoragecustomer'
-    || $product_list_type == 'producer_bycustomer'
-    || $product_list_type == 'producer_list')
+if ($product_list_type == 'customer_list'
+    || $product_list_type == 'customer_basket')
   {
-    $producer_page = true;
-  }
-// Do not show product lists unless the member has already opened a basket, so go do that...
-unset ($_SESSION['redirect_after_basket_select']);
-if (! CurrentBasket::basket_id()
-    && ! $producer_page)
-  {
-    // Put the originally requested URI into the $_SESSION for later retrieval
-    $_SESSION['redirect_after_basket_select'] = $_SERVER['REQUEST_URI'];
-    header ('Location: '.BASE_URL.PATH.'select_delivery_page.php?first_call=true');
-    exit (0);
+    $is_customer_product_page = true;
   }
 
 // Sanitize variables that are expected to be numeric
@@ -33,23 +21,6 @@ if (isset ($_GET['subcat_id'])) $_GET['subcat_id'] = preg_replace ('/[^0-9]/', '
 
 // Items dependent upon the location of this header
 $unique = array();
-$pager = array();
-if (isset ($_POST['action']))
-  {
-    if (( isset ($_POST['basket_x']) && isset ($_POST['basket_y'])) ||
-      ( isset ($_POST['basket_add_x']) && isset ($_POST['basket_add_y'])))
-      {
-        $_POST['action'] = 'add';
-      }
-    elseif ( isset ($_POST['basket_sub_x']) && isset ($_POST['basket_sub_y']))
-      {
-        $_POST['action'] = 'sub';
-      }
-    $process_type = $_POST['process_type'];
-    $non_ajax_query = true;
-    // Different back-end for customer_list|basket_list|producer_basket
-    include(FILE_PATH.PATH.'ajax/'.$process_type.'.php');
-  }
 
 // Determine whether a basket is open or not
 $basket_open_true = 0;
@@ -87,15 +58,13 @@ $is_wholesale_item = false;
 
 // SET UP QUERY PARAMETERS THAT APPLY TO MOST LISTS
 
-
-
 // Only show for listed producers -- not unlisted (1) or suspended (2)
 $where_unlisted_producer = '
     AND unlisted_producer = "0"';
 
 // Normally, do not show producers that are pending (1)
 $where_producer_pending = '
-    '.TABLE_PRODUCER.'.pending = 0';
+    AND '.TABLE_PRODUCER.'.pending = "0"';
 
 // Set up an exception for hiding zero-inventory products
 $where_zero_inventory = '';
@@ -110,7 +79,8 @@ if (EXCLUDE_ZERO_INV == true)
 
 // Set the default subquery_confirmed to look only at confirmed products
 $where_confirmed .= '
-    AND '.NEW_TABLE_PRODUCTS.'.confirmed = "1"';
+    AND '.NEW_TABLE_PRODUCTS.'.active = "1"
+    AND '.NEW_TABLE_PRODUCTS.'.approved = "1"';
 
 //////////////////////////////////////////////////////////////////////////////////////
 //                                                                                  //
@@ -120,7 +90,8 @@ $where_confirmed .= '
 
 // Make sure we're looking for a valid list_type
 if (isset ($_GET['type']) && file_exists ('product_list/'.$_GET['type'].'.php')) $list_type = $_GET['type'];
-else $list_type = 'by_id';
+else $list_type = 'customer_list';
+$unique['list_type'] = $list_type;
 
 // Include the appropriate list "module" from the product_list directory
 include_once ('product_list/'.$list_type.'.php');
@@ -128,13 +99,13 @@ include_once ('product_list/'.$list_type.'.php');
 include_once ('product_list/'.$template_type.'_template.php');
 
 // This setting might be overridden below or in included files
-$pager['per_page'] = PER_PAGE;
+$unique['pager_per_page'] = PER_PAGE;
 // Labels do not have pages
-if ($template_type == 'labels') $pager['per_page'] = 1000000;
+if ($template_type == 'labels') $unique['pager_per_page'] = 1000000;
 // Set up the pager for the output
-$list_start = ($_GET['page'] - 1) * $pager['per_page'];
+$list_start = ($_GET['page'] - 1) * $unique['pager_per_page'];
 if ($list_start < 0) $list_start = 0;
-$query_limit = $list_start.', '.$pager['per_page'];
+$query_limit = $list_start.', '.$unique['pager_per_page'];
 
 
 // Add limits to the query
@@ -149,19 +120,18 @@ $query_found_rows = '
 $result_found_rows = @mysqli_query ($connection, $query_found_rows) or die (debug_print ("ERROR: 860842 ", array ($query_found_rows, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 // Handle pagination for multi-page results
 $row_found_rows = mysqli_fetch_array ($result_found_rows, MYSQLI_ASSOC);
-$pager['found_rows'] = $row_found_rows['found_rows'];
-if ($_GET['page']) $pager['this_page'] = $_GET['page'];
-else $pager['this_page'] = 1;
-$pager['last_page'] = ceil (($pager['found_rows'] / $pager['per_page']) - 0.00001);
-$pager['page'] = 0;
-while (++$pager['page'] <= $pager['last_page'])
+$unique['pager_found_rows'] = $row_found_rows['found_rows'];
+if ($_GET['page']) $unique['pager_this_page'] = $_GET['page'];
+else $unique['pager_this_page'] = 1;
+$unique['pager_last_page'] = ceil (($unique['pager_found_rows'] / $unique['pager_per_page']) - 0.00001);
+$unique['pager_page'] = 0;
+$unique['pager_first_product_on_page'] = (($unique['pager_this_page'] - 1) * PER_PAGE) + 1;
+if ($row_found_rows['found_rows'] == 0) $unique['pager_first_product_on_page'] = 0; // When there are zero products to show
+$unique['pager_last_product_on_page'] = $unique['pager_this_page'] * PER_PAGE;
+if ($unique['pager_last_product_on_page'] > $unique['pager_found_rows'])
   {
-    if ($pager['page'] == $pager['this_page']) $pager['this_page_true'] = true;
-    else $pager['this_page_true'] = false;
-    $pager['display'] .= pager_display_calc($pager);
+    $unique['pager_last_product_on_page'] = $unique['pager_found_rows'];
   }
-$pager_navigation_display = pager_navigation($pager);
-$order_cycle_navigation_display = order_cycle_navigation($pager);
 
 // Iterate through the returned results and display products
 while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
@@ -187,17 +157,17 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
             $display_anonymous_price = true;
           }
       }
+    // Set the unique category/subcategory name for use later
+    $unique['category_name'] = $row['category_name'];
+    $unique['subcategory_name'] = $row['subcategory_name'];
+    $unique['site_long_you'] = $row['site_long_you'];
     $row['display_base_price'] = $display_base_price;
     $row['display_anonymous_price'] = $display_anonymous_price;
     $row['is_wholesale_item'] = $is_wholesale_item;
-// $row['availability_array'] = explode (',', $row['availability_list']);
-    // $row['site_id_you'] = CurrentBasket::site_id();
-    // $row['site_short_you'] = CurrentBasket::site_short();
-    // $row['site_long_you'] = CurrentBasket::site_long();
     $row['order_open'] = $order_open;
 
     // Open the product list
-    if ($first_time_through++ == 0) $display .= open_list_top($row);
+    if ($first_time_through++ == 0) $display .= open_list_top($row, $unique);
 
     // Set the various fees:
     $row['customer_customer_adjust_fee'] = 0;
@@ -297,14 +267,13 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
     if ($row['listing_auth_type'] == "institution") $row['is_wholesale_item'] = true;
     else $row['is_wholesale_item'] = false;
 
-    // Get the availability for this product at this member's chosen site_id
-    // Two conditions will allow products to be purchased (availability = true):
-    //   1. No availibility set for the producer means the product is available everywhere
-    //   2. Customer's site is in the set of availabile locations for the producer
-// if ($row['availability_list'] == '' || in_array ($row['site_id_you'], $row['availability_array'])) $row['availability'] = true;
-    // Otherwise the product is not available for this customer to purchase
-//else $row['availability'] = false;
-    $row['row_activity_link'] = row_activity_link_calc($row, $pager, $unique);
+    // Transition to specific activity sections
+    if (function_exists ('manage_ordering_control_calc'))
+        $row['manage_ordering_control'] = manage_ordering_control_calc($row, $unique);
+    if (function_exists ('manage_filling_control_calc'))
+        $row['manage_filling_control'] = manage_filling_control_calc($row, $unique);
+    if (function_exists ('manage_inventory_control_calc'))
+        $row['manage_inventory_control'] = manage_inventory_control_calc($row, $unique);
     $row['random_weight_display'] = random_weight_display_calc($row);
     $row['business_name_display'] = business_name_display_calc($row);
     $row['pricing_display'] = pricing_display_calc($row);
@@ -319,10 +288,10 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
         if ($listing_is_open)
           {
             if ($show_minor_division) $display .= minor_division_close($row, $unique);
-            $display .= major_division_close($row);
+            $display .= major_division_close($row, $unique);
             $listing_is_open = 0;
           }
-        $display .= major_division_open($row, $major_division);
+        $display .= major_division_open($row, $unique, $major_division);
         // New major division will force a new minor division
         $$minor_division_prior = -1;
       }
@@ -335,11 +304,11 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
             $display .= minor_division_close($row, $unique);
             $listing_is_open = 0;
           }
-        $display .= minor_division_open($row, $minor_division);
+        $display .= minor_division_open($row, $unique, $minor_division);
       }
 
     $listing_is_open = 1;
-    $display .= show_listing_row($row, $row_type);
+    $display .= show_listing_row($row, $unique);
 
     // Handle prior values to catch changes
     $$major_division_prior = $row[$major_division];
@@ -349,65 +318,43 @@ $unique['completed'] = 'true';
 // Close minor if there were any products
 if ($unique['product_count'] > 0 && $show_minor_division) $display .= minor_division_close($row, $unique);
 // Close major if there were any products
-if ($unique['product_count'] > 0 && $show_major_division) $display .= major_division_close($row);
+if ($unique['product_count'] > 0 && $show_major_division) $display .= major_division_close($row, $unique);
 // Close the product list if there were any products listed
-if ($pager['found_rows'] && $unique['product_count'] > 0)
+if ($unique['pager_found_rows'] && $unique['product_count'] > 0)
   {
     $display .= close_list_bottom($row, $unique);
   }
 // Otherwise send the "nothing to show" message
 else
   {
-    $display .= no_product_message();
-    $pager['found_rows'] = 0;
+    $display = open_list_top($row, $unique).
+      major_division_open($row, $unique, 'major_division_empty_title').
+      no_product_message().
+      major_division_close($row, $unique, $major_division).
+      close_list_bottom($row, $unique);
+    $unique['pager_found_rows'] = 0;
   }
 
 // Some product_list types need dynamically generated titles and subtitles
-if ($_GET['type'] == 'subcategory')
-  {
-    $page_title_html = '<span class="title">Products</span>';
-    $page_subtitle_html = '<span class="subtitle">'.$subcategory_name.' Subcategory</span>';
-    $page_title = 'Products: '.$subcategory_name.' Subcategory';
-    $page_tab = 'shopping_panel';
-  }
-elseif ($_GET['producer_id'] || strpos($_SERVER['SCRIPT_NAME'],'producers'))
-  {
-    $page_title_html = '<span class="title">Products</span>';
-    $page_subtitle_html = '<span class="subtitle">'.$business_name.'</span>';
-    $page_title = 'Products: '.$business_name;
-    $page_tab = 'shopping_panel';
-  }
+// if ($_GET['type'] == 'subcategory')
+//   {
+//     $page_title_html = '<span class="title">Products</span>';
+//     $page_subtitle_html = '<span class="subtitle">'.$subcategory_name.' Subcategory</span>';
+//     $page_title = 'Products in '.$subcategory_name.' Subcategory';
+//     $page_tab = 'shopping_panel';
+//   }
+// elseif ($_GET['producer_id'] || strpos($_SERVER['SCRIPT_NAME'],'producers'))
+//   {
+//     $page_title_html = '<span class="title">Products</span>';
+//     $page_subtitle_html = '<span class="subtitle">'.$business_name.'</span>';
+//     $page_title = 'Products from '.$business_name;
+//     $page_tab = 'shopping_panel';
+//   }
 
-$content_list = '
-<div id="listing_auth_type">
-  <h3>';
-foreach (array ("retail"=>"Listed Retail", "wholesale"=>"Listed Wholesale", "unlisted"=>"Unlisted", "archived"=>"Archived") as $key=>$value)
-  {
-    if ($_REQUEST['a'] == $key)
-      {
-        $content_list .= $value.' ';
-        $this_edit = $value;
-      }
-    else
-      {
-        $content_list .= '[<a href="producer_product_list.php?a='.$key.'">'.$value.'</a>] ';
-      }
-  }
-$content_list .= '</h3>';
+// Set subtitle as category [and?] subcategory
+if (isset ($_GET['category_id'])) $subtitle = $unique['category_name'];
+if (isset ($_GET['subcat_id'])) $subtitle = $unique['category_name'].' &ndash; '.$unique['subcategory_name'];
 
-if ($show_search) $search_display = '
-  <form action="'.$_SERVER['SCRIPT_NAME'].'" method="get">'.
-    ($_REQUEST['a'] ? '<input type="hidden" name="a" value="'.$_REQUEST['a'].'">' : '').
-    '<input type="text" name="query" value="'.$search_query.'">
-    <input type="submit" name="type" value="search">
-  </form>';
-
-
-if (isset ($pager['found_rows']))
-  {
-    $search_display .= '
-      <span class="found_rows">Found '.$pager['found_rows'].' '.Inflect::pluralize_if ($pager['found_rows'], 'item').'</span>';
-  }
 $page_specific_stylesheets['product_list'] = array (
   'name'=>'product_list',
   'src'=>BASE_URL.PATH.'product_list.css',
@@ -429,33 +376,6 @@ $page_specific_css .= '
   }
 #content_top {
   margin-bottom:25px;
-  }
-
-  #simplemodal-data {
-    height:100%;
-    background-color:#fff;
-    }
-  #simplemodal-container {
-    box-shadow:10px 10px 10px #000;
-    }
-  #simplemodal-data iframe {
-    border:0;
-    height:95%;
-    width:100%;
-    }
-  #simplemodal-container a.modalCloseImg {
-    background:url('.DIR_GRAPHICS.'/simplemodal_x.png) no-repeat; /* adjust url as required */
-    width:25px;
-    height:29px;
-    display:inline;
-    z-index:3200;
-    position:absolute;
-    top:0px;
-    right:0px;
-    cursor:pointer;
-  }
-.pager a {
-  width:'.($pager['last_page'] == 0 ? 0 : number_format(72/$pager['last_page'],2)).'%;
   }
 .estimate {
   color:#a00;
@@ -486,170 +406,357 @@ $page_specific_css .= '
   }
 .product_list {
   clear:both;
+  position:relative;
   }
-#delivery_id_nav {
-  margin: 5px auto 0;
-  max-width: 40rem;
-  text-align:center;
+/* Styles for detailed producer information */
+.producer_details {
+  margin-bottom:15px;
   }
-#delivery_id_nav .delivery_id {
+.producer_details .producer_section {
   display:block;
-  font-weight:bold;
-  background-color:#464;
-  color:#fff;
-  border-radius:10px;
+  margin-bottom:1rem;
   }
-#delivery_id_nav .prior,
-#delivery_id_nav .next,
-#delivery_id_nav .delivery_id {
-  display: inline-block;
-  line-height: 1.5;
-  padding: 0 15px;
+.producer_details .producer_section h4 {
+  display:inline-block;
+  clear:left;
+  margin:0 1rem 0 0;
+  }
+.producer_details {
+  background-color:#fff;
+  border-radius:10px;
+  border:1px solid #888;
+  padding:1rem;
+  }
+.producer_listing .producer_details a img {
+  box-shadow: none;
+  float: right;
+  height: 150px;
+  margin: 0.5rem 0.5rem 1rem 1rem;
+  max-width: 50%;
+  }
+.producer_details .original_questionnaire_link > a {
+  box-shadow: none;
+  }
+.producer_details .original_questionnaire_link {
+  display:block;
+  text-align:right;
   }';
 
 $page_specific_javascript .= '
+// FUNCTIONS TO MANAGE ORDERING
+
 var add_to_cart_array = [];
-function AddToCart (product_id, product_version, action) {
-  var elem;
-  var message = "";
-  if (elem = document.getElementById("message"+product_id)) message = elem.value;
-  var basket_id = "";
-  if (elem = document.getElementById("basket_id")) basket_id = elem.value;
-  var member_id = "";
-  if (elem = document.getElementById("member_id")) member_id = elem.value;
-  var delivery_id = "";
-  if (elem = document.getElementById("delivery_id")) delivery_id = elem.value;
-  jQuery.post("'.PATH.'ajax/'.$template_type.'.php", {
-    product_id:product_id,
-    product_version:product_version,
-    action:action,
-    message:message,
-    basket_id:basket_id,
-    member_id:member_id,
-    delivery_id:delivery_id
-    },
-  function(data) {
-    // If site is being inferred from a prior order, then notify of the assumption
-    if (data.substr(0,16) == "site_id reverted") {
-      popup_src(\''.PATH.'select_delivery_popup.php?after_select=close_and_add(parent.add_to_cart_array)#target_site\', \'select_delivery\', \'\');
-      // Set the requested product information so we can re-request it after the basket is handled
-      add_to_cart_array = [product_id, product_version, action];
-      return false;
-      }
-    // If no site can be determined, then popup a window to set it.
-    if (data == "site_id not set") {
-      popup_src(\'select_delivery_popup.php?after_select=close_and_add(parent.add_to_cart_array)#target_site\', \'select_delivery\', \'\');
-      // Set the requested product information so we can re-request it after the basket is handled
-      add_to_cart_array = [product_id, product_version, action];
-      return false;
-      }
-    var returned_array = data.split(":");
-    var new_quantity = returned_array[0];
-    var new_inventory = returned_array[1];
-    var checked_out = returned_array[2];
-    var alert_text = returned_array[3];
-    if (document.getElementById("basket_qty" + product_id))
-      {
-        document.getElementById("basket_qty" + product_id).innerHTML = new_quantity;
-      }
-    // Update the number available
-    if (document.getElementById("available" + product_id))
-      {
-        document.getElementById("available" + product_id).innerHTML = new_inventory;
-      }
-    // Show/hide the basket controls
-    if (new_quantity > 0 && document.getElementById("add" + product_id)) // The item is in the basket
-      {
-        if (document.getElementById("available" + product_id) && new_inventory == 0)
-          {
-            document.getElementById("add" + product_id).style.display = "none";
-          }
-        else
-          {
-            document.getElementById("add" + product_id).style.display = "";
-          }
-        document.getElementById("sub"+product_id).style.display = "";
-        document.getElementById("basket_empty"+product_id).style.display = "none";
-        document.getElementById("basket_full"+product_id).style.display = "";
-        document.getElementById("in_basket"+product_id).style.display = "";
-        if (elem = document.getElementById("message_area"+product_id)) elem.style.display = "";
-      }
-    else if (document.getElementById("add"+product_id) || document.getElementById("sub"+product_id)) // The item is not in the basket
-      {
-        document.getElementById("add"+product_id).style.display = "none";
-        document.getElementById("sub"+product_id).style.display = "none";
-        document.getElementById("basket_empty"+product_id).style.display = "";
-        document.getElementById("basket_full"+product_id).style.display = "none";
-        document.getElementById("in_basket"+product_id).style.display = "none";
-        document.getElementById("message_area"+product_id).style.display = "none";
-      }
-    if (checked_out == 1) {
-      document.getElementById("checkout"+product_id).innerHTML = "<input type=\"image\"class=\"checkout_check\" src=\"'.DIR_GRAPHICS.'checkout-ccs.png\" onclick=\"AddToCart("+product_id+","+product_version+",\'no_checkout\'); return false;\"><span class=\"checkout_text\">Ordered!</span>";
-      document.getElementById("message_button"+product_id).innerHTML = "";
-      document.getElementById("activity"+product_id).innerHTML = "";
+// This function hides the messages button and shows the messages textarea
+function show_message_area (product_id, product_version) {
+  $("#message_area-"+product_id+"-"+product_version).removeClass("no_message");
+  $("#message_area-"+product_id+"-"+product_version).addClass("has_message");
+  $("#message-"+product_id+"-"+product_version).removeClass("no_message");
+  $("#message-"+product_id+"-"+product_version).addClass("has_message");
+  }
+
+// This function is for checking out individual products from a customer basket. It requires two clicks
+// before something can be checked out, changing style between clicks.
+function checkout (product_id, product_version, action) {
+  if (action == "checkout") {
+    if (jQuery("#checkout_item-"+product_id+"-"+product_version).hasClass("warn")) {
+      // We have already warned the customer, so do the checkout
+      adjust_customer_basket (product_id, product_version, action);
+      jQuery("#checkout_item-"+product_id+"-"+product_version).removeClass("warn");
       }
     else {
+      // Confirm checkout
+      jQuery("#checkout_item-"+product_id+"-"+product_version).addClass("warn");
       }
+    }
+  else { // Reset the elements to pre-confirmation condition
+      jQuery("#checkout_item-"+product_id+"-"+product_version).removeClass("warn");
+    }
+  }
 
-    if (alert_text && alert_text.length > 1) {
+// Create debounced version for adjust_customer_basket
+// NOTE: debounce() is located in javascript.js
+var debounced_adjust_customer_basket = debounce(function(product_id, product_version, action) {
+  adjust_customer_basket(product_id, product_version, action);
+  }, 800);
+
+// Function for adding, subtracting, and setting quantities in a customer basket
+function adjust_customer_basket (product_id, product_version, action) {
+  var elem;
+  var set_quantity = "";
+  if (elem = document.getElementById("basket_quantity-"+product_id+"-"+product_version)) {
+    set_quantity = elem.value;
+    }
+  var message = "";
+  if (elem = document.getElementById("message-"+product_id+"-"+product_version)) {
+    message = elem.value;
+    }
+  var site_id = "";
+  if (elem = document.getElementById("site_id")) {
+    site_id = elem.value;
+    }
+  var basket_id = "";
+//  basket_id = jQuery("#basket_id").value;
+  if (elem = document.getElementById("basket_id")) {
+    basket_id = elem.value;
+    }
+  var member_id = "";
+  if (elem = document.getElementById("member_id")) {
+    member_id = elem.value;
+    }
+  var delivery_id = "";
+  if (elem = document.getElementById("delivery_id")) {
+    delivery_id = elem.value;
+    }
+  // site_id will not have a value until a basket has been opened..
+  // so go confirm or load a site to use before adding to the cart
+  if (! site_id > 0) {
+    // Set the requested product information so we can re-request it after the basket is handled
+    add_to_cart_array = [product_id, product_version, action];
+    popup_src(\'customer_select_site.php?confirm_site=true&completion_action=product_list_and_close();\', \'customer_select_site\', \'\');
+    return false;
+    }
+  else {
+    // Now all variable should be set, so go do the requested operation
+    jQuery.ajax({
+      type: "POST",
+      url: "'.PATH.'ajax/manage_ordering.php",
+      cache: false,
+      data: {
+        product_id:product_id,
+        product_version:product_version,
+        action:action,
+        message:message,
+        basket_id:basket_id,
+        member_id:member_id,
+        delivery_id:delivery_id,
+        set_quantity:set_quantity
+        }
+      })
+    .done(function(json_basket_item_info) {
+      basket_item_info = JSON.parse(json_basket_item_info);
+      /* Returns all variables from basket_item_info()
+         PLUS:
+           basket_item_info.error
+           basket_item_info.inventory_pull_quantity
+      */
+      if (basket_item_info.error.length > 1)
+        {
+        // Uncomment the following line to show alerts
+        alert (basket_item_info.error);
+        }
+      // Set the basket_id on this page if it is not already set
+      if (elem = document.getElementById("basket_id")
+          && elem.value == "") {
+        elem.value = basket_item_info.basket_id;
+        }
+      // Assign the quantity that ended up in the basket
+      if (document.getElementById("basket_quantity-"+product_id+"-"+product_version))
+        {
+          document.getElementById("basket_quantity-"+product_id+"-"+product_version).value = basket_item_info.quantity;
+        }
+      // Update the number available in inventory
+      if (document.getElementById("available-"+product_id+"-"+product_version))
+        {
+          document.getElementById("available-"+product_id+"-"+product_version).innerHTML = basket_item_info.inventory_pull_quantity;
+        }
+      // Update the to_ship number
+      var to_ship = basket_item_info.quantity - basket_item_info.out_of_stock;
+      if (document.getElementById("to_ship-"+product_id+"-"+product_version))
+        {
+          document.getElementById("to_ship-"+product_id+"-"+product_version).innerHTML = to_ship;
+        }
+      // Update the reserve number
+      var reserve = basket_item_info.out_of_stock;
+      if (document.getElementById("reserve-"+product_id+"-"+product_version))
+        {
+          document.getElementById("reserve-"+product_id+"-"+product_version).innerHTML = reserve;
+        }
+      // Show/hide the to_ship/reserve information
+      if (reserve > 0) {
+        jQuery("#ship_reserve-"+product_id+"-"+product_version).removeClass("hide");
+        }
+      else {
+        jQuery("#ship_reserve-"+product_id+"-"+product_version).addClass("hide");
+        }
+      // Show/hide the basket controls
+      if (basket_item_info.quantity > 0) // The item is in the basket
+        {
+          // Product is in basket
+          jQuery("#manage_ordering-"+product_id+"-"+product_version).removeClass("empty");
+          jQuery("#manage_ordering-"+product_id+"-"+product_version).addClass("full");
+          document.getElementById("dec-"+product_id+"-"+product_version).style.visibility = "visible";
+          jQuery("#message_area-"+product_id+"-"+product_version).removeClass("hidden");
+        }
+      else // nothing in basket
+        {
+          // Product is not in basket
+          jQuery("#manage_ordering-"+product_id+"-"+product_version).removeClass("full");
+          jQuery("#manage_ordering-"+product_id+"-"+product_version).addClass("empty");
+          document.getElementById("dec-"+product_id+"-"+product_version).style.visibility = "hidden";
+          jQuery("#message_area-"+product_id+"-"+product_version).addClass("hidden");
+        }
+      if (basket_item_info.checked_out == 1)
+        {
+          // Prevent any additional adjust_customer_basket() function
+          jQuery("#basket_quantity-"+product_id+"-"+product_version).removeAttr("onkeyup");
+          jQuery("#dec-"+product_id+"-"+product_version).removeAttr("onclick");
+          jQuery("#inc-"+product_id+"-"+product_version).removeAttr("onclick");
+          jQuery("#checkout_item-"+product_id+"-"+product_version).removeClass("checkout");
+          jQuery("#checkout_item-"+product_id+"-"+product_version).addClass("checkedout");
+          // Hide buttons
+          document.getElementById("inc-"+product_id+"-"+product_version).style.visibility = "hidden";
+          document.getElementById("dec-"+product_id+"-"+product_version).style.visibility = "hidden";
+          jQuery("#checkout_item-"+product_id+"-"+product_version).removeAttr("onclick");
+        }
+      });
+    }
+  }
+
+// FUNCTIONS TO MANAGE INVENTORY
+
+// Create debounced version for adjust_inventory
+// NOTE: debounce() is located in javascript.js
+var debounced_adjust_inventory = debounce(function(access_type, access_key, action, callback) {
+  // Default callback
+  if (callback === undefined) {
+    callback = function(){};
+    }
+  adjust_inventory(access_type, access_key, action);
+  }, 800);
+
+// Function for producers to adjust inventory levels
+function adjust_inventory (access_type, access_key, action, callback) {
+  // Default callback
+  if (callback === undefined) {
+    callback = function(){};
+    }
+  // access_type: [inventory|product]
+  // access_key: [inventory_id|product_id-product_version]
+  var elem;
+  var inventory_pull_quantity = "";
+  if (elem = document.getElementById("inventory_pull_quantity-"+ access_key)) inventory_pull_quantity = elem.value;
+  var inventory_description = "";
+  if (elem = document.getElementById("inventory_description-"+ access_key)) inventory_description = elem.value;
+  var inventory_quantity = "";
+  if (elem = document.getElementById("inventory_quantity-"+ access_key)) inventory_quantity = elem.value;
+  var delivery_id = "";
+  if (elem = document.getElementById("delivery_id")) delivery_id = elem.value;
+  jQuery.post("'.PATH.'ajax/manage_inventory.php", {
+    access_type:access_type,
+    access_key:access_key,
+    inventory_quantity:inventory_quantity,
+    inventory_pull_quantity:inventory_pull_quantity,
+    inventory_description:inventory_description,
+    delivery_id:delivery_id,
+    action:action
+    },
+  function(returned_data) {
+    if (returned_data.substring(0,1) != "{") {
+      return (1); // FAIL: Not a JSON response
+      }
+    var data = JSON.parse(returned_data);
+    if (action == "confirm"
+        || action == "delete") {
+      // Nothing to do upon return from these actions
+      return (0);
+      }
+    if (access_type == "product") {
+      if (elem = document.getElementById("inventory_pull_quantity-"+access_key)) elem.value = data["inventory_pull_quantity"];
+      if (elem = document.getElementById("bucket_quantity-"+access_key)) elem.innerHTML = data["bucket_quantity"];
+      if (elem = document.getElementById("ordered_quantity-"+access_key)) elem.innerHTML = data["ordered_quantity"] + 0;
+      }
+    else if (access_type == "inventory") {
+      if (elem = document.getElementById("inventory_quantity-"+access_key)) elem.value = data["inventory_quantity"];
+      if (elem = document.getElementById("ordered_quantity-"+access_key)) elem.innerHTML = data["ordered_quantity"] + 0;
+      if (data["error"] == 100) { // Duplicate inventory description (ask to combine?)
+        var initiate_combine = confirm ("The requested inventory bucket name is already in use. Selecting \"OK\" will combine products into a common inventory bucket and reload this page.");
+        if (initiate_combine == true) {
+          if (elem = document.getElementById("inventory_description-"+access_key)) elem.value = data["inventory_description"];
+          adjust_inventory (access_type, access_key, "combine",
+            function () {
+              alert ("Time to reload");
+              location.reload();
+              }
+            )
+          }
+        else {
+          if (elem = document.getElementById("inventory_description-"+access_key)) elem.value = data["old_inventory_description"];
+          }
+        }
+      else if (data["error"] == 200) { // Empty inventory description (ask to delete?)
+        var initiate_delete = confirm ("Selecting \"OK\" will DELETE the current inventory bucket, release all of its products from using inventory, and reload this page.");
+        if (initiate_delete == true) {
+          if (elem = document.getElementById("inventory_description-"+access_key)) elem.value = "";
+          adjust_inventory (access_type, access_key, "delete",
+            function () {
+              alert ("Time to reload");
+              location.reload();
+              }
+            )
+          }
+        else {
+          if (elem = document.getElementById("inventory_description-"+access_key)) elem.value = data["old_inventory_description"];
+          }
+        }
+      }
+    if (data["alert_text"] && data["alert_text"].length > 1) {
       // Uncomment the following line to show alerts
-      alert (alert_text);
+      // alert (data["alert_text"]);
       }
     });
+  callback ();
   }
 
-// This function will close the select_delivery_popup and add the requested item to the cart
-function close_and_add (add_to_cart_array) {
-  jQuery.modal.close();
-  AddToCart (add_to_cart_array[0], add_to_cart_array[1], add_to_cart_array[2]);
-  }
+// FUNCTIONS TO MANAGE FILLING ORDERS
 
+// Create debounced version for set_item
+// NOTE: debounce() is located in javascript.js
+var debounced_set_item = debounce(function(bpid, action) {
+  set_item(bpid, action);
+  }, 1800);
 
-function SetItem (bpid, action) {
+/* This function allows producers to adjust shipped quantities and variable weights */
+function set_item (bpid, action) {
   var elem;
-  if (elem = document.getElementById("ship_quantity"+bpid)) var ship_quantity = elem.value;
-  if (elem = document.getElementById("weight"+bpid)) var weight = elem.value;
+  if (elem = document.getElementById("ship_quantity-"+bpid)) var ship_quantity = elem.value;
+  if (elem = document.getElementById("weight-"+bpid)) var weight = elem.value;
   // Give user indication the function is running
-  if (action == "set_quantity") {
-    document.getElementById("ship_quantity"+bpid).style.color = "#f80";
+  if (action == "set_outs") {
+    $("#ship_quantity-"+bpid).addClass("active");
     }
   if (action == "set_weight") {
-    document.getElementById("weight"+bpid).style.color = "#f80";
+    $("#weight-"+bpid).addClass("active");
     }
-  jQuery.post("'.PATH.'ajax/producer_basket.php", {
+  jQuery.post("'.PATH.'ajax/manage_filling.php", {
     bpid:bpid,
     ship_quantity:ship_quantity,
     weight:weight,
     action:action
     },
-  function(data) {
-    // Function returns [producer_adjusted_cost]:[extra_charge] OR [ERROR:alert_message]
-    var returned_array = data.split(":");
-    if (returned_array[0] == "ERROR") {
-      alert (returned_array[1]);
+  function(returned_data) {
+    var data = JSON.parse(returned_data);
+    if (elem = document.getElementById("producer_adjusted_cost-"+bpid)) elem.innerHTML = data["producer_adjusted_cost"];
+    if (elem = document.getElementById("extra_charge-"+bpid)) elem.innerHTML = data["extra_charge"];
+
+    if (elem = document.getElementById("ship_quantity-"+bpid)) {
+      elem.value = data["shipped"];
+      $("#ship_quantity-"+bpid).removeClass("active");
       }
-    else {
-      var producer_adjusted_cost = returned_array[0];
-      var extra_charge = returned_array[1];
-      var shipped = returned_array[2];
-      var total_weight = returned_array[3];
-      if (elem = document.getElementById("producer_adjusted_cost"+bpid)) elem.innerHTML = producer_adjusted_cost;
-      if (elem = document.getElementById("extra_charge"+bpid)) elem.innerHTML = extra_charge;
-      }
-    if (action == "set_quantity" && (elem = document.getElementById("ship_quantity"+bpid))) {
+    if (elem = document.getElementById("weight-"+bpid)) {
       elem.style.color = "#000";
-      elem.value = shipped;
-      // now also set the weight...
-      action = "set_weight";
-      }
-    if (action == "set_weight" && (elem = document.getElementById("weight"+bpid))) {
-      elem.style.color = "#000";
-      elem.value = total_weight;
+      elem.value = data["total_weight"];
+      $("#weight-"+bpid).removeClass("active");
+      if (data["total_weight"] > 0) {
+        $("#estimate_text-"+bpid).css("display", "none");
+        }
       }
     });
   return false;
   }
-// This function is for updating product list images from the image upload screen
+
+// FUNCTIONS TO MANAGE PRODUCTS
+
+/* This function is for updating product list images from the image upload screen */
 function update_image (product_id, product_version, new_image_id) {
   var get_image_src = "'.get_image_path_by_id('XXX').'";
   if (new_image_id == 0) { // Remove the image
@@ -661,30 +768,50 @@ function update_image (product_id, product_version, new_image_id) {
     jQuery("#image-"+product_id+"-"+product_version).attr("class", "product_image");
     }
   }
-';
 
-$csv_link = '
-  <!-- <br><a href="'.$_SERVER['REQUEST_URI'].'&csv=true">Download full list as a CSV file</a> -->
-  ';
+/* This function is for deleting products. It requires two clicks to execute, changing style between */
+function delete_product (product_id, product_version, action, deletion_type) {
+  if (action == "delete") {
+    if (jQuery("#delete_product-"+product_id+"-"+product_version).hasClass("warn")) {
+      jQuery.post("'.PATH.'ajax/delete_product.php", {
+        product_id:product_id,
+        product_version:product_version,
+        deletion_type:deletion_type
+        },
+      function(data) {
+        // Function returns [SUCCESS] OR [ERROR:alert_message]
+        var returned_array = data.split(":");
+        if (returned_array[0] == "SUCCESS") {
+          // If deleted, then hide the product/version
+          jQuery("#product_display-"+product_id+"-"+product_version).addClass("delete");
+          }
+        else if (returned_array[0] == "ERROR") {
+          alert (returned_array[1]);
+          }
+        });
+      jQuery("#delete_product-"+product_id+"-"+product_version).removeClass("warn");
+      }
+    else {
+      jQuery("#delete_product-"+product_id+"-"+product_version).addClass("warn");
+      }
+    }
+  }';
 
-$content_list = 
-  ($content_top ? '
-    <div id="content_top">
-    '.$content_top.'
-    </div>' : '').'
-  <div class="product_list">
-    '.($message ? '<b><font color="#770000">'.$message.'</font></b>' : '').
-    $search_display.
-    $producer_display.         // Only set for pages needing producer info
-    $order_cycle_navigation_display.
-    $pager_navigation_display.
-    $display.
-    $pager_navigation_display.
-    $csv_link.'
-  </div>
-';
+$content_list = '
+  <div class="product_list">'.
+    $display.'
+  </div>';
 
 // $page_title_html = [value set dynamically]
+$page_subtitle_html = '
+  <span class="subtitle">'.$subtitle.
+    (strlen ($search_order_by) > 0 ? '
+      <span class="subtitle_search">'.$search_query.'</span>'
+    : '').
+    (strlen ($unique['site_long_you']) > 0 ? '
+      <span class="subtitle_site" title="Change this?" onclick="popup_src(\''.BASE_URL.PATH.'customer_select_site.php?display_as=popup\', \'customer_select_site\', \'\');">'.$unique['site_long_you'].'</span>'
+    : '').'
+  </span>';
 // $page_subtitle_html = [value set dynamically]
 // $page_title = [value set dynamically]
 // $page_tab = [value set dynamically]

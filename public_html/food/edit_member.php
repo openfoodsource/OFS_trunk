@@ -164,7 +164,7 @@ if (count ($error_array) == 0 &&
      $_REQUEST['action'] == 'Add New'))
   {
     // Close the modal dialog and reload the parent when completed.
-    $modal_action = 'reload_parent()';
+    $modal_action = 'parent.reload_parent()';
     // Get the auth_types from checkboxes
     // Prepare the database insert or update
     $query_values = '
@@ -333,7 +333,7 @@ $content_edit_member =
         <button type="submit" name="action" id="action" value="'.$submit_button_text.'">'.$submit_button_text.'</button>
         <button type="reset" name="reset" id="reset" value="Reset">Reset</button>
       </div>
-      <fieldset class="personal_info">
+      <fieldset class="personal_info grouping_block">
         <legend>Personal Information</legend>
         <div class="input_block first_name">
           <label for="first_name" class="'.$error['first_name'].'">Name 1 (first)</label>
@@ -360,7 +360,7 @@ $content_edit_member =
           <input type="text" id="business_name" name="business_name" size="40" maxlength="50" value="'.htmlspecialchars($member_info['business_name']).'">
         </div>
       </fieldset>
-      <fieldset class="contact_info">
+      <fieldset class="contact_info grouping_block">
         <legend>Contact Information</legend>
         <div class="input_block address_line1">
           <label for="address_line1" class="'.$error['address_line1'].'">Home address</label>
@@ -437,7 +437,7 @@ $content_edit_member =
           <input type="text" id="home_page" name="home_page" size="40" maxlength="200" value="'.htmlspecialchars($member_info['home_page']).'" class="'.$error['home_page'].'">
         </div>
       </fieldset>
-      <fieldset class="site_info">
+      <fieldset class="site_info grouping_block">
         <legend>Site-related Information</legend>
         <input type="hidden" id="member_id" name="member_id" size="20" maxlength="20" value="'.$member_info['member_id'].'">
 
@@ -447,11 +447,11 @@ $content_edit_member =
         </div>
         <div class="input_block password1">
           <label for="password1" class="'.$error['password1'].'">Password</label>
-          <input type="password" id="password1" name="password1" size="20" maxlength="250" value="" autocomplete="off" class="'.$error['password1'].'">
+          <input type="password" id="password1" name="password1" size="20" maxlength="250" value="" autocomplete="off" class="'.$error['password1'].'" readonly="readonly" onfocus="this.removeAttribute(\'readonly\');">
         </div>
         <div class="input_block password2">
           <label for="password2" class="'.$error['password2'].'">Password (twice to change)</label>
-          <input type="password" id="password2" name="password2" size="20" maxlength="250" value="" autocomplete="off" class="'.$error['password2'].'">
+          <input type="password" id="password2" name="password2" size="20" maxlength="250" value="" autocomplete="off" class="'.$error['password2'].'" readonly="readonly" onfocus="this.removeAttribute(\'readonly\');">
         </div>
         <div class="option_label">Member authorizations:</div>
         <div class="option_block auth_type">'.
@@ -515,106 +515,23 @@ $content_edit_member =
 </html>';
 
 $page_specific_css = '
-    fieldset {
-      margin:1em auto;
-      border: 1px solid #060;
-      border-radius:5px;
-      background-color: #fff;
-      }
-    fieldset.site_info,
-    fieldset.personal_info,
-    fieldset.contact_info {
-      width: 60%;
-      min-width:200px;
-      }
-
-    legend {
-      margin:0 5px;
-      padding:2px 5px;
-      font-weight:bold;
-      color:#040;
-      }
-    label,
-    div.option_label {
-      clear: both;
-      color: #008;
-      display: block;
-      font-size: 70%;
-      width: 100%;
-      margin-left: 4px;
-      }
-    fieldset .input_block {
-      display:inline-block;
-      min-width:3em;
-      float:left;
-      }
-    .auth_type_member,
-    .auth_type_producer {
-      float:left;
-      }
+    /* Assign fieldset colors */
     fieldset.personal_info {
       background-color:#efd;
+      width:80%;
       }
     fieldset.contact_info {
       background-color:#def;
+      width:80%;
       }
     fieldset.site_info {
       background-color:#edf;
+      width:80%;
       }
-
-    .form_buttons button,
-    fieldset input,
-    fieldset button,
-    .option_block,
-    textarea {
-      font-size:12px;
-      padding:3px 8px;
-      line-height:1.5;
-      margin:2px;
-      border-width:0;
-      border-style:none;
-      border-radius:5px;
-      border-color:none;
-      background:none;
-      border:1px solid #686;
-      box-shadow:2px 2px 0px 0px #bcb;
-      background-color:#eee;
-      color:#060;
+    /* Set fields that begin new lines (left margin) */
+    .grouping_block .input_block {
+      float:left;
       }
-    .option_block .input_block {
-      background:none;
-      border-radius:5px;
-      width:4.9em;
-      height:6em;
-      text-align:center;
-      margin:0 8px;
-      }
-    .option_block .input_block label {
-      display:table-cell;
-      vertical-align:bottom;
-      width:7em; /* width of containing input_block / 70% (font size) */
-      height:4.5em;
-      text-align:center;
-      color:#060;
-      }
-    .input_block label {
-      min-width:5em;
-      margin-left: 4px;
-      }
-    .form_buttons button:hover,
-    fieldset input:hover,
-    fieldset button:hover,
-    fieldset textarea:hover,
-    .option_block .input_block:hover {
-      background-color:#cdc;
-      color:#040;
-      }
-    /* This rule overrides styles from wordpress */
-    input:focus,
-    textarea:focus {
-      border:1px solid #686;
-      }
-
     .password1,
     .auth_type,
     .membership_type,
@@ -636,7 +553,7 @@ $page_specific_css = '
     .home_page {
       clear:left;
       }
-
+    /* Set fields that want a little extra spacing below */
     div.username,
     div.password2,
     div.auth_type,
@@ -654,25 +571,19 @@ $page_specific_css = '
     div.toll_free {
       margin-bottom:1em;
       }
-    div.notes,
-    #notes {
-      width:97%;
+    /* Special sizing rules for "notes" field */
+    .input_block.notes {
+      width:100%;
+      float:none;
+      }
+    .input_block.notes textarea {
+      width:95%; /* Why does 100% not work here? */
       height:7em;
-      }
-    .form_buttons {
-      position:fixed;
-      left:10px;
-      bottom:10px;
-      }
-    .form_buttons button {
-      display:block;
-      clear:both;
-      width:5em;
-      margin-bottom:2em;
       }';
 
-if($_GET['display_as'] == 'popup')
-  $display_as_popup = true;
+// No longer needed: Included in template_header.php
+// if($_GET['display_as'] == 'popup')
+//   $display_as_popup = true;
 
 include("template_header.php");
 echo '

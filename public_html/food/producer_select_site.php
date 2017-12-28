@@ -20,14 +20,12 @@ if (! CurrentMember::auth_type('producer_admin'))
   {
     $where_producer = '
   WHERE member_id = "'.mysqli_real_escape_string($connection, $_SESSION['member_id']).'"';
-    $consistency = 'member_id-'.mysqli_real_escape_string($connection, $_SESSION['member_id']);
   }
 // Otherwise, this is an admin, so narrow the field to specific producer_id if desired
 elseif (isset ($_GET['producer_id']))
   {
     $where_producer = '
   WHERE producer_id = "'.mysqli_real_escape_string($connection, $_GET['producer_id']).'"';
-    $consistency = 'producer_id-'.mysqli_real_escape_string($connection, $_GET['producer_id']);
   }
 else // This is the full list, so show group buttons
   {
@@ -67,7 +65,7 @@ while ($row = mysqli_fetch_object ($result))
   {
     $producer_name_array[$row->producer_id] = $row->business_name;
   }
-// Get the sites/producers that are current associated
+// Get the sites/producers that are currently associated
 $query = '
   SELECT
     *
@@ -78,55 +76,45 @@ while ($row = mysqli_fetch_object ($result))
   {
     $availability_array[$row->producer_id][$row->site_id] = 1;
   }
-if ($action == "Update")
+if (isset ($_POST['checked_array']) && isset ($_POST['unchecked_array']))
   {
-    // Check if we are accessing this page with different parameters than previously
-    // and abort if there is a discrepancy (otherwise we might inadvertently clear a
-    // range of producer values that should remain available)
-    if (isset ($_POST['consistency'])
-        && $_POST['consistency'] != $consistency)
+    // Create the checked_array and the unchecked_array from POST data
+    $checked_array = explode (',', $_POST['checked_array']);
+    $unchecked_array = explode (',', $_POST['unchecked_array']);
+    // Cycle through all producer/site combinations ...
+    foreach (array_keys ($producer_name_array) as $producer_id)
       {
-        array_push ($error_array, 'The producers listed on this page have changed from when your selections were made. Updates have been ignored to preserve the existing data. Terribly sorry, but you will need to re-enter the changes.');
-      }
-    else
-      {
-        // Cycle through all producer/site combinations ...
-        foreach (array_keys ($producer_name_array) as $producer_id)
+        foreach (array_keys ($site_short_array) as $site_id)
           {
-            foreach (array_keys ($site_short_array) as $site_id)
+            // Test if we have been instructed to turn on this producer/site avaiability
+            if (in_array ('select-'.$producer_id.'-'.$site_id, $checked_array))
               {
-                // Test if we have been instructed to turn on this producer/site avaiability
-                if (isset ($_POST['select-'.$producer_id.'-'.$site_id])
-                    && $_POST['select-'.$producer_id.'-'.$site_id] == 'on')
-                  {
-                    // If currently 'off', then set it to 'on' ...
-                    if (! isset ($availability_array[$producer_id][$site_id]))
-                      {
-                        $query2 = '
-                          INSERT INTO
-                            '.TABLE_AVAILABILITY.'
-                          SET
-                            site_id = "'.mysqli_real_escape_string ($connection, $site_id).'",
-                            producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
-                        $null = mysqli_query ($connection, $query2) or die(debug_print ("ERROR: 924489 ", array ('row-checked: '=>$row->checked, $query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
-                        // And correct the availability array
-                        $availability_array[$producer_id][$site_id] = 1;
-                      }
-                  }
-                // Otherwise, if it is not already 'off', make it so ...
-                elseif (isset ($availability_array[$producer_id][$site_id])
-                        && $availability_array[$producer_id][$site_id] == 1)
+                // If currently 'off', then set it to 'on' ...
+                if (! isset ($availability_array[$producer_id][$site_id]))
                   {
                     $query2 = '
-                      DELETE FROM
+                      INSERT INTO
                         '.TABLE_AVAILABILITY.'
-                      WHERE
-                        site_id = '.mysqli_real_escape_string ($connection, $site_id).'
-                        AND producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
-                    $null = mysqli_query ($connection, $query2) or die(debug_print ("ERROR: 233561 ", array ($query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+                      SET
+                        site_id = "'.mysqli_real_escape_string ($connection, $site_id).'",
+                        producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+                    $null = mysqli_query ($connection, $query2) or die(debug_print ("ERROR: 924489 ", array ('row-checked: '=>$row->checked, $query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
                     // And correct the availability array
-                    unset ($availability_array[$producer_id][$site_id]);
+                    $availability_array[$producer_id][$site_id] = 1;
                   }
+              }
+            // Otherwise, if it is not already 'off', make it so ...
+            elseif (in_array ('select-'.$producer_id.'-'.$site_id, $unchecked_array))
+              {
+                $query2 = '
+                  DELETE FROM
+                    '.TABLE_AVAILABILITY.'
+                  WHERE
+                    site_id = '.mysqli_real_escape_string ($connection, $site_id).'
+                    AND producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+                $null = mysqli_query ($connection, $query2) or die(debug_print ("ERROR: 233561 ", array ($query2, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+                // And correct the availability array
+                unset ($availability_array[$producer_id][$site_id]);
               }
           }
       }
@@ -146,15 +134,16 @@ $content = $error_message.'
     <h3>Select Collection Point</h3>
     <p>Use the following form to select a site where products will be brought for connection into the distribution system.
       More than one collection point may be chosen, in which case you will need to route the proper products to each.
-      Be sure to update any changes at the bottom of the form.</p>
-    <input type="hidden" name="consistency" value="'.$consistency.'">';
+      Be sure to update any changes at the bottom of the form.</p>';
 
 $content .= '
     <div id="table_container">
       <table id="producer_site_list">
         <thead>';
+$tab_index = 0;
 foreach (array_keys ($site_short_array) as $site_id)
   {
+    $tab_index++;
     $content1 .= '
           <th class="site_name" id="col-'.$site_id.'">
             <div>
@@ -163,9 +152,7 @@ foreach (array_keys ($site_short_array) as $site_id)
             </div>
           </th>';
     $content2 .= '
-          <th class="site_check">
-            <input class="site_check" name="site-'.$site_id.'" id="site-'.$site_id.'" type="checkbox">
-          </th>';
+          <th class="site_check"><input class="site_check" name="site-'.$site_id.'" id="site-'.$site_id.'" type="checkbox" tabindex="'.$tab_index.'"></th>';
   }
 $content .= '
           <tr>
@@ -184,6 +171,7 @@ $content .= '
 //      <td class="site">'.$site_short_array[$site_id].'<span class="detail">'.$site_long_array[$site_id].'</span></td>
 foreach (array_keys ($producer_name_array) as $producer_id)
   {
+    $tab_index++;
     $business_name = $row->business_name;
     $content .= '
           <tr>
@@ -191,10 +179,9 @@ foreach (array_keys ($producer_name_array) as $producer_id)
             </td>
             <td class="producer_check">'.
               ($show_group_buttons == true ? '
-              <input class="producer_check" name="producer-'.$producer_id.'" id="producer-'.$producer_id.'" type="checkbox">'
+              <input class="producer_check" name="producer-'.$producer_id.'" id="producer-'.$producer_id.'" type="checkbox" tabindex="'.$tab_index.'">'
               : '').'
-            </td>
-';
+            </td>';
     foreach (array_keys ($site_short_array) as $site_id)
       {
         if ($availability_array[$producer_id][$site_id] == 1)
@@ -215,29 +202,54 @@ foreach (array_keys ($producer_name_array) as $producer_id)
 $content .= '
         </tbody>
       </table>
-    </div>
-    <br>
-    <div>
-      <input type="submit" name="action" value="Update">
-      <input type="reset">'.
+    <div class="form_buttons">
+      <input class="floating" type="button" name="action" value="Update" onclick="get_checks_and_post();">
+      <input class="floating" type="reset">'.
       ($show_group_buttons == true ? '
-      <input value="Set Group" type="button" onclick="adjust_producer_site_checks (true);">
-      <input value="Clear Group" type="button" onclick="adjust_producer_site_checks (false);">'
+      <input class="floating" value="Set Group" type="button" onclick="adjust_producer_site_checks (true);">
+      <input class="floating" value="Clear Group" type="button" onclick="adjust_producer_site_checks (false);">'
       : '').'
     </div>
   </form>';
 
 $page_specific_css = '
+  .form_buttons {
+    bottom:2rem;
+    }
+  .form_buttons > input.floating {
+    border: 1px solid #444;
+    border-radius: 0.3rem;
+    color: #666;
+    padding: 0.25em;
+    font-weight: normal;
+    line-height: 1.5;
+    font-size: 12px;
+    display: block;
+    margin: 1rem;
+    width:9rem;
+    opacity:0.8;
+    background-color:#fff;
+    }
+  .form_buttons > input.floating:hover {
+    opacity:1;
+    color: #000;
+    background-color:#aaa;
+    }
   #producer_select_site {
-    text-align:center;
+    text-align:left;
     display:inline-block;
+    }
+  #producer_site_list {
+    max-width:100%;
+    overflow-x:scroll;
     }
   #producer_site_list thead {
     display:block;
+    position:sticky;
+    top:0;
     }
   #producer_site_list tbody {
     display:block;
-    max-height:40rem;
     overflow:scroll;
     }
   #producer_site_list {
@@ -252,8 +264,9 @@ $page_specific_css = '
     vertical-align:bottom;
     height:16rem;
     max-height:16rem;
-    width:33rem;
-    max-width:33rem;
+    width:20rem;
+    max-width:20rem;
+    min-width:20rem;
     padding:5px;
     }
   #producer_site_list th.site_name {
@@ -262,6 +275,7 @@ $page_specific_css = '
     border-left:1px solid;
     width:3rem;
     max-width:3rem;
+    padding:0;
     }
   #producer_site_list th.site_check {
     border-top:1px solid;
@@ -269,14 +283,16 @@ $page_specific_css = '
     text-align:center;
     width:3rem;
     max-width:3rem;
+    min-width:3rem;
     }
   #producer_site_list th.site_name > div {
     transform: translate(0, 5.5rem) rotate(-90deg);
     width:3rem;
     height:3rem;
+    padding:0.6rem 0.2rem;
     }
   #producer_site_list th.site_name > div > span {
-    padding:2px;
+    padding-left:2px;
     display:block;
     text-align:left;
     width:12rem;
@@ -286,23 +302,30 @@ $page_specific_css = '
   #producer_site_list th.site_name > div > span.site_short {
     display:inline-block;
     font-size:1rem;
+    line-height:1rem;
     }
   #producer_site_list th.site_name > div > span.site_long {
     font-size:0.6rem;
+    line-height:0.6rem;
     }
   #producer_site_list td.producer {
-    width:30rem;
-    max-width:30rem;
+    width:17rem;
+    max-width:17rem;
+    min-width:17rem;
+    line-height:1;
+    color:#ffc;
+    background-color:rgba(40, 80, 60, 0.8);
     }
   #producer_site_list tr th {
     color:#ffc;
-    background-color:rgba(40, 80, 60, 0.5);
+    background-color:rgba(40, 80, 60, 0.8);
     padding:2px;
      }
   #producer_site_list tr td {
-    background-color:rgba(200, 200, 200, 0.5);
-    border-top:1px solid #888;
-    border-left:1px solid #888;
+    background-color:rgba(200, 200, 200, 0.8);
+    color:#ffc;
+    border-top:1px solid;
+    border-left:1px solid;
     color:#444;
     padding:2px;
     }
@@ -319,11 +342,21 @@ $page_specific_css = '
   #producer_site_list td.site {
     text-align:left;
     }
-  #producer_site_list td.producer_check,
+  #producer_site_list td.producer_check {
+    background-color:rgba(40, 80, 60, 0.8);
+    color:#ffc;
+    border-top:1px solid;
+    border-left:1px solid;
+    text-align:center;
+    width:3rem;
+    max-width:3rem;
+    min-width:3rem;
+    }
   #producer_site_list td.producer_site_check {
     text-align:center;
     width:3rem;
     max-width:3rem;
+    min-width:3rem;
     }
   ';
 
@@ -339,7 +372,34 @@ function adjust_producer_site_checks (true_false) {
       $("#select-"+producer_checked+"-"+site_checked).prop("checked", true_false);
       });
     });
-  }';
+  };
+function get_checks_and_post() {
+  var checked_array = new Array();
+  var unchecked_array = new Array();
+  jQuery(".producer_site_check input:checkbox:checked").each(function(){ checked_array.push($(this).attr("id")); })
+  jQuery(".producer_site_check input:checkbox:not(:checked)").each(function(){ unchecked_array.push($(this).attr("id")); })
+  // Now create and post as a form
+  // REASON: We want to combine the checkbox information into two post elements since
+  // some servers restrict the number of input variables to a number like 1000 (this can run 20,000 or more)
+  var form = document.createElement("form");
+  form.setAttribute("method", "post");
+  form.setAttribute("action", "'.$_SERVER['SCRIPT_NAME'].(isset ($_GET['producer_id']) ? '?producer_id='.$_GET['producer_id'] : '').'");
+  // Add input element for checked_array data
+  var hidden_field = document.createElement("input");
+  hidden_field.setAttribute("type", "hidden");
+  hidden_field.setAttribute("name", "checked_array");
+  hidden_field.setAttribute("value", checked_array.join());
+  form.appendChild(hidden_field);
+  // Add input element for unchecked_array data
+  var hidden_field = document.createElement("input");
+  hidden_field.setAttribute("type", "hidden");
+  hidden_field.setAttribute("name", "unchecked_array");
+  hidden_field.setAttribute("value", unchecked_array.join());
+  form.appendChild(hidden_field);
+  // Add the form to the page and post it
+  document.body.appendChild(form);
+  form.submit();
+  };';
 
 if ($_GET['display_as'] == 'popup') $display_as_popup = true;
 

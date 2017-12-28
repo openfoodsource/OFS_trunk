@@ -106,7 +106,7 @@ if ($action == 'Update')
         $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 759321 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 
         // Do something here to close the modal
-        $modal_action = 'reload_parent()';
+        $modal_action = 'parent.reload_parent()';
       }
   }
 if ($action == 'add')
