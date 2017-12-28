@@ -22,6 +22,6 @@ $override_config = array (
   'email_producer_form'   => 'bogus1@openfoodsource.org',                          // Testing e-mail address
   'md5_master_password'   => '   *** ENTER PASSWORD HASH ***  ',                   // Master password can be gotten from MySQL: SELECT MD5("your_master_password")
   'debug'                 => true,                                                 // Debug mode for testing
-//  'error_flags'           => 'E_ERROR,E_WARNING,E_PARSE',                        // Error codes for testing
-  'bogus'                 => ''                                                    // Catch trailing commas when commenting lines
+//  'error_flags'           => 'E_ERROR,E_WARNING,E_PARSE',                                      // Error codes for testing
+  'is_developer'          => true,                                                // Catch trailing commas when commenting lines
   );

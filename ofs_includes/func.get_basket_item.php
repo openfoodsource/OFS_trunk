@@ -1,10 +1,10 @@
 <?php
 // If a basket_item exists for this order, the subroutine returns useful information.
 // This can be accessed by calling with:    get_basket_item ($bpid)
-//                                       OR get_basket_item ($basket_id, $product_id)
-//                                       OR get_basket_item ($member_id, $product_id, $delivery_id)
+//                                       OR get_basket_item ($basket_id, $product_id, $product_version)
+//                                       OR get_basket_item ($member_id, $product_id, $product_version, $delivery_id)
 // product_version is not needed: there better be only one version in the basket at a time
-function get_basket_item ($argument1, $product_id = NULL, $delivery_id = NULL)
+function get_basket_item ($argument1, $argument2 = NULL, $argument3 = NULL, $argument4 = NULL)
   {
     global $connection;
     $selected_fields = array (
@@ -14,13 +14,14 @@ function get_basket_item ($argument1, $product_id = NULL, $delivery_id = NULL)
       'basket_id',
       'product_id',
       'product_version',
-      'quantity',
-      'total_weight',
+      // SUM: Total of all versions, just in case there are multiple versions in the basket
+      'SUM(quantity) AS quantity', 
+      'SUM(out_of_stock) AS out_of_stock',
+      'SUM(total_weight) AS total_weight',
       NEW_TABLE_BASKET_ITEMS.'.product_fee_percent',
       NEW_TABLE_BASKET_ITEMS.'.subcategory_fee_percent',
       NEW_TABLE_BASKET_ITEMS.'.producer_fee_percent',
       'taxable',
-      'out_of_stock',
       // 'future_delivery',
       // 'future_delivery_type',
       'date_added',
@@ -60,21 +61,31 @@ function get_basket_item ($argument1, $product_id = NULL, $delivery_id = NULL)
       'checked_out',
       // COLUMNS FROM MESSAGES ------------------------------------
       'message',
+      // ACTIVE PRODUCT VERSION: Just in case we don't have this one in the basket
+      '(SELECT product_version
+          FROM '.NEW_TABLE_PRODUCTS.'
+          WHERE '.NEW_TABLE_PRODUCTS.'.product_id=products.product_id
+          AND approved="1"
+          AND active="1") AS active_product_version',
+      // COUNT() Should always be "1" unless there are multiple versions in the basket
+      'COUNT(product_version) AS number_of_versions',
       );
 
-    if (is_numeric ($argument1) && is_numeric ($product_id) && is_numeric ($delivery_id))
+    if (is_numeric ($argument1) && is_numeric ($argument2) && is_numeric ($argument3) && is_numeric ($argument4))
       {
         $query_where = 'RIGHT JOIN '.NEW_TABLE_BASKETS.' USING (basket_id)
         WHERE
           member_id = "'.mysqli_real_escape_string ($connection, $argument1).'"
-          AND product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"
-          AND delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"';
+          AND product_id = "'.mysqli_real_escape_string ($connection, $argument2).'"
+          AND product_version = "'.mysqli_real_escape_string ($connection, $argument3).'"
+          AND delivery_id = "'.mysqli_real_escape_string ($connection, $argument4).'"';
       }
-    elseif (is_numeric ($argument1) && is_numeric ($product_id))
+    elseif (is_numeric ($argument1) && is_numeric ($argument2) && is_numeric ($argument3))
       {
         $query_where = 'WHERE
           basket_id = "'.mysqli_real_escape_string ($connection, $argument1).'"
-          AND product_id = "'.mysqli_real_escape_string ($connection, $product_id).'"';
+          AND product_id = "'.mysqli_real_escape_string ($connection, $argument2).'"
+          AND product_version = "'.mysqli_real_escape_string ($connection, $argument3).'"';
       }
     elseif (is_numeric ($argument1))
       {
@@ -89,7 +100,7 @@ function get_basket_item ($argument1, $product_id = NULL, $delivery_id = NULL)
       SELECT
         '.implode (",\n        ", $selected_fields).'
       FROM '.NEW_TABLE_BASKET_ITEMS.'
-      LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(product_id,product_version)
+      LEFT JOIN '.NEW_TABLE_PRODUCTS.' products USING(product_id,product_version)
       LEFT JOIN '.NEW_TABLE_MESSAGES.' ON
         ('.NEW_TABLE_MESSAGES.'.message_type_id = 1
         AND '.NEW_TABLE_BASKET_ITEMS.'.bpid = '.NEW_TABLE_MESSAGES.'.referenced_key1)

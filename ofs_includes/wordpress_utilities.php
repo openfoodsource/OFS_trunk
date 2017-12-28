@@ -1,58 +1,39 @@
 <?php
 
-// For pages handled by wordpress, need to manually set some variables:
-if (!defined (PATH)) define('PATH' ,'/food.new/');
-if (!defined (DIR_GRAPHICS)) define('DIR_GRAPHICS' ,'/food.new/grfx/');
+// Access Open Food Source to get defined constants
+include_once ('config_openfood.php');
 
-function wordpress_show_usermenu ()
-  {
-    session_start ();
-    // Check if the member is logged in
-    if (isset ($_SESSION['member_id']))
-      {
-        $content_login = '
-          <div id="user_menu">
-            <img id="user_image" alt="user image" src="//www.gravatar.com/avatar/'.$_SESSION['gravatar_hash'].'?s=64&amp;d=mm&amp;r=PG" class="avatar avatar-64 photo" height="64" width="64" />
-            <ul id="user_actions">
-              <form method="post" action="'.PATH.'member_form.php" id="edit_profile">
-                <li id="user_menu_identity"><div class="display-name">'.$_SESSION['show_name'].'</div></li>
-                <li id="user_menu_profile" class="button"><input type="submit" form="edit_profile" value="Edit profile"></li>
-              </form>
-              <form method="post" action="'.PATH.'index.php" id="logout">
-                <li id="user_menu_action_logout"><input type="hidden" name="action" value="logout" form="logout"></li>
-                <li id="user_menu_logout" class="button"><input type="submit" form="logout" value="Log out"></li>
-              </form>
-            </ul>
-          </div>';
-      }
-    else
-      {
-        $content_login = '
-          <div id="user_menu">
-            <img id="user_image" alt="utility image" src="'.DIR_GRAPHICS.'gear.png" class="avatar avatar-64 photo" height="64" width="64" />
-            <ul id="user_actions">
-              <form method="post" action="'.PATH.'index.php" id="login">
-                <input type="hidden" name="action" value="login" form="login">
-                <li id="login_username"><input type="text" placeholder="Username" name="username" form="login"></li>
-                <li id="login_password"><input type="password" placeholder="Password" name="password" form="login"></li>
-                <li id="login_new_account" class="button"><input type="submit" form="login" value="Login"></li>
-              </form>
-              <form method="get" action="'.PATH.'member_form.php" id="sign_up">
-                <li id="login_new_account" class="button"><input type="submit" value="Sign up now!" form="sign_up"></li>
-              </form>
-            </ul>
-          </div>';
-      }
-    return $content_login;
-  }
+$content_user_menu = '';
+if (SHOW_USER_MENU == true) include ('user_menu.php');
 
 function wordpress_login ($member_id, $auth_types)
   {
     // We have skipped the Wordpress login checks, but since we are logged-in, we must set the wordpress session
     // This file includes everything required to set the session through wordpress
-    @include_once (FILE_PATH.WORDPRESS_CONFIG);
-    @wp_set_auth_cookie($_SESSION['member_id'], '', '');
-    @do_action('wp_login', $_SESSION['member_id'], $_SESSION['username']);
+    // Path (absolute or relative) to where your WP core is running
+    require(FILE_PATH.WORDPRESS_PATH.'wp-load.php');
+    if (is_user_logged_in())
+      {
+        $user = wp_get_current_user();
+      }
+    else
+      {
+        $creds = array ();
+        // We have an override on the "authenticate" filter in Wordpress so that it will
+        // automatically log in without checking username/password again.
+        $creds['user_login'] = ''; // not needed
+        $creds['user_password'] = ''; // not needed
+        $creds['remember'] = true;
+        $user = wp_signon ($creds, false);
+        if (is_wp_error ($user))
+          {
+            echo $user->get_error_message();
+          }
+        else
+          {
+            wp_set_auth_cookie ($user->ID, true);
+          }
+      }
     // Now make sure the wordpress database is correctly configured for this member
     // Open a database wp_connection to the Wordpress database
     $wp_connection = @mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME) or die(debug_print ("ERROR: 293034 ", array ('error'=>'Error while connecting to the WordPress database', mysqli_connect_error()), basename(__FILE__).' LINE '.__LINE__));

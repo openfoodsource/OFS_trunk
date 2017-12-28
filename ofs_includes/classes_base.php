@@ -72,7 +72,7 @@ class ActiveCycle
                 $query_where.'
                 /* AND order_fill_deadline > "'.date ('Y-m-d H:i:s', time()).'" */
               ORDER BY
-                delivery_id DESC
+                date_open DESC
               LIMIT
                 1';
             $result = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 730099 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
