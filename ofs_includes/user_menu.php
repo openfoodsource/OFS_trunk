@@ -13,7 +13,7 @@ if (isset ($_SESSION['member_id']))
             <li id="user_menu_action_logout"><input type="hidden" name="action" value="logout" form="logout"></li>
             <li id="user_menu_logout" class="button"><input type="submit" form="logout" value="Log out"></li>'.
             ($_SESSION['basket_id'] ? '
-            <li id="basket_info_link" class="button"><a href="'.PATH.'product_list.php?type=customer_basket&basket_id='.$_SESSION['basket_id'].'">Basket: '.$_SESSION['basket_quantity'].' '.Inflect::pluralize_if ($_SESSION['basket_quantity'], 'item').'</a></li>'
+            <li id="basket_info_link" class="button"><a href="'.PATH.'product_list.php?type=customer_basket&basket_id='.$_SESSION['basket_id'].'">Basket: '.$_SESSION['basket_quantity'].' '.Inflect::pluralize_if ($_SESSION['basket_quantity'], 'product').'</a></li>'
             : '').'
           </form>
         </ul>

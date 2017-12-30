@@ -81,9 +81,8 @@ $page_specific_scripts['ofs_javascript'] = array (
   'location'=>false
   );
 
-// Get basket information, but don't re-query if we already have it
+// Get basket information
 if (isset ($_SESSION['member_id'])
-    && ! isset ($_SESSION['basket_quantity'])
     && ActiveCycle::delivery_id())
   {
     $query = '
