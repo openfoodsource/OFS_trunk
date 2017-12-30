@@ -52,8 +52,9 @@ if ($_GET['action'] == 'select_site')
               ));
           }
         // Regardless: Set the $_COOKIE['ofs_customer']['site_id']
-        setcookie('ofs_customer[site_id]', $_GET['site_id'], strtotime ('+ 1 day'), '/', '.'.DOMAIN_NAME);
-        setcookie('ofs_customer[delivery_type]', $_GET['delivery_type'], strtotime ('+ 1 day'), '/', '.'.DOMAIN_NAME);
+        $domain_name = trim (explode ("\n", DOMAIN_NAME)[0]);
+        setcookie('ofs_customer[site_id]', $_GET['site_id'], strtotime ('+ 1 day'), '/', '.'.$domain_name);
+        setcookie('ofs_customer[delivery_type]', $_GET['delivery_type'], strtotime ('+ 1 day'), '/', '.'.$domain_name);
         // Now we have completed the purpose of this popup, so
         $modal_action = $completion_action;
       }
