@@ -157,13 +157,6 @@ if ($show_major_product) $display .= major_product_close($product_data, $unique_
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 
 // Load the data structure with all the values
@@ -172,6 +165,7 @@ $number_of_rows = mysqli_num_rows ($result_adjustment);
 $this_row = 0;
 while ($row_adjustment = mysqli_fetch_array ($result_adjustment, MYSQLI_ASSOC))
   {
+    // First array key=1
     $adjustment_data[++ $this_row] = (array) $row_adjustment;
   }
 
@@ -184,10 +178,6 @@ while ($this_row ++ < $number_of_rows)
     // $unique_data['show_adjustment'] = show_adjustment_row($adjustment_data, $unique_data);
     // $display .= show_adjustment_row($adjustment_data, $unique_data);
   }
-// Close minor
-// if ($show_minor_adjustment) $display .= minor_adjustment_close($adjustment_data, $unique_data);
-// Close major
-// if ($show_major_adjustment) $display .= major_adjustment_close($adjustment_data, $unique_data);
 
 
 // Close the page
