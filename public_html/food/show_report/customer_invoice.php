@@ -216,7 +216,8 @@ if (defined ('ACCOUNTING_ZERO_DATETIME') && strlen (ACCOUNTING_ZERO_DATETIME) > 
     $constrain_accounting_datetime = '
     AND '.TABLE_ORDER_CYCLES.'.date_closed > "'.ACCOUNTING_ZERO_DATETIME.'"';
     $constrain_effective_datetime = '
-    AND effective_datetime > "'.ACCOUNTING_ZERO_DATETIME.'"';
+    AND IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL, '.NEW_TABLE_LEDGER.'.effective_datetime, '.TABLE_ORDER_CYCLES.'.delivery_date) > "'.ACCOUNTING_ZERO_DATETIME.'"';
+
   }
 
 // Get the closing date for this member's most recent prior order
@@ -259,7 +260,7 @@ if ($row_prior_closing = mysqli_fetch_array ($result_prior_closing, MYSQLI_ASSOC
     AND ('.NEW_TABLE_LEDGER.'.effective_datetime < "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_date']).'"
       OR '.NEW_TABLE_LEDGER.'.delivery_id <= "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_id']).'")
     /* DO NOT INCLUDE ANY PAYMENTS OR RECEIPTS FOR THE PRIOR CYCLE */
-    AND NOT (('.NEW_TABLE_LEDGER.'.text_key = "payment received" OR '.NEW_TABLE_LEDGER.'.text_key = "payment made")
+    AND (NOT ('.NEW_TABLE_LEDGER.'.text_key = "payment received" OR '.NEW_TABLE_LEDGER.'.text_key = "payment made")
       AND '.NEW_TABLE_LEDGER.'.delivery_id = "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_id']).'")';
   }
 else
@@ -338,9 +339,7 @@ $query_balance = '
       AND '.NEW_TABLE_LEDGER.'.source_key = "'.mysqli_real_escape_string ($connection, $member_id).'")
     OR ('.NEW_TABLE_LEDGER.'.target_type = "member"
       AND '.NEW_TABLE_LEDGER.'.target_key = "'.mysqli_real_escape_string ($connection, $member_id).'"))
-    AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL
-
-    AND IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL, '.NEW_TABLE_LEDGER.'.effective_datetime, '.TABLE_ORDER_CYCLES.'.delivery_date) > "'.ACCOUNTING_ZERO_DATETIME.'"'.
+    AND '.NEW_TABLE_LEDGER.'.replaced_by IS NULL'.
     $and_before_prior_delivery_date.
     $constrain_effective_datetime;
 

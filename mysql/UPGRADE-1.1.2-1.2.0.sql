@@ -68,9 +68,6 @@ ALTER TABLE ofs_order_cycles
   ADD transport_id INT( 11 ) NOT NULL DEFAULT '0' AFTER customer_type;
 
 ALTER TABLE ofs_products
-  ADD approved TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER confirmed,
-  ADD active TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER approved;
-ALTER TABLE ofs_products
   ADD INDEX pricing_unit (pricing_unit),
   ADD INDEX ordering_unit (ordering_unit),
   ADD FULLTEXT product_name_fulltext (product_name),
