@@ -50,6 +50,7 @@ INSERT INTO ofs_configuration SET section = 4, name = 'show_user_menu', constant
 INSERT INTO ofs_configuration SET section = 6, name = 'is_developer', constant = 'IS_DEVELOPER', options = 'checkbox=\nfalse\r\ntrue', value= 'false', description = 'This configuration option should almost never be enabled for a live system. It is intended to provide a convenient place for developers to enable features that will help with the development process. In particular, it allows using this configuration interface to modify the configuration settings themselves.';
 INSERT INTO ofs_configuration SET section = 6, name = 'new_table_transport_identities', constant = 'NEW_TABLE_TRANSPORT_IDENTITIES', options = 'input_pattern=\r\n[A-Za-z0-9.-_]+', value= 'transport_identities', description = 'Name of the database table containing names for transport identities - i.e. named groups of transport routes that can be used over multiple cycles.';
 INSERT INTO ofs_configuration SET section = 4, name = 'show_customer_note_on_label', constant = 'SHOW_CUSTOMER_NOTE_ON_LABEL', options = 'checkbox=\r\nfalse\r\ntrue', value= 'false', description = 'Check this box to show customer notes on labels. Otherwise, the producer will only see an asterisk (*) indicating there is a customer note for the product.';
+INSERT INTO ofs_configuration SET section = 7, name = 'square_enabled', constant = 'SQUARE_ENABLED', options = 'checkbox=\r\nfalse\r\ntrue', value= 'false', description = 'Select this option if the site accepts Square payments.';
 
 -- UPDATE QUERIES:
 ALTER TABLE ofs_baskets

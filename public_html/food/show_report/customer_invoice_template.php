@@ -427,7 +427,7 @@ $unique['excluded_adjustments'].
                   'span2_content' => '',
                   'form_target' => 'paypal',
                   'allow_editing' => true,
-                  'amount' => round ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['invoice_included_adjustment_total'] + $unique['other_included_adjustment_total'], 2),
+                  'amount' => number_format ($unique['total_order_amount'] + $unique['balance_forward'] + $unique['invoice_included_adjustment_total'] + $unique['other_included_adjustment_total'], 2, '.', ''),
                   'business' => PAYPAL_EMAIL,
                   'item_name' => htmlentities (ORGANIZATION_ABBR.' '.$unique['member_id'].' '.$unique['preferred_name']),
                   'notify_url' => BASE_URL.PATH.'paypal_utilities.php',
@@ -452,7 +452,7 @@ $unique['excluded_adjustments'].
               </tr>
               <tr>
                 <td colspan="2" style="padding:5px;padding:5px;height:21px;font-size:16px;">
-                  Pay $&nbsp;'.(number_format (($unique['total_order_amount'] + $unique['balance_forward'] + $unique['included_adjustment_total']) * 1.0265, 2)).' by Square (2.65% added to cover Square fees).
+                  Pay $&nbsp;'.(number_format (($unique['total_order_amount'] + $unique['balance_forward'] + $unique['invoice_included_adjustment_total'] + $unique['other_included_adjustment_total']) * 1.0265, 2, '.', '')).' by Square (2.65% added to cover Square fees).
                 </td>
               </tr>'
 : '&nbsp;')
