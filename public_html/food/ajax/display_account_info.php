@@ -13,15 +13,13 @@ $per_page = isset($_POST['per_page']) ? mysqli_real_escape_string ($connection, 
 $limit_begin_row = ($data_page - 1) * $per_page;
 $limit_query = mysqli_real_escape_string ($connection, floor ($limit_begin_row).", ".floor ($per_page));
 
-// echo "<pre>".print_r($_POST, true)."</pre>";
-
 if ($account_key == '' || $account_type == '')
   {
     echo "Invalid request. Invalid account number or type.";
     exit (1);
   }
 
-// Set the accounting datetime limit (for constraining totals over time following the zero-date)
+// Set the accounting datetime limit (for constraining totals over time beginning with the zero-datetime)
 $constrain_accounting_datetime = '
               AND effective_datetime < "0"';
 if (defined ('ACCOUNTING_ZERO_DATETIME') && strlen (ACCOUNTING_ZERO_DATETIME) > 0)
@@ -31,7 +29,7 @@ if (defined ('ACCOUNTING_ZERO_DATETIME') && strlen (ACCOUNTING_ZERO_DATETIME) > 
               AND effective_datetime < "'.ACCOUNTING_ZERO_DATETIME.'"';
   }
 
-if ($account_type == 'tax') // Handle the tax query differently because we want group tax-codes rather than tax_ids
+if ($account_type == 'tax') // Handle the tax query differently because we want to group tax-codes rather than tax_ids
   {
     // Query for the running total of the current set of transactions
     $query_balance = '
@@ -271,6 +269,7 @@ if ($row_balance_limited = mysqli_fetch_array ($result_balance_limited, MYSQLI_A
 
 $running_total = $running_total_limited - $running_total_unlimited;
 
+// Now go back and process through the original data query
 while ($row = mysqli_fetch_array ($result_data, MYSQLI_ASSOC))
   {
     // Keep the desired account information on the "source" side...
@@ -299,14 +298,14 @@ while ($row = mysqli_fetch_array ($result_data, MYSQLI_ASSOC))
       {
         $replaced_class = ' replaced';
         $replaced_action = ' onmouseover="highlight_replacement(\''.$row['replaced_by'].'\')" onmouseout="restore_replacement(\''.$row['replaced_by'].'\')"';
-        // No running total for "replaced" transactions
+        // Running total is not changed for "replaced" transactions
         $running_total_next = $running_total + 0;
       }
     else
       {
         $replaced_class = '';
         $replaced_action = '';
-        // Subtract, since we're going in reverse order
+        // Subtract from the running total because we are displaying in reverse order
         $running_total_next = $running_total - $row['amount'];
       }
 

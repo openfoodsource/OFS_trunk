@@ -57,7 +57,7 @@ function just_close (delay) {
 
 /* Handle events for pagers
 Sample code for the pager(s) follows (use a unique descriptive ID for the outer div):
-    <form id="product_list_pager" name="product_list_pager" action="'.$_SERVER['SCRIPT_NAME'].'" method="GET">'.
+    <form id="product_list_pager" name="product_list_pager" action="'.$_SERVER['SCRIPT_NAME'].'" method="GET">
       <div id="product_list_pager_container" class="pager">
         <span class="button_position">
           <div id="product_list_pager_decrement" class="pager_decrement" onclick="decrement_pager(jQuery(this).closest(\'form\').attr(\'id\'));"><span>&ominus;</span></div>

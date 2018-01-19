@@ -153,11 +153,7 @@ if ($show_minor_product) $display .= minor_product_close($product_data, $unique_
 // Close major
 if ($show_major_product) $display .= major_product_close($product_data, $unique_data);
 
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 // Load the data structure with all the values
 $result_adjustment = mysqli_query ($connection, $query_adjustment) or die (debug_print ("ERROR: 567292 ", array ($query_adjustment, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
@@ -178,7 +174,6 @@ while ($this_row ++ < $number_of_rows)
     // $unique_data['show_adjustment'] = show_adjustment_row($adjustment_data, $unique_data);
     // $display .= show_adjustment_row($adjustment_data, $unique_data);
   }
-
 
 // Close the page
 $display .= close_list_bottom($product_data, $adjustment_data, $unique_data);

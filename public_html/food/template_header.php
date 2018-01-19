@@ -14,8 +14,6 @@ $panel_admin_menu = '';
 $logout_menu = '';
 $basket_menu = '';
 $login_menu = '';
-$header_title = '';
-$onload_action = '';
 $script_id = strtr (basename ($_SERVER['SCRIPT_NAME']), '.', '-');
 if (!isset($page_tab)) $page_tab = '';
 if (!isset($modal_action)) $modal_action = '';
@@ -164,13 +162,14 @@ elseif (USE_AVAILABILITY_MATRIX == true
 //////////////                                              ////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-if ($display_as_popup == true) // Do not distinguish Wordpress vs. non-Wordpress
+if ($display_as_popup == true) // Do not distinguish Wordpress vs. non-Wordpress for popup pages
   {
     // Since popups are often modal dialogues, we will sometimes need to close or refresh other windows
     // according to the information returned by the modal pages
     // Functions just_close(delay) and reload_parent() are defined in javascript.js, included from this header
     // Other functions can be used by passing them in as something like: function_foo(parent.variable_bar)
     // ... where the parent page will be responsible for supplying function_foo() and variable_bar
+    // These should be passed in via the $modal_action variable when the time comes to close the popup
     $inline_styles = get_inline_styles ($page_specific_stylesheets, $page_specific_css);
     $inline_scripts = get_inline_scripts ($page_specific_scripts, $page_specific_javascript);
     $content_header = '<!DOCTYPE html>
