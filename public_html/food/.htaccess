@@ -3,5 +3,6 @@ php_value include_path '/var/www/openfoodsource/ofs_includes/:.'
 
 RewriteEngine On
 RewriteBase /food/
-RewriteRule ^producers/([A-Za-z0-9_\-\.]+)$ product_list.php\?type=producer_link&producer_link=$1 [L]
-RewriteRule ^producers/([A-Za-z0-9_\-\.]+)\.php$ product_list.php\?type=producer_link&producer_link=$1 [L]
+RewriteRule ^producers/([A-Za-z0-9_\-\.]+)$ product_list.php\?type=customer_list&select_type=producer_link&producer_link=$1 [L]
+# Following for old link format and can probably be deprecated.
+RewriteRule ^producers/([A-Za-z0-9_\-\.]+)\.php$ product_list.php\?type=customer_list&select_type=producer_link&producer_link=$1 [L]
