@@ -234,6 +234,14 @@ td.activity {
   padding:0.75em 0;
   border-bottom:1px dotted #aaa;
   }
+.prior_link a {
+  display:inline-block;
+  float:right;
+  padding:0.25rem 1rem;
+  color:#fff;
+  background-color:#888;
+  border-radius:2rem;
+  }
 
 #listing_auth_type {
   width:95%;

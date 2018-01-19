@@ -1362,6 +1362,7 @@ ul.fancyList1 li {
   #user_menu,
   #payment_options,
   #quick_link,
+  .prior_link,
   .current_view,
   .no_print {
     display:none;

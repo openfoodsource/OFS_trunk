@@ -182,7 +182,11 @@ function pager_navigation(&$product, &$unique)
 
 function open_list_top(&$product, &$unique)
   {
-    $list_top = ($_GET['output'] == 'pdf' ? '' : '
+    $list_top = ($_GET['output'] == 'pdf' ? '' :
+      ($unique['prior_delivery_id'] > 0 ? '
+      <div class="prior_link"><a href="'.$_SERVER['SCRIPT_NAME'].'?'.($_GET['type'] ? 'type='.$_GET['type'] : '').'&amp;delivery_id='.$unique['prior_delivery_id'].($_GET['member_id'] ? '&amp;member_id='.$_GET['member_id'] : '').($_GET['view'] ? '&amp;view='.$_GET['view'] : '').'">Go to prior invoice: '.$unique['prior_delivery'].'</a></div>'
+      : ''
+      ).'
       <span class="current_view">
         Current view: '.ucfirst ($unique['view']).' invoice<br>
         View as
