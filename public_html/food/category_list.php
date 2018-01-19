@@ -2,15 +2,6 @@
 include_once 'config_openfood.php';
 session_start();
 
-// Do not show product lists unless the member has already opened a basket, so go do that...
-unset ($_SESSION['redirect_after_basket_select']);
-if (! CurrentBasket::basket_id())
-  {
-    // Put the originally requested URI into the $_SESSION for later retrieval
-    $_SESSION['redirect_after_basket_select'] = $_SERVER['REQUEST_URI'];
-    header ('Location: '.BASE_URL.PATH.'select_delivery_page.php?first_call=true');
-  }
-
 // valid_auth(''); // anyone can view these pages
 
 //The function of this script is to create an html-formatted output of the categories and subcategories
@@ -208,6 +199,7 @@ while ($count++ <= $found_rows)
     $subcategory_name = $row['subcategory_name'];
     $subcategory_qty = $row['qty_of_items'];
     $subcategory_new_qty = $row['qty_of_new_items'];
+    if (strlen ($row['site_long_you']) > 0) $site_long_you = $row['site_long_you']; // Because it has a null value for some rows
     // Generate the category section markup (if we're in a new category)
     if ($category_id != $category_id_prior &&
         $category_id_prior != 0) // Don't flag this on the first pass when processing the first row
@@ -310,7 +302,12 @@ $page_specific_css = '
     }';
 
 $page_title_html = '<span class="title">Products</span>';
-$page_subtitle_html = '<span class="subtitle">Browse Categories</span>';
+$page_subtitle_html = '
+  <span class="subtitle">'.$subtitle.
+    (strlen ($site_long_you) > 0 ? '
+      <span class="subtitle_site" title="Change this?" onclick="popup_src(\''.BASE_URL.PATH.'customer_select_site.php?display_as=popup\', \'customer_select_site\', \'\');">'.$site_long_you.'</span>'
+    : '').'
+  </span>';
 $page_title = 'Products - Browse Categories';
 $page_tab = 'shopping_panel';
 

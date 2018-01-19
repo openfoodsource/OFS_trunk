@@ -708,27 +708,6 @@ input.basket_dec {
 .message_area.hidden {
   display:none;
   }
-.subtitle_search {
-  display:block;
-  font-weight:normal;
-  /* text-transform:none;
-  font-variant:normal; */
-  }
-.subtitle_search::before {
-  content:"Searching: ";
-  display:inline;
-  }
-.subtitle_site {
-  display:block;
-  font-weight:normal;
-  text-transform:none;
-  font-variant:normal;
-  cursor:pointer;
-  }
-.subtitle_site::before {
-  content:"Delivery \2192  ";
-  display:inline;
-  }
 
 .search_container {
   position:relative;

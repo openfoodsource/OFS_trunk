@@ -93,12 +93,14 @@ $delivery_type_array = array ();
 // If we already have a $_COOKIE or $_SESSION value and are about to create a new basket,
 // then just confirm we have the correct site
 $just_confirm = false;
-if (isset ($_GET['confirm_site']) && $_GET['confirm_site'] == 'true')
+if (isset ($_GET['confirm_site']) && $_GET['confirm_site'] == 'true'
+    && (($_SESSION['ofs_customer']['site_id'] && $_SESSION['ofs_customer']['delivery_type'])
+      || ($_COOKIE['ofs_customer']['site_id'] && $_COOKIE['ofs_customer']['delivery_type'])))
   {
     $just_confirm = true;
     $confirm_message_top = '
         <div class="confirm_site_message">
-          Please select the site below to confirm that your order should be delivered to that location.
+          Please select the site below to confirm that your order should be delivered there.
         </div>';
     $confirm_message_bottom = '
         <div class="confirm_site_message">

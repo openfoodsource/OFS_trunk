@@ -34,11 +34,13 @@ if (USE_AVAILABILITY_MATRIX == true)
     if (! $ofs_customer_site_id) $ofs_customer_site_id = $_COOKIE['ofs_customer']['site_id'];
     // Now set query values...
     $select_availability = '
-    IF ('.TABLE_AVAILABILITY.'.site_id = "'.$ofs_customer_site_id.'", 1, 0) AS availability,';
+    IF ('.TABLE_AVAILABILITY.'.site_id = "'.$ofs_customer_site_id.'", 1, 0) AS availability,
+    '.NEW_TABLE_SITES.'.site_long AS site_long_you,';
     $join_availability = '
   LEFT JOIN '.TABLE_AVAILABILITY.' ON (
     '.TABLE_AVAILABILITY.'.producer_id = '.TABLE_PRODUCER.'.producer_id
-    AND '.TABLE_AVAILABILITY.'.site_id = "'.$ofs_customer_site_id.'")';
+    AND '.TABLE_AVAILABILITY.'.site_id = "'.$ofs_customer_site_id.'")
+  LEFT JOIN '.NEW_TABLE_SITES.' ON '.NEW_TABLE_SITES.'.site_id = "'.$ofs_customer_site_id.'"';
   }
 else
   {
@@ -46,7 +48,6 @@ else
     1 AS availability,';
     $join_availability = '';
   }
-
 
 $query = '
   SELECT
@@ -98,6 +99,7 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
     $subcategory_id = $row['subcategory_id'];
     $subcategory_name = $row['subcategory_name'];
     $logo_id = $row['logo_id'];
+    if (strlen ($row['site_long_you']) > 0) $site_long_you = $row['site_long_you']; // Because it has a null value for some rows
     if ($product_count > 0 || $show_all)
       {
         if ($producer_id != $producer_id_prior && $producer_id_prior != '') // Show accumulated data for the prior producer
@@ -234,7 +236,12 @@ $page_specific_javascript .= '
     };';
 
 $page_title_html = '<span class="title">Products</span>';
-$page_subtitle_html = '<span class="subtitle">'.($show_all ? 'Full Producer List' : 'Active Producers').'</span>';
+$page_subtitle_html = '
+  <span class="subtitle">'.$subtitle.
+    (strlen ($site_long_you) > 0 ? '
+      <span class="subtitle_site" title="Change this?" onclick="popup_src(\''.BASE_URL.PATH.'customer_select_site.php?display_as=popup\', \'customer_select_site\', \'\');">'.$site_long_you.'</span>'
+    : '').'
+  </span>';
 $page_title = 'Products: '.($show_all ? 'Full Producer List' : 'Active Producers');
 $page_tab = 'shopping_panel';
 
