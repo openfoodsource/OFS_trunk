@@ -9,7 +9,7 @@ valid_auth('member_admin,site_admin,cashier');
 $account_type = isset($_POST['account_type']) ? mysqli_real_escape_string ($connection, $_POST['account_type']) : '';
 $data_page = isset($_POST['data_page']) ? mysqli_real_escape_string ($connection, $_POST['data_page']) : 1;
 $per_page = isset($_POST['per_page']) ? mysqli_real_escape_string ($connection, $_POST['per_page']) : PER_PAGE;
-$per_page = 25;
+$per_page = 100;
 $top_special_markup = '';
 $limit_clause = mysqli_real_escape_string ($connection, floor (($data_page - 1) * $per_page).", ".floor ($per_page));
 

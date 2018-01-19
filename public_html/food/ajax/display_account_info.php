@@ -9,6 +9,21 @@ $account_key = isset($_POST['account_key']) ? mysqli_real_escape_string ($connec
 $account_type = isset($_POST['account_type']) ? mysqli_real_escape_string ($connection, $_POST['account_type']) : '';
 $data_page = isset($_POST['data_page']) ? mysqli_real_escape_string ($connection, $_POST['data_page']) : 1;
 $per_page = isset($_POST['per_page']) ? mysqli_real_escape_string ($connection, $_POST['per_page']) : PER_PAGE;
+if ($_POST['sort_option'] == 'ledger_order')
+  {
+    $order_by = 'transaction_id';
+    $show_voided = 'replaced_by IS NULL';
+  }
+elseif ($_POST['sort_option'] == 'ledger_order_voids')
+  {
+    $order_by = 'transaction_id';
+    $show_voided = '1';
+  }
+else // if ($sort_option == 'effective_datetime')
+  {
+    $order_by = 'effective_datetime';
+    $show_voided = 'replaced_by IS NULL';
+  }
 
 $limit_begin_row = ($data_page - 1) * $per_page;
 $limit_query = mysqli_real_escape_string ($connection, floor ($limit_begin_row).", ".floor ($per_page));
@@ -38,32 +53,22 @@ if ($account_type == 'tax') // Handle the tax query differently because we want 
       FROM
         (SELECT
           transaction_id,
+          effective_datetime,
           amount
         FROM
           (
             (SELECT
               transaction_id,
-              amount * IF(replaced_by IS NULL, -1, 0) AS amount
+              effective_datetime,
+              amount * IF(replaced_by IS NOT NULL, 0, IF (source_type = "tax", -1, 1)) AS amount
             FROM
               '.NEW_TABLE_LEDGER.'
             LEFT JOIN
-              '.NEW_TABLE_TAX_RATES.' ON (tax_id = source_key)
+              '.NEW_TABLE_TAX_RATES.' ON (IF (source_type = "tax", source_key, target_key) = tax_id)
             WHERE
-              source_type = "tax"
-              AND region_code="'.$account_key.'"CONSTRAINT)
-          UNION ALL
-             (SELECT
-              transaction_id,
-              amount * IF(replaced_by IS NULL, 1, 0) AS amount
-            FROM
-              '.NEW_TABLE_LEDGER.'
-            LEFT JOIN
-              '.NEW_TABLE_TAX_RATES.' ON (tax_id = target_key)
-            WHERE
-              target_type = "tax"
-              AND region_code="'.$account_key.'"CONSTRAINT)
-          ) foo
-        ORDER BY transaction_id DESC
+              region_code="'.$account_key.'"
+              AND '.$show_voided.'CONSTRAINT)) foo
+        ORDER BY '.$order_by.' DESC
         LIMIT) bar';
     // Query the actual transactions
     $query_data = '
@@ -71,86 +76,50 @@ if ($account_type == 'tax') // Handle the tax query differently because we want 
         SQL_CALC_FOUND_ROWS
         *
       FROM
-        (
-          (SELECT
-            transaction_id,
-            transaction_group_id,
-            source_type,
-            region_code AS source_key,
-            region_code AS source_name,
-            target_type,
-            target_key,
-            CASE target_type
-              WHEN "member" THEN (SELECT preferred_name FROM '.TABLE_MEMBER.' WHERE member_id = target_key)
-              WHEN "producer" THEN (SELECT business_name FROM '.TABLE_PRODUCER.' WHERE producer_id = target_key)
-              WHEN "internal" THEN (SELECT description FROM '.NEW_TABLE_ACCOUNTS.' WHERE account_id = target_key)
-              WHEN "tax" THEN (SELECT region_code FROM '.NEW_TABLE_TAX_RATES.' WHERE tax_id = target_key)
-            END AS target_name,
-            region_type,
-            region_name,
-            amount * IF(replaced_by IS NULL, -1, 0) AS amount,
-            text_key,
-            effective_datetime,
-            posted_by,
-            replaced_by,
-            replaced_datetime,
-            timestamp,
-            basket_id,
-            bpid,
-            site_id AS site_id_source,
-              IF(site_id, (SELECT site_short FROM '.NEW_TABLE_SITES.' WHERE site_id = site_id_source), "") AS site_name,
-            delivery_id AS delivery_id_source,
-              IF(delivery_id, (SELECT delivery_date FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = delivery_id_source), "") AS delivery_date,
-            pvid AS pvid_source,
-              IF(pvid, (SELECT product_name FROM '.NEW_TABLE_PRODUCTS.' WHERE pvid = pvid_source), "") AS product_name
-          FROM
-            '.NEW_TABLE_LEDGER.'
-          LEFT JOIN
-            '.NEW_TABLE_TAX_RATES.' ON (tax_id = source_key)
-          WHERE
-            source_type = "tax"
-            AND region_code="'.$account_key.'")
-        UNION ALL
-           (SELECT
-            transaction_id,
-            transaction_group_id,
-            source_type,
-            source_key,
-            CASE source_type
-              WHEN "member" THEN (SELECT preferred_name FROM '.TABLE_MEMBER.' WHERE member_id = source_key)
-              WHEN "producer" THEN (SELECT business_name FROM '.TABLE_PRODUCER.' WHERE producer_id = source_key)
-              WHEN "internal" THEN (SELECT description FROM '.NEW_TABLE_ACCOUNTS.' WHERE account_id = source_key)
-              WHEN "tax" THEN (SELECT region_code FROM '.NEW_TABLE_TAX_RATES.' WHERE tax_id = source_key)
-            END AS source_name,
-            target_type,
-            region_code AS target_key,
-            region_code AS target_name,
-            region_type,
-            region_name,
-            amount * IF(replaced_by IS NULL, 1, 0) AS amount,
-            text_key,
-            effective_datetime,
-            posted_by,
-            replaced_by,
-            replaced_datetime,
-            timestamp,
-            basket_id,
-            bpid,
-            site_id AS site_id_source,
-              IF(site_id, (SELECT site_short FROM '.NEW_TABLE_SITES.' WHERE site_id = site_id_source), "") AS site_name,
-            delivery_id AS delivery_id_source,
-              IF(delivery_id, (SELECT delivery_date FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = delivery_id_source), "") AS delivery_date,
-            pvid AS pvid_source,
-              IF(pvid, (SELECT product_name FROM '.NEW_TABLE_PRODUCTS.' WHERE pvid = pvid_source), "") AS product_name
-          FROM
-            '.NEW_TABLE_LEDGER.'
-          LEFT JOIN
-            '.NEW_TABLE_TAX_RATES.' ON (tax_id = target_key)
-          WHERE
-            target_type = "tax"
-            AND region_code="'.$account_key.'")
-        ) foo
-      ORDER BY transaction_id DESC
+        (SELECT
+          transaction_id,
+          transaction_group_id,
+          source_type,
+          IF (source_type = "tax", region_code, source_key) AS source_key,
+          CASE source_type
+            WHEN "member" THEN (SELECT preferred_name FROM '.TABLE_MEMBER.' WHERE member_id = source_key)
+            WHEN "producer" THEN (SELECT business_name FROM '.TABLE_PRODUCER.' WHERE producer_id = source_key)
+            WHEN "internal" THEN (SELECT description FROM '.NEW_TABLE_ACCOUNTS.' WHERE account_id = source_key)
+            WHEN "tax" THEN (SELECT region_code FROM '.NEW_TABLE_TAX_RATES.' WHERE tax_id = source_key)
+          END AS source_name,
+          target_type,
+          IF (target_type = "tax", region_code, target_key) AS target_key,
+          CASE target_type
+            WHEN "member" THEN (SELECT preferred_name FROM '.TABLE_MEMBER.' WHERE member_id = target_key)
+            WHEN "producer" THEN (SELECT business_name FROM '.TABLE_PRODUCER.' WHERE producer_id = target_key)
+            WHEN "internal" THEN (SELECT description FROM '.NEW_TABLE_ACCOUNTS.' WHERE account_id = target_key)
+            WHEN "tax" THEN (SELECT region_code FROM '.NEW_TABLE_TAX_RATES.' WHERE tax_id = target_key)
+          END AS target_name,
+          region_type,
+          region_name,
+          amount * IF(replaced_by IS NOT NULL, 0, IF (source_type = "tax", -1, 1)) AS amount,
+          text_key,
+          effective_datetime,
+          posted_by,
+          replaced_by,
+          replaced_datetime,
+          timestamp,
+          basket_id,
+          bpid,
+          site_id AS site_id_source,
+          IF(site_id IS NOT NULL, (SELECT site_short FROM '.NEW_TABLE_SITES.' WHERE site_id = site_id_source), "") AS site_name,
+          delivery_id AS delivery_id_source,
+          IF(delivery_id IS NOT NULL, (SELECT delivery_date FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = delivery_id_source), "") AS delivery_date,
+          pvid AS pvid_source,
+          IF(pvid IS NOT NULL, (SELECT product_name FROM '.NEW_TABLE_PRODUCTS.' WHERE pvid = pvid_source), "") AS product_name
+        FROM
+          '.NEW_TABLE_LEDGER.'
+        LEFT JOIN
+          '.NEW_TABLE_TAX_RATES.' ON (IF (source_type = "tax", source_key, target_key) = tax_id)
+        WHERE
+          region_code="'.$account_key.'"
+          AND '.$show_voided.') foo
+      ORDER BY '.$order_by.' DESC
       LIMIT '.$limit_query;
   }
 else
@@ -172,8 +141,9 @@ else
               AND source_key = "'.$account_key.'")
             OR
             ( target_type = "'.$account_type.'"
-              AND target_key = "'.$account_key.'"))CONSTRAINT
-          ORDER BY transaction_id DESC
+              AND target_key = "'.$account_key.'"))
+            AND '.$show_voided.'CONSTRAINT
+          ORDER BY '.$order_by.' DESC
           LIMIT
         ) AS foo';
     // Query the actual transactions
@@ -221,7 +191,8 @@ else
         OR
         ( target_type = "'.$account_type.'"
           AND target_key = "'.$account_key.'")
-      ORDER BY transaction_id DESC
+        AND '.$show_voided.'
+      ORDER BY '.$order_by.' DESC
       LIMIT '.$limit_query;
   }
 
@@ -254,8 +225,8 @@ $query_balance_limited = str_replace('LIMIT', $limit_running_total, $query_balan
 $query_balance_limited = str_replace('CONSTRAINT', '', $query_balance_limited);
 
 // Get the running total for all transactions
-$result_balance_unlimited = mysqli_query($connection, $query_balance_unlimited) or die (debug_print ("ERROR: 767392 ", array ($query_balance_unlimited, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
-if ($row_balance_unlimited = mysqli_fetch_array($connection, $result_balance_unlimited))
+$result_balance_unlimited = mysqli_query ($connection, $query_balance_unlimited) or die (debug_print ("ERROR: 767392 ", array ($query_balance_unlimited, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+if ($row_balance_unlimited = mysqli_fetch_array ($result_balance_unlimited, MYSQLI_ASSOC))
   {
     $running_total_unlimited = $row_balance_unlimited['running_total'];
   }
@@ -278,19 +249,14 @@ while ($row = mysqli_fetch_array ($result_data, MYSQLI_ASSOC))
     $row['pvid_id'] = $row['pvid_id_source'];
 
     // If necessary, invert sense of the source and target accounts
-    if ($row['target_type'] != $account_type || $row['target_key'] != $account_key)
+    // because we always want the source account to be the one being displayed
+    // if ($row['target_type'] != $account_type || $row['target_key'] != $account_key)
+    if ($row['target_type'] != $account_type)
       {
-        $temp = $row['source_type'];
-        $row['source_type'] = $row['target_type'];
-        $row['target_type'] = $temp;
-        $temp = $row['source_key'];
-        $row['source_key'] = $row['target_key'];
-        $row['target_key'] = $temp;
-        $temp = $row['source_name'];
-        $row['source_name'] = $row['target_name'];
-        $row['target_name'] = $temp;
-        // And invert the value of the amount
-        $row['amount'] = $row['amount'] * -1;
+        // Switch source and target values
+        // We do not need to switch the sign of "amount" because that was already done in the query
+        list      ($row['source_type'], $row['source_key'], $row['source_name'], $row['target_type'], $row['target_key'], $row['target_name'])
+          = array ($row['target_type'], $row['target_key'], $row['target_name'], $row['source_type'], $row['source_key'], $row['source_name']);
       }
 
     // Set up "replaced" transactions for style and linking with their replacements

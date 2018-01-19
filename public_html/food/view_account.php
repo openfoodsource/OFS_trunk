@@ -6,21 +6,35 @@ valid_auth('member_admin,site_admin,cashier');
 $account_type = isset($_GET['account_type']) ? $_GET['account_type'] : '';
 $account_key = isset($_GET['account_key']) ? $_GET['account_key'] : '';
 $account_name = isset($_GET['account_name']) ? $_GET['account_name'] : '';
-
+$sort_option = isset($_GET['sort_option']) ? $_GET['sort_option'] : 'effective_datetime';
 
 // See documentation for the auto-fill menu at http://api.jqueryui.com/autocomplete/
 $display = '
 <fieldset class="controls">
-  <label for="account_type">Type: </label>
-  <select id="account_type" name="account_type" onchange="clear_form();">
-    <option value="member"'.($account_type == "member" ? ' selected' : '').'>member</option>
-    <option value="producer"'.($account_type == "producer" ? ' selected' : '').'>producer</option>
-    <option value="internal"'.($account_type == "internal" || $account_type == '' ? ' selected' : '').'>internal</option>
-    <option value="tax"'.($account_type == "tax" ? ' selected' : '').'>tax</option>
-  </select>
-  <input type="hidden" id="account_key" value="'.$account_key.'">
-  <label for="account_name">Account: </label>
-  <input type="text" id="account_name" onFocus="this.select();" value="'.$account_name.'" placeholder="start typing to find account...">
+  <div class="grouping_block select_account">
+    <div class="info_block account_type">
+      <label for="account_type">Type: </label>
+      <select id="account_type" name="account_type" onchange="clear_form();">
+        <option value="member"'.($account_type == "member" ? ' selected' : '').'>member</option>
+        <option value="producer"'.($account_type == "producer" ? ' selected' : '').'>producer</option>
+        <option value="internal"'.($account_type == "internal" || $account_type == '' ? ' selected' : '').'>internal</option>
+        <option value="tax"'.($account_type == "tax" ? ' selected' : '').'>tax</option>
+      </select>
+    </div>
+    <div class="info_block account_name">
+      <label for="account_name">Account: </label>
+      <input type="text" id="account_name" onFocus="this.select();" value="'.$account_name.'" placeholder="start typing to find account...">
+    </div>
+    <div class="info_block account_name">
+      <label for="sort_option">Sort by</label>
+      <select id="sort_option" name="sort_option" onchange="get_account_info(\'data_page\', true);">
+        <option value="ledger_order"'.($sort_option == "ledger_order" ? ' selected' : '').'>Ledger Order</option>
+        <option value="ledger_order_voids"'.($sort_option == "ledger_order_voids" ? ' selected' : '').'>Ledger Order (with voided)</option>
+        <option value="effective_datetime"'.($sort_option == "effective_datetime" ? ' selected' : '').'>Effective Date/Time</option>
+      </select>
+    </div>
+    <input type="hidden" id="account_key" value="'.$account_key.'">
+  </div>
   <div id="pager">
     <label for="data_page"></label>
     <span id="decrement_data_page" class="decrement" onclick="decrement(\'data_page\');" style="display:none;">&#9664;</span>
@@ -47,7 +61,7 @@ if ($account_type != '' && $account_key != '')
     jQuery( document ).ready(function() {
       // Handler for .ready() called.
       actual["data_page"] = 0; // needed to force loading
-      get_account_info(\'data_page\');
+      get_account_info(\'data_page\', false);
       });';
 
 $page_specific_scripts['adjust_ledger'] = array (
@@ -126,12 +140,12 @@ $page_specific_javascript = '
     jQuery("#maximum_data_page").html(" / "+maximum["data_page"]);
     }
   var debounce_pager = debounce(function(target) {
-    get_account_info(target);
+    get_account_info(target, false);
     }, 1000);
-  function get_account_info(target) {
+  function get_account_info(target, force_update) {
     // Clear the current #ledger_container content
-//    jQuery("#ledger_container").html("");
-    if (document.getElementById(target).innerHTML != actual[target]) {
+    // jQuery("#ledger_container").html("");
+    if (document.getElementById(target).innerHTML != actual[target] || force_update == true) {
       actual[target] = document.getElementById(target).innerHTML;
       // Start the spinner (change color of the "data_page" field)
       jQuery("#data_page").addClass("spinning")
@@ -141,6 +155,7 @@ $page_specific_javascript = '
         cache: false,
         data: {
           account_key: document.getElementById("account_key").value,
+          sort_option: document.getElementById("sort_option").value,
           account_type: document.getElementById("account_type").value,
           data_page: document.getElementById("data_page").innerHTML
           }
@@ -338,13 +353,17 @@ $page_specific_css = '
     }
   .source_info {
     position:relative;
-    top:0; left:125px;
+    top:0; left:135px;
     height:15px;
-    width:300px;
+    width:280px;
     overflow:hidden;
+    text-decoration:inherit;
     }
   .source_type {
-    display:inline;
+    display:inline-block;
+    position:relative;
+    top:-4px;
+    text-decoration:inherit;
     }
   .source_type::before {
     content: " (";
@@ -353,28 +372,46 @@ $page_specific_css = '
     content: ")";
     } 
   .source_key {
-    display:inline;
+    display:inline-block;
+    position:relative;
+    top:-4px;
+    text-decoration:inherit;
     }
   .source_name {
-    display:inline;
+    display:inline-block;
+    max-width:200px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-decoration:inherit;
     }
   .target_info {
     position:relative;
-    top:0px; left:125px;
+    top:0px; left:135px;
     height:15px;
-    width:300px;
+    width:280px;
     overflow:hidden;
     display:none;
+    text-decoration:inherit;
     }
   .target_type {
-    display:inline;
+    display:inline-block;
+    position:relative;
+    top:-4px;
+    text-decoration:inherit;
     }
   .target_key {
-    display:inline;
+    display:inline-block;
     display:none;
+    position:relative;
+    top:-4px;
+    text-decoration:inherit;
     }
   .target_name {
-    display:inline;
+    display:inline-block;
+    max-width:200px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-decoration:inherit;
     }
   .amount {
     position:relative;
@@ -414,7 +451,7 @@ $page_specific_css = '
     position:relative;
     top:-30px; right:0;
     height:15px;
-    width:125px;
+    width:135px;
     }
   .posted_by {
     display:none;
@@ -431,7 +468,7 @@ $page_specific_css = '
   .order_info {
     position:relative;
     top:-45px; left:525px;
-    height:15px;
+    height:16px;
     text-align:center;
     overflow:hidden;
     width:50px;
@@ -441,6 +478,8 @@ $page_specific_css = '
     color:#fff;
     background-color:#444;
     z-index:100;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
     }
   .order_info::before {
     content: "(info)";
@@ -454,12 +493,13 @@ $page_specific_css = '
   .site_info {
     position:relative;
     /* top:-45px; left:425px; */
-    top:4px; left:-200px;
+    top:-2px; left:-150px;
     height:20px;
     width:50px;
     padding:2px;
     color:#fff;
     background-color:#444;
+    border-top-left-radius: 0.5rem;
     }
   .site_id {
     display:none;
@@ -470,9 +510,9 @@ $page_specific_css = '
   .delivery_info {
     position:relative;
     /* top:-60px; left:475px; */
-    top:-16px; left:-150px;
+    top:-22px; left:-100px;
     height:20px;
-    width:100px;
+    width:150px;
     padding:2px;
     color:#fff;
     background-color:#444;
@@ -489,12 +529,14 @@ $page_specific_css = '
   .product_info {
     position:relative;
     /* top:-75px; left:575px; */
-    top:-36px; left:-50px;
+    top:-22px; left:-150px;
     height:20px;
     width:200px;
     padding:2px;
     color:#fff;
     background-color:#444;
+    border-bottom-right-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
     }
   .pvid {
     display:inline;
