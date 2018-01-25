@@ -307,6 +307,9 @@ $page_specific_css = '
   body {
     margin:10px;
     }
+  form#edit_schedule {
+    text-align: left;
+    }
   fieldset {
     padding:10px;
     }
@@ -323,8 +326,6 @@ $page_specific_css = '
     color:#060;
     }
   input {
-    float:left;
-    clear:left;
     margin-bottom:0.5em;
     }
   input:invalid {
@@ -394,11 +395,19 @@ $page_specific_css = '
     }
   .controls input[type=submit],
   .controls input[type=reset] {
-    clear:none;
+    display:inline-block;
+    border-style:outset;
+    border-width:2px;
+    border-color:#ccc;
     width:15%;
-    min-width:8em;
-    margin:1em;
-    float:left;
+    min-width:8rem;
+    margin:1rem;
+    padding:0.5rem;
+    color:#000;
+    font-size:.9rem;
+    font-weight:normal;
+    line-height:1;
+    font-family: inherit;
     }
   .controls input:hover {
     font-weight:bold;
