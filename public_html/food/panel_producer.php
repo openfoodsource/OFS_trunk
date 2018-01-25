@@ -4,34 +4,28 @@ session_start();
 valid_auth('producer,producer_admin');
 
 // Check if we need to change the unlisted_producer status
-if (isset ($_POST['select_status']) && $_SESSION['producer_id_you'] != '' )
+// "instance" validation ensures we don't execute "_GET" changes on page reload, back, bookmarks, etc.
+if (isset ($_GET['select_status'])
+    && $_SESSION['producer_id_you'] != ''
+    && $_SESSION['instance'] == $_GET['instance'])
   {
-    if ( $_POST['select_status'] == 'listed' )
+    if ( $_GET['select_status'] == 'listed' )
       {
         $unlisted_producer = 0;
       }
-    elseif($_POST['select_status'] == "unlisted")
+    elseif($_GET['select_status'] == "unlisted")
       {
         $unlisted_producer = 1;
       }
-    elseif($_POST['select_status'] == "suspended")
+    elseif($_GET['select_status'] == "suspended")
       {
         $unlisted_producer = 2;
-      }
-    if ($_POST['select_pending'] == "pending")
-      {
-        $pending_producer = 1;
-      }
-    else
-      {
-        $pending_producer = 0;
       }
     $query = '
       UPDATE
         '.TABLE_PRODUCER.'
       SET
-        unlisted_producer = "'.mysqli_real_escape_string ($connection, $unlisted_producer).'",
-        pending = "'.mysqli_real_escape_string ($connection, $pending_producer).'"
+        unlisted_producer = "'.mysqli_real_escape_string ($connection, $unlisted_producer).'"
       WHERE
         producer_id = "'.mysqli_real_escape_string ($connection, $_SESSION['producer_id_you']).'"
         AND NOT (
@@ -41,18 +35,19 @@ if (isset ($_POST['select_status']) && $_SESSION['producer_id_you'] != '' )
     $result = @mysqli_query ($connection, $query) or die(debug_print ("ERROR: 904933", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
   }
 
-if ($_POST['select_producer'])
+if ($_GET['select_producer']
+    && $_SESSION['instance'] == $_GET['instance'])
   {
     // Make sure we are authorized to "become" this producer
     // Either we are the member who is the producer or we are a producer admin
     $query = '
       SELECT
         business_name,
-        producer_id,
+        producer_id
       FROM
         '.TABLE_PRODUCER.'
       WHERE
-        producer_id = "'.mysqli_real_escape_string ($connection, $_POST['select_producer']).'"
+        producer_id = "'.mysqli_real_escape_string ($connection, $_GET['select_producer']).'"
         AND member_id = "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"';
     $result = @mysqli_query ($connection, $query) or die(debug_print ("ERROR: 860943 ", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     if ($row = mysqli_fetch_object ($result))
@@ -76,6 +71,9 @@ if ($_POST['select_producer'])
           }
       }
   }
+
+// Use this as a value to confirm submission of this page, but not of a reloaded page
+$_SESSION['instance'] = uniqid();
 
 // Get a list of all the producer_id values for this member
 $query = '
@@ -104,36 +102,33 @@ $producer_count = 0;
     if ($row->unlisted_producer == 2) $listed_class = 'suspended';
     // Add the producer to the producer selections
     $producer_select_list .= '
-      <input class="select_type_radio" id="select_producer-'.$row->producer_id.'" name="select_producer" value="'.$row->producer_id.'" onchange="document.forms[\'select_producer\'].submit();" type="radio"'.($row->producer_id == $_SESSION['producer_id_you'] ? ' checked' : '').'>
-      <label class="block_31 '.$listed_class.'" for="select_producer-'.$row->producer_id.'">'.$row->business_name.'</label>';
+      <div class="producer_block">
+        <input class="select_type_radio" id="select_producer-'.$row->producer_id.'" name="select_producer" value="'.$row->producer_id.'" onchange="document.forms[\'select_producer\'].submit();" type="radio"'.($row->producer_id == $_SESSION['producer_id_you'] ? ' checked' : '').'>
+        <label class="block_31 '.$listed_class.'" for="select_producer-'.$row->producer_id.'">&nbsp;&nbsp;'.$row->business_name.'</label>
+      </div>';
     // Build the status options for this (producer_id_you) producer
     if ($row->producer_id == $_SESSION['producer_id_you'])
       {
         $producer_select_status = '
-          <form id="select_status" class="" name="select_status" action="'.$_SERVER['SCRIPT_NAME'].'" method="POST">
-            <!-- BUTTON FOR PENDING/UNPENDING A PRODUCER -->
-            <input id="select_status_pending_target" class="select_type_checkbox" name="select_pending" value="pending" onchange="document.forms[\'select_status\'].submit();" type="checkbox"'.($pending_class == 'pending' ? ' checked' : '').'>
-            <label id="select_status_pending" class="block_22 pending disabled" for="select_status_pending_target-DISABLED" onclick="interrupt_radio_check_confirm(this.id,\'ask_confirm\',6)">
-              <span class="default">'.($pending_class == 'pending' ? 'PENDING<span class="detail">Make active' : 'ACTIVE<span class="detail">Make Pending').'</span></span>
-              <span class="confirm">Confirm<span class="count"id="select_status_pending_count">&nbsp;</span></span>
-            </label>
+          <form id="select_status" class="" name="select_status" action="'.$_SERVER['SCRIPT_NAME'].'" method="GET">
             <!-- BUTTONS FOR LISTING/UNLISTING/SUSPENDING A PRODUCER -->
             <span class="block block_42">'.$row->business_name.'</span>
             <input id="select_status_listed_target" class="select_type_radio" name="select_status" value="listed" onchange="document.forms[\'select_status\'].submit();" type="radio"'.($listed_class == 'listed' ? ' checked' : '').'>
             <label id="select_status_listed" class="block_22 listed disabled" for="select_status_listed_target-DISABLED" onclick="interrupt_radio_check_confirm(this.id,\'ask_confirm\',6)">
-              <span class="default">'.($listed_class == 'listed' ? 'Producer is LISTED' : 'Relist Producer').'<span class="detail"></span></span>
+              <span class="default">'.($listed_class == 'listed' ? 'Listed' : 'Relist Producer').'<span class="detail"></span></span>
               <span class="confirm">Confirm<span class="count"id="select_status_listed_count">&nbsp;</span></span>
             </label>
             <input id="select_status_unlisted_target" class="select_type_radio" name="select_status" value="unlisted" onchange="document.forms[\'select_status\'].submit();" type="radio"'.($listed_class == 'unlisted' ? ' checked' : '').'>
             <label id="select_status_unlisted" class="block_22 unlisted disabled" for="select_status_unlisted_target-DISABLED" onclick="interrupt_radio_check_confirm(this.id,\'ask_confirm\',6)">
-              <span class="default">'.($listed_class == 'unlisted' ? 'Producer and Products are UNLISTED' : 'Unlist Producer').'<span class="detail"></span></span>
+              <span class="default">'.($listed_class == 'unlisted' ? 'Unlisted' : 'Unlist Producer').'<span class="detail"></span></span>
               <span class="confirm">Confirm<span class="count"id="select_status_unlisted_count">&nbsp;</span></span>
             </label>
             <input id="select_status_suspended_target" class="select_type_radio" name="select_status" value="suspended" onchange="document.forms[\'select_status\'].submit();" type="radio"'.($listed_class == 'suspended' ? ' checked' : '').'>
             <label id="select_status_suspended" class="block_22 suspended disabled" for="select_status_suspended_target-DISABLED" onclick="interrupt_radio_check_confirm(this.id,\'ask_confirm\',6)">
-              <span class="default">'.($listed_class == 'suspended' ? 'Producer is SUSPENDED' : 'Suspend Producer').'<span class="detail"></span></span>
+              <span class="default">'.($listed_class == 'suspended' ? 'Suspended' : 'Suspend Producer').'<span class="detail"></span></span>
               <span class="confirm">Confirm<span class="count"id="select_status_suspended_count">&nbsp;</span></span>
             </label>
+            <input type="hidden" name="instance" id="instance" value="'.$_SESSION['instance'].'">
           </form>';
       }
     $producer_count ++;
@@ -178,9 +173,10 @@ $display .= '
       Select Other Producer
     </header>
     <div id="producer_select_list">
-      <form id="select_producer" class="" name="select_producer" action="'.$_SERVER['SCRIPT_NAME'].'" method="POST">
-          <!-- BUTTONS FOR SELECTING A PRODUCER -->'.
-            $producer_select_list.'
+      <form id="select_producer" class="" name="select_producer" action="'.$_SERVER['SCRIPT_NAME'].'" method="GET">
+        <!-- BUTTONS FOR SELECTING A PRODUCER -->'.
+          $producer_select_list.'
+        <input type="hidden" name="instance" id="instance" value="'.$_SESSION['instance'].'">
       </form>
     </div>
   </div>';
@@ -196,7 +192,7 @@ $page_specific_javascript = '
   var countdown_radio_check_confirm = debounce(function(id, action, count) {
     radio_check_confirm(id, action, count);
     }, 1000);
-  function radio_check_confirm(id, action, count=6) {
+  function radio_check_confirm(id, action, count) {
     if (action == "ask_confirm") {
       $("#"+id).removeClass("disabled");
       $("#"+id).attr("for", id+"_target");
@@ -220,6 +216,10 @@ $page_specific_javascript = '
 
 
 $page_specific_css .= '
+  hr.button_divider {
+    width:75%;
+    margin:0.25rem auto;
+    }
   .producer_status header {
     background-image:url("'.DIR_GRAPHICS.'status.png");
     }
@@ -235,6 +235,22 @@ $page_specific_css .= '
   .select_type_checkbox,
   .select_type_radio {
     display:none;
+    }
+  #select_status .select_type_radio:checked + label::after {
+    content: "\2714";
+    position:relative;
+    }
+  .producer_block {
+    position:relative;
+    }
+  #select_producer .select_type_radio {
+    display:static;
+    }
+  #select_producer .select_type_radio:checked + label::before {
+    content: "\2714";
+    position:absolute;
+    left:1rem;
+    top:0.75rem;
     }
   #edit_producer_info,
   #select_status,
@@ -308,10 +324,6 @@ $page_specific_css .= '
     }
   label.disabled .default {
     display:inline;
-    }
-  label .detail:before { /* Create a line-break before .detail */
-    content:"\A";
-    white-space:pre;
     }';
 
 $page_title_html = '<span class="title">'.$_SESSION['producer_business_name'].'</span>';
