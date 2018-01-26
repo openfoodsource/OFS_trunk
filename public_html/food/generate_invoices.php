@@ -92,7 +92,7 @@ function compile_customer_invoices() {
           document.getElementById("c_progress-right").style.width = c_progress_right+"px";
           document.getElementById(element_id).className = "c_complete";
           // If we are done with the list, then show the PDF button
-          if (i == c_arrElements.length && USE_HTMLDOC == true) {
+          if (i == c_arrElements.length) {
             // And go generate the pdf
             document.getElementById("cust_progress").style.display = "none"; /* Hide the progress bar */
             document.getElementById("load_customer_html").style.display = ""; /* Make html link visible */
@@ -181,8 +181,8 @@ function compile_producer_invoices() {
           document.getElementById("p_progress-left").innerHTML = Math.floor (p_progress_left / 3)+"%&nbsp;";
           document.getElementById("p_progress-right").style.width = p_progress_right+"px";
           document.getElementById(element_id).className = "p_complete";
-          // If we\'re done with the list, then show the PDF button
-          if (i == p_arrElements.length && USE_HTMLDOC == true) {
+          // If we are done with the list, then show the PDF button
+          if (i == p_arrElements.length) {
             // And go generate the pdf
             document.getElementById("prod_progress").style.display = "none"; /* Hide the progress bar */
             document.getElementById("load_producer_html").style.display = ""; /* Make html link visible */
@@ -487,7 +487,8 @@ if ($delivery_id < ActiveCycle::delivery_id())
 
 $content .= '
 <h1>Generate Invoices for Delivery #'.$delivery_id.'<br>'.$delivery_date.'</h1>
-<p class="order_nav">'.$prior_delivery_link.' &nbsp; &nbsp; OTHER ORDERS &nbsp; &nbsp; '.$next_delivery_link.'</p>';
+<p class="order_nav">'.$prior_delivery_link.' &nbsp; &nbsp; OTHER ORDERS &nbsp; &nbsp; '.$next_delivery_link.'</p>
+<p><strong>Note:</strong> Sometimes this process fails. Please review all files after generation and re-generate as needed.</p>';
 
 
 $customer_output_html = INVOICE_WEB_PATH.'invoices_customers-'.$delivery_id.'.html';
