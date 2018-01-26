@@ -249,7 +249,7 @@ elseif ($_REQUEST['action'] == 'edit_image')
     if ($image_id != 0 && $producer_id != 0)
       {
         // Is there information to POST before proceeding?
-        if ($_POST['post_action'] == 'Save')
+        if ($_POST['post_action'] == 'Save Title/Caption')
           {
             $query = '
               UPDATE
@@ -329,7 +329,7 @@ elseif ($_REQUEST['action'] == 'edit_image')
               <div class="image_info">
                 <fieldset class="image_fields">
                   <form id="image_data" action="'.$_SERVER['SCRIPT_NAME'].'" method="post">
-                    <input id="save_button" name="post_action" type="submit" value="Save">
+                    <input id="save_button" name="post_action" type="submit" value="Save Title/Caption">
                     <input type="hidden" name="action" value="edit_image">
                     <input type="hidden" name="image_id" value="'.$row['image_id'].'">
                     '.($row['width'] != $image_info['width'] ? '<input type="hidden" name="width" value="'.$image_info['width'].'">' : '').'
@@ -389,18 +389,25 @@ elseif ($_REQUEST['action'] == 'edit_image')
           margin:0;
           }
         #save_button {
-          height:5em;
-          width:5em;
-          float:right;
-          margin:20px 25px 10px 10px;
+          background-color:#ddd;
+          margin:0.5rem;
+          padding:0.25rem 0.5rem;
+          border-style:outset;
+          border-width:2px;
+          border-color:#ccc;
+          min-width:10rem;
+          color:#000;
+          line-height:1rem;
+          font-weight:normal;
+          font-family:inherit;
           }
         #save_button:hover {
-          background-color:#ddd;
-          color:#008;
+          font-weight:bold;
           }
         label,
         .label {
           display:block;
+          text-align:left;
           font-size:80%;
           margin:5px 10px 1px 10px;
           }
@@ -412,6 +419,7 @@ elseif ($_REQUEST['action'] == 'edit_image')
           font-family: Helvetica,sans-serif;
           font-size:14px;
           padding:3px;
+          width:90%;
           }
         .info {
           background-color:#ddd;
