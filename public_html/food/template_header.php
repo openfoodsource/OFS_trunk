@@ -108,7 +108,8 @@ if (isset ($_SESSION['member_id'])
 // Check if we need to force a membership update or if it is member-requested
 // if..elseif... to ensure we only process one popup at a time
 if ($_SESSION['renewal_info']['membership_expired'] == true
-    && $update_membership_page != true)
+    && $update_membership_page != true
+    && $display_as_popup == false)
   {
     // Force the membership_renewal popup
     $page_specific_javascript .= '
@@ -125,9 +126,10 @@ if ($_SESSION['renewal_info']['membership_expired'] == true
       );
   }
 // Handle the MOTD inclusion
-elseif (MOTD_REPEAT_TIME >= 0 &&
-        strlen (MOTD_CONTENT) > 0 &&
-        ofs_get_status ('motd_viewed', $_SESSION['member_id']) == false)
+elseif (MOTD_REPEAT_TIME >= 0
+        && strlen (MOTD_CONTENT) > 0
+        && ofs_get_status ('motd_viewed', $_SESSION['member_id']) == false
+        && $display_as_popup == false)
   {
     // Force the MOTD popup
     $page_specific_javascript .= '
@@ -147,7 +149,8 @@ elseif (MOTD_REPEAT_TIME >= 0 &&
 elseif (USE_AVAILABILITY_MATRIX == true
         && $is_customer_product_page == true
         && ! isset ($_COOKIE['ofs_customer']['site_id'])
-        && ! isset ($_COOKIE['ofs_customer']['site_id']))
+        && ! isset ($_COOKIE['ofs_customer']['site_id'])
+        && $display_as_popup == false)
   {
     // Force the customer_select_site popup
     $page_specific_javascript .= '
