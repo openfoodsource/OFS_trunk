@@ -533,7 +533,7 @@ elseif ($_REQUEST['action'] == 'edit_image')
             returned = JSON.parse(return_values);
             if (returned["result"] == "success") {
               // Force the image to reload
-              var image_url = "'.PATH.'get_image.php?image_id="+image_id+"&"+returned["uniqid"];
+              var image_url = "'.BASE_URL.PATH.'get_image.php?image_id="+image_id+"&"+returned["uniqid"];
               // Udate all the images
               jQuery ("#gallery_image_large-"+image_id).css("background-image", "url(" + image_url + ")");
               jQuery ("#rotate_image_none-"+image_id).css("background-image", "url(" + image_url + ")");

@@ -269,12 +269,12 @@ function get_image_path_by_id ($image_id)
     // ... or from the database while creating new image files on the fly?
     elseif (CREATE_IMAGE_FILES == true)
       {
-        $src = PATH.'get_image.php?image_id='.$image_id;
+        $src = BASE_URL.PATH.'get_image.php?image_id='.$image_id;
       }
     // ... or use the legacy system to access the dabase directly and nothing more.
     else
       {
-        $src = PATH.'get_image.php?type=db&image_id='.$image_id;
+        $src = BASE_URL.PATH.'get_image.php?type=db&image_id='.$image_id;
       }
     return $src;
   }
