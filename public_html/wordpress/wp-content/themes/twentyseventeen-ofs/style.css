@@ -1,0 +1,84 @@
+/*
+Theme Name: Twenty Seventeen OFS Theme
+Theme URI: https://wordpress.org/themes/twentyseventeen/
+Description: Twenty Seventeen Child theme for Open Food Source
+Author: Roy Guisinger -- as modified from work done by the Wordpress Team
+Author URI: https://openfoodsource.org/
+Template: twentyseventeen
+Version: 1.1
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Tags: one-column, two-columns, right-sidebar, flexible-header, accessibility-ready, custom-colors, custom-header, custom-menu, custom-logo, editor-style, featured-images, footer-widgets, post-formats, rtl-language-support, sticky-post, theme-options, threaded-comments, translation-ready
+Text Domain: twentyseventeen-ofs
+*/
+
+/* AUGMENT TWENTYSEVENTEEN STYLES */
+.custom-header {
+  margin-bottom:63px;
+  }
+
+/* OVERRIDE TWENTYSEVENTEEN STYLES */
+.has-sidebar #secondary {
+  width: 24%;
+}
+.has-sidebar:not(.error404) #primary {
+  width: 70%;
+}
+#primary .page-header {
+  display: none;
+}
+.entry-content {
+  clear:left;
+  width:100% !important;
+}
+.footer-widget-1 {
+  width:100% !important;
+}
+/* Never print the header background image */
+@media print {
+  #wp-custom-header {
+    display:none;
+    }
+  }
+
+/****************** Styles to override Wordpress **********************/
+
+select {
+  height:auto;
+  }
+#ofs_content a {
+  box-shadow:none;
+  }
+::placeholder {
+  color:#ccc;
+  }
+input[type="text"] {
+  padding:0.25rem;
+  }
+
+
+/****************** Styles for media queries **********************/
+
+
+/* Display the user menu as part of the header for narrow screens */
+@media only screen and (max-width: 670px) {
+  #user_menu {
+    margin:0px auto 5px;
+    position:relative;
+    }
+  /* Switch to 100% width on primary content area */
+  .has-sidebar:not(.error404) #primary {
+    width: 100%;
+}
+  }
+/* Never print the user menu */
+@media print {
+  #user_menu {
+    display:none;
+    }
+  }
+
+
+
+
+
