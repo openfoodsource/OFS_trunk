@@ -138,7 +138,7 @@ switch ($account_type)
           account_id
         LIMIT '.$limit_clause;
       $top_special_markup = '
-        <div class="add_link"><a onclick="popup_src(\'edit_account.php?action=add&account_key=1\', \'add_new_account\', \'\');">Add new account</a></div>';
+        <div class="add_link"><a onclick="popup_src(\'edit_account.php?action=add&account_key=1\', \'add_new_account\', \'\', false);">Add new account</a></div>';
     break;
 
     case "tax":
@@ -207,11 +207,11 @@ while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     // Set up the edit links (easiest just to set up all possibilities)
       $edit_link['member'] = '
-        <div class="edit_link" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$row['account_key'].'&display_as=popup\', \'edit_member\', \'\');">Edit</a></div>';
+        <div class="edit_link" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$row['account_key'].'&display_as=popup\', \'edit_member\', \'\', false);">Edit</a></div>';
       $edit_link['producer'] = '
-        <div class="edit_link" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['account_key'].'&display_as=popup\', \'edit_producer\', \'\');">Edit</a></div>';
+        <div class="edit_link" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['account_key'].'&display_as=popup\', \'edit_producer\', \'\', false);">Edit</a></div>';
       $edit_link['internal'] = '
-        <div class="edit_link" onclick="popup_src(\'edit_account.php?action=edit&account_key='.$row['account_key'].'&display_as=popup\', \'edit_member\', \'\');">Edit</a></div>';
+        <div class="edit_link" onclick="popup_src(\'edit_account.php?action=edit&account_key='.$row['account_key'].'&display_as=popup\', \'edit_member\', \'\', false);">Edit</a></div>';
       $edit_link['tax'] = '';
     // build the ledger output
     $ledger_data['markup'] .= '

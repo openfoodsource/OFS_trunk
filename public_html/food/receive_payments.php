@@ -103,7 +103,7 @@ $page_specific_scripts['receive_payments'] = array (
 $page_specific_stylesheets['receive_payments'] = array (
   'name'=>'receive_payments',
   'src'=>BASE_URL.PATH.'receive_payments.css',
-  'dependencies'=>array('ofs_stylesheet'),
+  'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
   );

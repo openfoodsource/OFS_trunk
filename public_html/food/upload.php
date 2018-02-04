@@ -38,7 +38,7 @@ while ($row = mysqli_fetch_array ($rsrl, MYSQLI_ASSOC))
 if ( $logo_id )
   {
     $display_logo = '
-      <img src="getlogos.php?logo_id='.$logo_id.'" width="150" hspace="5" alt="'.$logo_desc.'">';
+      <img src="show_logo.php?logo_id='.$logo_id.'" width="150" hspace="5" alt="'.$logo_desc.'">';
   }
 else
   {

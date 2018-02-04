@@ -9,7 +9,7 @@ if($_GET['display_as'] == 'popup')
   }
 
 $producer_id = $_GET['producer_id'];
-include("func/show_businessname.php");
+include("show_businessname.php");
 
 $content_body = '';
 

@@ -22,14 +22,24 @@ $info_content = '
       so, in most cases, prior versions (particularly recent versions) will probably function properly
       (please notify us if you discover that these requirements can be downgraded).
       <dd>
-        <dt>PHP</dt>
-        <dd>version >= 5.3</dd>
+
         <dt>MySQL</dt>
-        <dd>version >= 14.14 or MariaDB >= 10.1.23</dd>
-        <dt>HTMLDoc</dt>
-        <dd>version >= 1.8.27 (Optional for producing PDF output)</dd>
-        <dt>Wordpress</dt>
-        <dd>version >= 4.8 (Optional for integrating a front-end CMS)</dd>
+        <dd>Version >= 14.14 or MariaDB >= 10.1.23</dd>
+
+        <dt>PHP</dt>
+        <dd>Version >= 5.3</dd>
+
+        <dt>PHP - imagick (Required for image processing)</dt>
+        <dd>Version >= 6.2.4</dd>
+
+        <dt>HTMLDoc (Optional)</dt>
+        <dd>Version >= 1.8.27 (Optional for producing PDF output)</dd>
+
+        <dt>Wordpress (Optional)</dt>
+        <dd>Version >= 4.8 (Optional for integrating a front-end CMS)</dd>
+        <dd>Wordpress Child Theme: TwentySeventeen-OFS (modified to work with OFS)</dd>
+        <dd>Wordpress Plugins: Must be compatible with jQuery >= 3.0.0</dd>
+
       </dd>
     </p>
   <h3>Other resources included with this software</h3>
@@ -38,36 +48,70 @@ $info_content = '
       Among them are the following, modified slightly in some cases.
       Many thanks are due to those who have made them available.
       <dd>
+
         <dt>PHPMailer &mdash; version 5.2.16</dt>
-        <dd>Repository: https://github.com/PHPMailer/PHPMailer</dd>
-        <dt>Inflect (singularizer/pluralizer) &mdash; version 2007-12-17</dt>
-        <dd>Website/Source: http://kuwamoto.org/2007/12/17/improved-pluralizing-in-php-actionscript-and-ror/</dd>
+        <dd>Repository: <a href="https://github.com/PHPMailer/PHPMailer" target="_blank">https://github.com/PHPMailer/PHPMailer</a></dd>
+
+        <dt>Inflect (singularizer/pluralizer) &mdash; published 2007-12-17</dt>
+        <dd>Website/Source: <a href="http://kuwamoto.org/2007/12/17/improved-pluralizing-in-php-actionscript-and-ror/" target="_blank">http://kuwamoto.org/2007/12/17/improved-pluralizing-in-php-actionscript-and-ror/</a></dd>
+
         <dt>Securimage PHP Captcha &mdash; version 3.6.4</dt>
-        <dd>Website: http://www.phpcaptcha.org/</dd>
-        <dt>Bootstrap</dt>
-        <dd>Website: https://getbootstrap.com/</dd>
-        <dt>Summernote</dt>
-        <dd>Website: https://summernote.org/</dd>
-        <dt>JavaScript-Load-Image</dt>
-        <dd>Repository: https://github.com/blueimp/JavaScript-Load-Image</dd>
-        <dt>JavaScript-rangeslider</dt>
-        <dd>Website: http://rangeslider.js.org/</dd>
-        <dt>JavaScript-templates</dt>
-        <dd>Repository: https://github.com/blueimp/JavaScript-Templates</dd>
-        <dt>Vis</dt>
-        <dd>Repository: https://github.com/almende/vis<br />
-            Website: http://rangeslider.js.org/</dd>
-        <dt>jQuery</dt>
-        <dd>Website: http://jquery.com/</dd>
-        <dt>jQuery-File-Upload</dt>
-        <dd>Repository: https://github.com/blueimp/jQuery-File-Upload</dd>
-        <dt>jQuery-simplemodal</dt>
-        <dd>Repository: https://github.com/ericmmartin/simplemodal<br />
-            Website: http://www.ericmmartin.com/projects/simplemodal/</dd>
-        <dt>jQuery-ui-widget</dt>
-        <dd>Website: https://jqueryui.com/</dd>
-        <dt></dt>
-        <dd></dd>
+        <dd>Website: <a href="http://www.phpcaptcha.org/" target="_blank">http://www.phpcaptcha.org/</a></dd>
+        <dd>Repository: <a href="https://github.com/dapphp/securimage" target="_blank">https://github.com/dapphp/securimage</a></dd>
+
+        <dt>Bootstrap &mdash; version 3.3.1</dt>
+        <dd>Website: <a href="https://getbootstrap.com/" target="_blank">https://getbootstrap.com/</a></dd>
+        <dd>Repository: <a href="https://github.com/twbs/bootstrap" target="_blank">https://github.com/twbs/bootstrap</a></dd>
+
+        <dt>JavaScript-Load-Image &mdash; version 1.13.0</dt>
+        <dd>Repository: <a href="https://github.com/blueimp/JavaScript-Load-Image" target="_blank">https://github.com/blueimp/JavaScript-Load-Image</a></dd>
+
+        <dt>JavaScript-rangeslider &mdash; version 2.1.1</dt>
+        <dd>Website: <a href="http://rangeslider.js.org/" target="_blank">http://rangeslider.js.org/</a></dd>
+        <dd>Repository: <a href="https://github.com/andreruffert/rangeslider.js" target="_blank">https://github.com/andreruffert/rangeslider.js</a></dd>
+
+        <dt>JavaScript-templates &mdash; version 2.4.1</dt>
+        <dd>Website: <a href="https://blueimp.github.io/JavaScript-Templates/" target="_blank">https://blueimp.github.io/JavaScript-Templates/</a></dd>
+        <dd>Repository: <a href="https://github.com/blueimp/JavaScript-Templates" target="_blank">https://github.com/blueimp/JavaScript-Templates</a></dd>
+
+        <dt>jQuery &mdash; version 3.2.1</dt>
+        <dd>Website: <a href="http://jquery.com/" target="_blank">http://jquery.com/</a></dd>
+        <dd>Repository: <a href="https://github.com/jquery/jquery" target="_blank">https://github.com/jquery/jquery</a></dd>
+
+        <dt>jQuery-migrate &mdash; version 3.0.0</dt>
+        <dd>Website: <a href="https://jquery.com/upgrade-guide/3.0/" target="_blank">https://jquery.com/upgrade-guide/3.0/</a></dd>
+        <dd>Repository: <a href="https://github.com/jquery/jquery-migrate" target="_blank">https://github.com/jquery/jquery-migrate</a></dd>
+
+        <dt>jQuery-mousewheel &mdash; version 3.0.4</dt>
+        <dd>Website: <a href="https://plugins.jquery.com/mousewheel/" target="_blank">https://plugins.jquery.com/mousewheel/</a></dd>
+        <dd>Repository: <a href="https://github.com/jquery/jquery-mousewheel" target="_blank">https://github.com/jquery/jquery-mousewheel</a></dd>
+
+        <dt>jQuery-fileupload &mdash; version 5.42.0</dt>
+        <dd>Website: <a href="https://blueimp.github.io/jQuery-File-Upload/" target="_blank">https://blueimp.github.io/jQuery-File-Upload/</a></dd>
+        <dd>Repository: <a href="https://github.com/blueimp/jQuery-File-Upload" target="_blank">https://github.com/blueimp/jQuery-File-Upload</a></dd>
+
+        <dt>Vis &mdash; version 4.21.0</dt>
+        <dd>Website: <a href="http://visjs.org/" target="_blank">http://visjs.org/</a></dd>
+        <dd>Repository: https://github.com/almende/vis</dd>
+
+        <dt>jQuery-simplemodal &mdash; version 1.4.6</dt>
+        <dd>Website: <a href="http://www.ericmmartin.com/projects/simplemodal/" target="_blank">http://www.ericmmartin.com/projects/simplemodal/<a></dd>
+        <dd>Repository: <a href="https://github.com/ericmmartin/simplemodal" target="_blank">https://github.com/ericmmartin/simplemodal</a></dd>
+
+        <dt>jQuery-ui &mdash; version 1.12.1</dt>
+        <dd>Website: <a href="https://jqueryui.com/" target="_blank">https://jqueryui.com/</a></dd>
+        <dd>Repository: <a href="https://github.com/jquery/jquery-ui" target="_blank">https://github.com/jquery/jquery-ui</a></dd>
+
+
+<!-- SOFTWARE NOT YET INTEGRATED INTO OPENFOOD BASE
+
+        <dt>Summernote &mdash; version 0.8.8</dt>
+        <dd>Website: <a href="https://summernote.org/" target="_blank">https://summernote.org/</a></dd>
+        <dd>Repository: <a href="https://github.com/summernote/summernote" target="_blank">https://github.com/summernote/summernote</a></dd>
+
+-- END OF SOFTWARE NOT YET INTEGRATED -->
+
+
       </dd>
     </p>
     ';

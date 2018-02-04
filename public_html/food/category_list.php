@@ -284,7 +284,7 @@ $page_specific_javascript = '
 
 $page_specific_stylesheets['category_list'] = array (
   'name'=>'category_list',
-  'src'=>BASE_URL.PATH.'category_list.css',
+  'src'=>BASE_URL.PATH.'css/openfood-category_list.css',
   'dependencies'=>array(),
   'version'=>'2.1.1',
   'media'=>'all'
@@ -305,7 +305,7 @@ $page_title_html = '<span class="title">Products</span>';
 $page_subtitle_html = '
   <span class="subtitle">'.$subtitle.
     (strlen ($site_long_you) > 0 ? '
-      <span class="subtitle_site" title="Change this?" onclick="popup_src(\''.BASE_URL.PATH.'customer_select_site.php?display_as=popup\', \'customer_select_site\', \'\');">'.$site_long_you.'</span>'
+      <span class="subtitle_site" title="Change this?" onclick="popup_src(\''.BASE_URL.PATH.'customer_select_site.php?display_as=popup\', \'customer_select_site\', \'\', false);">'.$site_long_you.'</span>'
     : '').'
   </span>';
 $page_title = 'Products - Browse Categories';

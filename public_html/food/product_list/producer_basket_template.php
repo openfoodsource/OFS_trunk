@@ -145,8 +145,8 @@ function image_display_calc($data)
     $image_display = '
               <figure class="product_image">'.
                 ($data['image_id'] ? '
-                <figcaption class="edit_product_image" onclick="popup_src(\''.get_image_path_by_id ($data['image_id']).'\', \'product_image\', \'\', \'true\');">Click for Larger Image</figcaption>
-                <img id="image-'.$data['product_id'].'-'.$data['product_version'].'" src="'.get_image_path_by_id ($data['image_id']).'" class="product_image" onclick="popup_src(\'set_product_image.php?display_as=popup&action=select_image&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'\', \'edit_product_image\', \'\', \'true\');">'
+                <figcaption class="edit_product_image" onclick="popup_src(\''.get_image_path_by_id ($data['image_id']).'\', \'product_image\', \'\', false);">Click for Larger Image</figcaption>
+                <img id="image-'.$data['product_id'].'-'.$data['product_version'].'" src="'.get_image_path_by_id ($data['image_id']).'" class="product_image" onclick="popup_src(\'set_product_image.php?display_as=popup&action=select_image&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'\', \'edit_product_image\', \'\', false);">'
                 : ''
                 ).'
               </figure>';

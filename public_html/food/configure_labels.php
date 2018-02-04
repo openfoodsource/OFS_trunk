@@ -1,6 +1,6 @@
 <?php
 
-require_once ("../func/label_config.class.php");
+require_once ("label_config.class.php");
 session_start();
 $show_list = true;
 $defined_labels = array();

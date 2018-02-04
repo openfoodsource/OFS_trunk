@@ -184,8 +184,8 @@ elseif ($action == 'edit' && $account_id > 0)
 $page_specific_javascript = '';
 $page_specific_stylesheets['edit_account'] = array (
   'name'=>'edit_account',
-  'src'=>BASE_URL.PATH.'edit_account.css',
-  'dependencies'=>array('ofs_stylesheet'),
+  'src'=>BASE_URL.PATH.'css/openfood-edit_account.css',
+  'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
   );

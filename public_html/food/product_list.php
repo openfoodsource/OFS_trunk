@@ -358,22 +358,12 @@ if (isset ($_GET['subcat_id'])) $subtitle = $unique['category_name'].' &ndash; '
 $page_specific_stylesheets['product_list'] = array (
   'name'=>'product_list',
   'src'=>BASE_URL.PATH.'product_list.css',
-  'dependencies'=>array('ofs_stylesheet'),
-  'version'=>'2.1.1',
-  'media'=>'all'
-  );
-$page_specific_stylesheets['basket_dropdown'] = array (
-  'name'=>'basket_dropdown',
-  'src'=>BASE_URL.PATH.'basket_dropdown.css',
-  'dependencies'=>array('ofs_stylesheet'),
+  'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
   );
 
 $page_specific_css .= '
-#basket_dropdown {
-  right:3%;
-  }
 #content_top {
   margin-bottom:25px;
   }
@@ -512,7 +502,7 @@ function adjust_customer_basket (product_id, product_version, action) {
   if (! site_id > 0) {
     // Set the requested product information so we can re-request it after the basket is handled
     add_to_cart_array = [product_id, product_version, action];
-    popup_src(\'customer_select_site.php?confirm_site=true&completion_action=product_list_and_close();\', \'customer_select_site\', \'\');
+    popup_src(\'customer_select_site.php?confirm_site=true&completion_action=product_list_and_close();\', \'customer_select_site\', \'\', false);
     return false;
     }
   else {
@@ -809,7 +799,7 @@ $page_subtitle_html = '
       <span class="subtitle_search">'.$search_query.'</span>'
     : '').
     (strlen ($unique['site_long_you']) > 0 ? '
-      <span class="subtitle_site" title="Change this?" onclick="popup_src(\''.BASE_URL.PATH.'customer_select_site.php?display_as=popup\', \'customer_select_site\', \'\');">'.$unique['site_long_you'].'</span>'
+      <span class="subtitle_site" title="Change this?" onclick="popup_src(\''.BASE_URL.PATH.'customer_select_site.php?display_as=popup\', \'customer_select_site\', \'\', false);">'.$unique['site_long_you'].'</span>'
     : '').'
   </span>';
 // $page_subtitle_html = [value set dynamically]

@@ -180,22 +180,13 @@ $display .= close_list_bottom($product_data, $adjustment_data, $unique_data);
 
 $page_specific_stylesheets['show_report'] = array (
   'name'=>'show_report',
-  'src'=>BASE_URL.PATH.'show_report.css',
-  'dependencies'=>array('ofs_stylesheet'),
+  'src'=>BASE_URL.PATH.'css/openfood-show_report.css',
+  'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
   );
-$page_specific_stylesheets['basket_dropdown'] = array (
-  'name'=>'basket_dropdown',
-  'src'=>BASE_URL.PATH.'basket_dropdown.css',
-  'dependencies'=>array('ofs_stylesheet'),
-  'version'=>'2.1.1',
-  'media'=>'all'
-  );
+
 $page_specific_css .= '
-#basket_dropdown {
-  right:3%;
-  }
 #content_top {
   margin-bottom:25px;
   }

@@ -40,7 +40,7 @@ else
 
 $page_specific_stylesheets['user_menu'] = array (
   'name'=>'user_menu',
-  'src'=>BASE_URL.PATH.'user_menu.css',
+  'src'=>BASE_URL.PATH.'css/openfood-user_menu.css',
   'dependencies'=>array('ofs_stylesheet'),
   'version'=>'2.1.1',
   'media'=>'all',

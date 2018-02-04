@@ -231,7 +231,7 @@ else
               {
                 $cycle_class = fmod ($order_cycle_data['delivery_id'], $distinct_cycles) + 1; // This is for coloring styles
                 $week_div .= $top_special_markup.'
-                  <div id="id-'.$order_cycle_data['delivery_id'].'" class="order_cycle_row distinct-'.$cycle_class.'" '.($site_admin ? 'onclick="popup_src(\'edit_order_schedule.php?delivery_id='.$order_cycle_data['delivery_id'].'\', \'edit_order\', \'\');" ' : '').'onmouseout="restore_calendar(\''.$order_cycle_data['delivery_id'].'\')" onmouseover="highlight_calendar(\''.$order_cycle_data['delivery_id'].'\')">
+                  <div id="id-'.$order_cycle_data['delivery_id'].'" class="order_cycle_row distinct-'.$cycle_class.'" '.($site_admin ? 'onclick="popup_src(\'edit_order_schedule.php?delivery_id='.$order_cycle_data['delivery_id'].'\', \'edit_order\', \'\', false);" ' : '').'onmouseout="restore_calendar(\''.$order_cycle_data['delivery_id'].'\')" onmouseover="highlight_calendar(\''.$order_cycle_data['delivery_id'].'\')">
                     <div class="delivery_id"><span class="key">Delivery ID</span><span class="value">'.$order_cycle_data['delivery_id'].'</span></div>
                     <div class="date_open"><span class="key">Opens</span><span class="value">'.$order_cycle_data['date_open'].'</span></div>
                     <div class="date_closed"><span class="key">Closes</span><span class="value">'.$order_cycle_data['date_closed'].'</span></div>

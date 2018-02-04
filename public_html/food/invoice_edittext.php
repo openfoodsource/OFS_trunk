@@ -32,7 +32,7 @@ while ( $row = mysqli_fetch_array ($resultmsg, MYSQLI_ASSOC) )
     $msg_bottom = $row['msg_bottom'];
   }
 
-$content .= $font.'
+$content .= '
   <h3>Editing Text on the Invoices</h3>
   <p>This will change the message for the current invoice ('.date (DATE_FORMAT_CLOSED, strtotime (ActiveCycle::delivery_date())).') and all future invoices until changed.</p>
   <table width="685" cellpadding="7" cellspacing="2" border="0">

@@ -36,7 +36,7 @@ return array(
     // example UTF-8 charset (TTF file must support symbols being used
     // 'charset'          => "абвгдeжзийклмнопрстуфхцчшщъьюяАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЮЯ",
 
-    'ttf_file'         => 'fonts/penguinattack.ttf',   // TTF file for captcha text
+    'ttf_file'         => 'glyphs/penguinattack.ttf',   // TTF file for captcha text
 
     /**** Code Storage & Database Options ****/
 

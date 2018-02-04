@@ -86,7 +86,7 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
 
 $page_specific_scripts['make_payments'] = array (
   'name'=>'make_payments',
-  'src'=>BASE_URL.PATH.'make_payments.js',
+  'src'=>BASE_URL.PATH.'js/openfood-make_payments.js',
   'dependencies'=>array('jquery'),
   'version'=>'4.21.0',
   'location'=>false
@@ -94,8 +94,8 @@ $page_specific_scripts['make_payments'] = array (
 
 $page_specific_stylesheets['make_payments'] = array (
   'name'=>'make_payments',
-  'src'=>BASE_URL.PATH.'make_payments.css',
-  'dependencies'=>array('ofs_stylesheet'),
+  'src'=>BASE_URL.PATH.'css/openfood-make_payments.css',
+  'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
   );

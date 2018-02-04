@@ -108,7 +108,7 @@ while ( $row = mysqli_fetch_array ($result, MYSQLI_ASSOC) )
             <div class="producer_listing">
               <div class="producer_details">
                 <a href="'.PATH.'product_list.php?type=customer_list&select_type=producer_id&producer_id='.$producer_id_prior.'" class="business_name">'.
-                  (strlen ($logo_id_prior) > 0 ? '<img class="producer_logo" src="'.PATH.'getlogos.php?logo_id='.$logo_id_prior.'">' : '').
+                  (strlen ($logo_id_prior) > 0 ? '<img class="producer_logo" src="'.PATH.'show_logo.php?logo_id='.$logo_id_prior.'">' : '').
                   $business_name_prior.'
                 </a>'.
                 (strlen ($producer_about) > 0 ? '
@@ -152,7 +152,7 @@ $display .= '
             <div class="producer_listing">
               <div class="producer_details">
                 <a href="'.PATH.'product_list.php?type=customer_list&select_type=producer_id&producer_id='.$producer_id_prior.'" class="business_name">'.
-                  (strlen ($logo_id_prior) > 0 ? '<img class="producer_logo" src="'.PATH.'getlogos.php?logo_id='.$logo_id_prior.'">' : '').
+                  (strlen ($logo_id_prior) > 0 ? '<img class="producer_logo" src="'.PATH.'show_logo.php?logo_id='.$logo_id_prior.'">' : '').
                   $business_name_prior.'
                 </a>'.
                 (strlen ($producer_about) > 0 ? '
@@ -201,7 +201,7 @@ $content_producer_list .= '
 
 $page_specific_stylesheets['producer_list'] = array (
   'name'=>'producer_list',
-  'src'=>BASE_URL.PATH.'producer_list.css',
+  'src'=>BASE_URL.PATH.'css/openfood-producer_list.css',
   'dependencies'=>array(),
   'version'=>'2.1.1',
   'media'=>'all'
@@ -239,7 +239,7 @@ $page_title_html = '<span class="title">Products</span>';
 $page_subtitle_html = '
   <span class="subtitle">'.$subtitle.
     (strlen ($site_long_you) > 0 ? '
-      <span class="subtitle_site" title="Change this?" onclick="popup_src(\''.BASE_URL.PATH.'customer_select_site.php?display_as=popup\', \'customer_select_site\', \'\');">'.$site_long_you.'</span>'
+      <span class="subtitle_site" title="Change this?" onclick="popup_src(\''.BASE_URL.PATH.'customer_select_site.php?display_as=popup\', \'customer_select_site\', \'\', false);">'.$site_long_you.'</span>'
     : '').'
   </span>';
 $page_title = 'Products: '.($show_all ? 'Full Producer List' : 'Active Producers');

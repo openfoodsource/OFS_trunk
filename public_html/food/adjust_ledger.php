@@ -59,14 +59,14 @@ if ($type == 'single')
       {
         $page_specific_stylesheets['basket_dropdown'] = array (
           'name'=>'basket_dropdown',
-          'src'=>BASE_URL.PATH.'adjust_ledger.css',
-          'dependencies'=>array('ofs_stylesheet'),
+          'src'=>BASE_URL.PATH.'css/openfood-adjust_ledger.css',
+          'dependencies'=>array('openfood'),
           'version'=>'2.1.1',
           'media'=>'all'
           );
         $page_specific_scripts['adjust_ledger'] = array (
           'name'=>'adjust_ledger',
-          'src'=>BASE_URL.PATH.'adjust_ledger.js',
+          'src'=>BASE_URL.PATH.'js/openfood-adjust_ledger.js',
           'dependencies'=>array('jquery'),
           'version'=>'2.1.1',
           'location'=>false
@@ -130,14 +130,14 @@ if ($type == 'product')
       {
         $page_specific_stylesheets['basket_dropdown'] = array (
           'name'=>'basket_dropdown',
-          'src'=>BASE_URL.PATH.'adjust_ledger.css',
-          'dependencies'=>array('ofs_stylesheet'),
+          'src'=>BASE_URL.PATH.'css/openfood-adjust_ledger.css',
+          'dependencies'=>array('openfood'),
           'version'=>'2.1.1',
           'media'=>'all'
           );
         $page_specific_scripts['adjust_ledger'] = array (
           'name'=>'adjust_ledger',
-          'src'=>BASE_URL.PATH.'adjust_ledger.js',
+          'src'=>BASE_URL.PATH.'js/openfood-adjust_ledger.js',
           'dependencies'=>array('jquery'),
           'version'=>'2.1.1',
           'location'=>false

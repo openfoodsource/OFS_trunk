@@ -559,8 +559,8 @@ if ($_GET['action'] == '' || $_GET['action'] == 'List')
 
 $page_specific_stylesheets['product_list'] = array (
   'name'=>'product_list',
-  'src'=>BASE_URL.PATH.'product_list.css',
-  'dependencies'=>array('ofs_stylesheet'),
+  'src'=>BASE_URL.PATH.'css/openfood-product_list.css',
+  'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
   );

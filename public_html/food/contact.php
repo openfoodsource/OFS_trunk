@@ -4,7 +4,7 @@ session_start();
 // valid_auth('member');  // Do not authenticate so this page is accessible to everyone
 
 
-$display_contact = $font.'
+$display_contact = '
   <br>
   Please first check the "<a href="faq.php">How to Order & FAQ</a>" page to see if your question has already been addressed.<br>Thank you for your involvement in the food '.ORGANIZATION_TYPE.'.
   <br><br>

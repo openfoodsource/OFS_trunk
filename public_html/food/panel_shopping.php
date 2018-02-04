@@ -71,14 +71,14 @@ if ( ActiveCycle::ordering_window() == 'open')
         </li>
         <li class="block block_42">
           <!-- Site: <strong>'.CurrentBasket::site_long().'</strong> -->
-          <a class="popup_link" onClick="popup_src(\''.PATH.'customer_select_site.php?after_select=parent.reload_parent()\', \'select_delivery\', \'\');">Change Delivery Location<span class="detail">('.CurrentBasket::site_long().')</span></a>
+          <a class="popup_link" onClick="popup_src(\''.PATH.'customer_select_site.php?after_select=parent.reload_parent()\', \'select_delivery\', \'\', false);">Change Delivery Location<span class="detail">('.CurrentBasket::site_long().')</span></a>
         </li>';
       }
     else
       {
         $current_basket_markup = '
         <li class="block block_42">
-          <a class="popup_link" onClick="popup_src(\''.PATH.'customer_select_site.php?after_select=parent.reload_parent()\', \'select_delivery\', \'\');">Select a location to begin shopping for<span class="detail">'.date (DATE_FORMAT_LONG, strtotime (ActiveCycle::delivery_date_next())).'</span></a>
+          <a class="popup_link" onClick="popup_src(\''.PATH.'customer_select_site.php?after_select=parent.reload_parent()\', \'select_delivery\', \'\', false);">Select a location to begin shopping for<span class="detail">'.date (DATE_FORMAT_LONG, strtotime (ActiveCycle::delivery_date_next())).'</span></a>
         </li>';
       }
   }
@@ -122,7 +122,7 @@ $display = '
         $current_basket_markup.
         $prior_basket_markup.'
         <li class="block block_42">
-          <a class="popup_link" onClick="popup_src(\''.PATH.'order_history_popup.php?history_type=customer\', \'select_order_history\', \'\');">Other Baskets/Invoices</a>
+          <a class="popup_link" onClick="popup_src(\''.PATH.'order_history_popup.php?history_type=customer\', \'select_order_history\', \'\', false);">Other Baskets/Invoices</a>
         </li>
      </ul>
      <span class="alert_block warn">* Delivery date may vary by site. Please check invoice for details. Invoice will be blank until basket items are checked-out'.(CHECKOUT_MEMBER_ID == 'ALL' ? '' : ' by an admin. All items in your basket will be checked out after the order closes').'.</span>

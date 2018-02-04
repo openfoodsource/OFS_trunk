@@ -162,7 +162,7 @@ $display .= '
       <li class="block block_33"><a href="edit_producer_info.php">Edit Basic Producer Information</a></li>
       <li class="block block_33"><a href="producer_form.php">Edit All Producer Information<span class="detail">'.((NEW_PRODUCER_PENDING || NEW_PRODUCER_STATUS != 0) ? ' (will require re-approval)' : '').'</span></a></li>'.
       (USE_AVAILABILITY_MATRIX == true ? '
-      <li class="block block_33"><a class="popup_link" onClick="popup_src(\'producer_select_site.php?producer_id='.$_SESSION['producer_id_you'].'&display_as=popup\', \'producer_select_site\', \'\');">Select Collection Point(s)</a></li>'
+      <li class="block block_33"><a class="popup_link" onClick="popup_src(\'producer_select_site.php?producer_id='.$_SESSION['producer_id_you'].'&display_as=popup\', \'producer_select_site\', \'\', false);">Select Collection Point(s)</a></li>'
       : '' ).'
     </ul>
   </div>
@@ -175,11 +175,11 @@ $display .= '
       <li class="block block_33"><a href="product_list.php?&type=producer_basket">Current Basket<span class="detail">(fill orders)</span></a></li>
       <li class="block block_33"><a href="order_summary.php">Order Summary</a></li>
       <li class="block block_33"><a href="show_report.php?type=producer_invoice">Current Invoice</a></li>
-      <li class="block block_33"><a class="block_link popup_link" onClick="popup_src(\''.PATH.'order_history_popup.php?history_type=producer\', \'select_order_history\', \'\');">Past Baskets &amp; Invoices</a></li>
+      <li class="block block_33"><a class="block_link popup_link" onClick="popup_src(\''.PATH.'order_history_popup.php?history_type=producer\', \'select_order_history\', \'\', false);">Past Baskets &amp; Invoices</a></li>
       <li class="block block_33"><a href="route_list.php?delivery_id='.ActiveCycle::delivery_id().'&type=pickup&producer_id='.$_SESSION['producer_id_you'].'">Routing Checklist<span class="detail">(by customer)</span></a></li>
       <li class="block block_33"><a href="route_list.php?delivery_id='.ActiveCycle::delivery_id().'&type=dropoff&producer_id='.$_SESSION['producer_id_you'].'">Routing Checklist<span class="detail">(by destination)</span></a></li>
       <li class="block block_33"><a href="product_list.php?type=producer_list&select_type=for_sale">My Products</a></li>
-      <li class="block block_33"><a class="popup_link" onClick="popup_src(\''.PATH.'edit_product_info.php?action=add&producer_id='.$_SESSION['producer_id_you'].'&display_as=popup\', \'edit_product_info\', \'\');">Create New Product</a></li>
+      <li class="block block_33"><a class="popup_link" onClick="popup_src(\''.PATH.'edit_product_info.php?action=add&producer_id='.$_SESSION['producer_id_you'].'&display_as=popup\', \'edit_product_info\', \'\', false);">Create New Product</a></li>
       <li class="block block_33"><a href="product_list.php?&type=inventory_list">Manage Inventory</a></li>
     </ul>
   </div>

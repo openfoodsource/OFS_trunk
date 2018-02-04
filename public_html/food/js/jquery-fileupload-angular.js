@@ -1,0 +1,1 @@
+jquery-fileupload-angular-2.2.0.min.js

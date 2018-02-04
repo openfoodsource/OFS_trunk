@@ -35,9 +35,9 @@ $header_title =
   <h1 class="site-title">'.SITE_NAME.'</h1>' : '');
 
 // Add boiler-plate stylesheet to the page-specific styles
-$page_specific_stylesheets['ofs_stylesheet'] = array (
-  'name'=>'ofs_stylesheet',
-  'src'=>BASE_URL.PATH.'stylesheet.css',
+$page_specific_stylesheets['openfood'] = array (
+  'name'=>'openfood',
+  'src'=>BASE_URL.PATH.'css/openfood.css',
   'dependencies'=>array(),
   'version'=>'2.1.1',
   'media'=>'all',
@@ -45,21 +45,32 @@ $page_specific_stylesheets['ofs_stylesheet'] = array (
 // Add boiler-plate scripts to the page-specific scripts array
 $page_specific_scripts['jquery'] = array (
   'name'=>'jquery',
-  'src'=>BASE_URL.PATH.'ajax/jquery.js',
+  'src'=>BASE_URL.PATH.'js/jquery.js',
   'dependencies'=>array(),
   'version'=>'3.2.1',
   'location'=>false
   );
+// Use jquery-migrate debugger when accessing website as a developer
+if (IS_DEVELOPER == true)
+  {
+    $page_specific_scripts['jquery-migrate3'] = array (
+      'name'=>'jquery-migrate3',
+      'src'=>BASE_URL.PATH.'js/jquery-migrate.js',
+      'dependencies'=>array('jquery'),
+      'version'=>'3.0.0',
+      'location'=>false
+      );
+  }
 $page_specific_scripts['jquery-ui'] = array (
   'name'=>'jquery-ui',
-  'src'=>BASE_URL.PATH.'ajax/jquery-ui.js',
+  'src'=>BASE_URL.PATH.'js/jquery-ui.js',
   'dependencies'=>array('jquery'),
   'version'=>'1.11.1',
   'location'=>false
   );
 $page_specific_scripts['jquery-simplemodal'] = array (
   'name'=>'jquery-simplemodal',
-  'src'=>BASE_URL.PATH.'ajax/jquery-simplemodal.js',
+  'src'=>BASE_URL.PATH.'js/jquery-simplemodal.js',
   'dependencies'=>array('jquery'),
   'version'=>'1.4.5',
   'location'=>false
@@ -73,8 +84,8 @@ $page_specific_scripts['rangeslider'] = array (
   );
 $page_specific_scripts['ofs_javascript'] = array (
   'name'=>'ofs_javascript',
-  'src'=>BASE_URL.PATH.'javascript.js',
-  'dependencies'=>array(),
+  'src'=>BASE_URL.PATH.'js/openfood.js',
+  'dependencies'=>array('jquery'),
   'version'=>'1.2.0',
   'location'=>false
   );
@@ -114,13 +125,13 @@ if ($_SESSION['renewal_info']['membership_expired'] == true
     // Force the membership_renewal popup
     $page_specific_javascript .= '
       jQuery(document).ready(function() {
-        popup_src("update_membership.php?display_as=popup", "membership_renewal", "index.php?action=logout");
+        popup_src("update_membership.php?display_as=popup", "membership_renewal", "index.php?action=logout", false);
         });';
     // Include membership_renewal styles
     $page_specific_stylesheets['membership_renewal'] = array (
       'name'=>'membership_renewal',
       'src'=>BASE_URL.PATH.'membership_renewal.css',
-      'dependencies'=>array('ofs_stylesheet'),
+      'dependencies'=>array('openfood'),
       'version'=>'2.1.1',
       'media'=>'all',
       );
@@ -134,13 +145,13 @@ elseif (MOTD_REPEAT_TIME >= 0
     // Force the MOTD popup
     $page_specific_javascript .= '
       jQuery(document).ready(function() {
-        popup_src("motd.php?display_as=popup", "motd", "");
+        popup_src("motd.php?display_as=popup", "motd", "", false);
         });';
     // Include MOTD styles
     $page_specific_stylesheets['motd'] = array (
       'name'=>'motd',
       'src'=>BASE_URL.PATH.'motd.css.css',
-      'dependencies'=>array('ofs_stylesheet'),
+      'dependencies'=>array('openfood'),
       'version'=>'2.1.1',
       'media'=>'all',
       );
@@ -155,7 +166,7 @@ elseif (USE_AVAILABILITY_MATRIX == true
     // Force the customer_select_site popup
     $page_specific_javascript .= '
       jQuery(document).ready(function() {
-        popup_src("customer_select_site.php?display_as=popup", "customer_select_site", "");
+        popup_src("customer_select_site.php?display_as=popup", "customer_select_site", "", false);
         });';
   }
 

@@ -3,39 +3,7 @@ include_once 'config_openfood.php';
 session_start();
 valid_auth('producer,producer_admin');
 
-/*
- * jQuery File Upload Plugin Demo 9.1.0
- * https://github.com/blueimp/jQuery-File-Upload
- *
- * Copyright 2010, Sebastian Tschan
- * https://blueimp.net
- *
- * Licensed under the MIT license:
- * http://www.opensource.org/licenses/MIT
- *
- * Modified for OFS by ROYG 2014-11-22
- */
-
 $page_content = '
-<!DOCTYPE HTML>
-<html lang="en">
-<head>
-<!-- Force latest IE rendering engine or ChromeFrame if installed -->
-<!--[if IE]>
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<![endif]-->
-<meta charset="utf-8">
-<title>Upload Images</title>
-<meta name="description" content="File Upload widget with multiple file selection, drag&amp;drop support, progress bars, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads and client-side image resizing. Works with any server-side platform (PHP, Python, Ruby on Rails, Java, Node.js, Go etc.) that supports standard HTML form file uploads.">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Bootstrap styles -->
-<link rel="stylesheet" href="'.PATH.'css/bootstrap.min.css">
-<link rel="stylesheet" href="upload_images.css">
-<!-- CSS adjustments for browsers with JavaScript disabled -->
-<noscript><link rel="stylesheet" href="css/jquery.fileupload-noscript.css"></noscript>
-<noscript><link rel="stylesheet" href="css/jquery.fileupload-ui-noscript.css"></noscript>
-</head>
-<body>
 <div class="container">
     <h1>Upload Images</h1>
     <h2 class="lead">Select product images to upload</h2>
@@ -152,55 +120,137 @@ $page_content = '
         </td>
     </tr>
 {% } %}
-</script>
-</body> 
-<script src="'.PATH.'ajax/jquery.js"></script>
-<script type="text/javascript">
-jQuery.cachedScript = function( url, options ) {
-  // Allow user to set any option except for dataType, cache, and url
-  options = jQuery.extend( options || {}, {
-    dataType: "script",
-    cache: true,
-    url: url
-    });
-  // Use jQuery.ajax() since it is more flexible than jQuery.getScript
-  // Return the jqXHR object so we can chain callbacks
-  return jQuery.ajax( options );
-  };
-// Ensure dependencies are loaded in order (this may be overkill, but it works)...
-jQuery.cachedScript( "'.PATH.'js/tmpl.js" ).done(function() {
-  });
-jQuery.cachedScript( "'.PATH.'ajax/load-image.js" ).done(function() {
-  jQuery.cachedScript( "'.PATH.'ajax/load-image-meta.js" ).done(function() {
-    jQuery.cachedScript( "'.PATH.'ajax/jquery-ui.js" ).done(function() {
-      jQuery.cachedScript( "'.PATH.'ajax/jquery-ui-widget.js" ).done(function() {
-        jQuery.cachedScript( "'.PATH.'js/jquery.fileupload.js" ).done(function() {
-          jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-ui.js" ).done(function() {
-          //jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-audio.js" ).done(function() {
-          //  });
-          //jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-video.js" ).done(function() {
-          //  });
-            jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-image.js" ).done(function() {
-              });
-            });
-          jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-process.js" ).done(function() {
-            jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-validate.js" ).done(function() {
-              jQuery.cachedScript( "'.PATH.'js/jquery.fileupload-main.js" ).done(function() {
-                jQuery("#fileupload").fileupload({
-                  url: "receive_image_uploads.php"
-                  }).on("fileuploadsubmit", function (e, data) {
-                    data.formData = data.context.find(":input").serializeArray();
-                  }); // End of #fileupload
-                });
-              });
-            });
-          });
-        });
-      });
-    });
-  });
-jQuery.cachedScript( "'.PATH.'js/bootstrap.min.js" ).done(function() {
-  });
-</script>
-</html>';
-echo $page_content;
+</script>';
+
+$page_specific_stylesheets['bootstrap'] = array (
+  'name'=>'bootstrap',
+  'src'=>BASE_URL.PATH.'css/bootstrap.css',
+  'dependencies'=>array(),
+  'version'=>'2.1.1',
+  'media'=>'all',
+  );
+$page_specific_stylesheets['upload_images'] = array (
+  'name'=>'upload_images',
+  'src'=>BASE_URL.PATH.'css/openfood-upload_images.css',
+  'dependencies'=>array('openfood'),
+  'version'=>'2.1.1',
+  'media'=>'all',
+  );
+
+$display_as_popup = true;
+
+$page_specific_scripts['jquery'] = array (
+  'name'=>'jquery',
+  'src'=>BASE_URL.PATH.'js/jquery.js',
+  'dependencies'=>array(),
+  'version'=>'3.2.1',
+  'location'=>false
+  );
+$page_specific_scripts['bootstrap'] = array (
+  'name'=>'bootstrap',
+  'src'=>BASE_URL.PATH.'js/bootstrap.js',
+  'dependencies'=>array(),
+  'version'=>'1.7.2',
+  'location'=>false
+  );
+$page_specific_scripts['tmpl'] = array (
+  'name'=>'tmpl',
+  'src'=>BASE_URL.PATH.'js/tmpl.js',
+  'dependencies'=>array(),
+  'version'=>'2.4.1',
+  'location'=>false
+  );
+$page_specific_scripts['load-image'] = array (
+  'name'=>'load-image',
+  'src'=>BASE_URL.PATH.'js/load-image.js',
+  'dependencies'=>array(),
+  'version'=>'1.13.0',
+  'location'=>false
+  );
+$page_specific_scripts['load-image-meta'] = array (
+  'name'=>'load-image-meta',
+  'src'=>BASE_URL.PATH.'js/load-image-meta.js',
+  'dependencies'=>array('load-image'),
+  'version'=>'1.0.2',
+  'location'=>false
+  );
+$page_specific_scripts['jquery-ui'] = array (
+  'name'=>'jquery-ui',
+  'src'=>BASE_URL.PATH.'js/jquery-ui.js',
+  'dependencies'=>array('jquery'),
+  'version'=>'1.12.1',
+  'location'=>false
+  );
+$page_specific_scripts['jquery-fileupload'] = array (
+  'name'=>'jquery-fileupload',
+  'src'=>BASE_URL.PATH.'js/jquery-fileupload.js',
+  'dependencies'=>array('jquery', 'load-image','jquery-ui'),
+  'version'=>'5.42.0',
+  'location'=>false
+  );
+$page_specific_scripts['jquery-fileupload-ui'] = array (
+  'name'=>'jquery-fileupload-ui',
+  'src'=>BASE_URL.PATH.'js/jquery-fileupload-ui.js',
+  'dependencies'=>array('jquery-fileupload'),
+  'version'=>'9.6.0',
+  'location'=>false
+  );
+$page_specific_scripts['jquery-fileupload-process'] = array (
+  'name'=>'jquery-fileupload-process',
+  'src'=>BASE_URL.PATH.'js/jquery-fileupload-process.js',
+  'dependencies'=>array('jquery-fileupload'),
+  'version'=>'1.7.2',
+  'location'=>false
+  );
+$page_specific_scripts['jquery-fileupload-image'] = array (
+  'name'=>'jquery-fileupload-image',
+  'src'=>BASE_URL.PATH.'js/jquery-fileupload-image.js',
+  'dependencies'=>array('jquery-fileupload-process'),
+  'version'=>'1.7.2',
+  'location'=>false
+  );
+// Following two types are not needed for PICTURES but included for completeness
+// $page_specific_scripts['jquery-fileupload-audio'] = array (
+//   'name'=>'jquery-fileupload-audio',
+//   'src'=>BASE_URL.PATH.'js/jquery-fileupload-audio.js',
+//   'dependencies'=>array('jquery-fileupload-ui'),
+//   'version'=>'1.0.3',
+//   'location'=>false
+//   );
+// $page_specific_scripts['jquery-fileupload-video'] = array (
+//   'name'=>'jquery-fileupload-video',
+//   'src'=>BASE_URL.PATH.'js/jquery-fileupload-video.js',
+//   'dependencies'=>array('jquery-fileupload-ui'),
+//   'version'=>'1.0.3',
+//   'location'=>false
+//   );
+$page_specific_scripts['jquery-fileupload-validate'] = array (
+  'name'=>'jquery-fileupload-validate',
+  'src'=>BASE_URL.PATH.'js/jquery-fileupload-validate.js',
+  'dependencies'=>array('jquery-fileupload-process'),
+  'version'=>'1.7.2',
+  'location'=>false
+  );
+$page_specific_scripts['jquery-fileupload-main'] = array (
+  'name'=>'jquery-fileupload-main',
+  'src'=>BASE_URL.PATH.'js/jquery-fileupload-main.js',
+  'dependencies'=>array('jquery-fileupload'),
+  'version'=>'1.7.2',
+  'location'=>false
+  );
+
+$page_specific_javascript = '
+  $(document).ready(function() {
+    $("#fileupload").fileupload({
+      url: "receive_image_uploads.php"
+      }).on("fileuploadsubmit", function (e, data) {
+        data.formData = data.context.find(":input").serializeArray();
+      }); // End of #fileupload
+    });';
+
+include("template_header.php");
+echo '
+  <!-- CONTENT BEGINS HERE -->
+  '.$page_content.'
+  <!-- CONTENT ENDS HERE -->';
+include("template_footer.php");

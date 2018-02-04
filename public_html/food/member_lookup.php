@@ -75,7 +75,7 @@ if ($_GET['action'] == 'Search' &&
                   {
                     $producer_info_temporary = '
                       <li class="block block_42">
-                        <a class="popup_link" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\', \'\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</a>
+                        <a class="popup_link" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\', \'\', false)">('.$row['producer_id'].') '.$row['producer_business_name'].'</a>
                       </li>';
                   }
               }
@@ -87,7 +87,7 @@ if ($_GET['action'] == 'Search' &&
                     // Add to the producer_info_temporary and recreate the member_list_temporary
                     $producer_info_temporary .= '
                       <li class="block block_42">
-                        <a class="popup_link" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\', \'\')">('.$row['producer_id'].') '.$row['producer_business_name'].'</a>
+                        <a class="popup_link" onclick="popup_src(\'edit_producer.php?action=edit&producer_id='.$row['producer_id'].'&display_as=popup\', \'edit_producer\', \'\', false)">('.$row['producer_id'].') '.$row['producer_business_name'].'</a>
                       </li>';
                   }
               }
@@ -135,10 +135,10 @@ if ($_GET['action'] == 'Search' &&
                     <div class="control_block membership">
                       <ul class="grid member_info">
                         <li class="block block_22">
-                          <a class="popup_link" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$row['member_id'].'&display_as=popup\', \'edit_member\', \'\'); return false;">Edit Member Info.</a>
+                          <a class="popup_link" onclick="popup_src(\'edit_member.php?action=edit&member_id='.$row['member_id'].'&display_as=popup\', \'edit_member\', \'\', false); return false;">Edit Member Info.</a>
                         </li>
                         <li class="block block_22">
-                          <a class="popup_link" onclick="popup_src(\'member_information.php?member_id='.$row['member_id'].'&display_as=popup\', \'member_information\', \'\'); return false;">View Summary Info.</a>
+                          <a class="popup_link" onclick="popup_src(\'member_information.php?member_id='.$row['member_id'].'&display_as=popup\', \'member_information\', \'\', false); return false;">View Summary Info.</a>
                         </li>
                       </ul>
                     </div>

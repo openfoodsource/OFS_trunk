@@ -277,7 +277,7 @@ while ($row = mysqli_fetch_array ($result_data, MYSQLI_ASSOC))
 
     // build the ledger output
     $ledger_data['markup'] .= '
-      <div id="id-'.$row['transaction_id'].'" class="data_row'.$replaced_class.'"'.$replaced_action.' onclick="popup_src(\'adjust_ledger.php?type=single&target='.$row['transaction_id'].'\', \'adjust_ledger\', \'\');">
+      <div id="id-'.$row['transaction_id'].'" class="data_row'.$replaced_class.'"'.$replaced_action.' onclick="popup_src(\'adjust_ledger.php?type=single&target='.$row['transaction_id'].'\', \'adjust_ledger\', \'\', false);">
         <div class="source_info">
           <div class="source_name">'.$row['source_name'].'</div>
           <div class="source_type">'.$row['source_type'].'</div>

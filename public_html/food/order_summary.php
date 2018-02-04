@@ -5,7 +5,7 @@ valid_auth('producer,producer_admin');
 
 $detail_type = $_GET['detail_type'];
 
-include ('func/order_summary_function.php');
+include ('order_summary_function.php');
 if (! preg_match ('/.*compile_producer_invoices.*/' , $_SERVER['HTTP_REFERER']))
   {
     $web_display = true;
@@ -48,7 +48,7 @@ else
 $producer_id = $_SESSION['producer_id_you'];
 $display_page = generate_producer_summary ($producer_id, $delivery_id, $detail_type, '');
 
-include("func/show_businessname.php");
+include("show_businessname.php");
 
 $page_title_html = '<span class="title">'.$business_name.'</span>';
 $page_subtitle_html = '<span class="subtitle">Order Summary'.($_GET['detail_type'] == 'product' ? ' by Product' : ' by Customer').'</span>';

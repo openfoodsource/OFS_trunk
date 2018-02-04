@@ -137,11 +137,11 @@ function image_display_calc($data)
   {
     $image_display = '
               <figure class="product_image">
-                <figcaption class="edit_product_image" onclick="popup_src(\'set_product_image.php?display_as=popup&action=select_image&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'\', \'edit_product_image\', \'\', \'true\');">Click to Select Image</figcaption>'.
+                <figcaption class="edit_product_image" onclick="popup_src(\'set_product_image.php?display_as=popup&action=select_image&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'\', \'edit_product_image\', \'\', false);">Click to Select Image</figcaption>'.
                 ($data['image_id'] ? '
-                <img id="image-'.$data['product_id'].'-'.$data['product_version'].'" src="'.get_image_path_by_id ($data['image_id']).'" class="product_image" onclick="popup_src(\'set_product_image.php?display_as=popup&action=select_image&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'\', \'edit_product_image\', \'\', \'true\');">'
+                <img id="image-'.$data['product_id'].'-'.$data['product_version'].'" src="'.get_image_path_by_id ($data['image_id']).'" class="product_image" onclick="popup_src(\'set_product_image.php?display_as=popup&action=select_image&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'\', \'edit_product_image\', \'\', false);">'
                 : '
-                <img id="image-'.$data['product_id'].'-'.$data['product_version'].'" src="'.DIR_GRAPHICS.'no_image_set.png" class="no_product_image" onclick="popup_src(\'set_product_image.php?display_as=popup&action=select_image&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&a='.$_REQUEST['a'].'\', \'edit_product_image\', \'\', \'true\');">'
+                <img id="image-'.$data['product_id'].'-'.$data['product_version'].'" src="'.DIR_GRAPHICS.'no_image_set.png" class="no_product_image" onclick="popup_src(\'set_product_image.php?display_as=popup&action=select_image&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&a='.$_REQUEST['a'].'\', \'edit_product_image\', \'\', false);">'
                 ).'
               </figure>';
     return $image_display;
@@ -185,7 +185,7 @@ function manage_inventory_control_calc($data, &$unique)
               ($data['total_ordered_this_version'] == 0 ? '
               <input class="delete_product" id="delete_product-'.$data['product_id'].'-'.$data['product_version'].'" onblur="jQuery(this).removeClass(\'warn\');" onclick="delete_product(\''.$data['product_id'].'\',\''.$data['product_version'].'\',\'delete\', \'version\')" value="DELETE VERSION" type="button">'
               : '
-              <a class="product_history_link" onclick="popup_src(\''.PATH.'product_order_history.php?product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&producer_id='.$_SESSION['producer_id_you'].'&a='.$_REQUEST['a'].'&display_as=popup\', \'product_sales_history\', \'\', \'true\')">Version&nbsp;Sales&nbsp;History</a><br>'
+              <a class="product_history_link" onclick="popup_src(\''.PATH.'product_order_history.php?product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&producer_id='.$_SESSION['producer_id_you'].'&a='.$_REQUEST['a'].'&display_as=popup\', \'product_sales_history\', \'\', false)">Version&nbsp;Sales&nbsp;History</a><br>'
               )
             :                                  // DISPLAYING ONLY CONFIRMED VERSIONS OF ALL PRODUCTS
               ($data['total_ordered_this_product'] == 0 ? '
@@ -193,7 +193,7 @@ function manage_inventory_control_calc($data, &$unique)
               <input class="delete_product" id="delete_product-'.$data['product_id'].'-'.$data['product_version'].'" onblur="jQuery(this).removeClass(\'warn\');" onclick="delete_product(\''.$data['product_id'].'\',\''.$data['product_version'].'\',\'delete\', \'product\')" value="DELETE PRODUCT" type="button">'
               : '
               <a class="product_versions_link" href="product_list.php?type=producer_list&select_type=versions&product_id='.$data['product_id'].'&a='.$_REQUEST['a'].'">Show&nbsp;Versions</a>
-              <a class="product_history_link" onclick="popup_src(\''.PATH.'product_order_history.php?product_id='.$data['product_id'].'&producer_id='.$_SESSION['producer_id_you'].'&a='.$_REQUEST['a'].'&display_as=popup\', \'product_sales_history\', \'\', \'true\')">Sales&nbsp;History</a>'
+              <a class="product_history_link" onclick="popup_src(\''.PATH.'product_order_history.php?product_id='.$data['product_id'].'&producer_id='.$_SESSION['producer_id_you'].'&a='.$_REQUEST['a'].'&display_as=popup\', \'product_sales_history\', \'\', false)">Sales&nbsp;History</a>'
               )
             ).'
             </form>
@@ -582,7 +582,7 @@ function show_listing_row($data, &$unique)
               <span class="product_version">'.$data['product_version'].'</span>
             </span>
             <span class="product_name">
-            <a class="edit_product_link" onclick="popup_src(\''.PATH.'edit_product_info.php?display_as=popup&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&producer_id='.$data['producer_id'].'&action=edit\', \'edit_product\', \'\', \'true\')">[EDIT]</a> '.
+            <a class="edit_product_link" onclick="popup_src(\''.PATH.'edit_product_info.php?display_as=popup&product_id='.$data['product_id'].'&product_version='.$data['product_version'].'&producer_id='.$data['producer_id'].'&action=edit\', \'edit_product\', \'\', false)">[EDIT]</a> '.
             $data['product_name'].'
             </span>
           </div>

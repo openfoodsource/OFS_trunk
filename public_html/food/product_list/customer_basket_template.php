@@ -158,7 +158,7 @@ function image_display_calc($data)
   {
     $image_display =
     ($data['image_id'] ? '
-      <img src="'.get_image_path_by_id ($data['image_id']).'" class="product_image" onclick="popup_src(\''.get_image_path_by_id ($data['image_id']).'\', \'product_image\', \'\', \'true\');">'
+      <img src="'.get_image_path_by_id ($data['image_id']).'" class="product_image" onclick="popup_src(\''.get_image_path_by_id ($data['image_id']).'\', \'product_image\', \'\', true);">'
     : '');
     return $image_display;
   };

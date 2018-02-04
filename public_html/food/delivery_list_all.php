@@ -276,9 +276,6 @@ $display .= '
 
 $site_name = 'Food '.ucfirst (ORGANIZATION_TYPE);
 $base_url = '';
-$fontface = 'arial';
-$fontsize = '-1';
-$font = '<font face="arial" size="-1">';
 
 $content_delivery = '
   <div id="delivery_id_nav">

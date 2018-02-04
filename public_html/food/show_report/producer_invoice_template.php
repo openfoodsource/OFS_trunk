@@ -497,7 +497,7 @@ function show_product_row(&$product, &$unique)
 
         $display_line = '
           <tr align="center">
-            <td width="40" align="right" valign="top" style="text-align:right;">'.($unique['view'] == 'editable' ? '<img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=product&amp;target='.$product[$this_row]['bpid'].'\', \'adjust_ledger\', \'\');">' : '').'</td>
+            <td width="40" align="right" valign="top" style="text-align:right;">'.($unique['view'] == 'editable' ? '<img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=product&amp;target='.$product[$this_row]['bpid'].'\', \'adjust_ledger\', \'\', false);">' : '').'</td>
             <td width="50" align="right" valign="top" style="text-align:right;">'.$product[$this_row]['member_id'].'&nbsp;&nbsp;</td>
             <td align="left" valign="top">'.$product[$this_row]['preferred_name'].'</td>
 

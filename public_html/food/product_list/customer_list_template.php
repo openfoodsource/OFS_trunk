@@ -167,7 +167,7 @@ function image_display_calc($data)
   {
     $image_display =
     ($data['image_id'] ? '
-      <img src="'.get_image_path_by_id ($data['image_id']).'" class="product_image" onclick="popup_src(\''.get_image_path_by_id ($data['image_id']).'\', \'product_image\', \'\', \'true\');">'
+      <img src="'.get_image_path_by_id ($data['image_id']).'" class="product_image" onclick="popup_src(\''.get_image_path_by_id ($data['image_id']).'\', \'product_image\', \'\', true);">'
     : '');
     return $image_display;
   };
@@ -392,7 +392,7 @@ function open_list_top($data, &$unique)
           <div class="producer_details">
             <div class="producer_listing">
               <a href="'.PATH.'product_list.php?type=customer_list&select_type=producer_id&producer_id='.$unique['producer_id'].'" class="business_name">'.
-                (strlen ($unique['logo_id']) > 0 ? '<img class="producer_logo" src="'.PATH.'getlogos.php?logo_id='.$unique['logo_id'].'">' : '').'
+                (strlen ($unique['logo_id']) > 0 ? '<img class="producer_logo" src="'.PATH.'show_logo.php?logo_id='.$unique['logo_id'].'">' : '').'
               </a>'.
               (strlen ($unique['about']) > 0 ? '
               <span class="producer_section about">
@@ -425,7 +425,7 @@ function open_list_top($data, &$unique)
                 $unique['producttypes'].'
               </span>' : '').'
               <span class="original_questionnaire_link">
-                <a class="block_link popup_link" onclick="popup_src(\''.PATH.'prdcr_display_quest.php?pid='.$unique['producer_id'].'&display_as=popup\', \'prdcr_display_quest\', \'\');">More detailed information about this producer</a>
+                <a class="block_link popup_link" onclick="popup_src(\''.PATH.'prdcr_display_quest.php?pid='.$unique['producer_id'].'&display_as=popup\', \'prdcr_display_quest\', \'\', false);">More detailed information about this producer</a>
               </span>
             </div>
           </div>

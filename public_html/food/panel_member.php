@@ -30,7 +30,7 @@ $display = '
     </header>
     <ul class="grid membership_info">
       <li class="block block_33 membership_class"">
-        <a class="popup_link" onclick="popup_src(\''.PATH.'update_membership.php?display_as=popup\', \'membership_renewal\', \'\');">
+        <a class="popup_link" onclick="popup_src(\''.PATH.'update_membership.php?display_as=popup\', \'membership_renewal\', \'\', false);">
           <span>You are a </span><span class="title">'.$_SESSION['renewal_info']['membership_class'].'</span><span class="detail">(click to change)</span>
         </a>
       </li>
@@ -44,7 +44,7 @@ $display = '
         <span class="title">Next Renewal</span><span>'.date('F j, Y', strtotime($_SESSION['renewal_info']['standard_renewal_date'])).'</span>
       </li>
       <li class="block block_33">
-        <a class="popup_link" onClick="popup_src(\''.PATH.'motd.php?display_as=popup\', \'motd\', \'\');">
+        <a class="popup_link" onClick="popup_src(\''.PATH.'motd.php?display_as=popup\', \'motd\', \'\', false);">
           <span class="motd">View the Message of the Day</span>
         </a>
       </li>
@@ -56,10 +56,10 @@ $display = '
     </header>
     <ul class="grid member_resources">
       <li class="block block_42">
-        <a class="popup_link" onClick="popup_src(\''.PATH.'member_form.php?display_as=popup\', \'member_form\', \'\');">Update My Contact Information</a>
+        <a class="popup_link" onClick="popup_src(\''.PATH.'member_form.php?display_as=popup\', \'member_form\', \'\', false);">Update My Contact Information</a>
       </li>
       <li class="block block_42">
-        <a class="popup_link" onClick="popup_src(\''.PATH.'reset_password.php?display_as=popup\', \'reset_password\', \'\');">Change My Password</a>
+        <a class="popup_link" onClick="popup_src(\''.PATH.'reset_password.php?display_as=popup\', \'reset_password\', \'\', false);">Change My Password</a>
       </li>
       <li class="block block_42">
         <a class="block_link" href="locations.php">View Available Pickup/Delivery Locations</a>
@@ -71,7 +71,7 @@ $display = '
         <a class="block_link" href="faq.php">How to Order FAQ</a>
       </li>
       <li class="block block_42">
-        <a class="popup_link" onClick="popup_src(\''.PATH.'producer_form.php?action=new_producer&display_as=popup\', \'member_form\', \'\');">New Producer Application Form</a>
+        <a class="popup_link" onClick="popup_src(\''.PATH.'producer_form.php?action=new_producer&display_as=popup\', \'member_form\', \'\', false);">New Producer Application Form</a>
       </li>
     </ul>
   </div>

@@ -48,7 +48,7 @@ foreach ($page_specific_stylesheets as $stylesheet)
 // Add in-line style content
 if (isset ($page_specific_css) && strlen ($page_specific_css) > 0)
   {
-    wp_register_style('page_specific_styles', false, array('ofs_stylesheet'), 'all');
+    wp_register_style('page_specific_styles', false, array('openfood'), 'all');
     wp_enqueue_style('page_specific_styles');
     wp_add_inline_style('page_specific_styles', $page_specific_css);
   }
