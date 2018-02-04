@@ -639,7 +639,8 @@ function show_adjustment_row(&$adjustment, &$unique)
       {
         // These adjustments are shown above the "Invoice Total" line because they belong to this order
         if ($adjustment[$this_row]['text_key'] == 'order cost'
-              || $adjustment[$this_row]['text_key'] == 'delivery cost')
+              || $adjustment[$this_row]['text_key'] == 'delivery cost'
+              || $adjustment[$this_row]['text_key'] == 'large order discount')
           {
             $unique['invoice_included_adjustment_total'] += $adjustment[$this_row]['amount'] * $adjustment[$this_row]['multiplier'];
             $unique['invoice_included_adjustments'] .= '

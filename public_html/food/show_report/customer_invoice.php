@@ -71,7 +71,6 @@ $query_unique = '
     '.NEW_TABLE_SITES.'.site_description,
     '.NEW_TABLE_BASKETS.'.site_id,
     '.NEW_TABLE_BASKETS.'.basket_id,
-
     (SELECT SUM(amount) FROM '.NEW_TABLE_LEDGER.' WHERE
       ((target_key = "'.mysqli_real_escape_string ($connection, $member_id).'"
       AND target_type = "member")
@@ -80,17 +79,14 @@ $query_unique = '
       AND text_key = "order cost"
       AND delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
       AND replaced_by IS NULL) AS order_cost,
-
-    /* '.NEW_TABLE_BASKETS.'.order_cost, */
-
     '.NEW_TABLE_BASKETS.'.delivery_cost,
     '.NEW_TABLE_BASKETS.'.member_id,
     '.NEW_TABLE_BASKETS.'.delivery_id,
     '.NEW_TABLE_BASKETS.'.delivery_postal_code,
     '.NEW_TABLE_BASKETS.'.customer_fee_percent,
     '.NEW_TABLE_BASKETS.'.checked_out,
-    '.TABLE_ORDER_CYCLES.'.delivery_date,
     '.TABLE_ORDER_CYCLES.'.invoice_price,
+    '.TABLE_ORDER_CYCLES.'.delivery_date,
     '.TABLE_ORDER_CYCLES.'.msg_all,
     '.TABLE_ORDER_CYCLES.'.msg_bottom
   FROM
@@ -156,13 +152,13 @@ $query_product = '
     '.NEW_TABLE_BASKET_ITEMS.'.producer_fee_percent,
     '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock,
     '.NEW_TABLE_BASKET_ITEMS.'.checked_out,
-    '.TABLE_PRODUCER.'.producer_id,
-    '.TABLE_PRODUCER.'.business_name AS producer_name,
     '.TABLE_SUBCATEGORY.'.subcategory_name,
     '.TABLE_CATEGORY.'.category_name,
     '.TABLE_PRODUCT_TYPES.'.prodtype,
     '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_type,
     '.TABLE_PRODUCT_STORAGE_TYPES.'.storage_code,
+    '.TABLE_PRODUCER.'.producer_id,
+    '.TABLE_PRODUCER.'.business_name AS producer_name,
     '.NEW_TABLE_MESSAGES.'1.message AS customer_message,
     '.NEW_TABLE_MESSAGES.'2.message AS product_message,
     '.NEW_TABLE_MESSAGES.'3.message AS adjustment_group_memo
@@ -200,7 +196,7 @@ $query_product = '
   ORDER BY
     '.TABLE_PRODUCER.'.producer_id,
     '.NEW_TABLE_PRODUCTS.'.product_id,
-    FIND_IN_SET('.NEW_TABLE_LEDGER.'.text_key, "quantity cost,weight cost,extra charge,customer fee,producer fee,delivery cost") DESC';
+    FIND_IN_SET('.NEW_TABLE_LEDGER.'.text_key, "quantity cost,weight cost,extra charge,customer fee,producer fee") DESC';
 
 // Set the accounting datetime limit (for constraining totals over time following the zero-date)
 $constrain_accounting_datetime = '';
@@ -210,8 +206,9 @@ if (defined ('ACCOUNTING_ZERO_DATETIME') && strlen (ACCOUNTING_ZERO_DATETIME) > 
     $constrain_accounting_datetime = '
     AND '.TABLE_ORDER_CYCLES.'.date_closed > "'.ACCOUNTING_ZERO_DATETIME.'"';
     $constrain_effective_datetime = '
-    AND IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL, '.NEW_TABLE_LEDGER.'.effective_datetime, '.TABLE_ORDER_CYCLES.'.delivery_date) > "'.ACCOUNTING_ZERO_DATETIME.'"';
-
+    AND IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
+           '.NEW_TABLE_LEDGER.'.effective_datetime,
+           '.TABLE_ORDER_CYCLES.'.delivery_date) > "'.ACCOUNTING_ZERO_DATETIME.'"';
   }
 
 // Get the closing date for this member's most recent prior order
@@ -243,60 +240,66 @@ if ($row_prior_closing = mysqli_fetch_array ($result_prior_closing, MYSQLI_ASSOC
 
     $and_since_prior_delivery_date = '
         (
-          IF /* BEFORE THE CURRENT DELIVERY DATE */
-            ('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
+          /* BEFORE THE CURRENT DELIVERY DATE */
+          IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
              '.NEW_TABLE_LEDGER.'.effective_datetime,
              '.TABLE_ORDER_CYCLES.'.delivery_date
             ) < "'.mysqli_real_escape_string ($connection, $unique_data['delivery_date']).'"
+        /* AND SINCE (INCLUSIVE) THE PRIOR DELIVERY DATE FOR THIS CUSTOMER */
         AND
-          IF /* AND SINCE (INCLUSIVE) THE PRIOR DELIVERY DATE FOR THIS CUSTOMER */
-            ('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
+          IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
              '.NEW_TABLE_LEDGER.'.effective_datetime,
              '.TABLE_ORDER_CYCLES.'.delivery_date
             ) >= "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_date']).'"
+        /* BUT DO NOT INCLUDE delivery cost, order cost FROM THE PRIOR ORDER */
         AND
-          ( /* BUT DO NOT INCLUDE delivery cost, order cost FROM THE PRIOR ORDER */
-          NOT
-            (
-              '.NEW_TABLE_LEDGER.'.text_key = "delivery cost"
-            OR
-              '.NEW_TABLE_LEDGER.'.text_key = "order cost"
-            )
-          AND '.NEW_TABLE_LEDGER.'.delivery_id = "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_id']).'"
-          )
+          NOT FIND_IN_SET('.NEW_TABLE_LEDGER.'.text_key, "delivery cost,order cost,large order discount")
         )';
     $and_before_prior_delivery_date = '
-    /* ALL NON-ITEM CHARGES PRIOR TO PREVIOUS INVOICE DATE (PREFER USING DELIVERY DATE FOR EFFECTIVE_DATETIME) */
-    AND IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
-           '.NEW_TABLE_LEDGER.'.effective_datetime,
-           '.TABLE_ORDER_CYCLES.'.delivery_date) <= "'.$row_prior_closing['delivery_date'].'"
+    /* ALL AMOUNTS PRIOR TO PREVIOUS INVOICE DATE (PREFER USING DELIVERY DATE FOR EFFECTIVE_DATETIME) */
     AND
-      (
-        '.NEW_TABLE_LEDGER.'.effective_datetime < "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_date']).'"
-      OR
-        '.NEW_TABLE_LEDGER.'.delivery_id <= "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_id']).'"
-      )
+      IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
+         '.NEW_TABLE_LEDGER.'.effective_datetime,
+         '.TABLE_ORDER_CYCLES.'.delivery_date
+        ) <= "'.$row_prior_closing['delivery_date'].'"
     /* DO NOT INCLUDE ANY PAYMENTS OR RECEIPTS FOR THE PRIOR CYCLE */
-    AND
-      (
-      NOT
-        (
-          '.NEW_TABLE_LEDGER.'.text_key = "payment received"
-        OR
-          '.NEW_TABLE_LEDGER.'.text_key = "payment made"
-        )
-      AND '.NEW_TABLE_LEDGER.'.delivery_id = "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_id']).'"
+    AND NOT (
+      FIND_IN_SET('.NEW_TABLE_LEDGER.'.text_key, "payment received,payment sent")
+      AND
+        IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
+           '.NEW_TABLE_LEDGER.'.effective_datetime,
+           '.TABLE_ORDER_CYCLES.'.delivery_date
+          ) >= "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_date']).'"
+      )
+    /* DO NOT INCLUDE NON-ORDER PAYMENTS FOR THE PRIOR DELIVERY DATE */
+    AND NOT (
+      NOT FIND_IN_SET('.NEW_TABLE_LEDGER.'.text_key, "delivery cost,order cost,large order discount")
+      AND
+        IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
+           '.NEW_TABLE_LEDGER.'.effective_datetime,
+           '.TABLE_ORDER_CYCLES.'.delivery_date
+          ) >= "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_date']).'"
+      AND
+        IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
+           '.NEW_TABLE_LEDGER.'.effective_datetime,
+           '.TABLE_ORDER_CYCLES.'.delivery_date
+          ) < "'.mysqli_real_escape_string ($connection, $unique_data['delivery_date']).'"
       )';
   }
 else
   {
     // There was no prior delivery date, so use the accounting datetime limit (for constraining totals over time following the zero-date)
     $and_since_prior_delivery_date = '
-        '.NEW_TABLE_LEDGER.'.effective_datetime > "'.ACCOUNTING_ZERO_DATETIME.'"';
+        ('.NEW_TABLE_LEDGER.'.effective_datetime > "'.ACCOUNTING_ZERO_DATETIME.'"
+          AND
+            IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
+               '.NEW_TABLE_LEDGER.'.effective_datetime,
+               '.TABLE_ORDER_CYCLES.'.delivery_date
+              ) <= "'.mysqli_real_escape_string ($connection, $unique_data['delivery_date']).'"
+        )';
     $and_before_prior_delivery_date = '
       /* THERE WAS NOTHING BEFORE THE PRIOR DELIVERY DATE */
       AND 0';
-    // AND '.NEW_TABLE_LEDGER.'.effective_datetime < "0000-00-00 00:00:00"';
   }
 
 // This multi-row content comprises the non-product body of the report
@@ -353,23 +356,17 @@ $query_adjustment = '
     /* ALSO CATCH INFORMATION THAT AFFECTS THE CURRENT INVOICE SPECIFICALLY */
       OR
         (
-          '.NEW_TABLE_LEDGER.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'" /* THE TAREGET ORDER CYCLE */
-        AND
-          (
-            '.NEW_TABLE_LEDGER.'.text_key = "payment received"
-          OR
-            '.NEW_TABLE_LEDGER.'.text_key = "payment made"
-          OR
-            '.NEW_TABLE_LEDGER.'.text_key = "delivery cost"
-          OR
-            '.NEW_TABLE_LEDGER.'.text_key = "order cost"
-          )
+          /* ITEMS ASSOCIATED WITH THE TAREGET ORDER CYCLE */
+          '.NEW_TABLE_LEDGER.'.delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'"
+          AND FIND_IN_SET('.NEW_TABLE_LEDGER.'.text_key, "payment received,payment made,delivery cost,order cost,large order discount")
         )
       )
   ORDER BY
     '.NEW_TABLE_LEDGER.'.effective_datetime';
 
-// Get the balance-forward amount, if any
+debug_print ("INFO QUERY_ADJUSTMENT: ", array ($query_adjustment, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__);
+
+// Get the balance-forward amount, if any, which should be everything that happened prior to this order except payments for/since the last order
 $query_balance = '
   SELECT
     SUM(amount * IF('.NEW_TABLE_LEDGER.'.source_type = "member", 1, -1)) AS total

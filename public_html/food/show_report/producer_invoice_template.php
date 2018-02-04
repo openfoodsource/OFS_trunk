@@ -178,7 +178,11 @@ function pager_navigation(&$product, &$unique)
 
 function open_list_top(&$product, &$unique)
   {
-    $display_list_top = ($_GET['output'] == 'pdf' ? '' : '
+    $list_top = ($_GET['output'] == 'pdf' ? '' :
+      ($unique['prior_delivery_id'] > 0 ? '
+      <div class="prior_link"><a href="'.$_SERVER['SCRIPT_NAME'].'?'.($_GET['type'] ? 'type='.$_GET['type'] : '').'&amp;delivery_id='.$unique['prior_delivery_id'].($_GET['producer_id'] ? '&amp;producer_id='.$_GET['producer_id'] : '').($_GET['view'] ? '&amp;view='.$_GET['view'] : '').'">Go to prior invoice: '.$unique['prior_delivery'].'</a></div>'
+      : ''
+      ).'
       <span class="current_view">
         Current view: '.ucfirst ($unique['view']).' invoice<br>
         View as
@@ -187,99 +191,100 @@ function open_list_top(&$product, &$unique)
           '.(($unique['view'] != 'editable' && CurrentMember::auth_type('cashier') && $_GET['producer_id'] != $_SESSION['producer_id_you']) ? '[<a href="'.$_SERVER['SCRIPT_NAME'].'?'.($_GET['type'] ? 'type='.$_GET['type'] : '').($_GET['delivery_id'] ? '&amp;delivery_id='.$_GET['delivery_id'] : '').($_GET['producer_id'] ? '&amp;producer_id='.$_GET['producer_id'] : '').'&amp;view=editable">Editable</a>]': '').'
         invoice.
       </span>').'
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-              <td align="left" valign="top" width="50%"><!-- FOOTER LEFT "'.$unique['business_name'].'" -->
-                <font size="+2"><b>'.$unique['business_name'].'</b></font>
-              </td>
-              <td valign="top" align="right" rowspan="2" style="text-align:right;" width="50%">
-                <img src="'.BASE_URL.DIR_GRAPHICS.'invoice_logo.gif" alt="logo" width="250" height="71">
-              </td>
-            </tr>
-            <tr>
-              <td align="left">
-                <br>
-                <table cellpadding="0" cellspacing="0" border="0">
-                  <tr>
-                    <td valign="top"><strong>Home:</strong><br>'.$unique['address_line1'].
+      <!-- BEGIN TABLE:producer_info -->
+      <table class="invoice_header" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td align="left" valign="top" width="50%"><!-- FOOTER LEFT "'.$unique['business_name'].'" -->
+            <font size="+2"><b>'.$unique['business_name'].'</b></font>
+          </td>
+          <td valign="top" align="right" rowspan="2" style="text-align:right;" width="50%">
+            <img src="'.BASE_URL.DIR_GRAPHICS.'invoice_logo.gif" alt="logo" width="250" height="71">
+          </td>
+        </tr>
+        <tr>
+          <td align="left">
+            <br>
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td valign="top"><strong>Home:</strong><br>'.$unique['address_line1'].
 ($unique['address_line2'] != '' ? '
-                      <br>'.$unique['address_line2'].''
+                  <br>'.$unique['address_line2'].''
 : '').'
-                      <br>'.implode (', ', array_filter (array($unique['city'], $unique['state'], $unique['zip']))).'<br>'.
+                  <br>'.implode (', ', array_filter (array($unique['city'], $unique['state'], $unique['zip']))).'<br>'.
 ($unique['home_phone'] != '' ? '
-                      <br>'.$unique['home_phone']
+                  <br>'.$unique['home_phone']
 : '').'
-                    </td>
-                    <td width="8" style="width:8px;">
-                    </td>
-                    <td width="1" bgcolor="#888888" style="width:1px;">
-                    </td>
-                    <td width="8" style="width:8px;">
-                    </td>
-                    <td valign="top"><strong>Business:</strong><br>'.$unique['work_address_line1'].
+                </td>
+                <td width="8" style="width:8px;">
+                </td>
+                <td width="1" bgcolor="#888888" style="width:1px;">
+                </td>
+                <td width="8" style="width:8px;">
+                </td>
+                <td valign="top"><strong>Business:</strong><br>'.$unique['work_address_line1'].
 ($unique['work_address_line2'] != '' ? '
-                      <br>'.$unique['address_line2'].''
+                  <br>'.$unique['address_line2'].''
 : '').'
-                      <br>'.implode (', ', array_filter (array($unique['work_city'], $unique['work_state'], $unique['work_zip']))).'<br>'.
+                  <br>'.implode (', ', array_filter (array($unique['work_city'], $unique['work_state'], $unique['work_zip']))).'<br>'.
 ($unique['work_phone'] != '' ? '
-                      <br>'.$unique['work_phone']
+                  <br>'.$unique['work_phone']
 : '').'
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top">'.
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">'.
 ($unique['email_address'] != '' ? '
-                <br><a href="mailto:'.$unique['email_address'].'">'.$unique['email_address'].'</a>'
+            <br><a href="mailto:'.$unique['email_address'].'">'.$unique['email_address'].'</a>'
 : '').
 ($unique['email_address_2'] != '' ? '
-                <br><a href="mailto:'.$unique['email_address_2'].'">'.$unique['email_address_2'].'</a>'
+            <br><a href="mailto:'.$unique['email_address_2'].'">'.$unique['email_address_2'].'</a>'
 : '').
 ($unique['mobile_phone'] != '' ? '
-                <br>'.$unique['mobile_phone'] .' (mobile)'
+            <br>'.$unique['mobile_phone'] .' (mobile)'
 : '').
 ($unique['fax'] != '' ? '
-                <br>'.$unique['fax'] .' (fax)'
+            <br>'.$unique['fax'] .' (fax)'
 : '').'
-              </td>
-              <td valign="bottom" align="right" style="vertical-align:bottom;text-align:right">
-                <font size="+2">'.date ("F j, Y", strtotime ($unique['delivery_date'])).'</font>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2">
-                '.
+          </td>
+          <td valign="bottom" align="right" style="vertical-align:bottom;text-align:right">
+            <font size="+2">'.date ("F j, Y", strtotime ($unique['delivery_date'])).'</font>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            '.
 ($unique['msg_all'] != '' ? '
-                <font color="#990000" size="-1">'.$unique['msg_all'].'  E-mail any problems with your order to <a href="mailto:'.PROBLEMS_EMAIL.'">'.PROBLEMS_EMAIL.'</a><br>'
+            <font color="#990000" size="-1">'.$unique['msg_all'].'  E-mail any problems with your order to <a href="mailto:'.PROBLEMS_EMAIL.'">'.PROBLEMS_EMAIL.'</a><br>'
 : '').
 ($unique['msg_unique'] != '' ? '
-                <br><font color="#990000" size="-1">'.$unique['msg_unique'].'<br>'
+            <br><font color="#990000" size="-1">'.$unique['msg_unique'].'<br>'
 : '').'
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2" height="20" align="center"><img class="wide-line" src="'.BASE_URL.DIR_GRAPHICS.'black_pixel.gif" width="750" height="1" alt="divider"></td>
-            </tr>
-            <tr>
-              <td colspan="2" align="right" padding="0"></td>
-            </tr>
-          </table>
-        <table cellpadding="0" cellspacing="0" border="0" style="width:100%;" width="750">
-          <tr>
-            <td colspan="7"><br></td>
-          </tr>
-          <tr>
-            <th valign="bottom" bgcolor="#444444" width="40"></th>
-            <th valign="bottom" bgcolor="#444444" width="35"><font color="#ffffff" size="-1">#</font></th>
-            <th valign="bottom" bgcolor="#444444" align="left"><font color="#ffffff" size="-1">Product Name</font></th>
-            <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Shipped</font></th>
-            <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Weight</font></th>
-            <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Order</font></th>
-            <th valign="bottom" bgcolor="#444444" align=right width="8%" style="text-align:right;"><font color="#ffffff" size="-1">Total</font></th>
-          </tr>';
-    return $display_list_top;
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" height="20" align="center"><img class="wide-line" src="'.BASE_URL.DIR_GRAPHICS.'black_pixel.gif" width="750" height="1" alt="divider"></td>
+        </tr>
+        <tr>
+          <td colspan="2" align="right" padding="0"></td>
+        </tr>
+      </table>
+    <table cellpadding="0" cellspacing="0" border="0" style="width:100%;" width="750">
+      <tr>
+        <td colspan="7"><br></td>
+      </tr>
+      <tr>
+        <th valign="bottom" bgcolor="#444444" width="40"></th>
+        <th valign="bottom" bgcolor="#444444" width="35"><font color="#ffffff" size="-1">#</font></th>
+        <th valign="bottom" bgcolor="#444444" align="left"><font color="#ffffff" size="-1">Product Name</font></th>
+        <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Shipped</font></th>
+        <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Weight</font></th>
+        <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Order</font></th>
+        <th valign="bottom" bgcolor="#444444" align=right width="8%" style="text-align:right;"><font color="#ffffff" size="-1">Total</font></th>
+      </tr>';
+    return $list_top;
   };
 
 
