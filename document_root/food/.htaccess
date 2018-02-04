@@ -1,4 +1,4 @@
-php_value include_path '/var/www/openfoodsource/ofs_includes/:.'
+php_value include_path '/var/www/openfoodsource/openfood_includes/:.'
 # DirectoryIndex index.php index.html index.htm
 
 RewriteEngine On
