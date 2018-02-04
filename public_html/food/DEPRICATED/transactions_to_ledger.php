@@ -2,8 +2,6 @@
 include_once 'config_openfood.php';
 session_start();
 
-include_once ('func.update_ledger.php');
-
 
 // README  README  README  README  README  README  README  README  README  README  README  README 
 // 
@@ -22,74 +20,66 @@ if ($_REQUEST['ajax'] == 'yes')
     ////////////////////////////////////////////////////////////////////////////
     if ($_REQUEST['process'] == 'post_to_ledger')
       {
-//$content .= print_r($_REQUEST,true);
         // Prepare the content for update_ledger()
-        $ledger_data['transaction_id'] = $_REQUEST['transaction_id'];
-        $ledger_data['transaction_group_id'] = $_REQUEST['transaction_group_id'];
+        // If there is not good timestamp value, then use the delivery date
+        if (! strtotime ($_REQUEST['timestamp'])
+          {
+            $query = '
+              SELECT delivery_date
+              FROM '.TABLE_ORDER_CYCLES.'
+              WHERE delivery_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['delivery_id']).'"';
+            $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 754937 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
+              {
+                $ledger_data['timestamp'] = $row['delivery_date'].' 00:00:00';
+              }
+            else
+              {
+                $error_code = 'no delivery_id to derive timestamp from';
+              }
+          }
+        else
+          {
+            $ledger_data['timestamp'] = $_REQUEST['timestamp'];
+          }
+        $ledger_data['effective_datetime'] = $ledger_data['timestamp']
         $ledger_data['source_type'] = $_REQUEST['source_type'];
         $ledger_data['source_key'] = $_REQUEST['source_key'];
         $ledger_data['target_type'] = $_REQUEST['target_type'];
         $ledger_data['target_key'] = $_REQUEST['target_key'];
         $ledger_data['amount'] = $_REQUEST['amount'];
-        $ledger_data['delivery_id'] = $_REQUEST['delivery_id'];
-        $ledger_data['site_id'] = $_REQUEST['site_id'];
-        $ledger_data['basket_id'] = $_REQUEST['basket_id'];
-        $ledger_data['bpid'] = $_REQUEST['bpid'];
         $ledger_data['text_key'] = $_REQUEST['text_key'];
-        $ledger_data['effective_date'] = $_REQUEST['timestamp'];
-        $ledger_data['timestamp'] = $_REQUEST['timestamp'];
+
+// Probably need to add other table linkage elements here
+
         $ledger_data['posted_by'] = $_REQUEST['posted_by'];
-        // Populate the messages array
+        // $ledger_data['replaced_by_transaction'] = '';
+        // put the various messages into an associative array
         $messages = array ();
         if ($_REQUEST['batchno'] != '' && $_REQUEST['batchno'] != 0) $messages['ledger batch number'] = $_REQUEST['batchno'];
         if ($_REQUEST['memo'] != '') $messages['ledger memo'] = $_REQUEST['memo'];
         if ($_REQUEST['comments'] != '') $messages['ledger comment'] = $_REQUEST['comments'];
-        // Handle "PROCESS-AND-NEXT" button push
-        if ($_REQUEST['requested_action'] == 'process_and_next')
+        // If no error, then go on with posting
+        if ($error_code)
           {
-            // First, verify that this transaction is not already processed...
-            $query = '
-              SELECT
-                xfer_to_ledger
-              FROM
-                '.TABLE_TRANSACTIONS.'
-              WHERE
-                transaction_id = "'.$_REQUEST['transaction_id'].'"';
-            $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 730542 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
-            if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
+            $content = $error_code;
+          }
+        else
+          {
+            // Rather than deleting delete_on_zero transactions, we simply will not post them
+            if ($_REQUEST['delete_on_zero'] != 'YES' || $_REQUEST['amount'] != 0)
               {
-                // If not yet xfer_to_ledger then okay to continue
-                if ($row['xfer_to_ledger'] == 0)
+                $content = update_ledger($ledger_data);
+                // Should return "target_transaction_id:[transaction_id]"
+                if (substr($content, 0, 22) == 'target_transaction_id:')
                   {
-                    $ledger_data['match_keys'] = array ('source_type','source_key','target_type','target_key','text_key','delivery_id');
-                    // Use add_to_ledger instead of basket_item_to_ledger because there may be multiple entries
-                    $new_transaction_id = add_to_ledger($ledger_data);
-                    // Update the transactions table to show this one is completed
+                    // Update the transactions table to show this one has been moved
                     $query = '
                       UPDATE '.TABLE_TRANSACTIONS.'
-                      SET xfer_to_ledger = "1"
+                      SET xfer_to_ledger = "'.mysqli_real_escape_string ($connection, substr($content, 22)).'"
                       WHERE transaction_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['transaction_id']).'"';
-                    $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 883892 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
-                    $content .= 'posted:'.$_REQUEST['transaction_id'];
                   }
               }
-           }
-        // Handle "MARK-AS-PROCESSED" button push
-        elseif ($_REQUEST['requested_action'] == 'mark_and_next')
-          {
-            // Update the transactions table to show this one is completed
-            // even though no action was taken.
-            $query = '
-              UPDATE '.TABLE_TRANSACTIONS.'
-              SET xfer_to_ledger = "1"
-              WHERE transaction_id = "'.mysqli_real_escape_string ($connection, $_REQUEST['transaction_id']).'"';
-            $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 752093 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
-            $content .= 'marked:'.$_REQUEST['transaction_id'];
-          }
-        // Handle "SKIP-TO-NEXT" button push
-        elseif ($_REQUEST['requested_action'] == 'skip_and_next')
-          {
-            $content .= 'skipped:'.$_REQUEST['transaction_id'];
           }
         echo $content;
         exit (0);
@@ -117,21 +107,17 @@ if ($_REQUEST['ajax'] == 'yes')
             '.TABLE_TRANS_TYPES.' ON '.TABLE_TRANS_TYPES.'.ttype_id = '.TABLE_TRANSACTIONS.'.transaction_type
           WHERE
             transaction_type = "'.$_REQUEST['ttype_id'].'"
-            /* AND xfer_to_ledger = "0" */';
-        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 868024 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+            AND xfer_to_ledger = "0"';
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 823024 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         $content .= '
-          <ul id="transactions_list">';
+          <ul>';
         while($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
           {
-            // Use this (strikeout) to show adjustments that were previous deletions.
-            // Of course, there was an associated adjustment that was the target of the deletion...
-            $strike = '';
-            if ($row['transaction_comments'] == 'Adjustment Zeroed Out') $strike = ' strike';
             $content .= '
-              <li id="trans_id:'.$row['transaction_id'].'" class="trans_detail trans_'.($row['xfer_to_ledger'] == 1 ? '' : 'in').'complete'.$strike.'" onclick="get_transaction_info('.$row['transaction_id'].')">
+              <li id="trans_id:'.$row['transaction_id'].'" class="trans_detail trans_incomplete" onclick="get_transaction_info('.$row['transaction_id'].')">
                   <span class="trans_id">'.$row['transaction_id'].'</span>
-                  <span class="amount'.($row['transaction_amount'] < 0 ? ' neg' : ' pos').'">$ '.$row['transaction_amount'].'</span>
-                  <span class="source">'.($row['ttype_whereshow'] == 'producer' ? 'Prod: '.$row['transaction_producer_id'] : 'Mem: '.$row['transaction_member_id']).'</span>
+                  <span class="amount'.($row['transaction_amount'] < 0 ? ' neg' : '').'">$ '.$row['transaction_amount'].'</span>
+                  <span class="source">'.($row['ttype_whereshow'] == 'producer' ? 'Prod: '.$row['transaction_producer_id'] : 'Memb: '.$row['transaction_member_id']).'</span>
                   <span class="delivery_id">Del. #'.$row['transaction_delivery_id'].'</span>
               </li>';
           }
@@ -151,43 +137,27 @@ if ($_REQUEST['ajax'] == 'yes')
         $query = '
           SELECT
             '.TABLE_TRANS_TYPES.'.ttype_whereshow,
-            '.TABLE_TRANSACTIONS.'.transaction_id,
-            '.TABLE_TRANSACTIONS.'.transaction_type,
-            '.TABLE_TRANSACTIONS.'.transaction_amount,
-            '.TABLE_TRANSACTIONS.'.transaction_producer_id,
-            '.TABLE_TRANSACTIONS.'.transaction_member_id,
-            '.TABLE_TRANSACTIONS.'.transaction_delivery_id,
-            '.TABLE_TRANSACTIONS.'.transaction_taxed,
-            '.TABLE_TRANSACTIONS.'.transaction_timestamp,
-            '.TABLE_TRANSACTIONS.'.transaction_batchno,
-            '.TABLE_TRANSACTIONS.'.transaction_memo,
-            '.TABLE_TRANSACTIONS.'.transaction_comments,
-            '.TABLE_ORDER_CYCLES.'.delivery_date,
-            COALESCE ((SELECT member_id
+            '.TABLE_TRANSACTIONS.'.*,
+            COALESCE(
+              ( SELECT member_id
                 FROM '.TABLE_MEMBER.'
-                WHERE username = transaction_user), 0) AS user_member_id,
-            '.TABLE_TRANSACTIONS.'.transaction_user AS user_member_text,
-            COALESCE (transaction_basket_id, (SELECT basket_id
+                WHERE username = transaction_user),
+              0) AS user_member_id,
+            COALESCE(
+              ( SELECT basket_id
                 FROM '.NEW_TABLE_BASKETS.'
                 WHERE delivery_id = transaction_delivery_id
-                  AND member_id = transaction_member_id)) AS basket_id,
-            (SELECT site_id
-                FROM '.NEW_TABLE_BASKETS.'
-                WHERE delivery_id = transaction_delivery_id
-                  AND member_id = transaction_member_id) AS site_id
+                  AND member_id = transaction_member_id),
+              0) AS referenced_basket_key
           FROM
             '.TABLE_TRANSACTIONS.'
           LEFT JOIN
             '.TABLE_TRANS_TYPES.' ON '.TABLE_TRANS_TYPES.'.ttype_id = '.TABLE_TRANSACTIONS.'.transaction_type
-          LEFT JOIN
-            '.TABLE_ORDER_CYCLES.' ON ('.TABLE_TRANSACTIONS.'.transaction_delivery_id = '.TABLE_ORDER_CYCLES.'.delivery_id)
           WHERE
             transaction_id = "'.$_REQUEST['transaction_id'].'"';
-        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 702752 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 747752 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         if($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
           {
-            // If bogus timestamp, then use the delivery date
-            if (! strtotime ($row['transaction_timestamp']) $row['transaction_timestamp'] = $row['delivery_date'].' 00:00:00';
             $content .= json_encode($row);
             echo $content;
             exit (0);
@@ -221,7 +191,7 @@ if ($_REQUEST['ajax'] == 'yes')
             AND '.TABLE_TRANSACTIONS.'.transaction_id IS NOT NULL
             AND xfer_to_ledger = "0"
           GROUP BY '.TABLE_TRANS_TYPES.'.ttype_id';
-        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 829082 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        $result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 891036 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
         while($row = mysqli_fetch_object ($result))
           {
 
@@ -247,28 +217,27 @@ if ($_REQUEST['ajax'] == 'yes')
             if ($row->ttype_debitcredit == 'credit')
               {
                 $source_type = 'internal';
-                $source_key = ''; // enter a varchar(25) name
                 $target_type = $whereshow;
                 $target_key = '['.$whereshow.'_id]'; // gives [member_id] or [producer_id]
               }
             elseif ($row->ttype_debitcredit == 'debit')
             {
                 $target_type = 'internal';
-                $target_key = ''; // enter a varchar(25) name
+                $target_key = 'transaction_type'; // enter a varchar(25) name
                 $source_type = $whereshow;
                 $source_key = '['.$whereshow.'_id]'; // gives [member_id] or [producer_id]
               }
             $amount = '[amount]'; // value to be filled in later
-            $text_key = 'adjustment';
-//            $reason = 'legacy-transaction';
+            $text_key = 'legacy transaction';
             $post_by_member = '[transaction_user]'; // Will need to be converted to a member_id
             $message = '';
+            $delete_on_zero = '';
             $content .= '
           <li id="ttype_id:'.$row->ttype_id.'" class="ttype_incomplete">
             <form>
               <div>
                 <div class="ttype" onclick="get_transaction_list('.$row->ttype_id.')">
-                  S<br>H<br>O<br>W<br> <br>L<br>I<br>S<br>T
+                  Show List
                 </div>
                 <div class="source_trans">
                   <strong>OLD TRANSACTION TYPE # '.$row->ttype_id.'</strong><br>
@@ -305,18 +274,26 @@ if ($_REQUEST['ajax'] == 'yes')
                     <input type="text" size="15" id="target_key:'.$row->ttype_id.'" name="target_key:'.$row->ttype_id.'" value=""></p>
                   <p><strong>Amount Multiplier:</strong>
                     <input type="text" size="5" id="base_multiplier:'.$row->ttype_id.'" name="base_multiplier:'.$row->ttype_id.'" value="1.00">
-                    (1.00 will keep same / -1.00 to invert)</p>
+                    (1.00=keep same / -1.00=invert)</p>
+
+<!-- Probably need to add other table linkage elements here -->
+
+                  <p><strong>Referenced Table:</strong>
+                    <input type="radio" id="referenced_members:'.$row->ttype_id.'" name="referenced_table" value="members">members table &nbsp; 
+                    <input type="radio" id="referenced_baskets:'.$row->ttype_id.'" name="referenced_table" value="baskets" checked>baskets table &nbsp; 
+                    <input type="radio" id="referenced_producers:'.$row->ttype_id.'" name="referenced_table" value="producers">producers &nbsp; 
                   <p><strong>Text Key:</strong>
-                    <input type="text" size="20" id="text_key:'.$row->ttype_id.'" name="text_key:'.$row->ttype_id.'" value="'.$text_key.'"> &nbsp; &nbsp; 
+                    <input type="text" size="20" id="text_key:'.$row->ttype_id.'" name="text_key" value="adjustment"> &nbsp; &nbsp; 
                   <strong>* Posted By Member ID:</strong>
-                    <input type="text" size="5" id="user:'.$row->ttype_id.'" name="user:'.$row->ttype_id.'" value=""></p>
-                  <p><strong>Transaction group ID:</strong>
-                    <input type="text" size="20" id="transaction_group_id:'.$row->ttype_id.'" name="transaction_group_id:'.$row->ttype_id.'" value=""></p>
+                    <input type="text" size="5" id="user:'.$row->ttype_id.'" name="user" value=""></p>
                   <p><strong>Messages:</strong>
-                    * Batch No: <input type="text" size="10" id="batchno:'.$row->ttype_id.'" name="batchno:'.$row->ttype_id.'"> &nbsp;
-                    * Memo: <input type="text" size="20" id="memo:'.$row->ttype_id.'" name="memo:'.$row->ttype_id.'"><br>
-                    * Comments: <input type="text" size="60" id="comments:'.$row->ttype_id.'" name="comments:'.$row->ttype_id.'"><br>
+                    * Batch No: <input type="text" size="10" id="batchno:'.$row->ttype_id.'" name="batchno"> &nbsp;
+                    * Memo: <input type="text" size="20" id="memo:'.$row->ttype_id.'" name="memo"><br>
+                    * Comments: <input type="text" size="60" id="comments:'.$row->ttype_id.'" name="comments"><br>
                     </p>
+                  <p><strong>Add Tax?</strong>
+                    <input type="checkbox" id="add_taxed:'.$row->ttype_id.'" value="taxed"'.($row->ttype_taxed == 1 ? ' checked' : '').'>
+                    (based on delivery_id)</p>
                   <p>* Fallback options will be used if actual values are not found.
                 </div>
               </div>
@@ -344,7 +321,7 @@ $query = '
     ttypes2.ttype_id IS NOT NULL 
   GROUP BY
     ttype_id';
-$result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 602823 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+$result= mysqli_query ($connection, $query) or die (debug_print ("ERROR: 603833 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
 while($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
   {
     // Create a button for each
@@ -352,21 +329,23 @@ while($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       <input type="button" value="'.$row['ttype_desc'].'" onclick="get_transactions_types('.$row['ttype_id'].')">';
   }
 $content .= '
+  <div id="controls">
+    <div id="basket_generate_start">
+      <input id="delivery_generate_button" type="submit" onClick="reset_delivery_list(); delivery_generate_start(); generate_basket_list();" value="Begin Processing">
+    </div>
+    <div id="delivery_progress"><div id="c_progress-left"></div><div id="c_progress-right"></div></div>
+    <div id="basket_progress"><div id="p_progress-left"></div><div id="p_progress-right"></div></div>
+  </div>
 <div id="instructions">
-  <p>Select from the buttons below to pick a family (parent) set of transactions to work with.
-    General information about those transactions and suggested translation values will be
-    displayed with each transaction type.</p>
-  <p>After modifying the translations to set new and/or default values, click the &quot;Show
-    List&quot; at the left to load the list of transactions from the database in preparation
-    for processing.</p>
-  <p>Click on transactions that are loaded in the list to see how they will be converted into
-    ledger entries. When everything looks good, either process them singly or uncheck the
-    &quot;Pause&quot; checkbox to automatically move on through the list. Note that transactions
-    will be flagged in the database so they will not be processed more than once.</p>
-  <p>Transactions that were used to zero-out other transactions are shown stricken-out. <i>In
-    combination with</i> the transaction they were used to zero, they can probably be ignored.
-    The recommended action is to find and &quot;Mark as Processed&quot; each of the two before
-    processing the list as a batch.</p>
+    <p>Select from the buttons below to pick a family (parent) set of transactions to work with.
+      General information about those transactions and suggested translation values will be
+      displayed with each transaction type.</p>
+    <p>After modifying the translations to set new and/or default values, click the &quot;Show
+      List&quot; at the left to load the list of transactions from the database in preparation
+      for processing.</p>
+    <p>Click on transactions that are loaded in the list to see how they will be converted into
+      ledger entries. When everything looks good, either process them singly or click the
+      &quot;Process All&quot; button.</p>
 </div>
 <div id="reporting">
   <div id="left-column">
@@ -377,6 +356,9 @@ $content .= '
     </div>
   </div>
   <div id="right-column">
+    Pause: <input type="checkbox" id="pause" name="pause" onClick="process_basket_list()">
+    Delivery: <input type="text" size="8" id="ttype_id" name="ttype_id">
+    Basket: <input type="text" size="8" id="basket_id" name="basket_id">
     <div id="transactions_box">
       <div id="trans_list">
       </div>
@@ -386,63 +368,57 @@ $content .= '
 <div id="process_area" style="clear:both;">
   <div id="process_target">
     <form name="ledger_data" id="ledger_data" action="" method="post">
-      <table id="in_process">
+      <table>
         <tr>
-          <td class="label">Amount:</td><td>
+          <td>Delivery ID:</td>
+          <td><input type="text" size="5" id="delivery_id"></td>
+          <td>Amount:</td><td>
           <input type="text" size="7" id="amount"></td>
-          <td class="label">Delivery ID:</td>
-          <td><input type="text" size="8" id="delivery_id"></td>
-          <td class="label">Timestamp:</td>
+          <td>Timestamp:</td>
           <td><input type="text" size="20" id="timestamp"></td>
         </tr>
         <tr>
-          <td class="label">Source Type:</td>
+          <td>Source Type:</td>
           <td><input type="text" size="12" id="source_type"></td>
-          <td class="label">Delcode ID:</td>
-          <td><input type="text" size="8" id="site_id"></td>
-          <td class="label">Posted By:</td>
-          <td><input type="text" size="5" id="posted_by"><input type="text" size="12" id="posted_by_text"></td>
+          <td>Source Key:</td>
+          <td><input type="text" size="5" id="source_key"></td>
+          <td>Source Subkey:</td>
+          <td>xxx</td>
         </tr>
         <tr>
-          <td class="label">Source Key:</td>
-          <td><input type="text" size="12" id="source_key"></td>
-          <td class="label">Basket ID</td>
-          <td><input type="text" size="8" id="basket_id"></td>
-          <td class="label">Reason:</td>
-          <td><input type="text" size="15" id="transaction_group_id"></td>
-        </tr>
-        <tr>
-          <td class="label">Target Type:</td>
+          <td>Target Type:</td>
           <td><input type="text" size="12" id="target_type"></td>
-          <td class="label">Bask/Prod BPID</td>
-          <td><input type="text" size="8" id="bpid"></td>
-          <td class="label">Post Zeros?</td>
-          <td><input type="checkbox" id="post_even_if_zero" value="YES"></td>
+          <td>Target Key:</td>
+          <td><input type="text" size="5" id="target_key"></td>
+          <td>Target Subkey:</td>
+          <td>xxx</td>
+        </tr>
+
+<!-- Probably need to add other table linkage elements here -->
+
+        <tr>
+          <td>Ref. Table:</td>
+          <td><input type="text" size="12" id="referenced_table"></td>
+          <td>Ref. Key:</td>
+          <td><input type="text" size="5" id="referenced_key"></td>
+          <td>Post By:</td>
+          <td><input type="text" size="5" id="posted_by"></td>
         </tr>
         <tr>
-          <td class="label">Target Key:</td>
-          <td><input type="text" size="12" id="target_key"></td>
-          <td class="label">Text Key:</td>
+          <td>Trans. Group:</td>
+          <td>xxx</td>
+          <td>Text Key:</td>
           <td><input type="text" size="15" id="text_key"></td>
-          <td class="label">Transaction ID:</td>
-          <td><input type="text" size="10" id="transaction_id"></td>
+          <td>Delete On Zero?</td>
+          <td><input type="checkbox" id="delete_on_zero" value="YES"></td>
         </tr>
         <tr>
-          <td class="label">Messages:</td>
+          <td>Messages:</td>
           <td colspan="5">
-            Batch No: <input type="text" size="10" id="batchno" name="batchno"> &nbsp;
-            Memo: <input type="text" size="20" id="memo" name="memo">
-            Comments: <input type="text" size="50" id="comments" name="comments">
+            Batch No: <input type="text" size="10" id="batchno" name="batchno"> &nbsp; Memo: <input type="text" size="20" id="memo" name="memo">
+            Comments: <input type="text" size="50" id="comments" name="comments"><br>
+            <input type="submit" id="process_ledger_data" value="Process This Entry">
           </td>
-        </tr>
-        <tr>
-          <td colspan="4">
-            <input type="button" id="process_next" value="Process and Next" onclick="process_ledger_data(\'process_and_next\')">
-            <input type="button" id="mark_processed" value="Mark as Processed" onclick="process_ledger_data(\'mark_and_next\')">
-            <input type="button" id="skip_process_next" value="Skip to Next" onclick="process_ledger_data(\'skip_and_next\')">
-          </td>
-          <td class="label">Pause?</td>
-          <td><input type="checkbox" id="pause" name="pause" onClick="process_basket_list()" checked></td>
         </tr>
       </table>
     </form>
@@ -450,18 +426,18 @@ $content .= '
   </div>
 </div>';
 
-$page_specific_scripts['transactions_to_ledger2'] = array (
-  'name'=>'transactions_to_ledger2',
-  'src'=>BASE_URL.PATH.'transactions_to_ledger2.js',
+$page_specific_scripts['transactions_to_ledger'] = array (
+  'name'=>'transactions_to_ledger',
+  'src'=>BASE_URL.PATH.'transactions_to_ledger.js',
   'dependencies'=>array('jquery'),
-  'version'=>'2.1.1',
+  'version'=>'4.21.0',
   'location'=>false
   );
 
-$page_specific_stylesheets['transactions_to_ledger2'] = array (
-  'name'=>'transactions_to_ledger2',
-  'src'=>BASE_URL.PATH.'transactions_to_ledger2.css',
-  'dependencies'=>array('ofs_stylesheet'),
+$page_specific_stylesheets['transactions_to_ledger'] = array (
+  'name'=>'transactions_to_ledger',
+  'src'=>BASE_URL.PATH.'transactions_to_ledger.css',
+  'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
   );

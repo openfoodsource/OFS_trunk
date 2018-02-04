@@ -447,7 +447,7 @@ $page_specific_scripts['create_basket_items_products_tables'] = array (
 $page_specific_stylesheets['create_basket_items_products_tables'] = array (
   'name'=>'create_basket_items_products_tables',
   'src'=>BASE_URL.PATH.'create_basket_items_products_tables.css',
-  'dependencies'=>array('ofs_stylesheet'),
+  'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
   );

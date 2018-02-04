@@ -144,7 +144,7 @@ $page_specific_scripts['create_ledger'] = array (
 $page_specific_stylesheets['create_ledger'] = array (
   'name'=>'create_ledger',
   'src'=>BASE_URL.PATH.'create_ledger.css',
-  'dependencies'=>array('ofs_stylesheet'),
+  'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
   );

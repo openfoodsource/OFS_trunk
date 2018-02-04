@@ -521,7 +521,7 @@ $page_specific_scripts['validate_customer_basket_items'] = array (
 $page_specific_stylesheets['validate_customer_basket_items'] = array (
   'name'=>'validate_customer_basket_items',
   'src'=>BASE_URL.PATH.'validate_customer_basket_items.css',
-  'dependencies'=>array('ofs_stylesheet'),
+  'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
   );
