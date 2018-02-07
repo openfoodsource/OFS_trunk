@@ -42,6 +42,16 @@ $page_specific_stylesheets['openfood'] = array (
   'version'=>'2.1.1',
   'media'=>'all',
   );
+if (SHOW_USER_MENU == true)
+  {
+    $page_specific_stylesheets['user_menu'] = array (
+      'name'=>'user_menu',
+      'src'=>BASE_URL.PATH.'css/openfood-user_menu.css',
+      'dependencies'=>array('openfood'),
+      'version'=>'2.1.1',
+      'media'=>'all',
+      );
+  }
 // Add boiler-plate scripts to the page-specific scripts array
 $page_specific_scripts['jquery'] = array (
   'name'=>'jquery',
@@ -243,7 +253,7 @@ function get_inline_styles ($page_specific_stylesheets, $page_specific_css)
             $okay_to_add = false;
             // If there are no dependencies, then we can add this style
             if (count ($style['dependencies']) == 0) $okay_to_add = true;
-            // If there are no unmet dependencies, then we can add this style
+            // Only if there are no unmet dependencies can we add this style
             else
               {
                 $okay_to_add = true;

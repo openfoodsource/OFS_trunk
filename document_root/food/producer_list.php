@@ -202,7 +202,7 @@ $content_producer_list .= '
 $page_specific_stylesheets['producer_list'] = array (
   'name'=>'producer_list',
   'src'=>BASE_URL.PATH.'css/openfood-producer_list.css',
-  'dependencies'=>array(),
+  'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
   );

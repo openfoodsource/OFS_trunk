@@ -9,29 +9,40 @@
  * @since 1.0
  */
 
+// Be sure Wordpress has session data from OFS (e.g. for the usermenu)
+if(! session_id()) session_start();
+
 /**
   * Include styles from the parent twentyseventeen theme
+    AND the styles from OpenFood
   */
-function my_theme_enqueue_styles() {
-    $parent_style = 'twentyseventeen-style'; // This is 'twentyseventeen-style' for the Twenty Seventeen theme.
-    wp_enqueue_style( $parent_style, get_template_directory_uri() . '/style.css' );
-    wp_enqueue_style( 'child-style',
-        get_stylesheet_directory_uri() . '/style.css',
-        array( $parent_style ),
-        wp_get_theme()->get('Version')
-    );
-}
+
+
+function my_theme_enqueue_styles ($page_specific_stylesheets)
+  {
+    global $page_specific_stylesheets;
+    $parent_style = 'twentyseventeen-ofs'; // This is 'twentyseventeen-style' for the Twenty Seventeen theme.
+    wp_enqueue_style($parent_style, get_template_directory_uri() . '/style.css');
+    wp_enqueue_style('child-style', get_stylesheet_directory_uri() . '/style.css', array($parent_style), wp_get_theme()->get('Version'));
+    // Now cycle through the OpenFood styles and enqueue them
+    foreach ($page_specific_stylesheets as $stylesheet)
+      {
+        wp_enqueue_style ($stylesheet['name'], $stylesheet['src'], $stylesheet['dependencies'], $stylesheet['version'], $stylesheet['media']);
+      }
+  }
 add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_styles' );
 
 /**
   * Add sidebar to pages as well as posts
   */
-function twentyseventeen_body_classes_child( $classes ){
-if ( is_active_sidebar( 'sidebar-1' ) &&  is_page() ) {
-		$classes[] = 'has-sidebar';
-	}
-	return $classes;
-}
+function twentyseventeen_body_classes_child( $classes )
+  {
+    if ( is_active_sidebar( 'sidebar-1' ) &&  is_page() )
+      {
+        $classes[] = 'has-sidebar';
+      }
+    return $classes;
+  }
 add_filter( 'body_class', 'twentyseventeen_body_classes_child' );
 
 // Remove display of the admin bar from the top of Wordpress pages
@@ -39,16 +50,15 @@ add_filter('show_admin_bar', '__return_false');
 
 // This will default the wiki posting screen to single-column
 $post_type = 'yada_wiki'; // Change this to a post type you'd want
-function my_screen_layout_post( $selected ) {
-    if( false === $selected ) { 
+function my_screen_layout_post( $selected )
+  {
+    if( false === $selected )
+      { 
         return 1; // Use 1 column if user hasn't selected anything in Screen Options
-    }
+      }
     return 1; // Use what the user wants
-}
+  }
 add_filter( "get_user_option_screen_layout_{$post_type}", 'my_screen_layout_post' );
-
-// Be sure Wordpress has session data from OFS (e.g. for the usermenu)
-if(! session_id()) session_start();
 
 // Following will force Wordpress to follow OFS user authentications
 add_filter('authenticate', 'ofs_auth', 10, 3);

@@ -285,7 +285,7 @@ $page_specific_javascript = '
 $page_specific_stylesheets['category_list'] = array (
   'name'=>'category_list',
   'src'=>BASE_URL.PATH.'css/openfood-category_list.css',
-  'dependencies'=>array(),
+  'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
   );

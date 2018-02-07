@@ -99,7 +99,7 @@ $page_specific_css = '
     border:0;
     min-width:12rem;
     max-width:12rem;
-    min-height:4rem;
+    min-height:3rem;
     background-color:#eea;
     position:absolute;
     bottom:1rem; right:1rem;
@@ -117,10 +117,11 @@ $page_specific_css = '
     }
   #motd_admin legend {
     box-sizing:border-box;
-    font-size:4em;
+    font-size:3em;
+    line-height:3em;
     margin:0;
     padding:0 1em;
-    height:2.55em;
+    height:3em;
     width:100%;
     color:#000;
     border:1px solid #800;
@@ -135,7 +136,7 @@ $page_specific_css = '
   #motd_admin:hover legend {
     font-size:0.65em;
     margin:0 1em;
-    height:1em;
+    height:1.3em;
     width:50%;
     border-bottom:0;
     border-top-left-radius:0.67em;
@@ -179,6 +180,15 @@ $page_specific_css = '
   #motd_admin #reset_motd.warn {
     color:#fff;
     background-color:#a00;
+    }
+  #reset_motd {
+    border:1px solid #666;
+    border-style:outset;
+    background-color:#aaa;
+    border-radius:0.25rem;
+    }
+  #reset_motd:hover {
+    color:#000;
     }
   '.MOTD_CSS;
 

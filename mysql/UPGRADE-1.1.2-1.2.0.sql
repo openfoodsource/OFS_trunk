@@ -23,8 +23,6 @@ ALTER TABLE ofs_configuration
 ALTER TABLE ofs_configuration
   ADD subsection SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT AFTER section,
   ADD PRIMARY KEY (subsection);
-DELETE FROM ofs_configuration WHERE ofs_configuration.name = "fontface";
-DELETE FROM ofs_configuration WHERE ofs_configuration.name = "font";
 UPDATE ofs_configuration SET options = "section_heading" WHERE constant = "";
 UPDATE ofs_configuration SET value = SUBSTR(section, 4) WHERE constant = "";
 UPDATE ofs_configuration SET section = SUBSTR(section, 1,1) WHERE 1;

@@ -16,8 +16,8 @@
 include_once 'config_openfood.php';
 
 // Add OpenFood stylesheets
-wp_enqueue_style ('ofs_stylesheet', BASE_URL.PATH.'stylesheet.css', array(), '2.1.1', 'all');
-wp_enqueue_style ('user_menu', BASE_URL.PATH.'user_menu.css', array(), '2.1.1', 'all');
+wp_enqueue_style ('openfood', BASE_URL.PATH.'css/openfood.css', array(), '2.1.1', 'all');
+if (SHOW_USER_MENU == true) wp_enqueue_style ('user_menu', BASE_URL.PATH.'css/openfood-user_menu.css', array(), '2.1.1', 'all');
 
 // Get userdata (i.e. user_role and username), which are used for the Hotspots Analytics WordPress package
 if (isset ($_SESSION['member_id']) && $_SESSION['member_id'] > 0) get_userdata( $_SESSION['member_id'] );
@@ -50,7 +50,7 @@ if (isset ($_SESSION['member_id']) && $_SESSION['member_id'] > 0) get_userdata( 
 include_once ('custom_menu_items.php');
 foreach (explode ("\n", WORDPRESS_MENU) as $menu_item)
   {
-    list ($parent_slug, $title, $url, $order, $parent, $id, $auth_type) = explode ("|", trim($menu_item));
+    list ($parent_slug, $title, $url, $order, $parent, $id, $auth_type) = array_pad (explode ("|", trim($menu_item)), 7, '');
     // Make a menu item if it is NOT a comment AND the user has auth_type permission
     if (substr (trim ($parent_slug), 0, 1) != '#'
         && (trim($auth_type) == 'ALL'
