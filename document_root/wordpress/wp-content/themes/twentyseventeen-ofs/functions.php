@@ -25,9 +25,12 @@ function my_theme_enqueue_styles ($page_specific_stylesheets)
     wp_enqueue_style($parent_style, get_template_directory_uri() . '/style.css');
     wp_enqueue_style('child-style', get_stylesheet_directory_uri() . '/style.css', array($parent_style), wp_get_theme()->get('Version'));
     // Now cycle through the OpenFood styles and enqueue them
-    foreach ($page_specific_stylesheets as $stylesheet)
+    if (is_array ($page_specific_stylesheets))
       {
-        wp_enqueue_style ($stylesheet['name'], $stylesheet['src'], $stylesheet['dependencies'], $stylesheet['version'], $stylesheet['media']);
+        foreach ($page_specific_stylesheets as $stylesheet)
+          {
+            wp_enqueue_style ($stylesheet['name'], $stylesheet['src'], $stylesheet['dependencies'], $stylesheet['version'], $stylesheet['media']);
+          }
       }
   }
 add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_styles' );

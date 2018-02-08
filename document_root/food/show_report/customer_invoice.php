@@ -164,14 +164,14 @@ $query_product = '
     '.NEW_TABLE_MESSAGES.'3.message AS adjustment_group_memo
   FROM
     '.NEW_TABLE_LEDGER.'
+  LEFT JOIN '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   LEFT JOIN '.NEW_TABLE_PRODUCTS.' USING(pvid)
+  LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.' USING(bpid)
   LEFT JOIN '.TABLE_PRODUCER.' USING(producer_id)
-  LEFT JOIN '.NEW_TABLE_BASKET_ITEMS.'  USING(bpid)
   LEFT JOIN '.TABLE_SUBCATEGORY.' USING(subcategory_id)
   LEFT JOIN '.TABLE_CATEGORY.' USING(category_id)
   LEFT JOIN '.TABLE_PRODUCT_TYPES.' USING(production_type_id)
   LEFT JOIN '.TABLE_PRODUCT_STORAGE_TYPES.' USING(storage_id)
-  LEFT JOIN '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   LEFT JOIN '.NEW_TABLE_MESSAGES.' '.NEW_TABLE_MESSAGES.'1 ON
     ( '.NEW_TABLE_MESSAGES.'1.referenced_key1 = '.NEW_TABLE_BASKET_ITEMS.'.bpid
     AND '.NEW_TABLE_MESSAGES.'1.message_type_id =
@@ -219,8 +219,7 @@ $query_prior_closing = '
     delivery_date
   FROM
     '.NEW_TABLE_BASKETS.'
-  LEFT JOIN
-    '.TABLE_ORDER_CYCLES.' USING(delivery_id)
+  LEFT JOIN '.TABLE_ORDER_CYCLES.' USING(delivery_id)
   WHERE
     '.NEW_TABLE_BASKETS.'.member_id = "'.mysqli_real_escape_string ($connection, $member_id).'"
     AND '.TABLE_ORDER_CYCLES.'.date_closed < (SELECT date_closed FROM '.TABLE_ORDER_CYCLES.' WHERE delivery_id = "'.mysqli_real_escape_string ($connection, $delivery_id).'")'.
@@ -251,7 +250,7 @@ if ($row_prior_closing = mysqli_fetch_array ($result_prior_closing, MYSQLI_ASSOC
              '.NEW_TABLE_LEDGER.'.effective_datetime,
              '.TABLE_ORDER_CYCLES.'.delivery_date
             ) >= "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_date']).'"
-        /* BUT DO NOT INCLUDE delivery cost, order cost FROM THE PRIOR ORDER */
+        /* BUT DO NOT INCLUDE delivery cost, order cost, large order discount FROM THE PRIOR ORDER */
         AND
           NOT FIND_IN_SET('.NEW_TABLE_LEDGER.'.text_key, "delivery cost,order cost,large order discount")
         )';
@@ -264,7 +263,7 @@ if ($row_prior_closing = mysqli_fetch_array ($result_prior_closing, MYSQLI_ASSOC
         ) <= "'.$row_prior_closing['delivery_date'].'"
     /* DO NOT INCLUDE ANY PAYMENTS OR RECEIPTS FOR THE PRIOR CYCLE */
     AND NOT (
-      FIND_IN_SET('.NEW_TABLE_LEDGER.'.text_key, "payment received,payment sent")
+      FIND_IN_SET('.NEW_TABLE_LEDGER.'.text_key, "payment received,payment made")
       AND
         IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
            '.NEW_TABLE_LEDGER.'.effective_datetime,
@@ -327,12 +326,12 @@ $query_adjustment = '
     '.NEW_TABLE_MESSAGES.'.message AS ledger_message
   FROM
     '.NEW_TABLE_LEDGER.'
+  LEFT JOIN '.TABLE_ORDER_CYCLES.' USING (delivery_id)
   LEFT JOIN '.NEW_TABLE_MESSAGES.' '.NEW_TABLE_MESSAGES.' ON
     ( '.NEW_TABLE_MESSAGES.'.referenced_key1 = '.NEW_TABLE_LEDGER.'.transaction_id
     AND '.NEW_TABLE_MESSAGES.'.message_type_id =
       (SELECT message_type_id FROM '.NEW_TABLE_MESSAGE_TYPES.' WHERE description = "ledger comment")
     )
-  LEFT JOIN '.TABLE_ORDER_CYCLES.' USING (delivery_id)
   WHERE
     (
       (
@@ -363,8 +362,6 @@ $query_adjustment = '
       )
   ORDER BY
     '.NEW_TABLE_LEDGER.'.effective_datetime';
-
-debug_print ("INFO QUERY_ADJUSTMENT: ", array ($query_adjustment, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__);
 
 // Get the balance-forward amount, if any, which should be everything that happened prior to this order except payments for/since the last order
 $query_balance = '

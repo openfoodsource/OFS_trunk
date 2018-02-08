@@ -65,7 +65,7 @@ table tr {
 table tr td {
   vertical-align:top;
   }
-table tr.line_item {
+table tbody.line_item {
   border-bottom:1px solid #ddd;
   }
 .show_report {

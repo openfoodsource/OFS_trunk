@@ -298,7 +298,7 @@ function open_list_top(&$product, &$unique)
 ($unique['checked_out'] != 0 ? '
         <tr>
           <th valign="bottom" bgcolor="#444444" width="40"></th>
-          <th valign="bottom" bgcolor="#444444" width="35"><font color="#ffffff" size="-1">#</font></th>
+          <th valign="bottom" bgcolor="#444444" width="35"><font color="#ffffff" size="-1">Product&nbsp;#</font></th>
           <th valign="bottom" bgcolor="#444444" align="left"><font color="#ffffff" size="-1">Product Name</font></th>
           <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Price</font></th>
           <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Quantity</font></th>
@@ -565,8 +565,9 @@ function show_product_row(&$product, &$unique)
       {
         $tax_display = ($product[$this_row]['taxable'] == 1 ? '* ' : '');
         $display_line = '
-          <tr class="center line_item '.$adjustment_class.'">
-            <td width="40" align="right" valign="top">'.($unique['view'] == 'editable' ? '<img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=product&amp;target='.$product[$this_row]['bpid'].'\', \'edit_transaction\', \'\');">' : '').'</td>
+          <tbody class="line_item">
+          <tr class="center'.$adjustment_class.'">
+            <td width="40" align="right" valign="top">'.($unique['view'] == 'editable' ? '<img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=product&amp;target='.$product[$this_row]['bpid'].'\', \'edit_transaction\', \'\', false);">' : '').'</td>
             <td width="50" align="right" valign="top">'.$product[$this_row]['product_id'].'&nbsp;&nbsp;</td>
 
             <td align="left" valign="top">'.$product[$this_row]['product_name'].
@@ -592,7 +593,8 @@ function show_product_row(&$product, &$unique)
             <td class="price" width="13" align="right" valign="top" style="text-align:right;"><b>'.$tax_display.'$'.number_format($product['total_product_amount'] - $product['total_product_tax'], 2).'</b></td>
           </tr>'.
           // Show adjustment comment (kept in an associative array keyed by the adjustment text -- to prevent duplication of message)
-          (count ($unique['adjustment_markup']) > 0 ? implode ('', $unique['adjustment_markup']) : '');
+          (count ($unique['adjustment_markup']) > 0 ? implode ('', $unique['adjustment_markup']) : '').'
+          </tbody>';
         // Set product aggregations to zero
         unset ($unique['adjustment_markup']);
         $product['total_product_amount'] = 0;
