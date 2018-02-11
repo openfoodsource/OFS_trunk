@@ -357,7 +357,7 @@ if (isset ($_GET['subcat_id'])) $subtitle = $unique['category_name'].' &ndash; '
 
 $page_specific_stylesheets['product_list'] = array (
   'name'=>'product_list',
-  'src'=>BASE_URL.PATH.'product_list.css',
+  'src'=>BASE_URL.PATH.'css/openfood-product_list.css',
   'dependencies'=>array('openfood'),
   'version'=>'2.1.1',
   'media'=>'all'
