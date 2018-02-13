@@ -34,6 +34,10 @@ Text Domain: twentyseventeen-ofs
 .footer-widget-1 {
   width:100% !important;
 }
+dd {
+  margin: 0 1.5em 0;
+}
+
 /* Never print the header background image */
 @media print {
   #wp-custom-header {
@@ -59,9 +63,6 @@ input[type="text"] {
 
 /****************** Styles for media queries **********************/
 
-dd {
-  margin: 0 1.5em 0;
-  }
 
 /* Display the user menu as part of the header for narrow screens */
 @media only screen and (max-width: 670px) {

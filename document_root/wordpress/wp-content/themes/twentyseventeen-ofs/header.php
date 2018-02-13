@@ -19,7 +19,7 @@ include_once 'config_openfood.php';
 wp_enqueue_style ('openfood', BASE_URL.PATH.'css/openfood.css', array(), '2.1.1', 'all');
 if (SHOW_USER_MENU == true) wp_enqueue_style ('user_menu', BASE_URL.PATH.'css/openfood-user_menu.css', array(), '2.1.1', 'all');
 
-// Get userdata (i.e. user_role and username), which are used for the Hotspots Analytics WordPress package
+// Get userdata (i.e. user_role and username), which are used (at least) for the Hotspots Analytics WordPress package
 if (isset ($_SESSION['member_id']) && $_SESSION['member_id'] > 0) get_userdata( $_SESSION['member_id'] );
 
 // The WORDPRESS_MENU constant is formatted to create OpenFood menu items in WordPress:
