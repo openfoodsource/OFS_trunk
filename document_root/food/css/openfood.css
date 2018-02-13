@@ -600,6 +600,12 @@ textarea {
   transition:all 0.5s;
   }
 
+  .no_site_message {
+    text-align:center;
+    }
+  .no_site_message p a:hover {
+    text-decoration:underline;
+    }
   /********************  STYLES FOR SIMPLEMODAL OVERLAYS ********************/
 
 body.popup {

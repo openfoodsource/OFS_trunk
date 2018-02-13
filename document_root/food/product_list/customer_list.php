@@ -334,6 +334,12 @@ if (USE_AVAILABILITY_MATRIX == true)
     if (! $ofs_customer_site_id) $ofs_customer_site_id = $_SESSION['ofs_customer']['site_id'];
     // If not, then use the cookie site_id, if it exists
     if (! $ofs_customer_site_id) $ofs_customer_site_id = $_COOKIE['ofs_customer']['site_id'];
+    // And if there is no cookie, then set the cookie...
+    if (! $ofs_customer_site_id)
+      {
+        $unique['no_site_selected'] = '
+        <div class="no_site_message"><h3>No site was selected</h3><p>Not all producers have products available at every location.<br />Please <a onclick="popup_src(\''.BASE_URL.PATH.'customer_select_site.php?display_as=popup\', \'customer_select_site\', \'\', false);">select a site</a> in order to view products available at that location.</p></div>';
+      }
     // Now set query values...
     $select_availability = '
     IF ('.TABLE_AVAILABILITY.'.site_id = "'.$ofs_customer_site_id.'", 1, 0) AS availability,
@@ -349,6 +355,7 @@ else
     $select_availability = '
     1 AS availability,';
     $join_availability = '';
+    $unique['no_site_selected'] = '';
   }
 
 // Execute the main product_list query

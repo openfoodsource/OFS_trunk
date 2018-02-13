@@ -338,16 +338,16 @@ function close_list_bottom(&$product, &$adjustment, &$unique)
           <td colspan="6" align="right" style="text-align:right;"><br><b>SUBTOTAL</b></td>
           <td class="price" align="right" width="8%" style="text-align:right;"><br><b>$&nbsp;'.number_format($unique['total_order_amount'] - ($unique['invoice_price'] == 1 ? 0 : $unique['total_order_customer_fee']) - $unique['total_order_tax'], 2).'</b></td>
         </tr>'.
-($product[$this_row]['delivery_id'] >= DELIVERY_NO_PAYPAL && $unique['invoice_price'] == 0 && $unique['customer_fee_percent'] != 0 ? '
-        <tr>
-          <td colspan="6" align="right" style="text-align:right;"><b>+ '.number_format($unique['customer_fee_percent'], 0).'% Fee</b></td>
-          <td class="price" align="right" width="8%" style="text-align:right;"><b>$&nbsp;'.number_format($unique['total_order_customer_fee'], 2).'</b></td>
-        </tr>'
-: '').
 ($unique['total_order_tax'] != 0 ? '
         <tr>
           <td colspan="6" align="right" style="text-align:right;"><b>* Sales tax</b></td>
           <td class="price" align="right" width="8%" style="text-align:right;"><b>$ '.number_format($unique['total_order_tax'], 2).'</b></td>
+        </tr>'
+: '').
+($unique['invoice_price'] == 0 && $unique['customer_fee_percent'] != 0 ? '
+        <tr>
+          <td colspan="6" align="right" style="text-align:right;"><b>Shipping &amp; Handling + '.number_format ($unique['customer_fee_percent'], 0).'% Co-op Fee</b></td>
+          <td class="price" align="right" width="8%" style="text-align:right;"><b>$ '.number_format($unique['total_order_customer_fee'], 2).'</b></td>
         </tr>'
 : '').
 ($product[$this_row]['exempt_adjustment_cost'] != 0 ? '

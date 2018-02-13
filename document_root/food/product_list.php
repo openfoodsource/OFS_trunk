@@ -329,7 +329,7 @@ else
   {
     $display = open_list_top($row, $unique).
       major_division_open($row, $unique, 'major_division_empty_title').
-      no_product_message().
+      no_product_message($unique).
       major_division_close($row, $unique, $major_division).
       close_list_bottom($row, $unique);
     $unique['pager_found_rows'] = 0;
@@ -805,6 +805,9 @@ $page_subtitle_html = '
 // $page_subtitle_html = [value set dynamically]
 // $page_title = [value set dynamically]
 // $page_tab = [value set dynamically]
+
+// Let the header know to handle this as a product_list page (i.e. ask for customer_site if needed)
+$is_customer_product_page = true;
 
 if ($_GET['output'] == 'csv')
   {

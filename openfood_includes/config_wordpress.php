@@ -78,3 +78,9 @@ define('WP_DEBUG', false);
 
 define( 'AUTOMATIC_UPDATER_DISABLED', true );
 define( 'WP_AUTO_UPDATE_CORE', false );
+
+// Uncomment the following to send Wordpress errors to the errors.text log
+//
+// @ini_set('log_errors','On'); // enable or disable php error logging (use 'On' or 'Off')
+// @ini_set('display_errors','Off'); // enable or disable public display of errors (use 'On' or 'Off')
+// @ini_set('error_log','/home/cloverbe/public_html/shop/errors.text'); // path to server-writable log file

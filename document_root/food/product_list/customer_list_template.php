@@ -57,9 +57,10 @@ function wholesale_text_html()
     '<span class="wholesale_notice">** FEATURED WHOLESALE ITEM **</span>';
   };
 
-function no_product_message()
-  { return
-    '<h2>No products to show</h2>';
+function no_product_message(&$unique)
+  {
+    if (strlen ($unique['no_site_selected']) > 0) return $unique['no_site_selected'];
+    else return '<h2>No products to show</h2>';
   };
 
 // RANDOM_WEIGHT_DISPLAY_CALC
