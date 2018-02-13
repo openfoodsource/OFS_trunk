@@ -18,7 +18,7 @@ if (is_numeric ($image_id))
   {
     // First check to see if the image exists as a file
     $file = FILE_PATH.PRODUCT_IMAGE_PATH.'img'.PRODUCT_IMAGE_SIZE.'-'.$image_id.'.png';
-    if (!file_exists (FILE_PATH.$file))
+    if (!file_exists ($file))
       {
         // If the image does not exist, then get it from the database
         $query = '
