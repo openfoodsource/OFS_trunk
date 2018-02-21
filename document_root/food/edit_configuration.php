@@ -515,7 +515,7 @@ else
                           <div id="info_button-'.$row->name.'" class="info_button">&#9432;</div>
                           <div id="info_content-'.$row->name.'" class="info_content">'.nl2br ($row->description).(IS_DEVELOPER == true ? ' <a class="edit_this" href="'.$_SERVER['SCRIPT_NAME'].'?config=edit_config&subsection='.$row->subsection.'">&#9998;</a>' : '').'</div>
                         </div>
-                        <label class="name" onclick="jQuery(this).closest(\'fieldset\').toggleClass(\'hover\');">
+                        <label class="name" onclick="jQuery(this).closest(\'fieldset\').toggleClass(\'show\');">
                           <span class="constant">'.$override_flag.$row->constant.
                           ($row->constant != strtoupper ($row->name) ? '
                           <span class="override_with">(override with &apos;'.$row->name.'&apos;)</span>'
@@ -560,10 +560,8 @@ else
       .config_row fieldset .config_setting {
         display:none;
         }
-      .config_row fieldset.hover .override_text,
-      .config_row fieldset:hover .override_text,
-      .config_row fieldset.hover .config_setting,
-      .config_row fieldset:hover .config_setting {
+      .config_row fieldset.show .override_text,
+      .config_row fieldset.show .config_setting {
         display:block;
         }
       .changed {

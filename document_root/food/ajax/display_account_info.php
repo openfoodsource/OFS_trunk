@@ -251,10 +251,11 @@ while ($row = mysqli_fetch_array ($result_data, MYSQLI_ASSOC))
     // If necessary, invert sense of the source and target accounts
     // because we always want the source account to be the one being displayed
     // if ($row['target_type'] != $account_type || $row['target_key'] != $account_key)
-    if ($row['target_type'] != $account_type)
+    if ($row['target_type'] != $account_type && $row['target_key'] != $account_key)
       {
         // Switch source and target values
         // We do not need to switch the sign of "amount" because that was already done in the query
+        $row['amount'] = 0 - $row['amount'];
         list      ($row['source_type'], $row['source_key'], $row['source_name'], $row['target_type'], $row['target_key'], $row['target_name'])
           = array ($row['target_type'], $row['target_key'], $row['target_name'], $row['source_type'], $row['source_key'], $row['source_name']);
       }

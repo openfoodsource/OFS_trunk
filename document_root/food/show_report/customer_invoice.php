@@ -269,20 +269,6 @@ if ($row_prior_closing = mysqli_fetch_array ($result_prior_closing, MYSQLI_ASSOC
            '.NEW_TABLE_LEDGER.'.effective_datetime,
            '.TABLE_ORDER_CYCLES.'.delivery_date
           ) >= "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_date']).'"
-      )
-    /* DO NOT INCLUDE NON-ORDER PAYMENTS FOR THE PRIOR DELIVERY DATE */
-    AND NOT (
-      NOT FIND_IN_SET('.NEW_TABLE_LEDGER.'.text_key, "delivery cost,order cost,large order discount")
-      AND
-        IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
-           '.NEW_TABLE_LEDGER.'.effective_datetime,
-           '.TABLE_ORDER_CYCLES.'.delivery_date
-          ) >= "'.mysqli_real_escape_string ($connection, $row_prior_closing['delivery_date']).'"
-      AND
-        IF('.NEW_TABLE_LEDGER.'.delivery_id IS NULL,
-           '.NEW_TABLE_LEDGER.'.effective_datetime,
-           '.TABLE_ORDER_CYCLES.'.delivery_date
-          ) < "'.mysqli_real_escape_string ($connection, $unique_data['delivery_date']).'"
       )';
   }
 else

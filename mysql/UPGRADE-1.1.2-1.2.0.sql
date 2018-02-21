@@ -11,6 +11,11 @@
 --
 
 -- --------------------------------------------------------------------- --
+
+-- Extend weight in basket_items to allow three decimal places
+ALTER TABLE ofs_basket_items
+  CHANGE total_weight total_weight DECIMAL( 8, 3 ) NOT NULL DEFAULT '0.00';
+
 -- CONFIGURATION TABLE --
 
 -- Remove some old/extraneous values
