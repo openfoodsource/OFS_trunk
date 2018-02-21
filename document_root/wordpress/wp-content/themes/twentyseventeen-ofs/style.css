@@ -73,7 +73,7 @@ input[type="text"] {
   /* Switch to 100% width on primary content area */
   .has-sidebar:not(.error404) #primary {
     width: 100%;
-}
+    }
   }
 /* Never print the user menu */
 @media print {
@@ -81,8 +81,3 @@ input[type="text"] {
     display:none;
     }
   }
-
-
-
-
-

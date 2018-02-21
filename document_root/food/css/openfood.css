@@ -62,8 +62,6 @@ form fieldset {
   min-width:200px;
   }
 
-
-
 /* BEGIN Section for styles that help OFS stand alone from Wordpress TwentySeventeen */
 *,
 li,
@@ -213,11 +211,11 @@ hr {
   height: 1px;
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  border-color: #D6D6D6; 
+  border-color: #D6D6D6;
   margin: 0%;
   }
 input {
-  font-size: 12px; 
+  font-size: 12px;
    font-family:"Lucida Console", monospace;
   /* background-color: #F5F5F5; DEE8ED*/
    color:#000;
@@ -227,11 +225,11 @@ pre {
   text-align:left;
   margin-left:1em;
   }
-textarea{ 
+textarea{
    width:90%;
-   font-size: 12px; 
+   font-size: 12px;
    font-family:"Lucida Console", monospace;
-   background-color: #F5F5F5; 
+   background-color: #F5F5F5;
    color:#000;
    border: 1px solid #666666;
   }
@@ -246,7 +244,7 @@ input[type="text"]:disabled
   {
   background-color:#ddd;
   color:#666;
-  } 
+  }
 /* Set background color for input/textarea placeholders */
 ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
   color:#aaa;
@@ -1350,14 +1348,10 @@ input[type="text"].paypal_amount_field {
   padding: 0 15px;
   }
 #delivery_id_nav .prior {
-  position: absolute;
   border-radius:1rem 0 0 1rem;
-  left: 0;
   }
 #delivery_id_nav .next {
-  position: absolute;
   border-radius:0 1rem 1rem 0;
-  right: 0;
   }
 
 /******************** OLD PANEL STYLES ***************/
@@ -1445,4 +1439,3 @@ ul.fancyList1 li {
     font-size:95%;
     }
   }
-

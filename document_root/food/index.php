@@ -129,7 +129,7 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
                     $username = $row['username'];
                     $_SESSION['username'] = $username;
                     $member_id = $row['member_id'];
-                    // Following is needed for gravatar (c.f. http://en.gravatar.com/site/implement/hash/)
+                    // Following is needed for gravatar (c.f. https://en.gravatar.com/site/implement/hash/)
                     $gravatar_hash = md5( strtolower( trim( $row['email_address'] ) ) );
                     $_SESSION['email_address'] = $row['email_address'];
                     $_SESSION['gravatar_hash'] = $gravatar_hash;
@@ -210,7 +210,7 @@ if ($_REQUEST['action'] == 'login' && ! $_SESSION['member_id'])
               <button type="submit" class="submit" name="submit" tabindex="3">Login</button>
             </fieldset>
           </form>';
-        $content .= 
+        $content .=
       ($error_message ? '
         <div class="error_message">
           <p class="message">'.$error_message.'</p>
@@ -227,8 +227,8 @@ else
     // Not login and not logged in, so show basic "info" screen
     $content .=
       ($error_message ? '<div class="error_message">'.$error_message.'</div>' : '').'
-      <div id="info_container" style="background-image: url('.DIR_GRAPHICS.'info_background.png); background-repeat: no-repeat; width:100%;background-position:top right;min-height:401px;background-size:870px 410px;">
-        <h3 style="clear; padding-top:220px;">Information Links</h3>
+      <div id="info_container">
+        <h3>Information Links</h3>
         <ul class="info_links">
           <li><a href="'.PATH.'locations.php">Food Pickup/Delivery Locations</a></li>
           <li><a href="'.PATH.'producer_list.php">Active Producers</a></li>
@@ -247,6 +247,18 @@ else
 
 $page_specific_javascript = '';
 $page_specific_css .= '
+  #info_container {
+    background-image: url('.DIR_GRAPHICS.'info_background.png);
+    background-repeat: no-repeat;
+    width:100%;
+    background-position:top right;
+    min-height:401px;
+    background-size:870px 410px;
+    }
+  #info_container > h3 {
+    clear:both;
+    padding-top:220px;
+    }
   #page_login fieldset {
     font-size:100%;
     position:relative;
