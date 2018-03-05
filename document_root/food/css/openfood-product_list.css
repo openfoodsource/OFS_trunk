@@ -1001,13 +1001,18 @@ figcaption.edit_product_image {
   left: 4rem;
   height: 0;
   float: left;
+  font-size:90%;
   transform-origin: 0% 100%;
   line-height: 2rem;
-  font-weight:bold;
+  font-variant:small-caps;
+  z-index:1;
   }
 .product_info.checkout_pending,
 .product_info, .customer_info.checkout_pending {
   border-left-color:#faa;
+  }
+.product_info, .customer_info.checkout_pending * {
+  color:#aaa;
   }
 .product_info.checkout_ready,
 .product_info, .customer_info.checkout_ready {

@@ -66,6 +66,7 @@ if ($type == 'pickup')
       WHERE
         '.NEW_TABLE_BASKETS.'.delivery_id = '.mysqli_real_escape_string ($connection, $delivery_id).'
         AND '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock != '.NEW_TABLE_BASKET_ITEMS.'.quantity
+        AND '.NEW_TABLE_BASKET_ITEMS.'.checked_out = 1
         AND '.NEW_TABLE_PRODUCTS.'.tangible = 1'.
         $and_producer_id.'
       ORDER BY
@@ -145,6 +146,7 @@ elseif ($type == 'dropoff')
       WHERE
         '.NEW_TABLE_BASKETS.'.delivery_id = '.mysqli_real_escape_string ($connection, $delivery_id).'
         AND '.NEW_TABLE_BASKET_ITEMS.'.out_of_stock != '.NEW_TABLE_BASKET_ITEMS.'.quantity
+        AND '.NEW_TABLE_BASKET_ITEMS.'.checked_out = 1
         AND '.NEW_TABLE_PRODUCTS.'.tangible = 1'.
         $and_producer_id.'
       ORDER BY

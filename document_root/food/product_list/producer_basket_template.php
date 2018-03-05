@@ -608,18 +608,18 @@ function show_listing_row($data, &$unique)
       }
     if ($data['checked_out'] != 1)
       {
-        $checkout_status = 'PENDING';
+        $checkout_status = 'Waiting Checkout';
         $checkout_status_class = ' checkout_pending';
       }
     elseif ($data['random_weight'] == 1
             && $data['total_weight'] == 0)
       {
-        $checkout_status = 'NEEDS WEIGHT';
+        $checkout_status = 'Needs Weight';
         $checkout_status_class = ' checkout_ready';
       }
     else
       {
-        $checkout_status = 'COMPLETE';
+        $checkout_status = 'Ready To Ship';
         $checkout_status_class = ' checkout_filled';
       }
     switch ($unique['row_type'])
