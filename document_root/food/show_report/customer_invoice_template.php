@@ -182,18 +182,32 @@ function pager_navigation(&$product, &$unique)
 
 function open_list_top(&$product, &$unique)
   {
+    // Set up view options for "Editable invoice"
+    $view_options = '';
+    if ($unique['view'] != 'adjusted')
+      {
+        $view_options .= '[<a href="'.$_SERVER['SCRIPT_NAME'].'?'.($_GET['type'] ? 'type='.$_GET['type'] : '').($_GET['delivery_id'] ? '&amp;delivery_id='.$_GET['delivery_id'] : '').($_GET['member_id'] ? '&amp;member_id='.$_GET['member_id'] : '').'&amp;view=adjusted">Adjusted</a>]';
+      }
+    if (0 // Disabled until/if "original" becomes available
+        && $unique['view'] != 'original')
+      {
+        $view_options .= '[<a href="'.$_SERVER['SCRIPT_NAME'].'?'.($_GET['type'] ? 'type='.$_GET['type'] : '').($_GET['delivery_id'] ? '&amp;delivery_id='.$_GET['delivery_id'] : '').($_GET['member_id'] ? '&amp;member_id='.$_GET['member_id'] : '').'&amp;view=original">Original</a>]';
+      }
+    if ($unique['view'] != 'editable'
+        && CurrentMember::auth_type('cashier')
+        && ($_GET['member_id'] != $_SESSION['member_id']
+            || in_array ('edit own customer invoice', explode (',', TRUST_ADMIN)) == true))
+      {
+        $view_options .= '[<a href="'.$_SERVER['SCRIPT_NAME'].'?'.($_GET['type'] ? 'type='.$_GET['type'] : '').($_GET['delivery_id'] ? '&amp;delivery_id='.$_GET['delivery_id'] : '').($_GET['member_id'] ? '&amp;member_id='.$_GET['member_id'] : '').'&amp;view=editable">Editable</a>]';
+      }
     $list_top = ($_GET['output'] == 'pdf' ? '' :
       ($unique['prior_delivery_id'] > 0 ? '
       <div class="prior_link"><a href="'.$_SERVER['SCRIPT_NAME'].'?'.($_GET['type'] ? 'type='.$_GET['type'] : '').'&amp;delivery_id='.$unique['prior_delivery_id'].($_GET['member_id'] ? '&amp;member_id='.$_GET['member_id'] : '').($_GET['view'] ? '&amp;view='.$_GET['view'] : '').'">Go to prior invoice: '.$unique['prior_delivery'].'</a></div>'
       : ''
       ).'
       <span class="current_view">
-        Current view: '.ucfirst ($unique['view']).' invoice<br>
-        View as
-          '.($unique['view'] != 'adjusted' ? '[<a href="'.$_SERVER['SCRIPT_NAME'].'?'.($_GET['type'] ? 'type='.$_GET['type'] : '').($_GET['delivery_id'] ? '&amp;delivery_id='.$_GET['delivery_id'] : '').($_GET['member_id'] ? '&amp;member_id='.$_GET['member_id'] : '').'&amp;view=adjusted">Adjusted</a>]': '').'
-          '.($unique['view'] != 'original' ? '[<a href="'.$_SERVER['SCRIPT_NAME'].'?'.($_GET['type'] ? 'type='.$_GET['type'] : '').($_GET['delivery_id'] ? '&amp;delivery_id='.$_GET['delivery_id'] : '').($_GET['member_id'] ? '&amp;member_id='.$_GET['member_id'] : '').'&amp;view=original">Original</a>]': '').'
-          '.(($unique['view'] != 'editable' && CurrentMember::auth_type('cashier') && $_GET['member_id'] != $member_id) ? '[<a href="'.$_SERVER['SCRIPT_NAME'].'?'.($_GET['type'] ? 'type='.$_GET['type'] : '').($_GET['delivery_id'] ? '&amp;delivery_id='.$_GET['delivery_id'] : '').($_GET['member_id'] ? '&amp;member_id='.$_GET['member_id'] : '').'&amp;view=editable">Editable</a>]': '').'
-        invoice.
+        Current view: '.ucfirst ($unique['view']).' invoice'.
+        (strlen ($view_options) > 0 ? '<br />View as '.$view_options.' invoice.' : '').'
       </span>').'
       <!-- BEGIN TABLE:member_info -->
       <table class="invoice_header" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -297,8 +311,8 @@ function open_list_top(&$product, &$unique)
       <table class="invoice_body" width="100%" cellpadding="0" cellspacing="0" border="0">'.
 ($unique['checked_out'] != 0 ? '
         <tr>
-          <th valign="bottom" bgcolor="#444444" width="40"></th>
-          <th valign="bottom" bgcolor="#444444" width="35"><font color="#ffffff" size="-1">Product&nbsp;#</font></th>
+          <th valign="bottom" bgcolor="#444444"></th>
+          <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Product&nbsp;#</font></th>
           <th valign="bottom" bgcolor="#444444" align="left"><font color="#ffffff" size="-1">Product Name</font></th>
           <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Price</font></th>
           <th valign="bottom" bgcolor="#444444"><font color="#ffffff" size="-1">Quantity</font></th>
@@ -567,8 +581,8 @@ function show_product_row(&$product, &$unique)
         $display_line = '
           <tbody class="line_item">
           <tr class="center'.$adjustment_class.'">
-            <td width="40" align="right" valign="top">'.($unique['view'] == 'editable' ? '<img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=product&amp;target='.$product[$this_row]['bpid'].'\', \'edit_transaction\', \'\', false);">' : '').'</td>
-            <td width="50" align="right" valign="top">'.$product[$this_row]['product_id'].'&nbsp;&nbsp;</td>
+            <td align="right" valign="top">'.($unique['view'] == 'editable' ? '<img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=product&amp;target='.$product[$this_row]['bpid'].'\', \'edit_transaction\', \'\', false);">' : '').'</td>
+            <td align="right" valign="top">'.$product[$this_row]['product_id'].'&nbsp;&nbsp;</td>
 
             <td align="left" valign="top">'.$product[$this_row]['product_name'].
               ($product[$this_row]['customer_message'] != '' ? '<br />
@@ -622,8 +636,7 @@ function show_adjustment_row(&$adjustment, &$unique)
             $unique['excluded_adjustment_total'] += $adjustment[$this_row]['amount'] * $adjustment[$this_row]['multiplier'];
             $unique['excluded_adjustments'] .= '
               <tr>
-                <td colspan="1">&nbsp;</td>
-                <td colspan="5" align="right" style="text-align:right;">'.
+                <td colspan="6" align="right" style="text-align:right;">'.
                   ($unique['view'] == 'editable' ? '
                   <img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=single&target='.$adjustment[$this_row]['transaction_id'].'\', \'edit_transaction\', \'\', false);">' : '').'
                   '.ucfirst ($adjustment[$this_row]['text_key']).'
@@ -647,8 +660,7 @@ function show_adjustment_row(&$adjustment, &$unique)
             $unique['invoice_included_adjustment_total'] += $adjustment[$this_row]['amount'] * $adjustment[$this_row]['multiplier'];
             $unique['invoice_included_adjustments'] .= '
               <tr>
-                <td colspan="1">&nbsp;</td>
-                <td colspan="5" align="right" style="text-align:right;">'.
+                <td colspan="6" align="right" style="text-align:right;">'.
                   ($unique['view'] == 'editable' ? '
                   <img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=single&amp;target='.$adjustment[$this_row]['transaction_id'].'\', \'edit_transaction\', \'\', false);">' : '').'
                   '.ucfirst ($adjustment[$this_row]['text_key']).'
@@ -663,8 +675,7 @@ function show_adjustment_row(&$adjustment, &$unique)
             $unique['other_included_adjustment_total'] += $adjustment[$this_row]['amount'] * $adjustment[$this_row]['multiplier'];
             $unique['other_included_adjustments'] .= '
               <tr>
-                <td colspan="1">&nbsp;</td>
-                <td colspan="5" align="right" style="text-align:right;">'.
+                <td colspan="6" align="right" style="text-align:right;">'.
                   ($unique['view'] == 'editable' ? '
                   <img src="'.DIR_GRAPHICS.'edit_icon.png" onclick="popup_src(\'adjust_ledger.php?type=single&amp;target='.$adjustment[$this_row]['transaction_id'].'\', \'edit_transaction\', \'\', false);">' : '').'
                   '.ucfirst ($adjustment[$this_row]['text_key']).'

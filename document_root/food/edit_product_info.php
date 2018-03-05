@@ -31,10 +31,28 @@ else
     $producer_id = $_SESSION['producer_id_you'];
   }
 
-// Does this user have administrative rights
-if (CurrentMember::auth_type('producer_admin'))
-    $is_admin = true
-    or $is_admin = false;
+// Get the member_id for this producer
+$query = '
+  SELECT
+    member_id
+  FROM '.TABLE_PRODUCER.'
+  WHERE '.TABLE_PRODUCER.'.producer_id = "'.mysqli_real_escape_string ($connection, $producer_id).'"';
+$result = mysqli_query ($connection, $query) or die (debug_print ("ERROR: 691054 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+if ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
+  {
+    $producer_member_id = $row['member_id'];
+  }
+else
+  {
+    debug_print ("ERROR: 829102 ", array ('message'=>'No member_id found for producer #'.$producer_id, 'query'=>$query), basename(__FILE__).' LINE '.__LINE__);
+  }
+
+// Does this user have administrative rights for this producer?
+if (CurrentMember::auth_type('producer_admin')
+    && ($producer_member_id != $_SESSION['member_id']
+        || in_array ('administer own product', explode (',', TRUST_ADMIN)) == true)
+   ) $is_admin = true;
+else $is_admin = false;
 
 // These are all fields from the product table (alphabetical by column for convenience)
 $product_fields_array = array (
@@ -696,7 +714,9 @@ if ($data_posted != true)
     $query = '
       SELECT *
       FROM '.TABLE_PRODUCT_TYPES.'
-      ORDER BY prodtype';
+      ORDER BY
+        sort,
+        prodtype';
     $result =  @mysqli_query ($connection, $query) or die(debug_print ("ERROR: 947534 ", array ($query,mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     while ($row = mysqli_fetch_array ($result, MYSQLI_ASSOC))
       {

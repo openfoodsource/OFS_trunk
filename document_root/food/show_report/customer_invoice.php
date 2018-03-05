@@ -1,14 +1,15 @@
 <?php
 valid_auth('member');
 
-$view = 'adjusted';
-if ($_GET['view'] == 'original')
-  $view = 'original';
+// Set up invoice view type based upon choice and permissions
+$view = 'adjusted'; // Default
+if ($_GET['view'] == 'original') $view = 'original';
 // Check if "editable" request by Cashier who is NOT the holder of the invoice
-elseif ($_GET['view'] == 'editable' &&
-  CurrentMember::auth_type('cashier') &&
-  $member_id != $_SESSION['member_id'])
-  $view = 'editable';
+elseif ($_GET['view'] == 'editable'
+        && CurrentMember::auth_type('cashier')
+        && ($member_id != $_SESSION['member_id']
+            || in_array ('edit own customer invoice', explode (',', TRUST_ADMIN)) == true)
+       ) $view = 'editable';
 
 if ($view == 'original')
   $view_original = '

@@ -33,6 +33,15 @@ if (isset ($_GET['select_status'])
       {
         $pending_producer = 0;
       }
+    $query_prevent_own_producer = '';
+    // Code that prevents administrators from un-suspending themselves -- depending on TRUST_ADMIN settings
+    if (in_array ('unsuspend own producer', explode (',', TRUST_ADMIN)) == false)
+      {
+        $query_prevent_own_producer = '
+        AND
+          (member_id != "'.mysqli_real_escape_string ($connection, $_SESSION['member_id']).'"
+          OR unlisted_producer != "2")';
+      }
     $query = '
       UPDATE
         '.TABLE_PRODUCER.'
@@ -40,8 +49,9 @@ if (isset ($_GET['select_status'])
         unlisted_producer = "'.mysqli_real_escape_string ($connection, $unlisted_producer).'",
         pending = "'.mysqli_real_escape_string ($connection, $pending_producer).'"
       WHERE
-        producer_id = "'.mysqli_real_escape_string ($connection, $_SESSION['producer_id_you']).'"';
-    $resultr = @mysqli_query ($connection, $query) or die (debug_print ("ERROR: 904933 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
+        producer_id = "'.mysqli_real_escape_string ($connection, $_SESSION['producer_id_you']).'"'.
+        $query_prevent_own_producer;
+    $resultr = @mysqli_query ($connection, $query) ; (debug_print ("ERROR: 904933 ", array ($query, mysqli_error ($connection)), basename(__FILE__).' LINE '.__LINE__));
     $message = 'Producer # '.$producer_id.' has been updated.<br>';
   }
 

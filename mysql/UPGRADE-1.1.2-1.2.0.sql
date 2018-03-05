@@ -97,7 +97,19 @@ CREATE TABLE IF NOT EXISTS ofs_transport_identities (
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 -- Provide at least one "default" value
 INSERT INTO ofs_transport_identities (transport_id, transport_identity_name) VALUES
-(0, 'No transport configured for this cycle');
+(1, 'No transport configured for this cycle');
+
+-- Add new option to configuration table
+INSERT INTO iowatest_openfood.ofs_configuration
+  SET
+    section = '2',
+    subsection = NULL,
+    name = 'trust_admin',
+    constant = 'TRUST_ADMIN',
+    options = 'multi_options=\r\nunsuspend own producer\r\nedit own customer invoice\r\napprove own product',
+    value = 'unsuspend own producer,edit own customer invoice,approve own product',
+    description = 'These selections are used to permit administrators to edit their own information, in addition to that of others. Without these permissions, administrators are not allowed to modify certain aspects of their own information.';
+
 
 -- CONVERT PRODUCTS TABLE --------------------------------------------------------------------------
 
@@ -336,6 +348,3 @@ FROM ofs_products
 WHERE 1
 GROUP BY product_id
 HAVING sum_approved = 0
-
-
-
